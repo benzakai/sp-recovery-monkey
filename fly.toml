@@ -1,0 +1,31 @@
+# fly.toml app configuration file generated for sp-recovery-monkey-wandering-paper-2558 on 2024-08-27T11:31:23+03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'sp-recovery-monkey-wandering-paper-2558'
+
+[build]
+
+[env]
+  PORT = '3000'
+  SCOPES = 'read_checkouts, write_products, read_orders'
+  SHOPIFY_API_KEY = '66e7df7cac5412f3a99a62879dfe3e04'
+  SHOPIFY_APP_URL = 'https://sp-recovery-monkey-wandering-paper-2558.fly.dev'
+application_url = "https://sp-recovery-monkey-wandering-paper-2558.fly.dev"
+[auth]
+redirect_urls = [
+  "https://sp-recovery-monkey-wandering-paper-2558.fly.dev/auth/callback",
+]
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1

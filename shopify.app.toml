@@ -3,7 +3,7 @@
 client_id = "66e7df7cac5412f3a99a62879dfe3e04"
 name = "sp-recovery-monkey\r\r\r\r\r"
 handle = "sp-recovery-monkey"
-application_url = "https://equivalent-fits-specialized-pull.trycloudflare.com"
+application_url = "https://trip-standards-desirable-usc.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,17 +17,17 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://equivalent-fits-specialized-pull.trycloudflare.com/auth/callback",
-  "https://equivalent-fits-specialized-pull.trycloudflare.com/auth/shopify/callback",
-  "https://equivalent-fits-specialized-pull.trycloudflare.com/api/auth/callback"
+  "https://trip-standards-desirable-usc.trycloudflare.com/auth/callback",
+  "https://trip-standards-desirable-usc.trycloudflare.com/auth/shopify/callback",
+  "https://trip-standards-desirable-usc.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-07"
 
   [[webhooks.subscriptions]]
-  topics = [ "app/uninstalled" ]
-  uri = "/webhooks"
+topics = ["checkouts/update"] 
+uri = "/webhooks/checkouts" 
 
 [pos]
 embedded = false
