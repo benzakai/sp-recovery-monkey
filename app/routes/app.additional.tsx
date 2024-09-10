@@ -13,7 +13,7 @@ export default function MessageBox() {
   };
 
   return (
-    <Page title="Message Box">
+    <Page title="Message Box!!">
       <Layout>
         <Layout.Section>
           <Card>
