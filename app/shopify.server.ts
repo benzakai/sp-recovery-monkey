@@ -7,6 +7,24 @@ import {
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import { restResources } from "@shopify/shopify-api/rest/admin/2024-07";
 import prisma from "./db.server";
+import express from 'express';
+import bodyParser from 'body-parser';
+
+
+//webhooke checkout
+const app = express();
+app.use(express.json());
+
+// Use the verifyShopifyWebhook middleware for compliance webhook routes
+app.post('/webhooks/compliance');
+
+// Start your server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
+//end webhooke checkout
+
 
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
