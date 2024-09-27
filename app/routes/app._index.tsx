@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useFetcher } from "@remix-run/react";
+import { useFetcher, useNavigate } from "@remix-run/react";
 import {
   Page,
   Layout,
@@ -93,6 +93,15 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Index() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    navigate("/app/welcome");
+  }, []);
+
+  return (<></>);
+}
+
+/*
   const fetcher = useFetcher<typeof action>();
 
   const shopify = useAppBridge();
@@ -333,3 +342,4 @@ export default function Index() {
     </Page>
   );
 }
+*/
