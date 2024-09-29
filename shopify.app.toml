@@ -1,0 +1,41 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "66e7df7cac5412f3a99a62879dfe3e04"
+name = "sp-recovery-monkey\r\r\r\r\r"
+handle = "sp-recovery-monkey"
+application_url = "https://sp-recovery-monkey-wandering-paper-2558.fly.dev"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "quickstart-f589edcd.myshopify.com"
+include_config_on_deploy = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_checkouts,read_orders,write_products"
+
+[auth]
+redirect_urls = [
+  "https://sp-recovery-monkey-wandering-paper-2558.fly.dev/auth/callback",
+  "https://sp-recovery-monkey-wandering-paper-2558.fly.dev/auth/shopify/callback",
+  "https://sp-recovery-monkey-wandering-paper-2558.fly.dev/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-07"
+
+  [[webhooks.subscriptions]]
+  topics = [ "checkouts/create" ]
+  uri = "pubsub://sp-recovery-monkey:AbandonedChekout"
+
+  [[webhooks.subscriptions]]
+  topics = [ "checkouts/update" ]
+  uri = "pubsub://sp-recovery-monkey:checkoutsUpdate"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "pubsub://sp-recovery-monkey:uninstall"
+
+[pos]
+embedded = false
