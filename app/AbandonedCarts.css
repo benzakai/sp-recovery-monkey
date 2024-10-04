@@ -1,0 +1,220 @@
+/* General styles (desktop/tablet) */
+.container {
+    display: flex;
+    justify-content: center;
+}
+
+.card {
+    border: 1px solid black;
+    width: 55%;
+    border-radius: 7px;
+    background-color: white;
+    padding: 1% 0 5% 0;
+}
+
+.header {
+    margin: 6%;
+    font-size: 60px;
+    font-weight: 800;
+    color: black;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    gap:2rem;
+}
+
+.search-container {
+    margin-left: 8%;
+    width: 80%;
+    background-color: #f4f6f9;
+    text-align: end;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.input, .select {
+    font-size: 16px;
+    padding: 12px 20px;
+    border-radius: 25px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    color: #333;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    outline: none;
+    transition: box-shadow 0.3s ease, border 0.3s ease;
+    margin-right: 10px;
+    width: 13rem;
+}
+
+
+
+.input:hover, .select:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    margin-left: 8%;
+    width: 82%;
+}
+
+.left-column {
+    width: 41%;
+    border-right: 2px solid black;
+}
+
+.data-block {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    justify-content: start;
+    margin: 10px 10px;
+}
+
+.data-icon {
+    width: 30px;
+    height: 30px;
+}
+
+.data-text {
+    font-size: 34px;
+    font-weight: bold;
+    margin: 0 0 3% 0;
+}
+
+.subtext {
+    font-size: 20px;
+}
+
+.right-column {
+    width: 59%;
+    font-size: 13px;
+    padding-left: 5%;
+}
+
+.item-row {
+    display: flex;
+    flex-direction: row;
+    margin: 5px 0;
+}
+
+.item-icon {
+    width: 15%;
+}
+
+.pagination-container {
+    margin-top: 20px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pagination-button {
+    margin-right: 10px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.pagination-button.disabled {
+    background-color: #e0e0e0;
+    color: #a0a0a0;
+    cursor: not-allowed;
+}
+
+.pagination-button.active {
+    background-color: #4caf50;
+    color: #fff;
+    cursor: pointer;
+}
+
+.pagination-button:hover {
+    transform: scale(1.1);
+}
+
+.pagination-text {
+    font-size: 18px;
+    color: #333;
+    margin: 0 15px;
+}
+
+/* Mobile specific styles */
+@media (max-width: 768px) {
+    .card {
+        width: 90%; /* Take most of the screen width on mobile */
+        padding: 2% 0 5% 0;
+    }
+
+    .header {
+        margin: 4%;
+        font-size: 40px;
+        display: flex;
+        flex-direction: row;
+        gap: 1.3rem;
+    }
+
+    .search-container {
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .input, .select {
+        width: 100%; /* Full width for mobile */
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .row {
+        flex-direction: column; /* Stack left and right columns vertically */
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .left-column {
+        width: 100%;
+        border-right: none;
+        border-bottom: 2px solid black;
+        padding-bottom: 20px;
+    }
+
+    .right-column {
+        width: 100%;
+        padding-left: 5px;
+        padding-top: 20px;
+    }
+
+    .data-block {
+        justify-content: center;
+    }
+
+    .subtext{
+        text-align: center;
+    }
+
+    
+
+    .pagination-text {
+        margin: 10px;
+    }
+
+    .pagination-button {
+        margin: 5px;
+    }
+}
+
+@media (max-width: 420px){
+    .header {
+        flex-direction:column;
+    }
+}

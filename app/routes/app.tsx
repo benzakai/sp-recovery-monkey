@@ -27,6 +27,7 @@ export default function App() {
         </Link>
         <Link to="/app/welcome">Welcome</Link>
         <Link to="/app/abandoned-list">Abandoned List</Link>
+        <Link to="/app/connect">Connect</Link>
       </NavMenu>
       <Outlet />
     </AppProvider>
