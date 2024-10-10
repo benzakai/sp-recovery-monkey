@@ -1,22 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../Connect.css'; 
 
 function Connect() {
   // Initialize state to store information for each card (header and body)
   const [cards, setCards] = useState([
-    { id: 1, header: "Hey [Customer's Name]!", body: "We noticed you left some great items in your cart. Don't worry, they're still here waiting for you! Come back and complete your purchase before they're group end. And just for you, we're offering a special discount of [X]% off on your cart. Use " },
-    { id: 2, header: "Hey [Customer's Name]!", body: "We noticed you left some great items in your cart. Don't worry, they're still here waiting for you! Come back and complete your purchase before they're group end. And just for you, we're offering a special discount of [X]% off on your cart. Use " },
-    { id: 3, header: "Hey [Customer's Name]!", body:"We noticed you left some great items in your cart. Don't worry, they're still here waiting for you! Come back and complete your purchase before they're group end. And just for you, we're offering a special discount of [X]% off on your cart. Use " },
-    { id: 4, header: "Hey [Customer's Name]!", body: "We noticed you left some great items in your cart. Don't worry, they're still here waiting for you! Come back and complete your purchase before they're group end. And just for you, we're offering a special discount of [X]% off on your cart. Use " }
+    { id: 1, header: "Hey [Customer's Name]!", body: "We noticed you left some great items in your cart. Don't worry, they're still here waiting for you! Come back and complete your purchase before they're group end. And just for you, we're offering a special discount of [X]% off on your cart. Use it " },
+    { id: 2, header: "Hey [Customer's Name]!", body: "We noticed you left some great items in your cart. Don't worry, they're still here waiting for you! Come back and complete your purchase before they're group end. And just for you, we're offering a special discount of [X]% off on your cart. Use it" },
+    { id: 3, header: "Hey [Customer's Name]!", body:"We noticed you left some great items in your cart. Don't worry, they're still here waiting for you! Come back and complete your purchase before they're group end. And just for you, we're offering a special discount of [X]% off on your cart. Use it`" },
+    { id: 4, header: "Hey [Customer's Name]!", body: "We noticed you left some great items in your cart. Don't worry, they're still here waiting for you! Come back and complete your purchase before they're group end. And just for you, we're offering a special discount of [X]% off on your cart. Use it" }
   ]);
 
   // State to track the selected card
   const [selectedCard, setSelectedCard] = useState(null);
+  const [isDataChanged,setIsDataChanged] = useState(false);
+  const [saveData,setSaveData] = useState(false);
 
   const webhookUrl = "https://console.cloud.google.com/cloudpubsub/topic/detail/test?project=sp-recovery-monkey&hl=he"; // Replace this with the actual webhook URL.
   const data ={
     name:'helo'
   }
+
+  useEffect(()=>{
+    const storedCards = localStorage.getItem('cards');
+    if(storedCards){
+      setCards(JSON.parse(storedCards));
+    }
+  },[]);
+
+  
 
   const sendDataToWebhook = () => {
     fetch(webhookUrl, {
@@ -47,6 +58,9 @@ function Connect() {
     setCards(cards.map(card =>
       card.id === id ? { ...card, header: newHeader } : card
     ));
+    if(!isDataChanged){
+      setIsDataChanged(true);
+    }
   };
 
   // Function to handle card body change (editable input)
@@ -54,11 +68,15 @@ function Connect() {
     setCards(cards.map(card =>
       card.id === id ? { ...card, body: newBody } : card
     ));
+    if(!isDataChanged){
+      setIsDataChanged(true);
+    }
   };
 
   // Function to handle the selection of a card
   const handleSelectCard = (id) => {
     setSelectedCard(id);
+    setSaveData(false)
   };
 
   // Function to log the selected card content to the console
@@ -68,10 +86,20 @@ function Connect() {
     //   sendDataToWebhook();
       console.log('Selected Box Header:', selectedBox.header);
       console.log('Selected Box Body:', selectedBox.body);
+      setSaveData(false);
     } else {
       console.log('No card selected!');
     }
   };
+
+  const handleSave =()=>{
+    if(isDataChanged){
+      localStorage.setItem('cards', JSON.stringify(cards));
+      console.log('saves');
+      setSaveData(true);
+    }
+    
+  }
 
 
 
@@ -108,7 +136,11 @@ function Connect() {
                         ))}
                     </div>
                     <div className="connect_button_div">
-                        <button className='connect_button' onClick={handleSend}>Send</button>
+                        <button className='connect_button' onClick={handleSave}>Save Data</button>
+                    </div>
+                    {saveData && <p style={{margin:'5px',color:' green'}}>Save data Successfully</p>}
+                    <div className="connect_button_div">
+                        <button className='connect_button' onClick={handleSend}>Send Data</button>
                     </div>
                 </div>
             </div>
