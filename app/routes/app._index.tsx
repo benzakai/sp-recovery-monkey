@@ -15,10 +15,15 @@ import {
   InlineStack,
 } from "@shopify/polaris";
 import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
-import { authenticate } from "../shopify.server";
+import { authenticate, MONTHLY_PLAN } from "../shopify.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await authenticate.admin(request);
+  const { billing } = await authenticate.admin(request);
+  await billing.require({
+    plans: [MONTHLY_PLAN],
+    isTest: true,
+    onFailure: async () => billing.request({ plan: MONTHLY_PLAN }),
+  });
 
   return null;
 };

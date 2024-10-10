@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { useResponsiveJSX } from './useResponsiveJSX';
 import '../AbandonedCarts.css'
+
 export default function AbandonedCheckouts() {
-    const breakpoint = useResponsiveJSX([600,1400]);
     const [getData, setData] = React.useState([]);
     const [sortOrder, setSortOrder] = React.useState('ascending');
     const [sortBy, setSortBy] = React.useState('updated_at'); 
