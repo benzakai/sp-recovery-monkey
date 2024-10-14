@@ -1,131 +1,173 @@
-
 .connect_container {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
+  padding: 2%;
 }
 
 .connect_main_card {
-    border: 1px solid black;
-    width: 55%;
-    border-radius: 7px;
-    background-color: white;
-    padding: 1% 0 5% 0;
+  border: 1px solid black;
+  width: 80%;
+  max-width: 1000px;
+  border-radius: 7px;
+  background-color: white;
+  padding: 2% 0 5% 0;
 }
 
-.connect_main_heading{
-    margin: 6%;
-    font-size: 60px;
-    font-weight: 800;
-    color: black;
-    display: flex;
-    flex-direction: row;
-    justify-content: start;
-    gap:2rem;
-    
+.connect_main_heading {
+  margin: 3% 6%;
+  font-size: 40px;
+  font-weight: 800;
+  color: black;
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  gap: 1rem;
 }
 
-.connect_sub_heading{
-    margin: 6%;
-    font-size: 20px;
-    font-weight: 600;
-    color: black;
-    display: flex;
-    flex-direction: row;
-    justify-content: start;
-    gap:2rem;
-    width: 50%;
+.connect_sub_heading {
+  margin: 3% 6%;
+  font-size: 18px;
+  font-weight: 600;
+  color: black;
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  gap: 1rem;
+  width: 90%;
 }
-
 
 .connect_card_container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 3rem;
-    row-gap: 3rem;
-    margin: 6%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Fixed to 2 columns */
+  gap: 2rem;
+  margin: 3% 6%;
+}
+
+.connect_card {
+  position: relative;
+  border: 2px solid black;
+  border-radius: 10px;
+  padding: 0;
+  width: 100%;
+  max-width: 274px;
+  height: 10rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  background-color: #f9f9f9;
+}
+
+.connect_card.connect_selected {
+  border-color: rgb(14, 175, 49);
+}
+
+.connect_card_header_div {
+  display: flex;
+  flex-direction: row;
+}
+
+textarea.connect_card_header {
+  width: 80%;
+  height: 1.6rem;
+  border: none;
+  resize: none;
+  outline: none;
+  background: white;
+  font-size: 14px;
+  text-align: end;
+  padding-top: 5px;
+  box-sizing: border-box;
+  font-weight: bold;
+  border-radius: 10px;
+}
+
+.connect_icon {
+  width: 1.25rem;
+  padding-top: 3px;
+}
+
+textarea.connect_card_body {
+  width: 100%;
+  height: 100%;
+  border: none;
+  resize: none;
+  outline: none;
+  background: white;
+  font-size: 12px;
+  text-align: center;
+  padding: 5px;
+  box-sizing: border-box;
+  border-radius: 10px;
+}
+
+textarea:focus {
+  outline: none;
+}
+
+.connect_button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: #90ee90;
+  border-radius: 10px;
+  border: 2px solid green;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.connect_button:hover {
+  background-color: #7fdb7f;
+}
+
+.connect_button_div {
+  margin: 3% 6%;
+  display: flex;
+  justify-content: start;
+}
+
+@media (max-width: 768px) {
+  .connect_main_heading {
+      font-size: 32px;
+      margin: 5% 6%;
   }
-  
+
+  .connect_sub_heading {
+      font-size: 16px;
+      margin: 5% 6%;
+  }
+
+  .connect_card_container {
+      grid-template-columns: 1fr; /* Single column on smaller screens */
+      margin: 5% 3%;
+  }
+
+  .connect_main_card {
+      width: 95%;
+  }
+
   .connect_card {
-    position: relative;
-    border: 2px solid black;
-    border-radius: 10px;
-    padding: 0;
-    width: 17rem;
-    height: 10rem;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    background-color: #f9f9f9;
+      max-width: 100%;
+      height: 8rem;
   }
-  
-  .connect_card.connect_selected {
-    border-color: rgb(14, 175, 49);
+}
+
+@media (max-width: 480px) {
+  .connect_main_heading {
+      font-size: 28px;
+      margin: 5% 4%;
   }
 
-  .connect_card_header_div{
-    display: flex;
-    flex-direction: row;
-
-    
-  }
-  
-  textarea.connect_card_header {
-    width: 83%;
-    height: 1.6rem;
-    border: none;
-    resize: none;
-    outline: none;
-    background:white;
-    font-size: 14px;
-    text-align: end;
-    padding-top: 5px;
-    box-sizing: border-box;
-    font-weight: bold;
-    border-radius: 10px;
+  .connect_sub_heading {
+      font-size: 14px;
+      margin: 5% 4%;
   }
 
-  .connect_icon{
-    width: 1.25rem;
-    padding-top: 3px;
-  }
-  
-  /* Style for the body textarea (bottom part of the card) */
-  textarea.connect_card_body {
-    width: 100%;
-    height: 100%;
-    border: none;
-    resize: none;
-    outline: none;
-    background:white;
-    font-size: 12px;
-    text-align: center;
-    padding: 5px;
-    box-sizing: border-box;
-    background-color: 'red';
-    border-radius: 10px;
-  }
-  
-  /* Ensures input fields don't look like inputs */
-  textarea:focus {
-    outline: none;
-  }
-  
   .connect_button {
-    margin-top: 20px;
-    padding: 10px 20px;
-    cursor: pointer;
-    background-color: #90ee90;
-    border-radius:10px;
-    border: 2px solid green;
+      padding: 8px 16px;
+      font-size: 14px;
   }
 
-  .connect_button_div{
-    margin-top: 20px;
-    display: flex;
-    justify-content: start;
-    margin: 6%;
-
+  .connect_card {
+      height: 7rem;
   }
-
-
-  
+}
