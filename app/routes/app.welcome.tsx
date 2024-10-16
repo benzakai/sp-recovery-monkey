@@ -30,7 +30,7 @@ export default function Welcome() {
         <div className="welcome-container">
             <div className="welcome-card">
                 <div className="welcome-header">
-                     <p className="welcome-title">Welcome</p>
+                     <div className="welcome-title">Welcome</div>
                 </div>
                 <div className="welcome-stats">
                 <div className="welcome-stat">

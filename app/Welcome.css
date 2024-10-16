@@ -14,20 +14,21 @@
   }
   
   .welcome-header {
-    height: 69px;
+    height: 97px;
   }
   
   .welcome-title {
     font-size: 69px;
     font-weight: bold;
+    color: black;
   }
   
   .welcome-stats {
     display: flex;
     flex-direction: row;
-    margin-bottom: 3rem;
-    gap: 3rem;
-    flex-wrap: wrap; /* Make it responsive */
+    margin-bottom: 4rem;
+    gap: 5rem;
+    flex-wrap: wrap;
   }
   
   .welcome-stat {
@@ -57,6 +58,7 @@
   .welcome-stat-label {
     font-size: 20px;
     margin: 6% 0 3% 0;
+    color: black;
   }
   
   @media (max-width: 768px) {

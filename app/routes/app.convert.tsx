@@ -108,8 +108,8 @@ function Convert() {
     <>
        <div className="connect_container">
             <div className="connect_main_card">
-                <div className="connect_main_heading"><p>Let's Convert</p></div>
-                <div className="connect_sub_heading"><p>Choose the right message that suits your customers</p></div>
+                <div className="connect_main_heading"><div>Let's Convert</div></div>
+                <div className="connect_sub_heading"><div>Choose the right message that suits your customers</div></div>
                 <div className="connect_App">
                     <div className="connect_card_container">
                         {cards.map(card => (

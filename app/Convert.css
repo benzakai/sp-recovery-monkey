@@ -14,8 +14,8 @@
 }
 
 .connect_main_heading {
-  margin: 3% 6%;
-  font-size: 40px;
+  margin: 7% 6%;
+  font-size: 60px;
   font-weight: 800;
   color: black;
   display: flex;
@@ -25,36 +25,37 @@
 }
 
 .connect_sub_heading {
-  margin: 3% 6%;
-  font-size: 18px;
+  margin: 4% 6%;
+  font-size: 21px;
   font-weight: 600;
   color: black;
   display: flex;
   flex-direction: row;
   justify-content: start;
   gap: 1rem;
-  width: 90%;
+  width: 45%;
 }
 
 .connect_card_container {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Fixed to 2 columns */
-  gap: 2rem;
+  grid-template-columns: repeat(2, 262px);
+  row-gap: 3rem;
+  column-gap: 5rem;
   margin: 3% 6%;
 }
 
 .connect_card {
   position: relative;
-  border: 2px solid black;
-  border-radius: 10px;
+  border-radius: 14px;
   padding: 0;
   width: 100%;
-  max-width: 274px;
-  height: 10rem;
+  max-width: 252px;
+  height: 9rem;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   background-color: #f9f9f9;
+  border: 3px solid black;
 }
 
 .connect_card.connect_selected {
@@ -73,7 +74,7 @@ textarea.connect_card_header {
   resize: none;
   outline: none;
   background: white;
-  font-size: 14px;
+  font-size: 12px;
   text-align: end;
   padding-top: 5px;
   box-sizing: border-box;
@@ -93,7 +94,7 @@ textarea.connect_card_body {
   resize: none;
   outline: none;
   background: white;
-  font-size: 12px;
+  font-size: 11px;
   text-align: center;
   padding: 5px;
   box-sizing: border-box;
