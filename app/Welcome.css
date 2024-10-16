@@ -1,0 +1,86 @@
+.welcome-container {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
+  
+  .welcome-card {
+    border: 1px solid black;
+    width: 55%;
+    border-radius: 7px;
+    background-color: white;
+    padding: 60px;
+    height: auto;
+  }
+  
+  .welcome-header {
+    height: 69px;
+  }
+  
+  .welcome-title {
+    font-size: 69px;
+    font-weight: bold;
+  }
+  
+  .welcome-stats {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 3rem;
+    gap: 3rem;
+    flex-wrap: wrap; /* Make it responsive */
+  }
+  
+  .welcome-stat {
+    width: 32%;
+    margin-right: 15px;
+  }
+  
+  .welcome-stat-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    justify-content: start;
+  }
+  
+  .welcome-icon {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .welcome-stat-number {
+    font-size: 34px;
+    font-weight: bold;
+    margin-bottom: 3%;
+  }
+  
+  .welcome-stat-label {
+    font-size: 20px;
+    margin: 6% 0 3% 0;
+  }
+  
+  @media (max-width: 768px) {
+    .welcome-card {
+      width: 90%;
+      padding: 30px;
+    }
+  
+    .welcome-title {
+      font-size: 45px;
+    }
+  
+    .welcome-stat {
+      width: 100%;
+      margin-right: 0;
+    }
+  
+    .welcome-stats {
+      flex-direction: column;
+      gap: 2rem;
+    }
+  
+    .welcome-stat-number {
+      font-size: 28px;
+    }
+  }
+  
