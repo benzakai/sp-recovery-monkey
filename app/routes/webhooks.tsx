@@ -21,6 +21,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         case "CHECKOUTS_UPDATE":
           console.log("checkouts/update:", payload);
           break;
+            case "ORDERS_CREATE":
+               console.log("orders/create:", payload);
+               break;
+
     case "APP_UNINSTALLED":
       if (session) {
         await db.session.deleteMany({ where: { shop } });

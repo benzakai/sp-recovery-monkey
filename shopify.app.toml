@@ -13,7 +13,7 @@ include_config_on_deploy = true
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_checkouts,read_orders,write_products"
+scopes = "read_checkouts,read_orders,write_orders,write_products"
 
 [auth]
 redirect_urls = [
@@ -32,6 +32,10 @@ api_version = "2024-07"
   [[webhooks.subscriptions]]
   topics = [ "checkouts/update" ]
   uri = "pubsub://sp-recovery-monkey:checkoutsUpdate"
+
+  [[webhooks.subscriptions]]
+  topics = [ "orders/create" ]
+  uri = "pubsub://sp-recovery-monkey:ordersCreate"
 
   [[webhooks.subscriptions]]
   topics = [ "app/uninstalled" ]

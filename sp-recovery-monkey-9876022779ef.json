@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "sp-recovery-monkey",
+  "private_key_id": "9876022779efa1bba8344208eb248fa16c47d7cf",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCs9ig8pCqfw4d8\nwmCoV0HIWemWyQgqxxwEZLcsABnaGHKfpmS+24TaFlaR2Ird03wsqd6vVhPLY1c3\ncwBgAvuScOACkqAFtfOvQgJ9DeEq8uF4bUZTMZmzn3agIfwTJBkuRWD+INkkbXCC\ntP+liITVgN2XZxjC3qY1SYegbvKDyrX5uRoOUykDVpnX+4OrqO263xyFzvKvELAQ\np2q3fNDAjbf5va05efY6ZZgCCMtIahKj9zFuW8aEta/54v5tzBq8s0o9mcxSWKon\nZ7Y0aUigMq7AN2pHCw/0bgIUwVbUifY6TRcnIgoaL6h3peeRkoE8UzsK1csX2xi5\nVY+eTrTbAgMBAAECggEAUInrIJm9M1nEHEcS5TCEdDvR9qGzyN+gXzdayAVgBFt/\n/HFp1im4Cil+tDkmKLcSymVrSTAG1Z1zfmFxmkOpS35+ARSvqRkZ2NEfAYZWBD7G\n2OHhblnZXXfysAxDKdKUWyR5TryTAFBppKONq1IPsK9p/9dFA3DT6lpL6lvfV5hn\nKK3jSVPosWRFhCMt4xxIgCwdXT8s15LZiQ5XR4ifMVBaFgS2MEZ8DDoHRO1z+o25\npQokjae1SBcZdBY89CQEAP+JAgE+HIIRy1q5t44Suzn6BR+Xiw0Sy3bddciQJMRj\n/YDmbvVZOQRRnhe9cn8WIpGUWQXxReNWeCjKnxp0CQKBgQC/4KaBMjhC0zmQaguR\n5e8SleZONQtwrX3mWqUIUHlSlkn7r5nW6fx7g0sSqBHgNh8sieveMFnlK/3d3QzJ\nM+81yEMD2WNPDP8CYSWimxZyglR1+VQR4spjkdmaOoJl47HMoWBh88zqA6Dx4BUd\npOaAbJ/n6ijX7+z7bcgTGowoFwKBgQDmwzi7lD7JQKgH9T4EuoJACmqR416h1dH2\ne4yNjiXn5cyeu53VT/ZxUn8ZGme5CEuviw0U8uz52hHT4ZB2nyYrRPU0DJCeBdIQ\nsG8/3TUNylfy+R+N48gpYa9Z3O4ZZ8rpB6hDr1ZMWkI4Gk9Vx7CR2yMDcjH30CuM\n/utKmjdP3QKBgAE9CvYUg+ZyhJGZDaAQct2U2BqzHvLIO+LLvPrzwgS1cZ7NQFnx\nwq5tZ4OkUBE5aDQaY8pYV4wyH35aGeYGjsmzFDOnKIvvEopKZDrLc3ajvrXQOSmw\nZAwGefgT3pmXwaMHe57GOxFbmqNVBe3eDZrQmKufiEn0g3wP9lWhOzxbAoGAWTbW\nYybQE0xs6g61OGzG2G1ugBJwTo70yp8/Wqa/HuVn82JDhemRNISZYKIlwZJkeGyA\n1T2Jwpq9U7Yb/NBQmF/jkIjfDEjhytP7Xqxty3QUBnqr6VZL1zvN6CcS4j2PZAIy\n2mAaNBCdE0WQsHAwYmNfKQDoMo+Hls4jN0dh5P0CgYEAhGaC+aeZLH1Y/H5PrSro\ntGma4jh2Q2hHAw7kfCuVQPDyuMpCFv55bae7Lad0zGQwLBuZmsDlhILzk0KPKLv6\nriPAO3o4HIYJneCZd/CdYoVJNyT61xnEov+hL1FELij8uOTkA2K9XsKM24Fbi8zW\nBAseDX7V1tpTKqUq+voo+v4=\n-----END PRIVATE KEY-----\n",
+  "client_email": "sp-recovery-monkey@appspot.gserviceaccount.com",
+  "client_id": "106942435747474540382",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/sp-recovery-monkey%40appspot.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

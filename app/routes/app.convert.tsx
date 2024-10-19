@@ -4,10 +4,10 @@ import '../Convert.css';
 function Convert() {
   // Initialize state to store information for each card (header and body)
   const [cards, setCards] = useState([
-    { id: 1, header: "Hey [Customer's Name]!", body: "We noticed you left some great items in your cart. Don't worry, they're still here waiting for you! Come back and complete your purchase before they're group end. And just for you, we're offering a special discount of [X]% off on your cart. Use it " },
-    { id: 2, header: "Hey [Customer's Name]!", body: "We noticed you left some great items in your cart. Don't worry, they're still here waiting for you! Come back and complete your purchase before they're group end. And just for you, we're offering a special discount of [X]% off on your cart. Use it" },
-    { id: 3, header: "Hey [Customer's Name]!", body:"We noticed you left some great items in your cart. Don't worry, they're still here waiting for you! Come back and complete your purchase before they're group end. And just for you, we're offering a special discount of [X]% off on your cart. Use it`" },
-    { id: 4, header: "Hey [Customer's Name]!", body: "We noticed you left some great items in your cart. Don't worry, they're still here waiting for you! Come back and complete your purchase before they're group end. And just for you, we're offering a special discount of [X]% off on your cart. Use it" }
+    { id: 1, header: "Hi [Customer’s Name]", body: "it looks like you left some items in your cart! Just a heads-up, our stock is moving fast, so grab them while you can 🎯. If you need any assistance, feel free to reach out! [link to abandon cart recovery] " },
+    { id: 2, header: "Hi [Customer’s Name]", body: "we noticed you left some items in your cart. If you have any questions about the products or need help finding the right fit, we’re here to assist you 😊. Let us know how we can help! [link to abandon cart recovery]" },
+    { id: 3, header: "Hey [Customer’s Name]", body:"we saw you left your cart behind 🛒! Some of the items in your cart are low in stock, so it’s a good idea to complete your purchase soon. Let us know if you need any assistance. [link to abandon cart recovery]" },
+    { id: 4, header: "👀 Hey [Customer’s Name]", body: "we noticed you disappeared with a full cart – don’t worry, your secret’s safe with us! 😜 But if you’re still interested, your items are waiting for you… and if you need any help, we’ve got you covered! 😎" }
   ]);
 
   // State to track the selected card
@@ -137,11 +137,18 @@ function Convert() {
                         ))}
                     </div>
                     <div className="connect_button_div">
-                        <button className='connect_button' onClick={handleSave}>Save Data</button>
+                        <div>
+                          <button className='connect_button' onClick={handleSave}>Save Data</button>
+                          {saveData && <p style={{margin:'5px',color:' green'}}>Save data Successfully</p>}
+                        </div>
+                        <div>
+                          <button className='connect_button' onClick={handleSend}>Send Data</button>
+
+                        </div>
                     </div>
-                    {saveData && <p style={{margin:'5px',color:' green'}}>Save data Successfully</p>}
+                    
                     <div className="connect_button_div">
-                        <button className='connect_button' onClick={handleSend}>Send Data</button>
+                        
                     </div>
                 </div>
             </div>
