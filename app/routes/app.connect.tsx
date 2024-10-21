@@ -6,11 +6,13 @@ import '../Connect.css';
 export default function Connect() {
   const [instances, setInstances] = useState([]);
   const [qrCode, setQRCode] = useState('');
+  const [qrCodeType,setQrCodeType] = useState('');
   const [showNumbers,setShowNumbers] = useState(false);
   const [stateInstance,setStateInstance] = useState('notAuthorized');
   const [storeId ,setStoreId]= useState('');
   const [pubsubData,setPubsubData] = useState({});
   const [fetchphoneNumberData,setFetchPhoneNumberData] = useState({});
+  const [currentQRData, setCurrentQRData] = useState({});
 
   const searchName = 'cartkeeper - il - 001 ';
 
@@ -27,6 +29,7 @@ export default function Connect() {
         };
   
         console.log('Found:', result);
+        console.log('updated:', updatedData);
         sendDataToPubSub(updatedData); // Call the function with updated data
   
         return updatedData; // Return the updated state
@@ -51,35 +54,35 @@ export default function Connect() {
 
   
 
-  const getLoaderDatawebhook =async()=>{
-    const res = await fetch('/api/getGreenWebhookData');
-    const responsedata = await res.json();
-    if(responsedata?.data?.typeWebhook == 'stateInstanceChanged'){
-      if(responsedata.data.stateInstance == 'authorized'){
-        setStateInstance('authorized');
-        console.log('number',fetchphoneNumberData);
-        console.log('instnaces',instances);
-        const storedData = localStorage.getItem('PhoneNumber');
-        const parsedNumberData = JSON.parse(storedData);
-        const phoneNumberAPIData = await fetchPhoneNumber(parsedNumberData);
-        setPubsubData(prevState => {
-          const updatedData = {
-            ...prevState,
-            greenAPIId: parsedNumberData?.id,
-            storeId: phoneNumberAPIData?.storeId,
-            phoneNumber: phoneNumberAPIData?.reponseData?.phone
-          };
+  // const getLoaderDatawebhook =async()=>{
+  //   const res = await fetch('/api/getGreenWebhookData');
+  //   const responsedata = await res.json();
+  //   if(responsedata?.data?.typeWebhook == 'stateInstanceChanged'){
+  //     if(responsedata.data.stateInstance == 'authorized'){
+  //       setStateInstance('authorized');
+  //       console.log('number',fetchphoneNumberData);
+  //       console.log('instnaces',instances);
+  //       const storedData = localStorage.getItem('PhoneNumber');
+  //       const parsedNumberData = JSON.parse(storedData);
+  //       const phoneNumberAPIData = await fetchPhoneNumber(parsedNumberData);
+  //       setPubsubData(prevState => {
+  //         const updatedData = {
+  //           ...prevState,
+  //           greenAPIId: parsedNumberData?.id,
+  //           storeId: phoneNumberAPIData?.storeId,
+  //           phoneNumber: phoneNumberAPIData?.reponseData?.phone
+  //         };
     
-          console.log('data to send to pub sub:', updatedData);
-          sendDataToPubSub(updatedData); // Call the function with updated data
+  //         console.log('data to send to pub sub:', updatedData);
+  //         sendDataToPubSub(updatedData); // Call the function with updated data
     
-          return updatedData; // Return the updated state
-        });
-      }
-    }
-    console.log('success',responsedata);
+  //         return updatedData; // Return the updated state
+  //       });
+  //     }
+  //   }
+  //   console.log('success',responsedata);
     
-  }
+  // }
 
   const sendDataToPubSub = async (dataTosend)=>{
     const response = await fetch('/api/sendPubSubData',{
@@ -123,25 +126,30 @@ export default function Connect() {
     try {
       for(let i=0; i<instances.length; i++){
         if(instances[i].status == 'notAuthorized'){
-          fetchQR(instances[i].apiUrl,instances[i].idInstance,instances[i].apiTokenInstance)
+          // fetchQR(instances[i].apiUrl,instances[i].idInstance,instances[i].apiTokenInstance)
           // console.log('id',instances[i].apiUrl,instances[i].idInstance,instances[i].apiTokenInstance);
           // sendDataToExpress(instances[i]);
-          setFetchPhoneNumberData(prevState => {
-            const updatedData = {
-              ...prevState,
-              url:instances[i].apiUrl,
-              id:instances[i].idInstance,
-              token:instances[i].apiTokenInstance
-            };
-            localStorage.setItem('PhoneNumber',JSON.stringify(updatedData));
+          // setFetchPhoneNumberData(prevState => {
+          //   const updatedData = {
+          //     ...prevState,
+          //     url:instances[i].apiUrl,
+          //     id:instances[i].idInstance,
+          //     token:instances[i].apiTokenInstance
+          //   };
+          //   localStorage.setItem('PhoneNumber',JSON.stringify(updatedData));
       
-            return updatedData; // Return the updated state
+          //   return updatedData; // Return the updated state
+          // });
+          // setPubsubData(prevState => ({
+          //   ...prevState,
+          //   greenAPIId: instances[i].idInstance,
+          //   storeId:storeId
+          // }));
+          setCurrentQRData({
+            url: instances[i].apiUrl,
+            id: instances[i].idInstance,
+            token: instances[i].apiTokenInstance,
           });
-          setPubsubData(prevState => ({
-            ...prevState,
-            greenAPIId: instances[i].idInstance,
-            storeId:storeId
-          }));
           
           break;
         }
@@ -163,16 +171,35 @@ export default function Connect() {
           body: JSON.stringify({ url,id,token })
       });
       const data = await response.json();
-      console.log('data',data);
+     
       
-      if(data?.qrData.type == 'qrCode'){
+      if(data?.qrData?.type == 'qrCode'){
           setQRCode(`data:image/png;base64,${data.qrData.message}`);
       }
       if(data?.storeId){
         setStoreId(data.storeId);
       }
-
-      console.log('qr',data);
+      if(data?.qrData?.type == 'alreadyLogged'){
+        console.log('alredy logged');
+        setStateInstance('authorized');
+        const phoneNumberAPIData = await fetchPhoneNumber(currentQRData);
+        setPubsubData(prevState => {
+          const updatedData = {
+            ...prevState,
+            greenAPIId: currentQRData?.id,
+            storeId: phoneNumberAPIData?.storeId,
+            phoneNumber: phoneNumberAPIData?.reponseData?.phone
+          };
+    
+          console.log('data to send to pub sub:', updatedData);
+          sendDataToPubSub(updatedData); 
+    
+          return updatedData; 
+        });        
+      }else{
+        console.log('data',data);
+      }
+      
       
       } catch (error) {
       console.error('Error fetching QR code:', error);
@@ -193,6 +220,22 @@ export default function Connect() {
     
   }
 
+  // Polling logic: Call fetchQR every 3 seconds until 'authorized'
+  useEffect(() => {
+    let intervalId;
+
+    if (stateInstance !== 'authorized') {
+      intervalId = setInterval(() => {
+        if (currentQRData?.url && currentQRData?.id && currentQRData?.token) {
+          fetchQR(currentQRData.url, currentQRData.id, currentQRData.token);
+        }
+      }, 3000); // Poll every 3 seconds
+    }
+
+    // Clean up the interval when stateInstance becomes 'authorized' or component unmounts
+    return () => clearInterval(intervalId);
+  }, [currentQRData, stateInstance]);
+
   useEffect(()=>{
     fetchInstances();
     
@@ -200,19 +243,23 @@ export default function Connect() {
 
   useEffect(()=>{
     getAuthStatus();
+    console.log('wrdata',currentQRData);
+    
   },[instances]);
 
-  useEffect(() => {
-    // Start polling every 3 seconds until stateInstance is 'authorized'
-    if (stateInstance !== 'authorized') {
-      const interval = setInterval(() => {
-        getLoaderDatawebhook();        
-      }, 3000);
+  // useEffect(() => {
+  //   // Start polling every 3 seconds until stateInstance is 'authorized'
+  //   if (stateInstance !== 'authorized') {
+  //     const interval = setInterval(() => {
+  //       if(currentQRData){
+  //         fetchQR(currentQRData?.url,currentQRData?.id,currentQRData?.token);
+  //       }      
+  //     }, 3000);
 
-      // Clean up the interval when component unmounts or when stateInstance becomes 'authorized'
-      return () => clearInterval(interval);
-    }
-  }, [stateInstance]);
+  //     // Clean up the interval when component unmounts or when stateInstance becomes 'authorized'
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [stateInstance]);
 
   return (
     <div style={{display:'flex',justifyContent:'center'}}>
