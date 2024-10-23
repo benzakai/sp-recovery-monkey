@@ -9,12 +9,12 @@ export async function action({ request }: ActionFunctionArgs) {
     const storeId = session.shop;
 
     try {
-        const response = await fetch('https://73b2-103-252-170-47.ngrok-free.app/getQRData',{
+        const response = await fetch('https://111b-103-252-170-47.ngrok-free.app/getremixData',{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({instance,storeId}),
+            body: JSON.stringify({instance}),
          });
          const data = await response.json();
         return {data};

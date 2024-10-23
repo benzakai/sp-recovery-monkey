@@ -3,32 +3,33 @@ import { authenticate } from "../shopify.server";
 import db from "../db.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const { topic, shop, session, admin } = await authenticate.webhook(request);
-
+  const { topic, shop, session, admin, payload } = await authenticate.webhook(request);
   if (!admin && topic !== 'SHOP_REDACT') {
     // The admin context isn't returned if the webhook fired after a shop was uninstalled.
     // The SHOP_REDACT webhook will be fired up to 48 hours after a shop uninstalls the app.
     // Because of this, no admin context is available.
     throw new Response();
   }
-
+console.log("TOPIC: ", topic)
   // The topics handled here should be declared in the shopify.app.toml.
   // More info: https://shopify.dev/docs/apps/build/cli-for-apps/app-configuration
   switch (topic) {
     case "CHECKOUTS_CREATE":
       console.log("checkouts/create:", payload);
       break;
-        case "CHECKOUTS_UPDATE":
-          console.log("checkouts/update:", payload);
-          break;
-            case "ORDERS_CREATE":
-               console.log("orders/create:", payload);
-               break;
+    case "CHECKOUTS_UPDATE":
+      console.log("checkouts/update:", payload);
+      break;
+    case "ORDERS_CREATE":
+      console.log("orders/create:", payload);
+      break;
 
     case "APP_UNINSTALLED":
       if (session) {
         await db.session.deleteMany({ where: { shop } });
       }
+
+      console.log("APP UNINSTALLED WEBHOOK")
 
       break;
     case "CUSTOMERS_DATA_REQUEST":
