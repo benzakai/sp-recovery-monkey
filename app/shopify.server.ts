@@ -41,7 +41,8 @@ const shopify = shopifyApp({
   },
   hooks: {
     afterAuth: async ({ session }) => {
-      shopify.registerWebhooks({ session });
+      await shopify.registerWebhooks({ session });
+      console.log("AFTER REGISTER WEBHOOKS")
     },
   },
   billing: {
