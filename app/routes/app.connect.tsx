@@ -41,7 +41,7 @@ export default function Connect() {
       setPubsubData(pubsubUpdate);
       console.log('Updated pubData:', pubsubUpdate);
 
-      // await sendDataToPubSub(pubsubUpdate);
+      await sendDataToPubSub(pubsubUpdate);
     } else {
       console.log('Instance not found');
     }
@@ -119,7 +119,7 @@ export default function Connect() {
         console.log('currentQRData',currentQRData);
         
         await sendDataToExpress(currentQRData);
-        // await sendDataToPubSub(pubsubData);
+        await sendDataToPubSub(pubsubData);
       }
       if (data.storeId) setStoreId(data.storeId);
     } catch (error) {
@@ -175,13 +175,7 @@ export default function Connect() {
                 <p style={{ fontWeight: 'bold' }}>Scan the QR code to present the dialogs on your own device.</p>
                 {qrCode && <img src={qrCode} alt="QR Code" />}
               </div>
-              <div className="vertical-line"></div>
-              <div className="get-number-section">
-                <p style={{ fontWeight: 'bold' }}>
-                  {showNumbers ? 'Choose an ID' : 'Get a new number for your store'}
-                </p>
-                <button className="get-number-button" onClick={handleNumbers}>Get New Number</button>
-              </div>
+              
             </>
           )}
         </div>

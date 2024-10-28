@@ -1,106 +1,160 @@
-
+/* Base styling */
 .main-container {
-    width: 60%;
-    background-color: white;
-    border: 1px solid black;
-    padding: 3rem;
-    border-radius: 30px;
+  width: 60%;
+  background-color: white;
+  border: 1px solid black;
+  padding: 3rem;
+  border-radius: 30px;
+  margin: 20px;
+}
+
+.connect-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin: 20px 0;
+}
+
+.main-heading {
+  font-size: 65px;
+  font-weight: bold;
+  margin-bottom: 54px;
+}
+
+.qr-code-section, .get-number-section {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+}
+
+.qr-code-section img {
+  width: 200px;
+  height: 200px;
+  background-color: green;
+}
+
+.vertical-line {
+  width: 3px;
+  height: 330px;
+  background-color: rgb(3, 3, 3);
+  margin: 10px;
+}
+
+.get-number-dialogue {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  font-size: 16px;
+  height: 19rem;
+  text-align: center;
+}
+
+/* Contact list styling */
+.contact-list {
+  list-style: none;
+  padding: 0;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.contact-item:hover {
+  background-color: #f1f1f1;
+}
+
+.contact-item img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 15px;
+}
+
+.contact-item div {
+  font-size: 16px;
+  color: #555;
+}
+
+/* Responsive styling */
+@media (max-width: 1024px) {
+  .main-container {
+    width: 80%;
   }
-  
+
+  .main-heading {
+    font-size: 50px;
+  }
+
+  .vertical-line {
+    height: 250px;
+  }
+
+  .qr-code-section img {
+    width: 180px;
+    height: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-container {
+    width: 90%;
+    padding: 2rem;
+  }
+
+  .main-heading {
+    font-size: 40px;
+    margin-bottom: 30px;
+  }
+
   .connect-container {
-      display: flex;
-      align-items: flex-start;
-      margin: 20px 0 20px 0;
-    }
-    
-    .main-heading {
-      font-size: 65px;
-      font-weight: bold;
-      margin-bottom: 44px;
-    }
-    
-    .qr-code-section {
-      width: 50%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 30px;
-    }
-    
-    .qr-code-section img {
-      width: 200px;
-      height: 200px;
-      background-color: green;
-    }
-    
-    /* Vertical separator */
-    .vertical-line {
-      width: 3px;
-      height: 330px;
-      background-color: rgb(3, 3, 3);
-      margin: 10px;
-    }
-    
-    /* Get number section */
-    .get-number-section {
-      width: 50%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 30px;
-    }
-  
-    .get-number-div {
-      display: flex;
-      flex-direction: row;
-      width: 85%;
-      justify-content: center;
-      align-items: center;
-      height: 18rem;
-    }
-    
-    .get-number-button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-      border: 1px solid black;
+    flex-direction: column;
+    align-items: center;
   }
-    
-    .get-number-button:hover {
-      background-color: #128C7E;
-    }
-    
-    .contact-list {
-      list-style: none;
-      padding: 0;
-      width: 100%;
-      margin-top: 20px;
-    }
-    
-    .contact-item {
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      border-bottom: 1px solid #ccc;
-      cursor: pointer;
-    }
-    
-    .contact-item:hover {
-      background-color: #f1f1f1;
-    }
-    
-    .contact-item img {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      margin-right: 15px;
-    }
-    
-    .contact-item div {
-      font-size: 16px;
-      color: #555;
-    }
-    
+
+  .qr-code-section, .get-number-section {
+    width: 100%;
+  }
+
+  .vertical-line {
+    display: none;
+  }
+
+  .qr-code-section img {
+    width: 160px;
+    height: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-heading {
+    font-size: 30px;
+  }
+
+  .qr-code-section img {
+    width: 140px;
+    height: 140px;
+  }
+
+  .get-number-dialogue {
+    font-size: 14px;
+    padding: 8px;
+    height: auto;
+  }
+
+  .contact-item {
+    padding: 8px;
+  }
+
+  .contact-item div {
+    font-size: 14px;
+  }
+}

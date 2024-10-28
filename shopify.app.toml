@@ -25,13 +25,6 @@ redirect_urls = [
 [webhooks]
 api_version = "2024-07"
 
-  [[webhooks.subscriptions]]
-  topics = [ "checkouts/create" ]
-  uri = "pubsub://sp-recovery-monkey:AbandonedChekout"
-
-  [[webhooks.subscriptions]]
-  topics = [ "checkouts/update" ]
-  uri = "pubsub://sp-recovery-monkey:checkoutsUpdate"
 
   [[webhooks.subscriptions]]
   topics = [ "orders/create" ]

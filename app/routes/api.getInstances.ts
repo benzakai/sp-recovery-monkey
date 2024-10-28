@@ -32,14 +32,15 @@ export async function loader({ request }: ActionFunctionArgs) {
           instances.map(async (instance) => {
             try {
               // Normalize the apiUrl to ensure it doesn't have trailing or double slashes
-              const normalizedApiUrl = instance.apiUrl.endsWith('/')
+              const normalizedApiUrl = instance?.apiUrl.endsWith('/')
                 ? instance.apiUrl.slice(0, -1)
                 : instance.apiUrl;
     
               // Construct the endpoint and fetch the state of the instance
-              const stateResponse = await fetch(`${normalizedApiUrl}/waInstance${instance.idInstance}/getWaSettings/${instance.apiTokenInstance}`);
+              const stateResponse = await fetch(`${normalizedApiUrl}/waInstance${instance?.idInstance}/getWaSettings/${instance?.apiTokenInstance}`);
               const stateData = await stateResponse.json();
-    
+              console.log('stateData',stateData);
+              
               // Add the state to the instance object
               instance.status = stateData?.stateInstance;
               instance.apiUrl = normalizedApiUrl;
