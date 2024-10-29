@@ -23,6 +23,7 @@ const startCronJob = (shop, token) => {
   console.log("Starting cron job for checking old checkouts.");
 
   cronJob = cron.schedule("*/10 * * * * *", async () => {
+    console.log("CRON is ACtive");
     const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
 
     try {
@@ -78,7 +79,7 @@ const handleOldCheckout = async (checkout, shop, token) => {
 
       if (checkoutUpdateDoc.exists) {
         console.log(`Sending updated checkout ${checkoutId} to Google Pub/Sub.`);
-        stopCronJob();
+        // stopCronJob();
         await sendDataToPubSub(checkoutUpdateDoc.data());
       } else {
         console.log(`No update found for abandoned checkout ${checkoutId}.`);
@@ -97,7 +98,7 @@ const handleOldCheckout = async (checkout, shop, token) => {
 // Function to send data to Google Pub/Sub
 const sendDataToPubSub = async (message) => {
   const messageJson = JSON.stringify(message);
-  const topicName = "AbandonedChekout"; // Replace with your actual topic name
+  const topicName = "AshitheKing";
 
   try {
     const topic = pubsub.topic(topicName);
