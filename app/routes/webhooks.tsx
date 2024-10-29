@@ -147,17 +147,12 @@ const setCheckoutData = async (data) => {
 };
 
 // Function to set checkout update data into Firestore (with merging)
-const setUpdatesData = async (data) => {
+const setUpdatesData = async (data,shopName) => {
   try {
     await checkoutUpdateCollection.doc(`${data?.id}`).set(
       {
-        checkoutId: data.id,
-        updatedAt: new Date(data.updated_at),
-        customerEmail: data.email,
-        phone: data.phone,
-        lineItems: data.line_items,
-        totalPrice: data.total_price,
-        shippingAddress: data.shipping_address,
+        STORE_ID: shopName,
+        UpdateData: data
       },
       { merge: true }
     );
@@ -181,7 +176,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       break;
     case "CHECKOUTS_UPDATE":
       console.log("checkouts/update:", payload);
-      await setUpdatesData(payload);
+      await setUpdatesData(payload,session?.shop);
       break;
     case "APP_UNINSTALLED":
       if (session) {
