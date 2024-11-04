@@ -22,7 +22,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   await billing.require({
     plans: [MONTHLY_PLAN],
     isTest: true,
-    onFailure: async () => billing.request({ plan: MONTHLY_PLAN }),
+    onFailure: async () => billing.request({ 
+      plan: MONTHLY_PLAN,
+      isTest: true 
+    }),
   });
 
   return null;

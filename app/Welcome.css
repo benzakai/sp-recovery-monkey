@@ -1,17 +1,8 @@
 .welcome-container {
-    display: flex;
-    justify-content: center;
-    padding: 20px;
-  }
+  padding: 75px;
+}
   
-  .welcome-card {
-    border: 1px solid black;
-    width: 55%;
-    border-radius: 7px;
-    background-color: white;
-    padding: 60px;
-    height: auto;
-  }
+
   
   .welcome-header {
     height: 97px;

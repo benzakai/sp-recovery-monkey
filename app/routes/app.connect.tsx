@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import '../Connect.css';
 
+
 export default function Connect() {
   const [instances, setInstances] = useState([]);
   const [qrCode, setQRCode] = useState('');
@@ -10,8 +11,9 @@ export default function Connect() {
   const [pubsubData, setPubsubData] = useState({});
   const [currentQRData, setCurrentQRData] = useState({});
   const [buttonData, setButtonData] = useState({});
-  
+
   const searchName = 'cartkeeper - il - 001 ';
+  const topics =['message'];
 
   const handleNumbers = async () => {
     const result = instances.find(item => item.name === searchName);
@@ -26,7 +28,7 @@ export default function Connect() {
         id: result.idInstance,
         token: result.apiTokenInstance,
       });
-      
+
       await sendDataToExpress({
         url: result.apiUrl,
         id: result.idInstance,
@@ -46,6 +48,7 @@ export default function Connect() {
       console.log('Instance not found');
     }
   };
+  
 
   const fetchPhoneNumber = async (phonedata) => {
     const response = await fetch('/api/fetchPhoneNumber', {
@@ -60,18 +63,35 @@ export default function Connect() {
     return data;
   };
 
-  const sendDataToPubSub = async (dataToSend) => {
+  const sendDataToPubSub = async (message) => {
+    const topicNames = topics;
     const response = await fetch('/api/sendPubSubData', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(dataToSend),
+      body: JSON.stringify({ message, topicNames }),
     });
     const data = await response.json();
     console.log('Sent pubsub data:', data);
     setStateInstance('authorized');
   };
+
+  const setDataInFirestore =async (collectionName, documentName, data) => {
+    const response = await fetch('/api/firestore', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ collectionName, documentName, data }),
+    });
+    const Responsedata = await response.json();
+    console.log('Sent firestore data:', Responsedata);
+  }
+
+
+
+
 
   const fetchInstances = async () => {
     try {
@@ -111,15 +131,25 @@ export default function Connect() {
         console.log('Already logged in');
         setStateInstance('authorized');
         const phoneNumberData = await fetchPhoneNumber(currentQRData);
-        setPubsubData({
-          greenAPIId: currentQRData.id,
-          storeId: phoneNumberData?.storeId,
-          phoneNumber: phoneNumberData?.responseData?.phone,
+        setPubsubData(async(prevState) => {
+          const updatedData = {
+            ...prevState,
+            greenAPIId: currentQRData.id,
+            storeId: phoneNumberData?.storeId,
+            phoneNumber: phoneNumberData?.reponseData?.phone,
+            greenAPIKey: currentQRData?.token
+          };
+    
+          console.log('PubSubData:', updatedData);
+          await sendDataToPubSub(updatedData);
+          await setDataInFirestore('ConnectPagedata', `${updatedData?.storeId}`, updatedData)
+    
+          return updatedData; 
         });
-        console.log('currentQRData',currentQRData);
         
-        await sendDataToExpress(currentQRData);
-        await sendDataToPubSub(pubsubData);
+        console.log('currentQRData', currentQRData);
+        // await sendDataToExpress(currentQRData);
+        
       }
       if (data.storeId) setStoreId(data.storeId);
     } catch (error) {
@@ -175,7 +205,7 @@ export default function Connect() {
                 <p style={{ fontWeight: 'bold' }}>Scan the QR code to present the dialogs on your own device.</p>
                 {qrCode && <img src={qrCode} alt="QR Code" />}
               </div>
-              
+
             </>
           )}
         </div>

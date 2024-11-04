@@ -29,6 +29,7 @@ export default function App() {
         <Link to="/app/abandoned-list">Abandoned List</Link>
         <Link to="/app/convert">Convert</Link>
         <Link to="/app/connect">Connect</Link>
+        <Link to="/app/Plans">Plans</Link>
       </NavMenu>
       <Outlet />
     </AppProvider>

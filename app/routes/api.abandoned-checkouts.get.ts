@@ -1,4 +1,4 @@
-import { ActionFunctionArgs } from "@remix-run/node";
+import { ActionFunctionArgs, json } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
 
 const formatDateInCustomFormat = (date: Date): string => {
@@ -29,13 +29,12 @@ export async function loader({ request }: ActionFunctionArgs) {
     try {
         const response: any = await admin.rest.resources.AbandonedCheckout.checkouts({
             session,
-            updated_at_min: last30Days,
         });
 
-        return { success: true, data: response.checkouts }
+        return json({ success: true, data: response.checkouts })
 
     } catch (error) {
         console.log("ERROR", error);
-        return { success: false };
+        return json({ success: false });
     }
 }

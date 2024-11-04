@@ -9,6 +9,8 @@ import {
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import { restResources } from "@shopify/shopify-api/rest/admin/2024-07";
 import prisma from "./db.server";
+import cron from "node-cron";
+import sendDataFromWebhooks from "./routes/sendDataFromWebhooks";
 
 export const MONTHLY_PLAN = 'Monthly subscription';
 
@@ -61,6 +63,11 @@ const shopify = shopifyApp({
   ...(process.env.SHOP_CUSTOM_DOMAIN
     ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] }
     : {}),
+});
+
+cron.schedule("*/10 * * * * *", async () => {
+  console.log("Cron Job is Active every 10 seconds");
+  await sendDataFromWebhooks();
 });
 
 export default shopify;

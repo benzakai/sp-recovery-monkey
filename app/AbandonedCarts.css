@@ -1,14 +1,8 @@
 /* General styles (desktop/tablet) */
-.container {
-    display: flex;
-    justify-content: center;
-}
+
 
 .card {
-    border: 1px solid black;
-    width: 55%;
-    border-radius: 7px;
-    background-color: white;
+
     padding: 1% 0 5% 0;
 }
 

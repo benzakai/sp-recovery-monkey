@@ -29,7 +29,7 @@ export async function loader({ request }: ActionFunctionArgs) {
     
         // Use Promise.all to fetch state for each instance
         const updatedInstances = await Promise.all(
-          instances.map(async (instance) => {
+          instances?.map(async (instance) => {
             try {
               // Normalize the apiUrl to ensure it doesn't have trailing or double slashes
               const normalizedApiUrl = instance?.apiUrl.endsWith('/')
@@ -39,7 +39,7 @@ export async function loader({ request }: ActionFunctionArgs) {
               // Construct the endpoint and fetch the state of the instance
               const stateResponse = await fetch(`${normalizedApiUrl}/waInstance${instance?.idInstance}/getWaSettings/${instance?.apiTokenInstance}`);
               const stateData = await stateResponse.json();
-              console.log('stateData',stateData);
+              // console.log('stateData',stateData);
               
               // Add the state to the instance object
               instance.status = stateData?.stateInstance;

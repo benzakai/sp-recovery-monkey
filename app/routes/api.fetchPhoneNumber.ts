@@ -1,4 +1,4 @@
-import { ActionFunctionArgs } from "@remix-run/node";
+import { ActionFunctionArgs, json } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
 
 
@@ -11,9 +11,9 @@ export async function action({ request }: ActionFunctionArgs) {
     try {
         const response = await fetch(`${data?.url}/waInstance${data?.id}/getWaSettings/${data?.token}`);
         const reponseData = await response.json();
-        return {reponseData,storeId};
+        return json({reponseData,storeId});
     } catch (error) {
         console.error('Error fetching qr ', error);
-        return { error: error.message };
+        return json({ error: error.message });
     }
 }

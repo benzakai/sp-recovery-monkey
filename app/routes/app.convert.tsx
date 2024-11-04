@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import '../Convert.css'; 
-// import { PubSub } from '@google-cloud/pubsub';
 
-// const pubsub = new PubSub();
 
 
 function Convert() {
@@ -16,7 +14,8 @@ function Convert() {
   const [selectedCard, setSelectedCard] = useState(null);
   const [isDataChanged, setIsDataChanged] = useState(false);
   const [isSuccessMessageVisible, setIsSuccessMessageVisible] = useState(false);
-
+  const [greenAPIData,setGreenAPIData] = useState([]);
+  const topics =['message'];
  
 
   useEffect(() => {
@@ -24,7 +23,29 @@ function Convert() {
     if (storedCards) {
       setCards(JSON.parse(storedCards));
     }
+    getDataFromFirestore();
   }, []);
+
+  const getDataFromFirestore = async () => {
+    const response = await fetch('/api/firestore?collectionName=ConnectPagedata', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const Responsedata = await response.json();
+    if(Responsedata.data.length > 0){
+      // Filter out the empty objects
+      const storeId = Responsedata.storeId; // Assuming Responsedata contains storeId
+      const filteredData = Responsedata.data.filter(item => 
+          Object.keys(item).length > 0 && item.storeId == storeId
+      );
+       console.log('filteredData',filteredData);
+       setGreenAPIData(filteredData); 
+
+    }
+    console.log('Getting Firestore data:', Responsedata);
+  };
 
   const handleHeaderChange = (id, newHeader) => {
     setCards(cards.map(card =>
@@ -59,8 +80,14 @@ function Convert() {
       console.log('Selected Box Body:', selectedBox.body);
       
       try {
-        // await sendDataToPubSub(selectedBox);
-        await sendDataToPubSub(selectedBox);
+        if(greenAPIData){
+           console.log('greenAPIData',greenAPIData);
+           const combinedObject = { ...selectedBox, ...greenAPIData };
+           console.log('combinedObject',combinedObject);
+           await sendDataToPubSub(combinedObject);
+        }else{
+          await sendDataToPubSub(selectedBox);
+        }
         console.log('Successfully sent data to webhook');
         setIsSuccessMessageVisible(true);
         setTimeout(() => setIsSuccessMessageVisible(false), 3000); 
@@ -73,16 +100,17 @@ function Convert() {
     }
   };
 
-  const sendDataToPubSub = async (dataToSend) => {
+  const sendDataToPubSub = async (message) => {
+    const topicNames = topics;
     const response = await fetch('/api/sendPubSubData', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(dataToSend),
+      body: JSON.stringify({ message, topicNames }),
     });
     const data = await response.json();
-    console.log('Sent pubsub data:', data);
+    console.log('Sent convert data:', data);
   };
 
   return (
