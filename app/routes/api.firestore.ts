@@ -21,17 +21,23 @@ const setFirestoreData = async (collectionName, documentName, data) => {
 };
 
 // Function to get data from Firestore
-const getFirestoreData = async (collectionName) => {
+const getFirestoreData = async (collectionName,storeId) => {
     try {
-        const collection = firestore.collection(collectionName);
-        const snapshot = await collection.get();
-        if (snapshot.empty) {
-            console.log(`No documents found in ${collectionName}`);
-            return [];
+        const docRef = firestore.collection(collectionName).doc(storeId);
+        // const docRef = firestore.collection(collectionName).doc(documentName);
+        const docSnapshot = await docRef.get();
+
+        if (docSnapshot.exists) {
+            console.log(`Document data for ${storeId}:`, docSnapshot.data());
+            return docSnapshot.data();
+        } else {
+            console.log(`No document found with ID ${storeId} in ${collectionName}`);
+            return {};
         }
-        const data = snapshot.docs.map((doc) => doc.data());
-        console.log(`Data retrieved from ${collectionName}`);
-        return data;
+        
+        // const data = snapshot.docs.map((doc) => doc.data());
+        // console.log(`Data retrieved from ${collectionName}`);
+        
     } catch (error) {
         console.error(`Error retrieving data from ${collectionName}:`, error);
         throw new Error("Failed to retrieve Firestore data");
@@ -56,15 +62,15 @@ export async function loader({ request }: ActionFunctionArgs) {
     const storeId = session.shop;
 
     if (!collectionName) {
-        return json({ error: "Missing collectionName parameter" }, { status: 400 });
+        return json({});
     }
     try {
-        const data = await getFirestoreData(collectionName);
+        const data = await getFirestoreData(collectionName,storeId);
         console.log('getDtaa',data);
         
         return json({ data ,storeId});
     } catch (error) {
-        return json({ error: error.message }, { status: 500 });
+        return json({});
     }
 }
 

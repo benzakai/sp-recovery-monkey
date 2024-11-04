@@ -177,14 +177,14 @@ export default function Connect() {
       },
     });
     const Responsedata = await response.json();
-    if(Responsedata.data.length > 0){
+    if(Responsedata.data){
       // Filter out the empty objects
-      const storeId = Responsedata.storeId; // Assuming Responsedata contains storeId
-      const filteredData = Responsedata.data.filter(item => 
-          Object.keys(item).length > 0 && item.storeId == storeId
-      );
-       console.log('filteredData connectPage',filteredData);
-       return filteredData;
+      // const storeId = Responsedata.storeId; // Assuming Responsedata contains storeId
+      // const filteredData = Responsedata.data.filter(item => 
+      //     Object.keys(item).length > 0 && item.storeId == storeId
+      // );
+       console.log('filteredData connectPage',Responsedata);
+       return Responsedata.data;
     }else{
       return null;
     }
@@ -204,11 +204,14 @@ export default function Connect() {
 
     const getFireData = async()=>{
       const fireStoreData = await getDataFromFirestore();
-      if(fireStoreData){
-        setStateInstance('authorized');
-      }else{
+      console.log('fireStoreData',fireStoreData);
+      if(Object.keys(fireStoreData).length === 0){
         initializeFlow();
+      }else{
+        
+        setStateInstance('authorized');
       }
+      
     }
 
     getFireData();

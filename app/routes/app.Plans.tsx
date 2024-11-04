@@ -1,13 +1,40 @@
 import { Card, Page } from '@shopify/polaris';
 import React, { useState } from 'react';
 import '../Plans.css';
+import { useSubmit } from '@remix-run/react';
+import { authenticate, MONTHLY_PLAN } from "../shopify.server";
+import { ActionFunctionArgs } from 'react-router';
+
+
+export const action = async ({ request }: ActionFunctionArgs) => {
+    console.log('action');
+
+    const { billing } = await authenticate.admin(request);
+    const okay = await billing.require({
+      plans: [MONTHLY_PLAN],
+      isTest: true,
+      onFailure: async () => billing.request({ 
+        plan: MONTHLY_PLAN,
+        isTest: true 
+      }),
+    });
+
+    console.log("okay" ,okay);
+
+    return null;
+};
 
 const Plans = () => {
     const [planName, setPlanName] = useState('not set');
+    const submit = useSubmit();
 
-    const handlePlanSelect = (plan) => {
-        setPlanName(plan);
-        console.log(`Selected Plan: ${plan}`);
+    const handlePlanSelect = () => {
+        // const formData = new FormData();
+        // setPlanName(plan);
+        submit(
+            { myKey: "myValue" },
+            { method: "POST", encType: "application/json" }
+        );
     };
 
     return (
@@ -23,7 +50,7 @@ const Plans = () => {
                         <div className='pricing_plans'>
                             <div
                                 className='pricing_plans_card'
-                                onClick={() => handlePlanSelect('Starter')}
+                                onClick={() => handlePlanSelect('Starter',19)}
                             >
                                 <div className='plan_content'>Starter</div>
                                 <div className='plan_content'>$19/month</div>
@@ -31,7 +58,7 @@ const Plans = () => {
                             </div>
                             <div
                                 className='pricing_plans_card'
-                                onClick={() => handlePlanSelect('Pro')}
+                                onClick={() => handlePlanSelect('Pro',49)}
                             >
                                 <div className='plan_content'>Pro</div>
                                 <div className='plan_content'>$49/month</div>
@@ -39,7 +66,7 @@ const Plans = () => {
                             </div>
                             <div
                                 className='pricing_plans_card'
-                                onClick={() => handlePlanSelect('Advance')}
+                                onClick={() => handlePlanSelect('Advance',99)}
                             >
                                 <div className='plan_content'>Advance</div>
                                 <div className='plan_content'>$99/month</div>

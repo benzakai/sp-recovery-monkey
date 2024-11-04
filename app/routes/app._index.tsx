@@ -18,15 +18,15 @@ import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate, MONTHLY_PLAN } from "../shopify.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { billing } = await authenticate.admin(request);
-  await billing.require({
-    plans: [MONTHLY_PLAN],
-    isTest: true,
-    onFailure: async () => billing.request({ 
-      plan: MONTHLY_PLAN,
-      isTest: true 
-    }),
-  });
+  // const { billing } = await authenticate.admin(request);
+  // await billing.require({
+  //   plans: [MONTHLY_PLAN],
+  //   isTest: true,
+  //   onFailure: async () => billing.request({ 
+  //     plan: MONTHLY_PLAN,
+  //     isTest: true 
+  //   }),
+  // });
 
   return null;
 };
