@@ -10,10 +10,17 @@ const pubsub = new PubSub();
 
 
 export async function action({ request }: ActionFunctionArgs) {
+  const { admin, session } = await authenticate.admin(request);
   const {message,topicNames} = await request.json();
+  
   try {
+
+      const storeId = session.shop;
+      const combinedObject = { ...message, STORE_ID: storeId};
+      console.log('combinedObject', combinedObject);
+      
       // Convert the object to a JSON string
-      const messageJson = JSON.stringify(message);
+      const messageJson = JSON.stringify(combinedObject);
 
       // Loop through each topic and publish the message
       const publishPromises = topicNames.map(async (topicName) => {

@@ -10,7 +10,7 @@ import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prism
 import { restResources } from "@shopify/shopify-api/rest/admin/2024-07";
 import prisma from "./db.server";
 import cron from "node-cron";
-import sendDataFromWebhooks from "./routes/sendDataFromWebhooks";
+import sendDataFromWebhooks from "./services/sendDataFromWebhooks";
 
 export const MONTHLY_PLAN = 'Monthly subscription';
 
