@@ -169,6 +169,28 @@ export default function Connect() {
     console.log('Sent to Express:', data);
   };
 
+  const getDataFromFirestore = async () => {
+    const response = await fetch('/api/firestore?collectionName=ConnectPagedata', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const Responsedata = await response.json();
+    if(Responsedata.data.length > 0){
+      // Filter out the empty objects
+      const storeId = Responsedata.storeId; // Assuming Responsedata contains storeId
+      const filteredData = Responsedata.data.filter(item => 
+          Object.keys(item).length > 0 && item.storeId == storeId
+      );
+       console.log('filteredData connectPage',filteredData);
+       return filteredData;
+    }else{
+      return null;
+    }
+  };
+  
+
   useEffect(() => {
     const initializeFlow = async () => {
       await fetchInstances();
@@ -179,7 +201,19 @@ export default function Connect() {
         }
       }
     };
-    initializeFlow();
+
+    const getFireData = async()=>{
+      const fireStoreData = await getDataFromFirestore();
+      if(fireStoreData){
+        setStateInstance('authorized');
+      }else{
+        initializeFlow();
+      }
+    }
+
+    getFireData();
+    
+    
   }, [instances.length, currentQRData]);
 
   useEffect(() => {
@@ -198,7 +232,10 @@ export default function Connect() {
         <div className="main-heading"><p>Let's Connect</p></div>
         <div className="connect-container">
           {stateInstance === 'authorized' ? (
-            <div style={{ fontWeight: 'bold' }}>You Are Successfully Authorized</div>
+            <div>
+              <div style={{ fontWeight: 'bold' }}>your device is already connected</div>
+              <div style={{ fontWeight: 'bold' }}>you should easily send and recieve whatsapp messages</div>
+            </div>
           ) : (
             <>
               <div className="qr-code-section">
