@@ -35,6 +35,12 @@
     transition: all 0.3s ease;
     background-color: white;
 }
+
+.active_plan{
+    background-color: #28da28;
+    border: 3.6px solid #065709;
+    cursor: default;
+}
 .pricing_plans_card:hover {
     transform: scale(1.05);
     background-color: #f4f6f8;

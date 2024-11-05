@@ -10,9 +10,8 @@ import { BillingInterval } from '@shopify/shopify-app-remix/server';
 export const action = async ({ request }) => {
     console.log('action');
     const formData = await request.formData();
-    const price = parseFloat(formData.get("price"));
     const planName = formData.get("planName") || MONTHLY_PLAN;
-    console.log('price',price,planName);
+    console.log('plan: ',planName);
     
 
     const { billing } = await authenticate.admin(request);
@@ -34,18 +33,50 @@ export const action = async ({ request }) => {
 };
 
 
-const Plans = () => {
+const upgradePlan = () => {
     const [planName, setPlanName] = useState('not set');
     const submit = useSubmit();
 
-    const handlePlanSelect = (planName, price) => {
-        setPlanName(planName);
+    const handlePlanSelect = (planName) => {
+        // setPlanName(planName);
         const formData = new FormData();
         formData.append("planName", planName);
-        formData.append("price", price);
     
         submit(formData, { method: "post" });
     };
+
+    const getDataFromFirestore = async () => {
+        const response = await fetch('/api/firestore?collectionName=subscriptions', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        const Responsedata = await response.json();
+        if(Responsedata.data){
+           console.log('plans data',Responsedata.data);
+           return Responsedata.data;
+        }else{
+          return null;
+        }
+    };
+
+    useEffect(()=>{
+        const getFireData = async()=>{
+          const fireStoreData = await getDataFromFirestore();
+          if(Object.keys(fireStoreData).length === 0){
+            console.log('INACTIVE');
+            
+            setPlanName('NO_PLAN');
+          }else{
+            // console.log('ACTIVE');
+            setPlanName(fireStoreData?.plan);
+          }
+          
+        }
+    
+        getFireData();
+    },[]);
 
     
     
@@ -62,24 +93,24 @@ const Plans = () => {
                         <div className='sub_heading_plan'>Choose the right plan for your needs</div>
                         <div className='pricing_plans'>
                             <div
-                                className='pricing_plans_card'
-                                onClick={() => handlePlanSelect('Starter',19)}
+                                className={planName == 'Starter' ? 'pricing_plans_card active_plan':'pricing_plans_card' }
+                                onClick={() => handlePlanSelect('Starter')}
                             >
                                 <div className='plan_content'>Starter</div>
                                 <div className='plan_content'>$19/month</div>
                                 <div className='plan_content'>Up to 10 abandoned carts per month</div>
                             </div>
                             <div
-                                className='pricing_plans_card'
-                                onClick={() => handlePlanSelect('Pro',49)}
+                                className={planName == 'Pro' ? 'pricing_plans_card active_plan':'pricing_plans_card' }
+                                onClick={() => handlePlanSelect('Pro')}
                             >
                                 <div className='plan_content'>Pro</div>
                                 <div className='plan_content'>$49/month</div>
                                 <div className='plan_content'>Up to 49 abandoned carts per month</div>
                             </div>
                             <div
-                                className='pricing_plans_card'
-                                onClick={() => handlePlanSelect('Advance',99)}
+                                className={planName == 'Advance' ? 'pricing_plans_card active_plan':'pricing_plans_card' }
+                                onClick={() => handlePlanSelect('Advance')}
                             >
                                 <div className='plan_content'>Advance</div>
                                 <div className='plan_content'>$99/month</div>
@@ -93,4 +124,4 @@ const Plans = () => {
     );
 };
 
-export default Plans;
+export default upgradePlan;

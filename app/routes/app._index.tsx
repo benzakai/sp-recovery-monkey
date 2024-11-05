@@ -101,10 +101,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Index() {
-  const navigate = useNavigate();
-  useEffect(() => {
-    navigate("/app/welcome");
-  }, []);
+  // const navigate = useNavigate();
+  // useEffect(() => {
+  //   navigate("/app/welcome");
+  // }, []);
 
   return (<></>);
 }

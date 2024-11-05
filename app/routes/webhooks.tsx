@@ -8,7 +8,36 @@ const pubsub = new PubSub();
 const firestoreDatabase = new Firestore();
 const checkoutCollection = firestoreDatabase.collection('users');
 const checkoutUpdateCollection = firestoreDatabase.collection('checkoutUpdateData');
+const SubscriptionsCollection = firestoreDatabase.collection('subscriptions');
 
+
+const setSubscriptionData = async (data, storeId) => {
+  try {
+    if(data?.app_subscription?.status == 'ACTIVE'){
+      await SubscriptionsCollection.doc(`${storeId}`).set({
+        storeId,
+        plan: data?.app_subscription?.name,
+        status:data?.app_subscription?.status,
+        createdAt: new Date(),
+      });
+      console.log("setSubscriptionData successfully saved to Firestore.");
+    }else{
+      console.log("setSubscriptionData not available.");
+    }
+    
+  } catch (error) {
+    console.error("Error saving setSubscriptionData to Firestore:", error);
+  }
+};
+
+const deleteSubscriptionData = async (storeId)=>{
+  try {
+    await SubscriptionsCollection.doc(`${storeId}`).delete();
+    console.log("Subscription data successfully deleted from Firestore.");
+  } catch (error) {
+    console.error("Error deleting subscription data from Firestore:", error);
+  }
+}
 
 // Function to set checkout data into Firestore
 const setCheckoutData = async (data, storeId) => {
@@ -60,7 +89,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         const sessionDeleted = await db.session.deleteMany({ where: { shop } });
         console.log("sessionDeleted", sessionDeleted);
       }
+      await deleteSubscriptionData(session?.shop);
       console.log("APP UNINSTALLED WEBHOOK");
+      break;
+
+    case 'APP_SUBSCRIPTIONS_UPDATE':
+      console.log("APP_SUBSCRIPTIONS_UPDATE:", payload);
+      await setSubscriptionData(payload, session?.shop);
       break;
     case "CUSTOMERS_DATA_REQUEST":
     case "CUSTOMERS_REDACT":

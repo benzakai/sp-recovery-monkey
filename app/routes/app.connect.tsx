@@ -137,7 +137,8 @@ export default function Connect() {
             greenAPIId: currentQRData.id,
             storeId: phoneNumberData?.storeId,
             phoneNumber: phoneNumberData?.reponseData?.phone,
-            greenAPIKey: currentQRData?.token
+            greenAPIKey: currentQRData?.token,
+            greenAPIUrl: currentQRData?.url,
           };
     
           console.log('PubSubData:', updatedData);
@@ -189,6 +190,23 @@ export default function Connect() {
       return null;
     }
   };
+
+  const getInstanceState = async(url,id,token)=>{
+    try {
+      const response = await fetch('/api/getInstanceStatus',{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url,id,token }),
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching instance status:', error);
+      return {};
+    }
+  }
   
 
   useEffect(() => {
@@ -208,8 +226,15 @@ export default function Connect() {
       if(Object.keys(fireStoreData).length === 0){
         initializeFlow();
       }else{
+        const stateInstanceData = await getInstanceState(fireStoreData?.greenAPIUrl, fireStoreData?.greenAPIId, fireStoreData?.greenAPIKey);
+        console.log('stateInstanceData',stateInstanceData);
+        if(stateInstanceData?.responseData?.stateInstance == 'authorized'){
+          setStateInstance('authorized');
+        }else{
+          initializeFlow();
+        }
         
-        setStateInstance('authorized');
+        
       }
       
     }

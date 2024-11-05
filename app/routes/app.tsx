@@ -1,12 +1,13 @@
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Link, Outlet, useLoaderData, useRouteError } from "@remix-run/react";
+import { Link, Outlet, useLoaderData, useNavigate, useRouteError } from "@remix-run/react";
 import { boundary } from "@shopify/shopify-app-remix/server";
 import { AppProvider } from "@shopify/shopify-app-remix/react";
 import { NavMenu } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 
 import { authenticate } from "../shopify.server";
+import { useEffect, useState } from "react";
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
@@ -18,19 +19,65 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export default function App() {
   const { apiKey } = useLoaderData<typeof loader>();
+  const [planStatus,setPlanStatus] = useState('INACTIVE');
+  const navigate = useNavigate();
+
+  const getDataFromFirestore = async () => {
+    const response = await fetch('/api/firestore?collectionName=subscriptions', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const Responsedata = await response.json();
+    if(Responsedata.data){
+       console.log('plans data',Responsedata.data);
+       return Responsedata.data;
+    }else{
+      return null;
+    }
+  };
+
+  useEffect(()=>{
+    const getFireData = async()=>{
+      const fireStoreData = await getDataFromFirestore();
+      if(Object.keys(fireStoreData).length === 0){
+        console.log('INACTIVE');
+        navigate("/app/Plans");
+        setPlanStatus('INACTIVE');
+      }else{
+        console.log('ACTIVE');
+        navigate("/app/upgradePlan");
+        setPlanStatus('ACTIVE');
+      }
+      
+    }
+
+    getFireData();
+  },[]);
 
   return (
     <AppProvider isEmbeddedApp apiKey={apiKey}>
-      <NavMenu>
-        <Link to="/app" rel="home">
+      
+        {/* <Link to="/app" rel="home">
           Home
-        </Link>
-        <Link to="/app/welcome">Welcome</Link>
-        <Link to="/app/abandoned-list">Abandoned List</Link>
-        <Link to="/app/convert">Convert</Link>
-        <Link to="/app/connect">Connect</Link>
-        <Link to="/app/Plans">Plans</Link>
-      </NavMenu>
+        </Link> */}
+        {planStatus == 'INACTIVE'?(
+          <NavMenu>
+            <Link to="/app/Plans">Plans</Link>
+          </NavMenu>
+          
+        ):(
+          <NavMenu>
+            <Link to="/app/welcome">Welcome</Link>
+            <Link to="/app/abandoned-list">Abandoned List</Link>
+            <Link to="/app/convert">Convert</Link>
+            <Link to="/app/connect">Connect</Link>
+            <Link to="/app/upgradePlan">upgradePlan</Link>
+          </NavMenu>
+        )}
+        
+        
       <Outlet />
     </AppProvider>
   );

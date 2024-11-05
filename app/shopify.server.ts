@@ -13,6 +13,9 @@ import cron from "node-cron";
 import sendDataFromWebhooks from "./services/sendDataFromWebhooks";
 
 export const MONTHLY_PLAN = 'Monthly subscription';
+export const STARTER_PLAN = 'Starter';
+export const PRO_PLAN = 'Pro';
+export const ADVANCE_PLAN = 'Advance';
 
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
@@ -36,6 +39,10 @@ const shopify = shopifyApp({
       deliveryMethod: DeliveryMethod.Http,
       callbackUrl: '/webhooks',
     },
+    APP_SUBSCRIPTIONS_UPDATE:{
+      deliveryMethod: DeliveryMethod.Http,
+      callbackUrl: '/webhooks',
+    },
     APP_UNINSTALLED: {
       deliveryMethod: DeliveryMethod.Http,
       callbackUrl: '/webhooks',
@@ -48,8 +55,22 @@ const shopify = shopifyApp({
     },
   },
   billing: {
-    [MONTHLY_PLAN]: {
+    [STARTER_PLAN]: {
+      amount: 19,
+      trialDays: 7,
+      isTest: true,
+      currencyCode: 'USD',
+      interval: BillingInterval.Every30Days,
+    },
+    [PRO_PLAN]: {
       amount: 49,
+      trialDays: 7,
+      isTest: true,
+      currencyCode: 'USD',
+      interval: BillingInterval.Every30Days,
+    },
+    [ADVANCE_PLAN]: {
+      amount: 99,
       trialDays: 7,
       isTest: true,
       currencyCode: 'USD',
