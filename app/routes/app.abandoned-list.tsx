@@ -5,14 +5,21 @@ import { Card, Page } from '@shopify/polaris';
 export default function AbandonedCheckouts() {
     const [getData, setData] = React.useState([]);
     const [sortOrder, setSortOrder] = React.useState('ascending');
-    const [sortBy, setSortBy] = React.useState('updated_at');
+    const [sortBy, setSortBy] = React.useState('created_at');
     const [currentPage, setCurrentPage] = React.useState(1);
     const itemsPerPage = 10;
     const [searchTerm, setSearchTerm] = React.useState('');
     let sum = 0;
     let recoveredSum = 0;
+    let count=0;
     const AllOverValue = () => {
-        sum = getData.reduce((acc, value) => acc + parseFloat(value.total_price), 0);
+        getData?.forEach(function (item) {
+            if(item.completed_at == null){
+                var num = parseFloat(item.total_price)
+                sum += num;
+                count++;
+            }
+        })
     };
 
     const recoveredCheckoutsTotalPrice = () => {
@@ -57,7 +64,7 @@ export default function AbandonedCheckouts() {
                                 <div className="left-column">
                                     <div className="data-block">
                                         <div className="data-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M0 24C0 10.7 10.7 0 24 0L69.5 0c22 0 41.5 12.8 50.6 32l411 0c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3l-288.5 0 5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5L488 336c13.3 0 24 10.7 24 24s-10.7 24-24 24l-288.3 0c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5L24 48C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z" /></svg></div>
-                                        <div className="data-text">{getData?.length > 0 ? getData?.length : '0'}</div>
+                                        <div className="data-text">{getData?.length > 0 ? count : '0'}</div>
                                     </div>
                                     <div className="subtext">Abandoned Carts</div>
                                     <br />
@@ -80,7 +87,7 @@ export default function AbandonedCheckouts() {
                                             return (
                                                 <div className="item-row" key={item.id}>
                                                     <div className="item-icon"><svg style={{ width: '17px', height: '17px' }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512l388.6 0c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304l-91.4 0z" /></svg></div>
-                                                    <div style={{ width: '49%', marginRight: '5px' }}>{item.updated_at ? item.updated_at.split("T")[0] : 'N/A'}</div>
+                                                    <div style={{ width: '49%', marginRight: '5px' }}>{item.created_at ? item.created_at.split("T")[0] : 'N/A'}</div>
                                                     <div style={{ width: '45%', marginRight: '5px' }}>{item.customer.first_name || 'N/A'} {item.customer.last_name || 'N/A'}</div>
                                                     <div style={{ width: '43%', marginRight: '5px' }}>${item.total_price || 'N/A'}</div>
                                                     <div style={{ width: '15%', marginRight: '5px' }}>

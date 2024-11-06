@@ -47,7 +47,7 @@ export default function App() {
         setPlanStatus('INACTIVE');
       }else{
         console.log('ACTIVE');
-        navigate("/app/upgradePlan");
+        navigate("/app/welcome");
         setPlanStatus('ACTIVE');
       }
       

@@ -29,6 +29,7 @@ export async function loader({ request }: ActionFunctionArgs) {
     try {
         const response: any = await admin.rest.resources.AbandonedCheckout.checkouts({
             session,
+            limit: "250",
         });
 
         return json({ success: true, data: response.checkouts })
