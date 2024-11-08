@@ -10,15 +10,42 @@ const checkoutCollection = firestoreDatabase.collection('users');
 const checkoutUpdateCollection = firestoreDatabase.collection('checkoutUpdateData');
 const SubscriptionsCollection = firestoreDatabase.collection('subscriptions');
 
+function addDaysToFormattedDate(dateStr, daysToAdd) {
+  // Parse the input date string into a Date object
+  const originalDate = new Date(dateStr);
+
+  // Add the specified number of days (30 in this case)
+  originalDate.setDate(originalDate.getDate() + daysToAdd);
+
+  // Format the date back into the original format
+  const year = originalDate.getFullYear();
+  const month = String(originalDate.getMonth() + 1).padStart(2, '0');
+  const day = String(originalDate.getDate()).padStart(2, '0');
+  const hours = String(originalDate.getHours()).padStart(2, '0');
+  const minutes = String(originalDate.getMinutes()).padStart(2, '0');
+  const seconds = String(originalDate.getSeconds()).padStart(2, '0');
+
+  // Get the timezone offset in hours and minutes
+  const timezoneOffset = -originalDate.getTimezoneOffset();
+  const offsetHours = String(Math.floor(Math.abs(timezoneOffset) / 60)).padStart(2, '0');
+  const offsetMinutes = String(Math.abs(timezoneOffset) % 60).padStart(2, '0');
+  const offsetSign = timezoneOffset >= 0 ? '+' : '-';
+
+  // Construct the formatted date string
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offsetSign}${offsetHours}:${offsetMinutes}`;
+}
+
 
 const setSubscriptionData = async (data, storeId) => {
   try {
     if(data?.app_subscription?.status == 'ACTIVE'){
+      const result = addDaysToFormattedDate(data?.app_subscription?.updated_at, 30);
       await SubscriptionsCollection.doc(`${storeId}`).set({
         storeId,
         plan: data?.app_subscription?.name,
         status:data?.app_subscription?.status,
-        createdAt: new Date(),
+        startDate: data?.app_subscription?.updated_at,
+        endDate:result
       });
       console.log("setSubscriptionData successfully saved to Firestore.");
     }else{

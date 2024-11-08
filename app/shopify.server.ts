@@ -10,7 +10,8 @@ import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prism
 import { restResources } from "@shopify/shopify-api/rest/admin/2024-07";
 import prisma from "./db.server";
 import cron from "node-cron";
-import sendDataFromWebhooks from "./services/sendDataFromWebhooks";
+import { sendDataFromWebhooks } from "./services/sendDataFromWebhooks";
+import { setAppInstalledDate } from "./services/sendDataFromWebhooks";
 
 export const MONTHLY_PLAN = 'Monthly subscription';
 export const STARTER_PLAN = 'Starter';
@@ -39,7 +40,7 @@ const shopify = shopifyApp({
       deliveryMethod: DeliveryMethod.Http,
       callbackUrl: '/webhooks',
     },
-    APP_SUBSCRIPTIONS_UPDATE:{
+    APP_SUBSCRIPTIONS_UPDATE: {
       deliveryMethod: DeliveryMethod.Http,
       callbackUrl: '/webhooks',
     },
@@ -51,7 +52,15 @@ const shopify = shopifyApp({
   hooks: {
     afterAuth: async ({ session }) => {
       await shopify.registerWebhooks({ session });
-      console.log("AFTER REGISTER WEBHOOKS")
+      console.log("AFTER REGISTER WEBHOOKS");
+      const date = new Date();
+      const timestamp = date.getTime();
+      const newDate = new Date(timestamp);
+      const data = {
+        appInstalledDate: newDate,
+        recoveredcarts: 0
+      }
+      await setAppInstalledDate(session,data);
     },
   },
   billing: {
