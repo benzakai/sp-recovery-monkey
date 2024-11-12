@@ -174,10 +174,6 @@ export async function loader({ request }: ActionFunctionArgs) {
   // console.log('subscriptionData',subscriptionData);
   // const formattedDate = formatDate(appInstalledDate?.appInstalledDate);
   // console.log('formattedDate', formattedDate); 2024-11-08T10:28:53+05:30   2014-04-25T16:15:47-04:00
-  // const session ={
-  //   shop:'sprecoverymonkey.myshopify.com',
-  //   accessToken:'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'
-  // }
 
   // const data = await getAbandonedCarts(session);
   // console.log('got recovered carts',data);
