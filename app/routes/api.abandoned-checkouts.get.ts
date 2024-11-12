@@ -1,10 +1,11 @@
 import { ActionFunctionArgs, json } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
-import axios from "axios";
-import { getAppInstalledDate } from "~/services/sendDataFromWebhooks";
-import { getRecoveredCartslist } from "~/services/sendDataFromWebhooks";
+// import axios from "axios";
+// import { getAppInstalledDate } from "~/services/sendDataFromWebhooks";
+// import { getRecoveredCartslist } from "~/services/sendDataFromWebhooks";
 import { getSubscriptionsData } from "~/services/sendDataFromWebhooks";
-import { checkMatching } from "~/services/sendDataFromWebhooks";
+// import { checkMatching } from "~/services/sendDataFromWebhooks";
+// import { getAbandonedCarts } from "~/services/sendDataFromWebhooks";
 
 const formatDateInCustomFormat = (date: Date): string => {
   const year = date.getFullYear();
@@ -164,25 +165,35 @@ export async function loader({ request }: ActionFunctionArgs) {
   const daysBefore30 = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
   const last30Days = formatDateInCustomFormat(daysBefore30);
 
-  const appInstalledDate = await getAppInstalledDate(session);
-  console.log('appInstalledDate', appInstalledDate?.appInstalledDate);
-  const isoDate = convertFirestoreTimestampToISO(appInstalledDate?.appInstalledDate);
-  console.log('isoDate', isoDate);
-  console.log('type', typeof isoDate);
-  const subscriptionData = await getSubscriptionsData(session);
-  console.log('subscriptionData',subscriptionData);
+  // const appInstalledDate = await getAppInstalledDate(session);
+  // console.log('appInstalledDate', appInstalledDate?.appInstalledDate);
+  // const isoDate = convertFirestoreTimestampToISO(appInstalledDate?.appInstalledDate);
+  // console.log('isoDate', isoDate);
+  // console.log('type', typeof isoDate);
+  // const subscriptionData = await getSubscriptionsData(session);
+  // console.log('subscriptionData',subscriptionData);
   // const formattedDate = formatDate(appInstalledDate?.appInstalledDate);
   // console.log('formattedDate', formattedDate); 2024-11-08T10:28:53+05:30   2014-04-25T16:15:47-04:00
+  // const session ={
+  //   shop:'sprecoverymonkey.myshopify.com',
+  //   accessToken:'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'
+  // }
+
+  // const data = await getAbandonedCarts(session);
+  // console.log('got recovered carts',data);
+  
 
   let allCheckouts = [];
   let lastId = null;
 
   try {
+
+    
     // Loop to fetch all checkouts in batches of 250
     do {
       const response = await admin.rest.resources.AbandonedCheckout.checkouts({
         session,
-        created_at_min: '2024-11-06T10:28:53+05:30',
+        // created_at_min: isoDate,
         limit: "250",
         ...(lastId && { since_id: lastId })
       });
@@ -198,33 +209,36 @@ export async function loader({ request }: ActionFunctionArgs) {
       }
     } while (allCheckouts.length % 250 === 0);
 
+    //get abandonedCarts after the plan monthStartDate
+    // const referenceDateStr = subscriptionData?.startDate;
+    // const referenceDateStr = '2024-11-06T10:28:53+05:30';
+    // const referenceDate = new Date(referenceDateStr);
 
-    const referenceDateStr = subscriptionData?.startDate;
-    const referenceDate = new Date(referenceDateStr);
-
-    const filteredAbandonedCheckouts = allCheckouts.filter(item => {
-      // Check if 'created_at' exists and parse it as a date
-      if (item.created_at) {
-        const completedAtDate = new Date(item.created_at);
-        // Return only the items where created_at is greater than the reference date
-        return completedAtDate > referenceDate;
-      }
-      return false;
-    });
-    // console.log('filteredAbandonedCheckouts',filteredAbandonedCheckouts);
+    // const filteredAbandonedCheckouts = allCheckouts.filter(item => {
+    //   // Check if 'created_at' exists and parse it as a date
+    //   if (item.created_at) {
+    //     const createdAtDate = new Date(item.created_at);
+    //     // Return only the items where created_at is greater than the reference date
+    //     return createdAtDate > referenceDate;
+    //   }
+    //   return false;
+    // });
+    // // console.log('filteredAbandonedCheckouts',filteredAbandonedCheckouts);
+    // //get recovered carts only for the current month abandoned carts
+    // const filteredRecoveredCarts = () => {
+    //   return filteredAbandonedCheckouts.filter(item => item.completed_at !== null);
+    // };
+    // const recoveredCarts = filteredRecoveredCarts();
+    // // console.log('recoveredCarts',recoveredCarts);
     
-    const filteredRecoveredCarts = () => {
-      return filteredAbandonedCheckouts.filter(item => item.completed_at !== null);
-    };
-    const recoveredCarts = filteredRecoveredCarts();
-    // console.log('recoveredCarts',recoveredCarts);
+
+    // getRecoveredCartslist(recoveredCarts);
+
+    // const HasToSend = await checkMatching(session);
+    // console.log('HasToSend==============================================', HasToSend);
     
 
-    getRecoveredCartslist(recoveredCarts);
-
-    await checkMatching(session);
-
-    return json({ success: true, data: allCheckouts,recoveredCarts });
+    return json({ success: true, data: allCheckouts });
 
   } catch (error) {
     console.log("ERROR", error);

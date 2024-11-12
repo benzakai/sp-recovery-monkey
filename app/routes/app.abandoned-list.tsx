@@ -130,9 +130,9 @@ export default function AbandonedCheckouts() {
             const response = await fetch("/api/abandoned-checkouts/get");
             if (response.ok == true && response.status == 200) {
                 const responseData = await response.json();
-                console.log('recoveredCarts',responseData.recoveredCarts);
+                // console.log('recoveredCarts',responseData?.recoveredCarts);
                 
-                setData(responseData.data);
+                setData(responseData?.data || []);
             }
         } catch (error) {
             console.log("handleFetchAbandonedCheckouts Error", error);

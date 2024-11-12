@@ -58,7 +58,6 @@ const shopify = shopifyApp({
       const newDate = new Date(timestamp);
       const data = {
         appInstalledDate: newDate,
-        recoveredcarts: 0
       }
       await setAppInstalledDate(session,data);
     },
@@ -67,21 +66,21 @@ const shopify = shopifyApp({
     [STARTER_PLAN]: {
       amount: 19,
       trialDays: 7,
-      isTest: true,
+      isTest: false,
       currencyCode: 'USD',
       interval: BillingInterval.Every30Days,
     },
     [PRO_PLAN]: {
       amount: 49,
       trialDays: 7,
-      isTest: true,
+      isTest: false,
       currencyCode: 'USD',
       interval: BillingInterval.Every30Days,
     },
     [ADVANCE_PLAN]: {
       amount: 99,
       trialDays: 7,
-      isTest: true,
+      isTest: false,
       currencyCode: 'USD',
       interval: BillingInterval.Every30Days,
     },

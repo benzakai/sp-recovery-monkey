@@ -222,14 +222,18 @@ export default function Connect() {
 
     const getFireData = async()=>{
       const fireStoreData = await getDataFromFirestore();
-      console.log('fireStoreData',fireStoreData);
+      // console.log('fireStoreData',fireStoreData);
       if(Object.keys(fireStoreData).length === 0){
         initializeFlow();
       }else{
         const stateInstanceData = await getInstanceState(fireStoreData?.greenAPIUrl, fireStoreData?.greenAPIId, fireStoreData?.greenAPIKey);
-        console.log('stateInstanceData',stateInstanceData);
+        // console.log('stateInstanceData',stateInstanceData);
         if(stateInstanceData?.responseData?.stateInstance == 'authorized'){
           setStateInstance('authorized');
+        }else if(stateInstanceData?.responseData?.stateInstance == 'notAuthorized'){
+          let emptyObject ={};
+          let storeId = stateInstanceData?.storeId;
+          await setDataInFirestore('ConnectPagedata', storeId, emptyObject);
         }else{
           initializeFlow();
         }
@@ -268,8 +272,14 @@ export default function Connect() {
             <>
               <div className="qr-code-section">
                 <p style={{ fontWeight: 'bold' }}>Scan the QR code to present the dialogs on your own device.</p>
-                {qrCode && <img src={qrCode} alt="QR Code" />}
+                {qrCode ?(
+                  <img src={qrCode} alt="QR Code" />
+                ):(
+                  <div className="spinner"></div>
+                )}
+                {/* {qrCode && <img src={qrCode} alt="QR Code" />} */}
               </div>
+              
 
             </>
           )}

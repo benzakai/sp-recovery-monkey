@@ -4,7 +4,12 @@ const partnerApiUrl = 'https://api.greenapi.com';
 const partnerToken = 'gac.8fcbb1b93eca477ebca0084f7537e721ec829930442647';
 
 
+function formatUrl(url) {
+  // Remove trailing slash if it exists
+  return url.endsWith('/') ? url.slice(0, -1) : url;
+}
 
+let s=0;
 export async function loader({ request }: ActionFunctionArgs) {
 
     try {
@@ -26,20 +31,25 @@ export async function loader({ request }: ActionFunctionArgs) {
         if (!instances || !Array.isArray(instances)) {
           throw new Error('Invalid instances response: Expected an array of instances');
         }
+
+        const filteredDeletedInstances = instances.filter(item => item.deleted == false);
     
         // Use Promise.all to fetch state for each instance
         const updatedInstances = await Promise.all(
-          instances?.map(async (instance) => {
+          filteredDeletedInstances?.map(async (instance) => {
             try {
               // Normalize the apiUrl to ensure it doesn't have trailing or double slashes
-              const normalizedApiUrl = instance?.apiUrl.endsWith('/')
-                ? instance.apiUrl.slice(0, -1)
-                : instance.apiUrl;
-    
+              // const normalizedApiUrl = instance?.apiUrl.endsWith('/')
+              //   ? instance.apiUrl.slice(0, -1)
+              //   : instance.apiUrl;
+
+              const normalizedApiUrl = formatUrl(instance?.apiUrl);
+              s++;
+              console.log('normalizedApiUrl===================',normalizedApiUrl,s);
               // Construct the endpoint and fetch the state of the instance
               const stateResponse = await fetch(`${normalizedApiUrl}/waInstance${instance?.idInstance}/getWaSettings/${instance?.apiTokenInstance}`);
               const stateData = await stateResponse.json();
-              // console.log('stateData',stateData);
+              
               
               // Add the state to the instance object
               instance.status = stateData?.stateInstance;
