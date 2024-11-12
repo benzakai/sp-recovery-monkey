@@ -1,11 +1,11 @@
 /* Base styling */
 .main-container {
-  width: 60%;
+  width: 100%;
   background-color: white;
-  border: 1px solid black;
-  padding: 3rem;
+  /* border: 1px solid black; */
+  padding: 2rem;
   border-radius: 30px;
-  margin: 20px;
+  /* margin: 20px; */
 }
 
 .connect-container {

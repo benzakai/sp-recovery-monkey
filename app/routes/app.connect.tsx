@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import '../Connect.css';
+import { Card, Page } from "@shopify/polaris";
 
 
 export default function Connect() {
@@ -13,7 +14,7 @@ export default function Connect() {
   const [buttonData, setButtonData] = useState({});
 
   const searchName = 'cartkeeper - il - 001 ';
-  const topics =['message'];
+  const topics = ['message'];
 
   const handleNumbers = async () => {
     const result = instances.find(item => item.name === searchName);
@@ -48,7 +49,7 @@ export default function Connect() {
       console.log('Instance not found');
     }
   };
-  
+
 
   const fetchPhoneNumber = async (phonedata) => {
     const response = await fetch('/api/fetchPhoneNumber', {
@@ -77,7 +78,7 @@ export default function Connect() {
     setStateInstance('authorized');
   };
 
-  const setDataInFirestore =async (collectionName, documentName, data) => {
+  const setDataInFirestore = async (collectionName, documentName, data) => {
     const response = await fetch('/api/firestore', {
       method: 'POST',
       headers: {
@@ -131,7 +132,7 @@ export default function Connect() {
         console.log('Already logged in');
         setStateInstance('authorized');
         const phoneNumberData = await fetchPhoneNumber(currentQRData);
-        setPubsubData(async(prevState) => {
+        setPubsubData(async (prevState) => {
           const updatedData = {
             ...prevState,
             greenAPIId: currentQRData.id,
@@ -140,17 +141,17 @@ export default function Connect() {
             greenAPIKey: currentQRData?.token,
             greenAPIUrl: currentQRData?.url,
           };
-    
+
           console.log('PubSubData:', updatedData);
           await sendDataToPubSub(updatedData);
           await setDataInFirestore('ConnectPagedata', `${updatedData?.storeId}`, updatedData)
-    
-          return updatedData; 
+
+          return updatedData;
         });
-        
+
         console.log('currentQRData', currentQRData);
         // await sendDataToExpress(currentQRData);
-        
+
       }
       if (data.storeId) setStoreId(data.storeId);
     } catch (error) {
@@ -178,27 +179,27 @@ export default function Connect() {
       },
     });
     const Responsedata = await response.json();
-    if(Responsedata.data){
+    if (Responsedata.data) {
       // Filter out the empty objects
       // const storeId = Responsedata.storeId; // Assuming Responsedata contains storeId
       // const filteredData = Responsedata.data.filter(item => 
       //     Object.keys(item).length > 0 && item.storeId == storeId
       // );
-       console.log('filteredData connectPage',Responsedata);
-       return Responsedata.data;
-    }else{
+      console.log('filteredData connectPage', Responsedata);
+      return Responsedata.data;
+    } else {
       return null;
     }
   };
 
-  const getInstanceState = async(url,id,token)=>{
+  const getInstanceState = async (url, id, token) => {
     try {
-      const response = await fetch('/api/getInstanceStatus',{
+      const response = await fetch('/api/getInstanceStatus', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ url,id,token }),
+        body: JSON.stringify({ url, id, token }),
       });
       const data = await response.json();
       return data;
@@ -207,7 +208,7 @@ export default function Connect() {
       return {};
     }
   }
-  
+
 
   useEffect(() => {
     const initializeFlow = async () => {
@@ -220,32 +221,32 @@ export default function Connect() {
       }
     };
 
-    const getFireData = async()=>{
+    const getFireData = async () => {
       const fireStoreData = await getDataFromFirestore();
       // console.log('fireStoreData',fireStoreData);
-      if(Object.keys(fireStoreData).length === 0){
+      if (Object.keys(fireStoreData).length === 0) {
         initializeFlow();
-      }else{
+      } else {
         const stateInstanceData = await getInstanceState(fireStoreData?.greenAPIUrl, fireStoreData?.greenAPIId, fireStoreData?.greenAPIKey);
         // console.log('stateInstanceData',stateInstanceData);
-        if(stateInstanceData?.responseData?.stateInstance == 'authorized'){
+        if (stateInstanceData?.responseData?.stateInstance == 'authorized') {
           setStateInstance('authorized');
-        }else if(stateInstanceData?.responseData?.stateInstance == 'notAuthorized'){
-          let emptyObject ={};
+        } else if (stateInstanceData?.responseData?.stateInstance == 'notAuthorized') {
+          let emptyObject = {};
           let storeId = stateInstanceData?.storeId;
           await setDataInFirestore('ConnectPagedata', storeId, emptyObject);
-        }else{
+        } else {
           initializeFlow();
         }
-        
-        
+
+
       }
-      
+
     }
 
     getFireData();
-    
-    
+
+
   }, [instances.length, currentQRData]);
 
   useEffect(() => {
@@ -259,32 +260,36 @@ export default function Connect() {
   }, [stateInstance, currentQRData]);
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <div className="main-container">
-        <div className="main-heading"><p>Let's Connect</p></div>
-        <div className="connect-container">
-          {stateInstance === 'authorized' ? (
-            <div>
-              <div style={{ fontWeight: 'bold' }}>your device is already connected</div>
-              <div style={{ fontWeight: 'bold' }}>you should easily send and recieve whatsapp messages</div>
-            </div>
-          ) : (
-            <>
-              <div className="qr-code-section">
-                <p style={{ fontWeight: 'bold' }}>Scan the QR code to present the dialogs on your own device.</p>
-                {qrCode ?(
-                  <img src={qrCode} alt="QR Code" />
-                ):(
-                  <div className="spinner"></div>
-                )}
-                {/* {qrCode && <img src={qrCode} alt="QR Code" />} */}
-              </div>
-              
+    <Page>
+      <Card>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <div className="main-container">
+            <div className="main-heading"><p>Let's Connect</p></div>
+            <div className="connect-container">
+              {stateInstance === 'authorized' ? (
+                <div>
+                  <div style={{ fontWeight: 'bold' }}>your device is already connected</div>
+                  <div style={{ fontWeight: 'bold' }}>you should easily send and recieve whatsapp messages</div>
+                </div>
+              ) : (
+                <>
+                  <div className="qr-code-section">
+                    <p style={{ fontWeight: 'bold' }}>Scan the QR code to present the dialogs on your own device.</p>
+                    {qrCode ? (
+                      <img src={qrCode} alt="QR Code" />
+                    ) : (
+                      <div className="spinner"></div>
+                    )}
+                    {/* {qrCode && <img src={qrCode} alt="QR Code" />} */}
+                  </div>
 
-            </>
-          )}
+
+                </>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </Card>
+    </Page>
   );
 }

@@ -469,4 +469,17 @@ export const getAbandonedCarts = async (session) => {
 };
 
 
+export const sendDataAppInstallTopicPubSub = async (message) => {
+  const messageJson = JSON.stringify(message);
+  const topicName = "install";
 
+  try {
+    const topic = pubsub.topic(topicName);
+    const messageId = await topic.publishMessage({
+      data: Buffer.from(messageJson),
+    });
+    console.log(`Message ${messageId} published to ${topicName} topic`);
+  } catch (err) {
+    console.error("Error publishing message:", err);
+  }
+};

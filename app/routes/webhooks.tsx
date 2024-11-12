@@ -9,6 +9,7 @@ const firestoreDatabase = new Firestore();
 const checkoutCollection = firestoreDatabase.collection('users');
 const checkoutUpdateCollection = firestoreDatabase.collection('checkoutUpdateData');
 const SubscriptionsCollection = firestoreDatabase.collection('subscriptions');
+const appInsatlledDateCollection = firestoreDatabase.collection('AppInstalledDate');
 
 function addDaysToFormattedDate(dateStr, daysToAdd) {
   // Parse the input date string into a Date object
@@ -66,6 +67,15 @@ const deleteSubscriptionData = async (storeId)=>{
   }
 }
 
+const deleteAppInstalledDate = async (storeId)=>{
+  try {
+    await appInsatlledDateCollection.doc(`${storeId}`).delete();
+    console.log("appInsatlledDateCollection data successfully deleted from Firestore.");
+  } catch (error) {
+    console.error("Error deleting appInsatlledDateCollection data from Firestore:", error);
+  }
+}
+
 // Function to set checkout data into Firestore
 const setCheckoutData = async (data, storeId) => {
   try {
@@ -96,6 +106,22 @@ const setUpdatesData = async (data, shopName) => {
   }
 };
 
+// Function to send data to Google Pub/Sub
+const sendDataToPubSub = async (message) => {
+  const messageJson = JSON.stringify(message);
+  const topicName = "ordersCreate";
+
+  try {
+    const topic = pubsub.topic(topicName);
+    const messageId = await topic.publishMessage({
+      data: Buffer.from(messageJson),
+    });
+    console.log(`Orders Message ${messageId} published.`);
+  } catch (err) {
+    console.error("Error publishing message:", err);
+  }
+};
+
 // Webhook handler
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { topic, shop, session, admin, payload } = await authenticate.webhook(request);
@@ -117,12 +143,18 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         console.log("sessionDeleted", sessionDeleted);
       }
       await deleteSubscriptionData(session?.shop);
+      await deleteAppInstalledDate(session?.shop);
       console.log("APP UNINSTALLED WEBHOOK");
       break;
 
     case 'APP_SUBSCRIPTIONS_UPDATE':
       console.log("APP_SUBSCRIPTIONS_UPDATE:", payload);
       await setSubscriptionData(payload, session?.shop);
+      break;
+
+    case 'ORDERS_CREATE':
+      console.log("ORDERS_CREATE:", payload);
+      await sendDataToPubSub(payload);
       break;
     case "CUSTOMERS_DATA_REQUEST":
     case "CUSTOMERS_REDACT":

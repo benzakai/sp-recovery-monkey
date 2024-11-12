@@ -74,6 +74,7 @@ export default function App() {
             <Link to="/app/convert">Convert</Link>
             <Link to="/app/connect">Connect</Link>
             <Link to="/app/upgradePlan">upgradePlan</Link>
+            <Link to="/app/StartPage">StartPage</Link>
           </NavMenu>
         )}
         

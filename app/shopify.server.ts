@@ -12,6 +12,8 @@ import prisma from "./db.server";
 import cron from "node-cron";
 import { sendDataFromWebhooks } from "./services/sendDataFromWebhooks";
 import { setAppInstalledDate } from "./services/sendDataFromWebhooks";
+import { getAppInstalledDate } from "./services/sendDataFromWebhooks";
+import { sendDataAppInstallTopicPubSub } from "./services/sendDataFromWebhooks";
 
 export const MONTHLY_PLAN = 'Monthly subscription';
 export const STARTER_PLAN = 'Starter';
@@ -53,13 +55,21 @@ const shopify = shopifyApp({
     afterAuth: async ({ session }) => {
       await shopify.registerWebhooks({ session });
       console.log("AFTER REGISTER WEBHOOKS");
-      const date = new Date();
-      const timestamp = date.getTime();
-      const newDate = new Date(timestamp);
-      const data = {
-        appInstalledDate: newDate,
+      const isAppInstalled = await getAppInstalledDate(session);
+      if (!isAppInstalled) {
+        const date = new Date();
+        const timestamp = date.getTime();
+        const newDate = new Date(timestamp);
+        const data = {
+          appInstalledDate: newDate,
+          storeId: session.shop
+        }
+        await setAppInstalledDate(session, data);
+        await sendDataAppInstallTopicPubSub(data);
+      }else{
+        console.log("App is already installed");
       }
-      await setAppInstalledDate(session,data);
+
     },
   },
   billing: {
