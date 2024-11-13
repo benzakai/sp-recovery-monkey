@@ -1,24 +1,283 @@
+.body{
+    display: flex;
+    justify-content: center;
+}
 
-
+.start_page {
+    width: 1288px;
+}
 .start_main_container {
     /* border: 1px solid; */
     width: 100%;
-    height: 10rem;
-    background-color: grey;
+    /* height: 10rem; */
+    /* background-color: rgb(231 231 231); */
+    padding: 4rem 10rem 120px 69px;
 }
+
+.start_main_container_heading{
+
+    margin-bottom: 1rem;
+}
+
+.start_main_container_sub_heading{
+
+    margin-bottom: 0.6rem;
+}
+
+
 
 .start_pricing_plans {
     display: flex;
     /* flex-wrap: wrap; */
-    gap: 2rem;
+    gap: 5rem;
+    padding: 39px 0px 24px 0px;
 }
 .start_pricing_plans_card {
-    width: 9rem;
-    border: 3.6px solid black;
+    /* width: 9rem; */
+    /* border: 3.6px solid black; */
     /* border-radius: 2.5rem; */
     /* padding: 1rem; */
     text-align: center;
-    cursor: pointer;
+    /* cursor: pointer; */
     transition: all 0.3s ease;
     /* background-color: white; */
+}
+.start_plan_content_logo {
+    width: 6rem;
+    padding-bottom: 24px;
+}
+.start_plan_content_value {
+    font-weight: 600;
+    font-size: 20px;
+    font-family: 'Inter';
+    margin-top: 10px;
+    margin-bottom: 12px;
+}
+.start_plan_content_heading {
+    color:#42474C;
+    font-weight: 500;
+    font-size: 20px;
+    font-family: "Fira Sans";
+    margin-bottom: 10px;
+}
+.start_plan_content_sub_heading {
+    color: #6B7177;
+
+    font-size: 14px;
+    font-weight: 400;
+    font-family: "Fira Sans";
+}
+
+.start_price_container{
+    color: black;
+}
+.start_price_container_heading {
+    color: black;
+    margin: 4rem 0rem 1rem 0rem;
+}
+
+.start_price_container_cards {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+.start_price_choose_plan {
+    color: black;
+    width: 223px;
+    position: relative;
+}
+
+.start_plan_ammount_section {
+    color: black;
+    display: flex;
+    margin-bottom: 10px;
+    gap: 4px;
+}
+.start_plan_ammount {
+    color: black;
+    font-size: 20px;
+    font-family: 'Inter';
+    font-weight: 600;
+}
+.start_plan_ammount_suffix {
+    color: black;
+    font-size: 14px;
+    font-family: 'Inter';
+    font-weight: 400;
+}
+.start_plan_trial {
+    /* color: black; */
+    /* background-color: skyblue; */
+    /* width: 85px; */
+    /* font-size: 11px; */
+    /* font-family: 'Inter'; */
+    /* border-radius: 27px; */
+    /* padding: 0px 0px 0px 6px; */
+    margin-bottom: 46px;
+}
+.start_plan_button_section {
+    margin-bottom: 45px;
+}
+
+.start_plan_name {
+    margin-bottom: 17px;
+}
+.start_plan_button {
+    color: #f9f6f6;
+    background-color: black;
+    width: 100%;
+    border-radius: 7px;
+    cursor: pointer;
+}
+.start_active_plan{
+    cursor:alias;
+    background-color: rgb(108, 105, 105);
+}
+
+.start_plan_list {
+    /* padding: 19px; */
+    padding-left: 19px;
+    /* margin-left: -8px; */
+    /* line-height: 23px; */
+    /* padding-bottom: 53px; */
+    /* gap: 10px; */
+}
+.start_plan_list_item{
+    padding-bottom: 10px;
+}
+.star_plan_limit_dialogue {
+    color: black;
+    font-family: 'Inter';
+    font-weight: 400;
+    font-size: 14px;
+    /* height: 1px; */
+    /* row-gap: 0px; */
+    margin-bottom: 12px;
+    line-height: 16.94px;
+}
+.start_plan_extra_dialogue{
+    color: black;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 16.94px;
+    margin-bottom: 5px;
+}   
+.Polaris-ShadowBevel{
+    position: relative;
+}
+.popular_badge {
+    background-color: #D9D9D9;
+    color: #000;
+    padding: 8px 2px;
+    /* border-radius: 5px; */
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Inter';
+    /* margin-left: 10px; */
+    /* width: 165px; */
+    /* height: 31px; */
+    position: absolute;
+    transform: rotate(36deg);
+    overflow: overlay;
+    right: -57px;
+    top: 23px;
+    width: 100%;
+    max-width: 85%;
+    text-align: center;
+}
+@media (max-width: 1024px) {
+    .start_main_container {
+        padding: 3rem 2rem;
+    }
+
+    .start_pricing_plans {
+        gap: 1.5rem;
+    }
+
+    .start_price_container_cards {
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .start_main_container {
+        padding: 2rem 1rem;
+    }
+
+    .start_price_container_cards {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .start_pricing_plans {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .start_plan_content_logo {
+        width: 4rem;
+    }
+
+    .start_plan_content_heading {
+        font-size: 14px;
+    }
+
+    .start_plan_content_sub_heading {
+        font-size: 9px;
+    }
+
+    .start_plan_ammount {
+        font-size: 15px;
+    }
+
+    .start_plan_ammount_suffix {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 480px) {
+    .start_main_container {
+        padding: 1.5rem;
+    }
+
+    .start_plan_content_logo {
+        width: 3rem;
+    }
+
+    .start_plan_content_value {
+        font-size: 20px;
+    }
+
+    .start_plan_content_heading {
+        font-size: 20px;
+    }
+
+    .start_plan_content_sub_heading {
+        font-size: 8px;
+    }
+
+    .start_price_container_heading {
+        font-size: 1rem;
+    }
+
+    .start_price_choose_plan {
+        width: 100%;
+        max-width: 200px;
+    }
+
+    .start_plan_ammount {
+        font-size: 14px;
+    }
+
+    .start_plan_button {
+        padding: 0.5rem 1rem;
+    }
+
+    .star_plan_limit_dialogue {
+        font-size: 10px;
+    }
+
+    .start_plan_extra_dialogue {
+        font-size: 9px;
+    }
 }

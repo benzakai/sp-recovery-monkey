@@ -43,7 +43,7 @@ export default function App() {
       const fireStoreData = await getDataFromFirestore();
       if(Object.keys(fireStoreData).length === 0){
         console.log('INACTIVE');
-        navigate("/app/Plans");
+        navigate("/app/StartPage");
         setPlanStatus('INACTIVE');
       }else{
         console.log('ACTIVE');
@@ -64,7 +64,7 @@ export default function App() {
         </Link> */}
         {planStatus == 'INACTIVE'?(
           <NavMenu>
-            <Link to="/app/Plans">Plans</Link>
+            <Link to="/app/StartPage">StartPage</Link>
           </NavMenu>
           
         ):(
@@ -74,7 +74,7 @@ export default function App() {
             <Link to="/app/convert">Convert</Link>
             <Link to="/app/connect">Connect</Link>
             <Link to="/app/upgradePlan">upgradePlan</Link>
-            <Link to="/app/StartPage">StartPage</Link>
+            {/* <Link to="/app/StartPage">StartPage</Link> */}
           </NavMenu>
         )}
         
