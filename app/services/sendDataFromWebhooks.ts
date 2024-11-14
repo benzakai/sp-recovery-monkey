@@ -6,6 +6,7 @@ const pubsub = new PubSub();
 const firestoreDatabase = new Firestore();
 const checkoutCollection = firestoreDatabase.collection('users');
 const checkoutUpdateCollection = firestoreDatabase.collection('checkoutUpdateData');
+const ConnectPageCollection = firestoreDatabase.collection('ConnectPagedata');
 // let recoveredCarts;
 
 
@@ -483,3 +484,12 @@ export const sendDataAppInstallTopicPubSub = async (message) => {
     console.error("Error publishing message:", err);
   }
 };
+
+export const deleteConnectPageDataFromFirestore = async(storeId)=>{
+  try {
+    await ConnectPageCollection.doc(`${storeId}`).delete();
+    console.log("ConnectPageCollection successfully deleted from Firestore.");
+  } catch (error) {
+    console.error("Error deleting ConnectPageCollection from Firestore:", error);
+  }
+}

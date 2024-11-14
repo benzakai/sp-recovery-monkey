@@ -1,3 +1,7 @@
+.start_pricing_plans .Polaris-SkeletonDisplayText__DisplayText {
+    height: 20px !important;
+}
+
 .body{
     display: flex;
     justify-content: center;
@@ -84,7 +88,8 @@
 .start_price_choose_plan {
     color: black;
     width: 223px;
-    position: relative;
+    height: 340px;
+    /* position: relative; */
 }
 
 .start_plan_ammount_section {
@@ -183,6 +188,55 @@
     top: 23px;
     width: 100%;
     max-width: 85%;
+    text-align: center;
+}
+
+
+
+.connection_main_container_heading{
+    margin-bottom: 5rem;
+}
+.connection_main_container_sub_heading{
+    margin-bottom: 2rem;
+}
+.connection_card_sub_heading{
+    font-size: 14px;
+    font-weight: 400;
+}
+.connection_alien_logo_section {
+    padding: 7px 7px 0 7px;
+    height: 215px;
+    /* background-color: rgb(95, 219, 108); */
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.connection_qr_code {
+    width: 85%;
+    height: 85%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.qr_image_connection{
+    width: 100%;
+}
+.connection_alien_logo{
+    width: 100%;
+    /* border: 1px solid; */
+}
+.connection_card_dialogue_section{
+    padding: 7px;
+}
+.connection_card_before_qr_dialogue {
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+}
+.connection_card_after_qr_dialogue{
+    font-size: 14px;
+    font-weight: 400;
     text-align: center;
 }
 @media (max-width: 1024px) {
