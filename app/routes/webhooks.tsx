@@ -10,6 +10,7 @@ const checkoutCollection = firestoreDatabase.collection('users');
 const checkoutUpdateCollection = firestoreDatabase.collection('checkoutUpdateData');
 const SubscriptionsCollection = firestoreDatabase.collection('subscriptions');
 const appInsatlledDateCollection = firestoreDatabase.collection('AppInstalledDate');
+let subscriptionData;
 
 function addDaysToFormattedDate(dateStr, daysToAdd) {
   // Parse the input date string into a Date object
@@ -39,26 +40,41 @@ function addDaysToFormattedDate(dateStr, daysToAdd) {
 
 const setSubscriptionData = async (data, storeId) => {
   try {
-    if(data?.app_subscription?.status == 'ACTIVE'){
+    if (data?.app_subscription?.status == 'ACTIVE') {
       const result = addDaysToFormattedDate(data?.app_subscription?.updated_at, 30);
       await SubscriptionsCollection.doc(`${storeId}`).set({
         storeId,
         plan: data?.app_subscription?.name,
-        status:data?.app_subscription?.status,
+        status: data?.app_subscription?.status,
         startDate: data?.app_subscription?.updated_at,
-        endDate:result
+        endDate: result
       });
       console.log("setSubscriptionData successfully saved to Firestore.");
-    }else{
+    } else {
       console.log("setSubscriptionData not available.");
     }
-    
+
   } catch (error) {
     console.error("Error saving setSubscriptionData to Firestore:", error);
   }
 };
 
-const deleteSubscriptionData = async (storeId)=>{
+const getSubsciptionData = async (storeId) => {
+  try {
+    const doc = await SubscriptionsCollection.doc(`${storeId}`).get();
+    if (!doc.exists) {
+      console.log('No such document!');
+      return null;
+    } else {
+      console.log('Document data:', doc.data());
+      return doc.data();
+    }
+  } catch (error) {
+    console.error("Error gettinfg subscription data from Firestore:", error);
+  }
+}
+
+const deleteSubscriptionData = async (storeId) => {
   try {
     await SubscriptionsCollection.doc(`${storeId}`).delete();
     console.log("Subscription data successfully deleted from Firestore.");
@@ -67,7 +83,7 @@ const deleteSubscriptionData = async (storeId)=>{
   }
 }
 
-const deleteAppInstalledDate = async (storeId)=>{
+const deleteAppInstalledDate = async (storeId) => {
   try {
     await appInsatlledDateCollection.doc(`${storeId}`).delete();
     console.log("appInsatlledDateCollection data successfully deleted from Firestore.");
@@ -122,6 +138,16 @@ const sendDataToPubSub = async (message) => {
   }
 };
 
+const checkSubscriptionStatus = async (storeId) => {
+  subscriptionData = await getSubsciptionData(storeId);
+  if (!subscriptionData || subscriptionData?.status !== 'ACTIVE') {
+    console.log("Checkout data not saved due to subscription not active.");
+    return false;
+  }
+  
+  return true;
+};
+
 // Webhook handler
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { topic, shop, session, admin, payload } = await authenticate.webhook(request);
@@ -131,11 +157,19 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   switch (topic) {
     case "CHECKOUTS_CREATE":
       console.log("checkouts/create:", payload);
-      await setCheckoutData(payload, session?.shop);
+
+      if (await checkSubscriptionStatus(session?.shop)) {
+        console.log("it has active plan============.........");
+        await setCheckoutData(payload, session?.shop);
+      }
       break;
     case "CHECKOUTS_UPDATE":
       console.log("checkouts/update:", payload);
-      await setUpdatesData(payload, session?.shop);
+
+      if (await checkSubscriptionStatus(session?.shop)) {
+        console.log("it has active plan============.........");
+        await setUpdatesData(payload, session?.shop);
+      }
       break;
     case "APP_UNINSTALLED":
       if (session) {
@@ -154,7 +188,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
     case 'ORDERS_CREATE':
       console.log("ORDERS_CREATE:", payload);
-      await sendDataToPubSub(payload);
+      
+      if (await checkSubscriptionStatus(session?.shop)) {
+        console.log("it has active plan============.........");
+        await sendDataToPubSub(payload);
+      }
       break;
     case "CUSTOMERS_DATA_REQUEST":
     case "CUSTOMERS_REDACT":

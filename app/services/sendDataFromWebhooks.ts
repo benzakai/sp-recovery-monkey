@@ -151,7 +151,7 @@ const sendDataToPubSub = async (message) => {
 
 // Function to fetch orders from Shopify within the last 10 minutes
 const fetchOrders = async (shopName, token) => {
-  const lastTenMinuteTime = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+  const lastTenMinuteTime = new Date(Date.now() - 1 * 60 * 1000).toISOString();
   try {
     const response = await fetch(
       `https://${shopName}/admin/api/2024-10/orders.json?status=any&created_at_min=${lastTenMinuteTime}`,
@@ -211,7 +211,7 @@ const getShopDomain = async (shopName, token) => {
 export const sendDataFromWebhooks = async () => {
   console.log("=====calling function==========");
 
-  const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+  const tenMinutesAgo = new Date(Date.now() - 1 * 60 * 1000);
   // console.log('tenMinutesAgo', tenMinutesAgo);
 
 

@@ -127,6 +127,72 @@ textarea:focus {
   justify-content: start;
 }
 
+.convert_main_page{
+  width: 90%;
+  max-width: 1288px;
+}
+.convert_page_body{
+  display: flex;
+  justify-content: center;
+  padding: 0 10px;
+}
+.convert_page_main_container_section {
+  padding: 20px 0px 329px 0px;
+}
+.convert_page_card_container {
+  display: grid;
+  grid-template-columns: 270px 270px 270px 270px;
+  gap: 17px;
+}
+.convert_page_card {
+  /* border: 1px solid black; */
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border-radius: 14px;
+}
+.convert_page_card_selected{
+  border: 1px solid rgb(23, 214, 23);
+}
+.convert_page_card_header {
+  border: none;
+  resize: none;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: 'Inter';
+}
+.convert_page_card_body {
+  border: none;
+  resize: none;
+  outline: none;
+  width: 14rem;
+  height: 9vw;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: 'Inter';
+  line-height: 18px;
+}
+.convert_page_card_button {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0px 10px 0px;
+}
+
+@media (max-width: 1024px) {
+  .convert_page_main_container_section {
+      padding: 20px 0px 50px 0px;
+  }
+
+  .convert_page_card_body {
+      font-size: 12px; /* Slightly smaller font size for smaller screens */
+  }
+
+  .convert_page_card_container {
+      gap: 15px; /* Reduce gap between cards */
+  }
+}
+
 @media (max-width: 768px) {
   .connect_main_heading {
       font-size: 32px;
@@ -151,6 +217,22 @@ textarea:focus {
       max-width: 100%;
       height: 8rem;
   }
+  /* .convert_page_card_container {
+    display: grid;
+    grid-template-columns: 270px 270px 270px;
+    gap: 17px;
+  } */
+  .convert_page_card_container {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px; /* Further reduce gap between cards */
+  }
+
+  .convert_page_card_body {
+    font-size: 12px;
+    line-height: 16px;
+    width: 13rem;
+    height: 20vw;
+  }
 }
 
 @media (max-width: 480px) {
@@ -171,5 +253,18 @@ textarea:focus {
 
   .connect_card {
       height: 7rem;
+  }
+  .convert_page_main_container_section {
+    padding: 20px 0px 20px 0px; /* Compact padding for very small screens */
+  }
+
+  .convert_page_card_container {
+      grid-template-columns: 1fr; /* Single column for very small screens */
+  }
+
+  .convert_page_card_body {
+    font-size: 11px;
+    width: 20rem;
+    height: 17vw;
   }
 }

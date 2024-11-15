@@ -72,8 +72,9 @@ export default function App() {
             {/* <Link to="/app/welcome">Welcome</Link> */}
             <Link to="/app/WelcomeConnect">Welcome</Link> 
             <Link to="/app/AbandonedList">Abandoned List</Link>
+            <Link to="/app/ConvertPage">Convert</Link>
             {/* <Link to="/app/abandoned-list">Abandoned List</Link> */}
-            <Link to="/app/convert">Convert</Link>
+            {/* <Link to="/app/convert">Convert</Link> */}
             {/* <Link to="/app/connect">Connect</Link> */}
             <Link to="/app/UpgradePlan">Upgrade Plan</Link>
             
