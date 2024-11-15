@@ -71,11 +71,12 @@ export default function App() {
           <NavMenu>
             {/* <Link to="/app/welcome">Welcome</Link> */}
             <Link to="/app/WelcomeConnect">Welcome</Link> 
-            <Link to="/app/abandoned-list">Abandoned List</Link>
+            <Link to="/app/AbandonedList">Abandoned List</Link>
+            {/* <Link to="/app/abandoned-list">Abandoned List</Link> */}
             <Link to="/app/convert">Convert</Link>
             {/* <Link to="/app/connect">Connect</Link> */}
-            <Link to="/app/upgradePlan">upgradePlan</Link>
-            <Link to="/app/NewAbandonedList">NewAbandonedList</Link>
+            <Link to="/app/UpgradePlan">Upgrade Plan</Link>
+            
           </NavMenu>
         )}
         

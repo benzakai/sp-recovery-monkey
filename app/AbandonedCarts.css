@@ -145,8 +145,8 @@
 
 
 
-.abandoned_list_main_container_heading{
-    margin-bottom: 3rem;
+.abandoned_list_main_container_heading {
+    margin-bottom: 4rem;
 }
 
 .checkIcon_listPage{
@@ -179,8 +179,25 @@
     margin-left: -21%;
 }
 
+.abandoned_list_container {
+    width: 111%;
+}
+
+.abandoned_list_price{
+    /* width: 40%; */
+}
+
 .list_status_section {
-    width: 45%;
+    display: flex;
+    justify-content: end;
+}
+
+.Polaris-DataTable__Cell {
+    padding: 15px 17px 15px 17px !important;
+}
+
+.abandoned_list_spinner{
+    text-align: center;
 }
 /* Mobile specific styles */
 @media (max-width: 768px) {
@@ -246,10 +263,16 @@
     .pagination-button {
         margin: 5px;
     }
+    .abandoned_list_container {
+        width: 100%;
+    }
 }
 
 @media (max-width: 420px){
     .header {
         flex-direction:column;
+    }
+    .abandoned_list_container {
+        width: 100%;
     }
 }
