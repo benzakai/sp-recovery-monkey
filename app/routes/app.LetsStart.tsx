@@ -341,7 +341,7 @@ const LetsStart = () => {
                                             <div className="start_plan_ammount_suffix">/  Month</div>
                                         </div>
                                         <div className="start_plan_trial"><Badge size="small" tone="info">7 day free trial</Badge> </div>
-                                        <div className="start_plan_button_section"><Button size='micro' onClick={() => handlePlanSelect('Starter')} variant='primary' fullWidth>select</Button></div>
+                                        <div className="start_plan_button_section"><Button size='large' onClick={() => handlePlanSelect('Starter')} variant='primary' fullWidth>select</Button></div>
                                         <div className="star_plan_limit_dialogue">
                                             <ul className='start_plan_list'>
                                                 <li className='start_plan_list_item'>Up to 10 abandoned carts per month</li>
@@ -360,7 +360,7 @@ const LetsStart = () => {
                                             <div className="start_plan_ammount_suffix">/  Month</div>
                                         </div>
                                         <div className="start_plan_trial"><Badge tone="info">7 day free trial</Badge> </div>
-                                        <div className="start_plan_button_section"><Button size='micro' onClick={() => handlePlanSelect('Pro')} variant='primary' fullWidth>select</Button></div>
+                                        <div className="start_plan_button_section"><Button size='large' onClick={() => handlePlanSelect('Pro')} variant='primary' fullWidth>select</Button></div>
                                         <div className="star_plan_limit_dialogue">
                                             <ul className='start_plan_list'>
                                                 <li className='start_plan_list_item'>Up to 49 abandoned carts per month</li>
@@ -382,7 +382,7 @@ const LetsStart = () => {
                                             <div className="start_plan_ammount_suffix">/  Month</div>
                                         </div>
                                         <div className="start_plan_trial"><Badge tone="info">7 day free trial</Badge> </div>
-                                        <div className="start_plan_button_section"><Button size='micro' onClick={() => handlePlanSelect('Advance')} variant='primary' fullWidth>select</Button></div>
+                                        <div className="start_plan_button_section"><Button size='large' onClick={() => handlePlanSelect('Advance')} variant='primary' fullWidth>select</Button></div>
                                         <div className="star_plan_limit_dialogue">
                                             <ul className='start_plan_list'>
                                                 <li className='start_plan_list_item'>Up to 100 abandoned carts per month</li>

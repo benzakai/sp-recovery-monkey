@@ -76,8 +76,9 @@ export default function App() {
             {/* <Link to="/app/abandoned-list">Abandoned List</Link> */}
             {/* <Link to="/app/convert">Convert</Link> */}
             {/* <Link to="/app/connect">Connect</Link> */}
-            <Link to="/app/UpgradePlan">Upgrade Plan</Link>
-            
+            {/* <Link to="/app/UpgradePlan">Upgrade Plan</Link> */}
+            <Link to="/app/ConnectPage">Connect Page</Link>
+            <Link to="/app/Settings">Settings</Link>
           </NavMenu>
         )}
         

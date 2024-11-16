@@ -137,7 +137,7 @@ textarea:focus {
   padding: 0 10px;
 }
 .convert_page_main_container_section {
-  padding: 20px 0px 329px 0px;
+  padding: 20px 0px 35px 0px;
 }
 .convert_page_card_container {
   display: grid;
@@ -181,7 +181,7 @@ textarea:focus {
 
 @media (max-width: 1024px) {
   .convert_page_main_container_section {
-      padding: 20px 0px 50px 0px;
+      padding: 20px 0px 10px 0px;
   }
 
   .convert_page_card_body {
@@ -255,7 +255,7 @@ textarea:focus {
       height: 7rem;
   }
   .convert_page_main_container_section {
-    padding: 20px 0px 20px 0px; /* Compact padding for very small screens */
+    padding: 20px 0px 5px 0px; /* Compact padding for very small screens */
   }
 
   .convert_page_card_container {

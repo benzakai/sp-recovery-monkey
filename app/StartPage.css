@@ -18,9 +18,8 @@
     padding: 4rem 10rem 120px 69px;
 }
 
-.start_main_container_heading{
-
-    margin-bottom: 1rem;
+.start_main_container_heading {
+    margin-bottom: 2px;
 }
 
 .start_main_container_sub_heading{
@@ -87,8 +86,8 @@
 }
 .start_price_choose_plan {
     color: black;
-    width: 223px;
-    height: 340px;
+    width: 210px;
+    height: 303px;
     /* position: relative; */
 }
 
@@ -118,14 +117,15 @@
     /* font-family: 'Inter'; */
     /* border-radius: 27px; */
     /* padding: 0px 0px 0px 6px; */
-    margin-bottom: 46px;
+    margin-bottom: 44px;
 }
 .start_plan_button_section {
-    margin-bottom: 45px;
+    margin-bottom: 38px;
 }
 
 .start_plan_name {
-    margin-bottom: 17px;
+    margin-bottom: 13px;
+    font-size: 14px;
 }
 .start_plan_button {
     color: #f9f6f6;
@@ -153,7 +153,7 @@
 .star_plan_limit_dialogue {
     color: black;
     font-family: 'Inter';
-    font-weight: 400;
+    /* font-weight: 400; */
     font-size: 14px;
     /* height: 1px; */
     /* row-gap: 0px; */
@@ -210,6 +210,7 @@
     display: flex;
     flex-direction: row;
     justify-content: center;
+    align-items: center;
 }
 .connection_qr_code {
     width: 85%;
@@ -238,6 +239,21 @@
     font-size: 14px;
     font-weight: 400;
     text-align: center;
+}
+
+.connectPage_connect_message{
+    width: 100%;
+    height: 45%;
+    text-align: center;
+    
+}
+
+
+
+.upgrade_page_container_heading {
+    color: black;
+    font-size: 14px;
+    margin: 1.9rem 0rem 0.7rem 0rem;
 }
 @media (max-width: 1024px) {
     .start_main_container {
@@ -312,6 +328,10 @@
 
     .start_price_container_heading {
         font-size: 1rem;
+    }
+    .upgrade_page_container_heading {
+        color: black;
+        font-size: 0.5rem;
     }
 
     .start_price_choose_plan {

@@ -146,7 +146,6 @@ const ConvertPage = () => {
                     </div>
                     <div className="convert_page_card_container">
                         {cards.map(card => (
-                            <>
                                 <div
                                     key={card.id}
                                     className={`convert_page_card ${selectedCard === card.id ? 'convert_page_card_selected' : ''}`}
@@ -175,7 +174,6 @@ const ConvertPage = () => {
 
                                 </div>
 
-                            </>
                         ))}
 
                     </div>
