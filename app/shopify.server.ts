@@ -14,6 +14,8 @@ import { sendDataFromWebhooks } from "./services/sendDataFromWebhooks";
 import { setAppInstalledDate } from "./services/sendDataFromWebhooks";
 import { getAppInstalledDate } from "./services/sendDataFromWebhooks";
 import { sendDataAppInstallTopicPubSub } from "./services/sendDataFromWebhooks";
+// import { CronJob } from 'cron';
+// import cron from "cron";
 
 export const MONTHLY_PLAN = 'Monthly subscription';
 export const STARTER_PLAN = 'Starter';
@@ -66,10 +68,9 @@ const shopify = shopifyApp({
         }
         await setAppInstalledDate(session, data);
         await sendDataAppInstallTopicPubSub(data);
-      }else{
+      } else {
         console.log("App is already installed");
       }
-
     },
   },
   billing: {
@@ -105,9 +106,21 @@ const shopify = shopifyApp({
 });
 
 cron.schedule("*/10 * * * * *", async () => {
-  console.log("Cron Job is Active every 10 seconds");
+  console.log("Cron Job is Active every 10 seconds 2222222222222222222222");
   await sendDataFromWebhooks();
 });
+
+// const job = CronJob.from({
+// 	cronTime: '*/10 * * * * *',
+// 	onTick: async function () {
+// 		console.log('You will see this message every 10 seconds 123123123');
+//     await sendDataFromWebhooks();
+// 	},
+// 	timeZone: 'America/Los_Angeles'
+// });
+
+// job.stop();
+// job.start();
 
 export default shopify;
 export const apiVersion = ApiVersion.July24;
