@@ -1,4 +1,5 @@
 import * as React from 'react';
+import "../StartPage.css";
 import '../AbandonedCarts.css'
 import { Card, Page, LegacyCard, DataTable, Pagination, Icon, Text, SkeletonDisplayText, Spinner } from '@shopify/polaris';
 import { CheckSmallIcon } from '@shopify/polaris-icons';

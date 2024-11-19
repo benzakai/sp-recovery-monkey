@@ -9,8 +9,8 @@ import {
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import { restResources } from "@shopify/shopify-api/rest/admin/2024-07";
 import prisma from "./db.server";
-import cron from "node-cron";
-import { sendDataFromWebhooks } from "./services/sendDataFromWebhooks";
+// import cron from "node-cron";
+// import { sendDataFromWebhooks } from "./services/sendDataFromWebhooks";
 import { setAppInstalledDate } from "./services/sendDataFromWebhooks";
 import { getAppInstalledDate } from "./services/sendDataFromWebhooks";
 import { sendDataAppInstallTopicPubSub } from "./services/sendDataFromWebhooks";
@@ -105,10 +105,10 @@ const shopify = shopifyApp({
     : {}),
 });
 
-cron.schedule("*/10 * * * * *", async () => {
-  console.log("Cron Job is Active every 10 seconds 2222222222222222222222");
-  await sendDataFromWebhooks();
-});
+// cron.schedule("*/10 * * * * *", async () => {
+//   console.log("Cron Job is Active every 10 seconds 2222222222222222222222");
+//   await sendDataFromWebhooks();
+// });
 
 // const job = CronJob.from({
 // 	cronTime: '*/10 * * * * *',

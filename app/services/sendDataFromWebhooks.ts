@@ -10,17 +10,26 @@ const ConnectPageCollection = firestoreDatabase.collection('ConnectPagedata');
 // let recoveredCarts;
 
 
-const getFirestoreData = async (collectionName: string) => {
+const getFirestoreData = async (collectionName: string, storeId: string) => {
   try {
-    const collection = firestoreDatabase.collection(collectionName);
-    const snapshot = await collection.get();
-    if (snapshot.empty) {
-      console.log(`No documents found in ${collectionName}`);
-      return [];
+
+    const getDoc = await firestoreDatabase.collection(collectionName).doc(storeId).get();
+    const getDocData = getDoc.data();
+
+    if (getDocData) {
+      return { success: true, data: getDocData };
     }
-    const data = snapshot.docs.map((doc) => doc.data());
-    console.log(`Data retrieved from ${collectionName}`);
-    return data;
+
+    return { success: false, message: `Connect Page Collection doesn't have the ${storeId} doc present in it` };
+    // const collection = firestoreDatabase.collection(collectionName);
+    // const snapshot = await collection.get();
+    // if (snapshot.empty) {
+    //   console.log(`No documents found in ${collectionName}`);
+    //   return [];
+    // }
+    // const data = snapshot.docs.map((doc) => doc.data());
+    // console.log(`Data retrieved from ${collectionName}`);
+    // return data;
   } catch (error) {
     console.error(`Error retrieving data from ${collectionName}:`, error);
     throw new Error("Failed to retrieve Firestore data");
@@ -44,13 +53,12 @@ const getFirestoreData = async (collectionName: string) => {
 
 // Function to handle old checkout logic
 const handleOldCheckout = async (checkout, shop, token, session) => {
-  console.log('chekcoutData', checkout, shop, token);
 
   const checkoutId = checkout.checkoutId;
 
   try {
     const recentOrders = await fetchOrders(shop, token);
-    console.log('recentOrders', recentOrders);
+    // console.log('recentOrders', recentOrders);
     const shopDomain = await getShopDomain(shop, token);
     const orderExists = recentOrders.some(order => order.checkout_id === checkoutId);
     console.log('orderExists', orderExists);
@@ -68,20 +76,20 @@ const handleOldCheckout = async (checkout, shop, token, session) => {
         // console.log(`Sending updated checkout ${checkoutId} to Google Pub/Sub.`);
 
         console.log("shopshopshop", shop);
-        const getGreenAPIData = await getFirestoreData("ConnectPagedata");
-        console.log("getGreenAPIData", getGreenAPIData, typeof getGreenAPIData);
+        const getGreenAPIData = await getFirestoreData("ConnectPagedata", shop);
+        console.log("getGreenAPIData", getGreenAPIData);
+
         let objj: any = {};
         objj = checkoutUpdateDoc.data();
         objj["SHOP DOMAIN"] = shopDomain;
 
-        if (getGreenAPIData.length > 0) {
-          const storeId = shop;
-          const filteredData = getGreenAPIData.filter(item =>
-            Object.keys(item).length > 0 && item.storeId == storeId
-          );
+        if (getGreenAPIData.success == true) {
+          // const storeId = shop;
+          // const filteredData = getGreenAPIData.filter(item =>
+          //   Object.keys(item).length > 0 && item.storeId == storeId
+          // );
 
-
-          objj["Green API ID"] = filteredData[0];
+          objj["Green API ID"] = getGreenAPIData.data;
           const HasToSend = await checkMatching(session);
           console.log('matchedCheckedData======== ', HasToSend?.data);
 
@@ -139,6 +147,13 @@ const sendDataToPubSub = async (message) => {
   const topicName = "AshitheKing";
 
   try {
+
+    const topic0 = pubsub.topic("NewAbandonedCheckout");
+    const messageId0 = await topic0.publishMessage({
+      data: Buffer.from(JSON.stringify(message)),
+    });
+    console.log("messageId NEW TOPIC", messageId0);
+
     const topic = pubsub.topic(topicName);
     const messageId = await topic.publishMessage({
       data: Buffer.from(messageJson),
@@ -164,7 +179,7 @@ const fetchOrders = async (shopName, token) => {
       }
     );
     const responseData = await response.json();
-    console.log("Fetched orders from Shopify:", responseData);
+    // console.log("Fetched orders from Shopify:", responseData);
     return responseData?.orders;
   } catch (error) {
     console.log("Error fetching orders from Shopify:", error);
@@ -200,7 +215,7 @@ const getShopDomain = async (shopName, token) => {
       }
     );
     const responseData = await response.json();
-    console.log("domain from Shopify:", responseData);
+    // console.log("domain from Shopify:", responseData);
     return responseData.data?.shop?.primaryDomain?.host;
   } catch (error) {
     console.log("Error fetching domain from Shopify:", error);
@@ -209,30 +224,31 @@ const getShopDomain = async (shopName, token) => {
 }
 
 export const sendDataFromWebhooks = async () => {
-  console.log("=====calling function==========");
+  console.log("Cron Job Started");
 
   const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
 
-
   try {
     // Query Firestore for checkouts created more than 10 minutes ago
-    const oldCheckoutsQuerySnapshot = await checkoutCollection
-      .where("createdAt", "<=", tenMinutesAgo)
-      .get();
+    const oldCheckoutsQuerySnapshot = await checkoutCollection.where("createdAt", "<=", tenMinutesAgo).get();
+
     // Loop through the old checkouts and handle them
     oldCheckoutsQuerySnapshot?.forEach(async (doc) => {
       const checkout = doc.data();
-      const session = await db.session.findFirst({
-        where: { shop: checkout.storeId }
-      });
-      console.log('oldCheckouts', checkout);
+      const session = await db.session.findFirst({ where: { shop: checkout.storeId } });
+      console.log('oldCheckout', checkout);
 
       if (session) {
         // check if the shop has active subsription plan 
         await handleOldCheckout(checkout, session.shop, session.accessToken, session);
+        console.log("Cron Job Ended");
+      } else {
+        console.log(`Session is Not Found for the ${checkout.storeId} in the Database, hence code not moving forward`)
+        console.log("Cron Job Ended");
       }
 
     });
+
   } catch (error) {
     console.error("Error fetching old checkouts:", error);
   }
@@ -392,7 +408,7 @@ export const checkMatching = async (session) => {
           // console.log('Limit not exceeded:', recoveredCount, limit);
           return { data: 'Limit not exceeded', status: true };
         }
-      } 
+      }
       // else {
       //   // console.log('No matching cart found');
       //   return { data: 'No matching cart found', status: true };
@@ -425,7 +441,7 @@ export const getAbandonedCarts = async (session) => {
           },
         }
       );
-      
+
       const responseData = await response.json();
       const checkouts = responseData.checkouts;
 
@@ -435,7 +451,7 @@ export const getAbandonedCarts = async (session) => {
       } else {
         break; // Stop if no more checkouts are returned
       }
-      
+
     } while (lastId); // Continue until there are no more checkouts
 
     console.log("Fetched all checkouts from Shopify:");
@@ -485,7 +501,7 @@ export const sendDataAppInstallTopicPubSub = async (message) => {
   }
 };
 
-export const deleteConnectPageDataFromFirestore = async(storeId)=>{
+export const deleteConnectPageDataFromFirestore = async (storeId) => {
   try {
     await ConnectPageCollection.doc(`${storeId}`).delete();
     console.log("ConnectPageCollection successfully deleted from Firestore.");
