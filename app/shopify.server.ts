@@ -16,6 +16,8 @@ import { getAppInstalledDate } from "./services/sendDataFromWebhooks";
 import { sendDataAppInstallTopicPubSub } from "./services/sendDataFromWebhooks";
 // import { CronJob } from 'cron';
 // import cron from "cron";
+import * as dotenv from "dotenv";
+dotenv.config();
 
 export const MONTHLY_PLAN = 'Monthly subscription';
 export const STARTER_PLAN = 'Starter';
