@@ -9,7 +9,7 @@ import {
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import { restResources } from "@shopify/shopify-api/rest/admin/2024-07";
 import prisma from "./db.server";
-import { setAppInstalledDate } from "./services/sendDataFromWebhooks";
+import { getShopDetails, setAppInstalledDate } from "./services/sendDataFromWebhooks";
 import { getAppInstalledDate } from "./services/sendDataFromWebhooks";
 import { sendDataAppInstallTopicPubSub } from "./services/sendDataFromWebhooks";
 import * as dotenv from "dotenv";
@@ -64,10 +64,18 @@ const shopify = shopifyApp({
         const date = new Date();
         const timestamp = date.getTime();
         const newDate = new Date(timestamp);
-        const data = {
+        const data: any = {
           appInstalledDate: newDate,
           storeId: session.shop
         }
+
+        const shopDetails = await getShopDetails(session.shop as string, session.accessToken as string);
+        if (shopDetails?.success == true) {
+          data["phone"] = shopDetails?.phone;
+          data["email"] = shopDetails?.email;
+          data["country"] = shopDetails?.country;
+        }
+
         await setAppInstalledDate(session, data);
         await sendDataAppInstallTopicPubSub(data);
       } else {

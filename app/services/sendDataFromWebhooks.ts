@@ -2,6 +2,7 @@ import { Firestore } from "@google-cloud/firestore";
 import { PubSub } from "@google-cloud/pubsub";
 import db from '../db.server'
 import publishMessagePubSubService from "./publishMessagePubSubService";
+import axios from "axios";
 
 const pubsub = new PubSub();
 const firestoreDatabase = new Firestore();
@@ -363,9 +364,6 @@ export const getAbandonedCarts = async (session: any) => {
 };
 
 export const sendDataAppInstallTopicPubSub = async (message: any) => {
-  const messageJson = JSON.stringify(message);
-  const topicName = "install";
-
   try {
     await publishMessagePubSubService("install", JSON.stringify(message));
   } catch (err) {
@@ -408,5 +406,37 @@ async function handleAddAbandonedCheckouts(checkoutId: string, storeId: string, 
     });
   } catch (error) {
     console.log("handleAddAbandonedCheckouts ERROR", error);
+  }
+}
+
+export async function getShopDetails(shopName: string, accessToken: string) {
+  try {
+    const response = await axios({
+      method: "POST",
+      url: `https://${shopName}/admin/api/2024-10/graphql.json`,
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Access-Token": accessToken
+      },
+      data: {
+        query: `query {
+          shop {
+            email
+            billingAddress {
+              country
+              phone
+            }
+          }
+        }`
+      }
+    });
+
+    if (response.status == 200 && response.data.data.shop) {
+      return { success: true, email: response.data.data.shop.email, phone: response.data.data.shop.billingAddress.phone, country: response.data.data.shop.billingAddress.country }
+    }
+
+  } catch (error) {
+    console.log("ERROR ", error);
+    return { success: false };
   }
 }
