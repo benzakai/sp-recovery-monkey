@@ -111,7 +111,7 @@ const Settings = () => {
                                         <div className="start_plan_trial"><Badge size="small" tone="info">7 day free trial</Badge> </div>
                                         <div className="start_plan_button_section">
                                             <Button disabled={planName === 'Starter'} size='large' onClick={() => handlePlanSelect('Starter')} variant='primary' fullWidth>
-                                                {planName == 'Starter'? 'selected':'select'}
+                                                {planName == 'Starter' ? 'selected' : 'select'}
 
                                             </Button>
                                         </div>
@@ -134,7 +134,7 @@ const Settings = () => {
                                         <div className="start_plan_trial"><Badge tone="info">7 day free trial</Badge> </div>
                                         <div className="start_plan_button_section">
                                             <Button disabled={planName === 'Pro'} size='large' onClick={() => handlePlanSelect('Pro')} variant='primary' fullWidth>
-                                                {planName == 'Pro'? 'selected':'select'}
+                                                {planName == 'Pro' ? 'selected' : 'select'}
                                             </Button>
                                         </div>
                                         <div className="star_plan_limit_dialogue">
@@ -156,7 +156,7 @@ const Settings = () => {
                                         <div className="start_plan_trial"><Badge tone="info">7 day free trial</Badge> </div>
                                         <div className="start_plan_button_section">
                                             <Button disabled={planName === 'Advance'} size='large' onClick={() => handlePlanSelect('Advance')} variant='primary' fullWidth>
-                                                {planName == 'Advance'? 'selected':'select'}
+                                                {planName == 'Advance' ? 'selected' : 'select'}
                                             </Button>
                                         </div>
                                         <div className="star_plan_limit_dialogue">

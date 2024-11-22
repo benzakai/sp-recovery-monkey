@@ -18,6 +18,7 @@ const WelcomeConnect = () => {
     const [getData, setData] = useState([]);
     const [instances, setInstances] = useState([]);
     const [qrCode, setQRCode] = useState('');
+    const [getAcrRate, setAcrRate] = React.useState(null);
     const [showNumbers, setShowNumbers] = useState(false);
     const [stateInstance, setStateInstance] = useState('notAuthorized');
     const [storeId, setStoreId] = useState('');
@@ -521,7 +522,12 @@ const WelcomeConnect = () => {
                                         className='start_pricing_plans_card'
                                     >
                                         <div className='start_plan_content_logo_container'><img className='start_plan_content_logo' src={tickmarkLogo} alt="" /></div>
-                                        <div className='start_plan_content_value'>0.0%</div>
+                                        <div className='start_plan_content_value'>{
+                                            count && getAcrRate != null ?
+                                                `${getAcrRate}%`
+                                                :
+                                                (<div style={{ height: "20px", paddingLeft: "20px" }}><SkeletonDisplayText size="small" /></div>)
+                                        }</div>
                                         <div className='start_plan_content_heading'>ACR Rate</div>
                                         <div className='start_plan_content_sub_heading'>The amount of income waiting for recovery</div>
                                     </div>
@@ -595,14 +601,12 @@ const WelcomeConnect = () => {
     );
 
     async function handleFetchAbandonedCheckouts() {
-
-
         try {
             const response = await fetch("/api/abandoned-checkouts/get");
             if (response.ok == true && response.status == 200) {
                 const responseData = await response.json();
-                // console.log('api response',responseData?.data || []);
                 setData(responseData?.data || []);
+                setAcrRate(responseData?.acrRate);
             }
         } catch (error) {
             console.log("handleFetchAbandonedCheckouts Error", error);

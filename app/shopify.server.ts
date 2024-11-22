@@ -9,13 +9,9 @@ import {
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import { restResources } from "@shopify/shopify-api/rest/admin/2024-07";
 import prisma from "./db.server";
-// import cron from "node-cron";
-// import { sendDataFromWebhooks } from "./services/sendDataFromWebhooks";
 import { setAppInstalledDate } from "./services/sendDataFromWebhooks";
 import { getAppInstalledDate } from "./services/sendDataFromWebhooks";
 import { sendDataAppInstallTopicPubSub } from "./services/sendDataFromWebhooks";
-// import { CronJob } from 'cron';
-// import cron from "cron";
 import * as dotenv from "dotenv";
 dotenv.config();
 
@@ -43,6 +39,10 @@ const shopify = shopifyApp({
       callbackUrl: '/webhooks',
     },
     ORDERS_CREATE: {
+      deliveryMethod: DeliveryMethod.Http,
+      callbackUrl: '/webhooks',
+    },
+    ORDERS_PAID: {
       deliveryMethod: DeliveryMethod.Http,
       callbackUrl: '/webhooks',
     },
@@ -106,23 +106,6 @@ const shopify = shopifyApp({
     ? { customShopDomains: [process.env.SHOP_CUSTOM_DOMAIN] }
     : {}),
 });
-
-// cron.schedule("*/10 * * * * *", async () => {
-//   console.log("Cron Job is Active every 10 seconds 2222222222222222222222");
-//   await sendDataFromWebhooks();
-// });
-
-// const job = CronJob.from({
-// 	cronTime: '*/10 * * * * *',
-// 	onTick: async function () {
-// 		console.log('You will see this message every 10 seconds 123123123');
-//     await sendDataFromWebhooks();
-// 	},
-// 	timeZone: 'America/Los_Angeles'
-// });
-
-// job.stop();
-// job.start();
 
 export default shopify;
 export const apiVersion = ApiVersion.July24;

@@ -2,24 +2,21 @@ import type { ActionFunctionArgs } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
 import { Firestore } from "@google-cloud/firestore";
-import { PubSub } from "@google-cloud/pubsub";
+import publishMessagePubSubService from "~/services/publishMessagePubSubService";
 
-const pubsub = new PubSub();
 const firestoreDatabase = new Firestore();
 const checkoutCollection = firestoreDatabase.collection('users');
 const checkoutUpdateCollection = firestoreDatabase.collection('checkoutUpdateData');
 const SubscriptionsCollection = firestoreDatabase.collection('subscriptions');
 const appInsatlledDateCollection = firestoreDatabase.collection('AppInstalledDate');
+const AbandonedCheckoutsDataCollection = firestoreDatabase.collection('AbandonedCheckoutsData');
+
 let subscriptionData;
 
-function addDaysToFormattedDate(dateStr, daysToAdd) {
-  // Parse the input date string into a Date object
+function addDaysToFormattedDate(dateStr: any, daysToAdd: number) {
   const originalDate = new Date(dateStr);
-
-  // Add the specified number of days (30 in this case)
   originalDate.setDate(originalDate.getDate() + daysToAdd);
 
-  // Format the date back into the original format
   const year = originalDate.getFullYear();
   const month = String(originalDate.getMonth() + 1).padStart(2, '0');
   const day = String(originalDate.getDate()).padStart(2, '0');
@@ -27,18 +24,15 @@ function addDaysToFormattedDate(dateStr, daysToAdd) {
   const minutes = String(originalDate.getMinutes()).padStart(2, '0');
   const seconds = String(originalDate.getSeconds()).padStart(2, '0');
 
-  // Get the timezone offset in hours and minutes
   const timezoneOffset = -originalDate.getTimezoneOffset();
   const offsetHours = String(Math.floor(Math.abs(timezoneOffset) / 60)).padStart(2, '0');
   const offsetMinutes = String(Math.abs(timezoneOffset) % 60).padStart(2, '0');
   const offsetSign = timezoneOffset >= 0 ? '+' : '-';
 
-  // Construct the formatted date string
   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offsetSign}${offsetHours}:${offsetMinutes}`;
 }
 
-
-const setSubscriptionData = async (data, storeId) => {
+const setSubscriptionData = async (data: any, storeId: string) => {
   try {
     if (data?.app_subscription?.status == 'ACTIVE') {
       const result = addDaysToFormattedDate(data?.app_subscription?.updated_at, 30);
@@ -55,45 +49,43 @@ const setSubscriptionData = async (data, storeId) => {
     }
 
   } catch (error) {
-    console.error("Error saving setSubscriptionData to Firestore:", error);
+    console.log("Error saving setSubscriptionData to Firestore:", error);
   }
 };
 
-const getSubsciptionData = async (storeId) => {
+const getSubsciptionData = async (storeId: string) => {
   try {
     const doc = await SubscriptionsCollection.doc(`${storeId}`).get();
     if (!doc.exists) {
       console.log('No such document!');
       return null;
     } else {
-      console.log('Document data:', doc.data());
       return doc.data();
     }
   } catch (error) {
-    console.error("Error gettinfg subscription data from Firestore:", error);
+    console.log("Error getting subscription data from Firestore:", error);
   }
 }
 
-const deleteSubscriptionData = async (storeId) => {
+const deleteSubscriptionData = async (storeId: string) => {
   try {
     await SubscriptionsCollection.doc(`${storeId}`).delete();
     console.log("Subscription data successfully deleted from Firestore.");
   } catch (error) {
-    console.error("Error deleting subscription data from Firestore:", error);
+    console.log("Error deleting subscription data from Firestore:", error);
   }
 }
 
-const deleteAppInstalledDate = async (storeId) => {
+const deleteAppInstalledDate = async (storeId: string) => {
   try {
     await appInsatlledDateCollection.doc(`${storeId}`).delete();
     console.log("appInsatlledDateCollection data successfully deleted from Firestore.");
   } catch (error) {
-    console.error("Error deleting appInsatlledDateCollection data from Firestore:", error);
+    console.log("Error deleting appInsatlledDateCollection data from Firestore:", error);
   }
 }
 
-// Function to set checkout data into Firestore
-const setCheckoutData = async (data, storeId) => {
+const setCheckoutData = async (data: any, storeId: string) => {
   try {
     await checkoutCollection.doc(`${data?.id}`).set({
       storeId,
@@ -102,49 +94,41 @@ const setCheckoutData = async (data, storeId) => {
     });
     console.log("Checkout data successfully saved to Firestore.");
   } catch (error) {
-    console.error("Error saving checkout data to Firestore:", error);
+    console.log("Error saving checkout data to Firestore:", error);
   }
 };
 
-// Function to set checkout update data into Firestore (with merging)
-const setUpdatesData = async (data, shopName) => {
+const setUpdatesData = async (data: any, shopName: string) => {
   try {
-    await checkoutUpdateCollection.doc(`${data?.id}`).set(
-      {
-        STORE_ID: shopName,
-        UpdateData: data
-      },
-      { merge: true }
-    );
-    console.log("Checkout update data successfully saved to Firestore.");
+    await checkoutUpdateCollection.doc(`${data?.id}`).set({
+      STORE_ID: shopName,
+      UpdateData: data
+    }, { merge: true });
+    // console.log("Checkout update data successfully saved to Firestore.");
   } catch (error) {
-    console.error("Error saving checkout update data to Firestore:", error);
+    console.log("Error saving checkout update data to Firestore:", error);
   }
 };
 
-// Function to send data to Google Pub/Sub
-const sendDataToPubSub = async (message) => {
+const sendDataToPubSub = async (message: any) => {
   const messageJson = JSON.stringify(message);
   const topicName = "ordersCreate";
 
   try {
-    const topic = pubsub.topic(topicName);
-    const messageId = await topic.publishMessage({
-      data: Buffer.from(messageJson),
-    });
-    console.log(`Orders Message ${messageId} published.`);
+    await publishMessagePubSubService("ordersCreate", JSON.stringify(message));
   } catch (err) {
-    console.error("Error publishing message:", err);
+    console.log("Error publishing message:", err);
   }
 };
 
-const checkSubscriptionStatus = async (storeId) => {
+const checkSubscriptionStatus = async (storeId: string) => {
   subscriptionData = await getSubsciptionData(storeId);
+
   if (!subscriptionData || subscriptionData?.status !== 'ACTIVE') {
     console.log("Checkout data not saved due to subscription not active.");
     return false;
   }
-  
+
   return true;
 };
 
@@ -156,43 +140,49 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
   switch (topic) {
     case "CHECKOUTS_CREATE":
-      console.log("checkouts/create:", payload);
+      console.log("CHECKOUTS_CREATE webhook triggered: Checkout ID => ", payload.id);
 
-      if (await checkSubscriptionStatus(session?.shop)) {
-        console.log("it has active plan============.........");
-        await setCheckoutData(payload, session?.shop);
+      if (await checkSubscriptionStatus(session?.shop as string)) {
+        await setCheckoutData(payload, session?.shop as string);
       }
       break;
     case "CHECKOUTS_UPDATE":
-      console.log("checkouts/update:", payload);
+      console.log("CHECKOUTS_UPDATE webhook triggered: Checkout ID => ", payload.id);
 
-      if (await checkSubscriptionStatus(session?.shop)) {
-        console.log("it has active plan============.........");
-        await setUpdatesData(payload, session?.shop);
+      if (await checkSubscriptionStatus(session?.shop as string)) {
+        await setUpdatesData(payload, session?.shop as string);
       }
       break;
     case "APP_UNINSTALLED":
+      await deleteSubscriptionData(session?.shop as string);
+      await deleteAppInstalledDate(session?.shop as string);
       if (session) {
-        const sessionDeleted = await db.session.deleteMany({ where: { shop } });
-        console.log("sessionDeleted", sessionDeleted);
+        await db.session.deleteMany({ where: { shop } });
       }
-      await deleteSubscriptionData(session?.shop);
-      await deleteAppInstalledDate(session?.shop);
       console.log("APP UNINSTALLED WEBHOOK");
       break;
 
     case 'APP_SUBSCRIPTIONS_UPDATE':
       console.log("APP_SUBSCRIPTIONS_UPDATE:", payload);
-      await setSubscriptionData(payload, session?.shop);
+      await setSubscriptionData(payload, session?.shop as string);
       break;
 
     case 'ORDERS_CREATE':
-      console.log("ORDERS_CREATE:", payload);
-      
-      if (await checkSubscriptionStatus(session?.shop)) {
-        console.log("it has active plan============.........");
+      console.log("ORDERS_CREATE webhook triggered: Order ID => ", payload?.id, " Checkout ID => ", payload?.checkout_id);
+
+      if (await checkSubscriptionStatus(session?.shop as string)) {
         await sendDataToPubSub(payload);
       }
+      break;
+    case 'ORDERS_PAID':
+      console.log("ORDERS_PAID:", payload.checkout_id);
+      const doc = await AbandonedCheckoutsDataCollection.doc(`${payload.checkout_id}`).get();
+      const getDoc: any = doc.data();
+
+      if (getDoc != undefined) {
+        await publishMessagePubSubService("sales", JSON.stringify(payload));
+      }
+
       break;
     case "CUSTOMERS_DATA_REQUEST":
     case "CUSTOMERS_REDACT":

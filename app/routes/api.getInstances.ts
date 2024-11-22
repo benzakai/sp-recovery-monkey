@@ -45,7 +45,7 @@ export async function loader({ request }: ActionFunctionArgs) {
 
               const normalizedApiUrl = formatUrl(instance?.apiUrl);
               s++;
-              console.log('normalizedApiUrl===================',normalizedApiUrl,s);
+              // console.log('normalizedApiUrl===================',normalizedApiUrl,s);
               // Construct the endpoint and fetch the state of the instance
               const stateResponse = await fetch(`${normalizedApiUrl}/waInstance${instance?.idInstance}/getWaSettings/${instance?.apiTokenInstance}`);
               const stateData = await stateResponse.json();

@@ -15,6 +15,7 @@ export default function NewAbandonedList() {
     const [sortOrder, setSortOrder] = React.useState('ascending');
     const [sortBy, setSortBy] = React.useState('created_at');
     const [currentPage, setCurrentPage] = React.useState(1);
+    const [getAcrRate, setAcrRate] = React.useState(null);
     const itemsPerPage = 15;
     const [searchTerm, setSearchTerm] = React.useState('');
     const [loader, setLoader] = React.useState(false);
@@ -357,7 +358,12 @@ export default function NewAbandonedList() {
                                         className='start_pricing_plans_card'
                                     >
                                         <div className='start_plan_content_logo_container'><img className='start_plan_content_logo' src={tickmarkLogo} alt="" /></div>
-                                        <div className='start_plan_content_value'>0.0%</div>
+                                        <div className='start_plan_content_value'>{
+                                            count && getAcrRate != null ?
+                                                `${getAcrRate}%`
+                                                :
+                                                (<div style={{ height: "20px", paddingLeft: "20px" }}><SkeletonDisplayText size="small" /></div>)
+                                        }</div>
                                         <div className='start_plan_content_heading'>ACR Rate</div>
                                         <div className='start_plan_content_sub_heading'>The amount of income waiting for recovery</div>
                                     </div>
@@ -373,7 +379,7 @@ export default function NewAbandonedList() {
                             </div>
 
                             {loader ? (
-                               <div className='abandoned_list_spinner'> <Spinner accessibilityLabel="Spinner example" size="large" /></div>
+                                <div className='abandoned_list_spinner'> <Spinner accessibilityLabel="Spinner example" size="large" /></div>
                             ) : (
                                 <LegacyCard>
                                     <DataTable
@@ -419,10 +425,10 @@ export default function NewAbandonedList() {
             const response = await fetch("/api/abandoned-checkouts/get");
             if (response.ok == true && response.status == 200) {
                 const responseData = await response.json();
-                // console.log('recoveredCarts',responseData?.recoveredCarts);
                 if (responseData?.data) {
                     setData(responseData?.data || []);
                     setLoader(false);
+                    setAcrRate(responseData?.acrRate);
                 }
 
             }

@@ -28,7 +28,7 @@ const getFirestoreData = async (collectionName,storeId) => {
         const docSnapshot = await docRef.get();
 
         if (docSnapshot.exists) {
-            console.log(`Document data for ${storeId}:`, docSnapshot.data());
+            // console.log(`Document data for ${storeId}:`, docSnapshot.data());
             return docSnapshot.data();
         } else {
             console.log(`No document found with ID ${storeId} in ${collectionName}`);
@@ -66,7 +66,7 @@ export async function loader({ request }: ActionFunctionArgs) {
     }
     try {
         const data = await getFirestoreData(collectionName,storeId);
-        console.log('getDtaa',data);
+        // console.log('getDtaa',data);
         
         return json({ data ,storeId});
     } catch (error) {

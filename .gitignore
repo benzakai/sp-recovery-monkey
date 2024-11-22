@@ -13,8 +13,7 @@ database.sqlite
 .env
 .env.*
 
-
-
+/sp-recovery-monkey-*
 
 
 /extensions/*/dist

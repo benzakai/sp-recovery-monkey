@@ -3,7 +3,7 @@ import { authenticate } from "../shopify.server";
 // import axios from "axios";
 // import { getAppInstalledDate } from "~/services/sendDataFromWebhooks";
 // import { getRecoveredCartslist } from "~/services/sendDataFromWebhooks";
-import { getSubscriptionsData } from "~/services/sendDataFromWebhooks";
+import { getAppInstalledDate, getSubscriptionsData } from "~/services/sendDataFromWebhooks";
 // import { checkMatching } from "~/services/sendDataFromWebhooks";
 // import { getAbandonedCarts } from "~/services/sendDataFromWebhooks";
 
@@ -226,15 +226,22 @@ export async function loader({ request }: ActionFunctionArgs) {
     // };
     // const recoveredCarts = filteredRecoveredCarts();
     // // console.log('recoveredCarts',recoveredCarts);
-    
+
 
     // getRecoveredCartslist(recoveredCarts);
 
     // const HasToSend = await checkMatching(session);
     // console.log('HasToSend==============================================', HasToSend);
-    
 
-    return json({ success: true, data: allCheckouts });
+    const appInstalledDate = await getAppInstalledDate(session);
+
+    const getAbandonedCartsSinceAppInstall = allCheckouts.filter((item: any) => new Date(item.created_at).getTime() >= new Date(appInstalledDate?.appInstalledDate?.toDate()).getTime());
+    const getAbandonedCartsCount = getAbandonedCartsSinceAppInstall.filter((item: any) => item.completed_at == null).length;
+    const getAbandonedCartsRecoveredCount = getAbandonedCartsSinceAppInstall.filter((item: any) => item.completed_at != null).length;
+
+    const calculateACRRate = ((getAbandonedCartsRecoveredCount / getAbandonedCartsCount) * 100).toFixed(2);
+
+    return json({ success: true, data: allCheckouts, acrRate: calculateACRRate });
 
   } catch (error) {
     console.log("ERROR", error);
