@@ -3,6 +3,9 @@ import { authenticate } from "../shopify.server";
 import db from "../db.server";
 import { Firestore } from "@google-cloud/firestore";
 import publishMessagePubSubService from "~/services/publishMessagePubSubService";
+import fireStoreDeleteService from "~/services/fireStoreDeleteService";
+import fireStoreCreateService from "~/services/fireStoreCreateService";
+import fireStoreFetchService from "~/services/fireStoreFetchService";
 
 const firestoreDatabase = new Firestore();
 const checkoutCollection = firestoreDatabase.collection('users');
@@ -36,77 +39,75 @@ const setSubscriptionData = async (data: any, storeId: string) => {
   try {
     if (data?.app_subscription?.status == 'ACTIVE') {
       const result = addDaysToFormattedDate(data?.app_subscription?.updated_at, 30);
-      await SubscriptionsCollection.doc(`${storeId}`).set({
+
+      await fireStoreCreateService("subscriptions", storeId, {
         storeId,
         plan: data?.app_subscription?.name,
         status: data?.app_subscription?.status,
         startDate: data?.app_subscription?.updated_at,
         endDate: result
-      });
-      console.log("setSubscriptionData successfully saved to Firestore.");
-    } else {
-      console.log("setSubscriptionData not available.");
+      }, {});
     }
 
   } catch (error) {
-    console.log("Error saving setSubscriptionData to Firestore:", error);
+    console.log("error", error);
   }
 };
 
 const getSubsciptionData = async (storeId: string) => {
   try {
-    const doc = await SubscriptionsCollection.doc(`${storeId}`).get();
-    if (!doc.exists) {
-      console.log('No such document!');
+    const doc = await fireStoreFetchService("subscriptions", storeId);
+
+    if (!doc) {
       return null;
     } else {
-      return doc.data();
+      return doc;
     }
   } catch (error) {
-    console.log("Error getting subscription data from Firestore:", error);
+    console.log("error", error);
   }
 }
 
 const deleteSubscriptionData = async (storeId: string) => {
   try {
-    await SubscriptionsCollection.doc(`${storeId}`).delete();
-    console.log("Subscription data successfully deleted from Firestore.");
+    await fireStoreDeleteService("subscriptions", storeId);
   } catch (error) {
-    console.log("Error deleting subscription data from Firestore:", error);
+    console.log("error", error);
   }
 }
 
 const deleteAppInstalledDate = async (storeId: string) => {
   try {
-    await appInsatlledDateCollection.doc(`${storeId}`).delete();
-    console.log("appInsatlledDateCollection data successfully deleted from Firestore.");
+    await fireStoreDeleteService("AppInstalledDate", storeId);
   } catch (error) {
-    console.log("Error deleting appInsatlledDateCollection data from Firestore:", error);
+    console.log("error", error);
   }
 }
 
 const setCheckoutData = async (data: any, storeId: string) => {
   try {
-    await checkoutCollection.doc(`${data?.id}`).set({
+
+    await fireStoreCreateService("users", String(data?.id), {
       storeId,
       checkoutId: data.id,
-      createdAt: new Date(),
-    });
-    console.log("Checkout data successfully saved to Firestore.");
+      createdAt: new Date()
+    }, {});
+
   } catch (error) {
-    console.log("Error saving checkout data to Firestore:", error);
+    console.log("error", error);
   }
 };
 
 const setUpdatesData = async (data: any, shopName: string) => {
   try {
-    await checkoutUpdateCollection.doc(`${data?.id}`).set({
+
+    await fireStoreCreateService("checkoutUpdateData", String(data?.id), {
       STORE_ID: shopName,
       UpdateData: data
     }, { merge: true });
-    // console.log("Checkout update data successfully saved to Firestore.");
+
   } catch (error) {
-    console.log("Error saving checkout update data to Firestore:", error);
+    console.log("error", error);
   }
 };
 
@@ -117,7 +118,7 @@ const sendDataToPubSub = async (message: any) => {
   try {
     await publishMessagePubSubService("ordersCreate", JSON.stringify(message));
   } catch (err) {
-    console.log("Error publishing message:", err);
+    console.log("err", err);
   }
 };
 
@@ -125,7 +126,6 @@ const checkSubscriptionStatus = async (storeId: string) => {
   subscriptionData = await getSubsciptionData(storeId);
 
   if (!subscriptionData || subscriptionData?.status !== 'ACTIVE') {
-    console.log("Checkout data not saved due to subscription not active.");
     return false;
   }
 
@@ -176,8 +176,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       break;
     case 'ORDERS_PAID':
       console.log("ORDERS_PAID:", payload.checkout_id);
-      const doc = await AbandonedCheckoutsDataCollection.doc(`${payload.checkout_id}`).get();
-      const getDoc: any = doc.data();
+
+      const getDoc = await fireStoreFetchService("AbandonedCheckoutsData", String(payload.checkout_id));
 
       if (getDoc != undefined) {
         await publishMessagePubSubService("sales", JSON.stringify(payload));

@@ -36,8 +36,6 @@ const ConvertPage = () => {
         const Responsedata = await response.json();
         if (Object.keys(Responsedata).length > 0) {
             if (Object.keys(Responsedata?.data).length > 0) {
-                // Filter out the empty objects
-                // const storeId = Responsedata.storeId; 
                 const filteredData = Responsedata?.data;
                 console.log('filteredData', filteredData);
                 setGreenAPIData(filteredData);

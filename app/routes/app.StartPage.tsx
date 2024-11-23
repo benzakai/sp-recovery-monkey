@@ -13,12 +13,8 @@ import tickmarkLogo from './images/TickMark.png';
 
 
 export const action = async ({ request }) => {
-    console.log('action');
     const formData = await request.formData();
-    // const price = parseFloat(formData.get("price"));
     const planName = formData.get("planName") || MONTHLY_PLAN;
-    console.log('price', planName);
-
 
     const { billing } = await authenticate.admin(request);
 
@@ -30,10 +26,6 @@ export const action = async ({ request }) => {
             isTest: false
         }),
     });
-
-
-
-    console.log("Billing setup:", okay);
 
     return null;
 };
@@ -51,8 +43,6 @@ const StartPage = () => {
         setPlanName(planName);
         const formData = new FormData();
         formData.append("planName", planName);
-        // formData.append("price", price);
-
         submit(formData, { method: "post" });
     };
 
@@ -65,8 +55,6 @@ const StartPage = () => {
                 count++;
             }
         })
-        // console.log('count', count);
-
     };
 
     const recoveredCheckoutsTotalPrice = () => {
@@ -80,11 +68,7 @@ const StartPage = () => {
 
 
     useEffect(() => {
-        console.log('useefect running');
-
         handleFetchAbandonedCheckouts();
-
-
     }, []);
 
     AllOverValue();
@@ -230,7 +214,6 @@ const StartPage = () => {
             const response = await fetch("/api/abandoned-checkouts/get");
             if (response.ok == true && response.status == 200) {
                 const responseData = await response.json();
-                // console.log('api response',responseData?.data || []);
                 setData(responseData?.data || []);
             }
         } catch (error) {

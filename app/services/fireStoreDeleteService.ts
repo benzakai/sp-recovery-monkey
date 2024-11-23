@@ -5,6 +5,8 @@ export default async function fireStoreDeleteService(collectionName: string, doc
     try {
         const getCollection = firestoreDatabase.collection(collectionName);
         await getCollection.doc(documentName).delete();
+
+        console.log(`Document ${documentName} deleted from firestore collection ${collectionName}`);
         return { success: true };
     } catch (error) {
         console.log("fireStoreDeleteService error", error);

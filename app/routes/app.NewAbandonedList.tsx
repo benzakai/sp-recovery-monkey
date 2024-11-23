@@ -2,7 +2,6 @@ import * as React from 'react';
 import '../AbandonedCarts.css'
 import { Card, Page, LegacyCard, DataTable, Pagination, Icon, Text, SkeletonDisplayText } from '@shopify/polaris';
 import { CheckSmallIcon } from '@shopify/polaris-icons';
-import { mainModule } from 'process';
 
 import cartLogo from './images/cart.png';
 import bagLogo from './images/bag.png';
@@ -200,8 +199,6 @@ export default function NewAbandonedList() {
             }
 
         })
-        console.log('currencySymbol', currencySymbol);
-
     }
 
     const recoveredCheckoutsTotalPrice = () => {
@@ -270,21 +267,13 @@ export default function NewAbandonedList() {
         ),
     ]);
 
-
-    console.log(getData);
-    console.log('GetDataRow', GetDataRow);
-
     const date = new Date();
-    const formattedDate = date.toISOString(); // Format as ISO 8601 (UTC time)
+    const formattedDate = date.toISOString();
     const dateObject = new Date(formattedDate);
     const timestamp = dateObject.getTime();
     const newDate = new Date(timestamp);
-    console.log('newDate', newDate);
-
-
 
     return (
-
         <div className="body">
             <div className='start_page'>
                 <Page fullWidth>
@@ -296,7 +285,6 @@ export default function NewAbandonedList() {
                                 </Text>
                             </div>
                         </div>
-
                         <div>
                             <Card>
                                 <div className='start_pricing_plans'>
@@ -348,7 +336,7 @@ export default function NewAbandonedList() {
                         <div >
                             <div className="start_price_container_heading">
                                 <Text variant="headingLg" as="h5">
-                                Overview of Customers with Abandoned Carts
+                                    Overview of Customers with Abandoned Carts
                                 </Text>
                             </div>
                             <DataTable
@@ -381,7 +369,6 @@ export default function NewAbandonedList() {
                 </Page>
             </div>
         </div>
-
     )
 
     async function handleFetchAbandonedCheckouts() {
@@ -389,8 +376,6 @@ export default function NewAbandonedList() {
             const response = await fetch("/api/abandoned-checkouts/get");
             if (response.ok == true && response.status == 200) {
                 const responseData = await response.json();
-                // console.log('recoveredCarts',responseData?.recoveredCarts);
-
                 setData(responseData?.data || []);
             }
         } catch (error) {

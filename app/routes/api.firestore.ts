@@ -1,42 +1,33 @@
 import { ActionFunctionArgs, json } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
-
 import { Firestore } from "@google-cloud/firestore";
-// console.log('Firestore',Firestore);
+import fireStoreCreateService from "~/services/fireStoreCreateService";
 
 const firestore = new Firestore();
-// console.log('firestore',firestore);
-// console.log(process.env.FIRESTORE_CREDENTIALS);
-
 
 const setFirestoreData = async (collectionName, documentName, data) => {
     try {
-        const collection = firestore.collection(collectionName);
-        await collection.doc(documentName).set(data, { merge: true });
-        console.log(`Data successfully set in ${collectionName}/${documentName}`);
+        await fireStoreCreateService(collectionName, documentName, data, { merge: true });
     } catch (error) {
         console.error(`Error setting data in ${collectionName}/${documentName}:`, error);
         throw new Error("Failed to set Firestore data");
     }
 };
 
-// Function to get data from Firestore
+
 const getFirestoreData = async (collectionName,storeId) => {
     try {
         const docRef = firestore.collection(collectionName).doc(storeId);
-        // const docRef = firestore.collection(collectionName).doc(documentName);
+        
         const docSnapshot = await docRef.get();
 
         if (docSnapshot.exists) {
-            // console.log(`Document data for ${storeId}:`, docSnapshot.data());
+            
             return docSnapshot.data();
         } else {
             console.log(`No document found with ID ${storeId} in ${collectionName}`);
             return {};
         }
-        
-        // const data = snapshot.docs.map((doc) => doc.data());
-        // console.log(`Data retrieved from ${collectionName}`);
         
     } catch (error) {
         console.error(`Error retrieving data from ${collectionName}:`, error);
@@ -66,7 +57,6 @@ export async function loader({ request }: ActionFunctionArgs) {
     }
     try {
         const data = await getFirestoreData(collectionName,storeId);
-        // console.log('getDtaa',data);
         
         return json({ data ,storeId});
     } catch (error) {

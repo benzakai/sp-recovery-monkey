@@ -36,16 +36,13 @@ function Convert() {
     });
     const Responsedata = await response.json();
     if (Responsedata.data.length > 0) {
-      // Filter out the empty objects
-      const storeId = Responsedata.storeId; // Assuming Responsedata contains storeId
+      const storeId = Responsedata.storeId;
       const filteredData = Responsedata.data.filter(item =>
         Object.keys(item).length > 0 && item.storeId == storeId
       );
-      console.log('filteredData', filteredData);
       setGreenAPIData(filteredData);
 
     }
-    console.log('Getting Firestore data:', Responsedata);
   };
 
   const handleHeaderChange = (id, newHeader) => {
@@ -77,27 +74,21 @@ function Convert() {
 
     if (selectedCard !== null) {
       const selectedBox = cards.find(card => card.id === selectedCard);
-      console.log('Selected Box Header:', selectedBox.header);
-      console.log('Selected Box Body:', selectedBox.body);
 
       try {
         if (greenAPIData) {
-          console.log('greenAPIData', greenAPIData);
           const combinedObject = { ...selectedBox, ...greenAPIData };
-          console.log('combinedObject', combinedObject);
           await sendDataToPubSub(combinedObject);
         } else {
           await sendDataToPubSub(selectedBox);
         }
-        console.log('Successfully sent data to webhook');
+        
         setIsSuccessMessageVisible(true);
         setTimeout(() => setIsSuccessMessageVisible(false), 3000);
       } catch (error) {
         console.error('Error sending data to webhook:', error);
         alert('Failed to send data');
       }
-    } else {
-      console.log('No card selected!');
     }
   };
 
@@ -111,7 +102,6 @@ function Convert() {
       body: JSON.stringify({ message, topicNames }),
     });
     const data = await response.json();
-    console.log('Sent convert data:', data);
   };
 
   return (

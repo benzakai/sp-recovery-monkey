@@ -3,7 +3,6 @@ import "../StartPage.css";
 import '../AbandonedCarts.css'
 import { Card, Page, LegacyCard, DataTable, Pagination, Icon, Text, SkeletonDisplayText, Spinner } from '@shopify/polaris';
 import { CheckSmallIcon } from '@shopify/polaris-icons';
-import { mainModule } from 'process';
 
 import cartLogo from './images/cart.png';
 import bagLogo from './images/bag.png';
@@ -201,10 +200,7 @@ export default function NewAbandonedList() {
             if (!currencySymbol) {
                 currencySymbol = currencySymbols[currencyCode] || currencyCode
             }
-
         })
-        console.log('currencySymbol', currencySymbol);
-
     }
 
     const recoveredCheckoutsTotalPrice = () => {
@@ -220,14 +216,12 @@ export default function NewAbandonedList() {
             <svg className='checkSVG' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" /></svg>
         );
     };
+
     const CheckiconContent = () => {
         return (
             <svg className='checkSVG' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
         );
     };
-
-
-
 
     const sortedData = [...getData].sort((a, b) => {
         const dateA = new Date(a[sortBy]);
@@ -239,7 +233,6 @@ export default function NewAbandonedList() {
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
-
 
     const handleNext = () => {
         if (currentPage < totalPages) {
@@ -257,22 +250,10 @@ export default function NewAbandonedList() {
         handleFetchAbandonedCheckouts();
 
     }, []);
+
     AllOverValue();
     recoveredCheckoutsTotalPrice();
     storeCurrency();
-
-    // const GetDataRow = currentItems?.map((item) => [
-    //     item.created_at?.split("T")[0] || 'N/A',
-    //     item.customer?.first_name || item.customer?.last_name
-    //         ? `${item.customer?.first_name || ''} ${item.customer?.last_name || ''}`.trim()
-    //         : item.email || 'N/A',
-    //     <div className='item_total_price'>{currencySymbol} {item.total_price}</div>,
-    //     item.completed_at ? (
-    //         <div className='list_status_section'> <Icon source={CheckiconContent} tone="base" /></div>
-    //     ) : (
-    //         <div className='list_status_section'> <Icon source={CrossiconContent} tone="base" /></div>
-    //     ),
-    // ]);
 
     const GetDataRow = currentItems?.map((item) => [
         <div>{item.created_at?.split("T")[0] || 'N/A'}</div>,
@@ -291,18 +272,11 @@ export default function NewAbandonedList() {
         </div>,
     ]);
 
-
-    console.log(getData);
-    console.log('GetDataRow', GetDataRow);
-
     const date = new Date();
-    const formattedDate = date.toISOString(); // Format as ISO 8601 (UTC time)
+    const formattedDate = date.toISOString();
     const dateObject = new Date(formattedDate);
     const timestamp = dateObject.getTime();
     const newDate = new Date(timestamp);
-    console.log('newDate', newDate);
-
-
 
     return (
 
@@ -360,7 +334,7 @@ export default function NewAbandonedList() {
                                         <div className='start_plan_content_logo_container'><img className='start_plan_content_logo' src={tickmarkLogo} alt="" /></div>
                                         <div className='start_plan_content_value'>{
                                             count && getAcrRate != null ?
-                                                `${getAcrRate}%`
+                                                isNaN(getAcrRate) ? "0.00%" : `${getAcrRate}%`
                                                 :
                                                 (<div style={{ height: "20px", paddingLeft: "20px" }}><SkeletonDisplayText size="small" /></div>)
                                         }</div>
@@ -407,16 +381,11 @@ export default function NewAbandonedList() {
                                     />
                                 </LegacyCard>
                             )}
-
-
-
                         </div>
                     </div>
-
                 </Page>
             </div>
         </div>
-
     )
 
     async function handleFetchAbandonedCheckouts() {

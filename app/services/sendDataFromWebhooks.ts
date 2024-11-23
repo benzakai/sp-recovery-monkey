@@ -1,22 +1,17 @@
 import { Firestore } from "@google-cloud/firestore";
-import { PubSub } from "@google-cloud/pubsub";
 import db from '../db.server'
 import publishMessagePubSubService from "./publishMessagePubSubService";
 import axios from "axios";
+import fireStoreDeleteService from "./fireStoreDeleteService";
+import fireStoreCreateService from "./fireStoreCreateService";
+import fireStoreFetchService from "./fireStoreFetchService";
 
-const pubsub = new PubSub();
 const firestoreDatabase = new Firestore();
 const checkoutCollection = firestoreDatabase.collection('users');
-const checkoutUpdateCollection = firestoreDatabase.collection('checkoutUpdateData');
-const ConnectPageCollection = firestoreDatabase.collection('ConnectPagedata');
-const SubscriptionsCollection = firestoreDatabase.collection('subscriptions');
-const AbandonedCheckoutsDataCollection = firestoreDatabase.collection('AbandonedCheckoutsData');
 
 const getFirestoreData = async (collectionName: string, storeId: string) => {
   try {
-
-    const getDoc = await firestoreDatabase.collection(collectionName).doc(storeId).get();
-    const getDocData = getDoc.data();
+    const getDocData = await fireStoreFetchService(collectionName, storeId);
 
     if (getDocData) {
       return { success: true, data: getDocData };
@@ -24,10 +19,10 @@ const getFirestoreData = async (collectionName: string, storeId: string) => {
 
     return { success: false, message: `Connect Page Collection doesn't have the ${storeId} doc present in it` };
   } catch (error) {
-    console.error(`Error retrieving data from ${collectionName}:`, error);
+    console.log(`error`, error);
     throw new Error("Failed to retrieve Firestore data");
   }
-};
+}
 
 const handleOldCheckout = async (checkout: any, shop: string, token: string, session: any) => {
   const checkoutId = checkout.checkoutId;
@@ -39,27 +34,25 @@ const handleOldCheckout = async (checkout: any, shop: string, token: string, ses
     const orderExists = recentOrders.some((order: any) => order.checkout_id === checkoutId);
 
     if (orderExists) {
-      await checkoutCollection.doc(checkoutId.toString()).delete();
-      await checkoutUpdateCollection.doc(checkoutId.toString()).delete();
-      console.log(`Checkout ${checkoutId} converted to an order and deleted from Firestore.`);
+      await fireStoreDeleteService("users", String(checkoutId));
+      await fireStoreDeleteService("checkoutUpdateData", String(checkoutId));
     } else {
       console.log(`Checkout ${checkoutId} is abandoned.`);
 
-      const checkoutUpdateDoc = await checkoutUpdateCollection.doc(checkoutId.toString()).get();
+      const checkoutUpdateDoc = await fireStoreFetchService("checkoutUpdateData", checkoutId.toString());
 
-      if (checkoutUpdateDoc.exists) {
+      if (checkoutUpdateDoc) {
         const getGreenAPIData = await getFirestoreData("ConnectPagedata", shop);
 
         let objj: any = {};
-        objj = checkoutUpdateDoc.data();
+        objj = checkoutUpdateDoc;
+        
         objj["SHOP DOMAIN"] = shopDomain;
 
         if (getGreenAPIData.success == true) {
 
           objj["Green API ID"] = getGreenAPIData.data;
           const HasToSend = await checkMatching(session);
-          console.log('matchedCheckedData======== ', HasToSend?.data);
-
 
           if (HasToSend && HasToSend?.status == true) {
             await sendDataToPubSub(objj);
@@ -71,8 +64,6 @@ const handleOldCheckout = async (checkout: any, shop: string, token: string, ses
             await sendDataToPubSub(objj);
             await handleAddAbandonedCheckouts(checkoutId.toString(), shop, objj);
             await setsubscriptionAbandonedCarts(objj);
-          } else {
-            console.log('nothing is ----------------------');
           }
 
 
@@ -90,22 +81,18 @@ const handleOldCheckout = async (checkout: any, shop: string, token: string, ses
             await setsubscriptionAbandonedCarts(objj);
           }
 
-          console.log('no green data');
         }
 
-      } else {
-        console.log(`No update found for abandoned checkout ${checkoutId}.`);
       }
 
-      await checkoutCollection.doc(checkoutId.toString()).delete();
-      await checkoutUpdateCollection.doc(checkoutId.toString()).delete();
-      console.log(`Abandoned checkout ${checkoutId} deleted from Firestore.`);
+      await fireStoreDeleteService("users", String(checkoutId));
+      await fireStoreDeleteService("checkoutUpdateData", String(checkoutId));
       console.log("Cron Job Ended");
     }
   } catch (error) {
     console.error(`Error handling checkout ${checkoutId}:`, error);
   }
-};
+}
 
 const sendDataToPubSub = async (message: any) => {
   const messageJson = JSON.stringify(message);
@@ -117,7 +104,7 @@ const sendDataToPubSub = async (message: any) => {
   } catch (err) {
     console.error("Error publishing message:", err);
   }
-};
+}
 
 const fetchOrders = async (shopName: string, token: string) => {
   const lastTenMinuteTime = new Date(Date.now() - 10 * 60 * 1000).toISOString();
@@ -139,7 +126,7 @@ const fetchOrders = async (shopName: string, token: string) => {
     console.log("Error fetching orders from Shopify:", error);
     return [];
   }
-};
+}
 
 const getShopDomain = async (shopName: string, token: string) => {
   try {
@@ -213,31 +200,26 @@ export const sendDataFromWebhooks = async () => {
 
 export const setAppInstalledDate = async (session: any, data: any) => {
 
-  const collection = firestoreDatabase.collection('AppInstalledDate');
-  await collection.doc(`${session.shop}`).set(data, { merge: true });
-  console.log('AppInstalledDate set successfully');
-
+  await fireStoreCreateService("AppInstalledDate", session.shop, data, { merge: true })
 }
 
 export const getAppInstalledDate = async (session: any) => {
-  const collection = firestoreDatabase.collection('AppInstalledDate');
-  const doc = await collection.doc(`${session.shop}`).get();
-  if (!doc.exists) {
-    console.log('No such document!');
+  const doc = await fireStoreFetchService("AppInstalledDate", session.shop);
+
+  if (!doc) {
     return null;
   } else {
-    return doc.data();
+    return doc;
   }
 }
 
 export const getSubscriptionsData = async (session: any) => {
-  const collection = firestoreDatabase.collection('subscriptions');
-  const doc = await collection.doc(`${session.shop}`).get();
-  if (!doc.exists) {
-    console.log('No such document!');
+  const doc = await fireStoreFetchService("subscriptions", session.shop);
+
+  if (!doc) {
     return null;
   } else {
-    return doc.data();
+    return doc;
   }
 }
 
@@ -251,57 +233,43 @@ export const checkMatching = async (session: any) => {
   const subscriptionQuerySnapshot = await collection.where("STORE_ID", "==", session.shop).get();
 
   if (subscriptionQuerySnapshot.empty) {
-    console.log('No subscriptionAbandonedCarts found!');
     return { data: 'No subscriptionAbandonedCarts found', status: true };
   }
   const recoveredCarts = await getAbandonedCarts(session);
-  // console.log('recoveredCarts=====', recoveredCarts);
-  // Iterate through each document in the snapshot
+  
   for (const doc of subscriptionQuerySnapshot.docs) {
     const docData = doc.data();
     const checkoutId = docData?.UpdateData?.id || docData?.checkoutId || docData?.id || null;
 
     if (recoveredCarts?.length > 0) {
       const matchedCart = recoveredCarts.find(c => c.id == checkoutId);
-      //if recovered cart matched means somthing recoverd from this months abandoned carts...
+      
       if (matchedCart) {
-        console.log('matchedCart', matchedCart.id);
 
-        // Check plan limit and check if limit exceeded
         let limit = 0;
         const subscriptionData = await getSubscriptionsData(session);
         const plan = subscriptionData?.plan;
 
-        if (plan === 'Starter') limit = 10;//10
-        else if (plan === 'Pro') limit = 49;//49
-        else if (plan === 'Advance') limit = 100;//100
-
-        // console.log('limit =========', limit);
+        if (plan === 'Starter') limit = 10;
+        else if (plan === 'Pro') limit = 49;
+        else if (plan === 'Advance') limit = 100;
 
         const recoveredCount = recoveredCarts.length;
-        console.log('recoveredCount =====', recoveredCount);
 
-        // Check if the recovered count has exceeded the limit
         if (recoveredCount >= limit) {
-          // console.log('Limit exceeded:', recoveredCount, limit);
           return { data: 'Limit exceeded', status: false };
         } else {
-          // console.log('Limit not exceeded:', recoveredCount, limit);
           return { data: 'Limit not exceeded', status: true };
         }
       }
-      // else {
-      //   // console.log('No matching cart found');
-      //   return { data: 'No matching cart found', status: true };
-      // }
+      
     } else {
-      // console.log('No recovered carts');
       return { data: 'No recovered carts', status: true };
     }
   }
 
   return { data: 'No matching carts or limit not exceeded', status: true };
-};
+}
 
 export const getAbandonedCarts = async (session: any) => {
   let allCheckouts: any = [];
@@ -325,43 +293,43 @@ export const getAbandonedCarts = async (session: any) => {
 
       if (checkouts.length > 0) {
         allCheckouts = [...allCheckouts, ...checkouts];
-        lastId = checkouts[checkouts.length - 1].id; // Get the ID of the last item in this batch
+        lastId = checkouts[checkouts.length - 1].id;
       } else {
-        break; // Stop if no more checkouts are returned
+        break;
       }
 
-    } while (lastId); // Continue until there are no more checkouts
+    } while (lastId);
 
-    console.log("Fetched all checkouts from Shopify:");
+    
     const subscriptionData = await getSubscriptionsData(session);
-    //get abandonedCarts after the plan monthStartDate
+    
     const referenceDateStr = subscriptionData?.startDate;
-    // const referenceDateStr = '2024-11-06T10:28:53+05:30';
+    
     const referenceDate = new Date(referenceDateStr);
 
     const filteredAbandonedCheckouts = allCheckouts.filter(item => {
-      // Check if 'created_at' exists and parse it as a date
+    
       if (item.created_at) {
         const createdAtDate = new Date(item.created_at);
-        // Return only the items where created_at is greater than the reference date
+    
         return createdAtDate > referenceDate;
       }
       return false;
     });
-    // console.log('filteredAbandonedCheckouts',filteredAbandonedCheckouts);
-    //get recovered carts only for the current month abandoned carts
+    
+    
     const filteredRecoveredCarts = () => {
       return filteredAbandonedCheckouts.filter(item => item.completed_at !== null);
     };
     const recoveredCarts = filteredRecoveredCarts();
-    // console.log('recoveredCarts=========',recoveredCarts);
+    
     return recoveredCarts;
 
   } catch (error) {
-    console.log("Error fetching checkouts from Shopify:", error);
+    console.log("error", error);
     return [];
   }
-};
+}
 
 export const sendDataAppInstallTopicPubSub = async (message: any) => {
   try {
@@ -369,12 +337,11 @@ export const sendDataAppInstallTopicPubSub = async (message: any) => {
   } catch (err) {
     console.error("Error publishing message:", err);
   }
-};
+}
 
 export const deleteConnectPageDataFromFirestore = async (storeId: string) => {
   try {
-    await ConnectPageCollection.doc(`${storeId}`).delete();
-    console.log("ConnectPageCollection successfully deleted from Firestore.");
+    await fireStoreDeleteService("ConnectPagedata", storeId);
   } catch (error) {
     console.error("Error deleting ConnectPageCollection from Firestore:", error);
   }
@@ -382,28 +349,28 @@ export const deleteConnectPageDataFromFirestore = async (storeId: string) => {
 
 async function storeSubscriptionActive(storeId: string) {
   try {
-    const doc = await SubscriptionsCollection.doc(`${storeId}`).get();
-    if (!doc.exists) {
+    const doc = await fireStoreFetchService("subscriptions", storeId);
+
+    if (!doc) {
       return { success: false, message: "Store Subscription document does not exist." };
     } else {
-      const getDoc: any = doc.data();
-
-      if (getDoc.status == "ACTIVE") return { success: true, data: doc.data() };
+      if (doc.status == "ACTIVE") return { success: true, data: doc };
       else return { success: false, message: "Store Subscription Status is NOT SET TO ACTIVE" };
     }
   } catch (error) {
-    console.log("storeSubscriptionActive Error", error);
+    console.log("error", error);
   }
 }
 
 async function handleAddAbandonedCheckouts(checkoutId: string, storeId: string, payload: any) {
   try {
-    await AbandonedCheckoutsDataCollection.doc(`${checkoutId}`).set({
+    await fireStoreCreateService("AbandonedCheckoutsData", checkoutId, {
       storeId,
       checkoutId,
       payload,
       createdAt: new Date()
-    });
+    }, {});
+
   } catch (error) {
     console.log("handleAddAbandonedCheckouts ERROR", error);
   }

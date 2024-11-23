@@ -31,7 +31,6 @@ export default function App() {
     });
     const Responsedata = await response.json();
     if(Responsedata.data){
-       console.log('plans data',Responsedata.data);
        return Responsedata.data;
     }else{
       return null;
@@ -42,11 +41,9 @@ export default function App() {
     const getFireData = async()=>{
       const fireStoreData = await getDataFromFirestore();
       if(Object.keys(fireStoreData).length === 0){
-        console.log('INACTIVE');
         navigate("/app/LetsStart");
         setPlanStatus('INACTIVE');
       }else{
-        console.log('ACTIVE');
         navigate("/app/WelcomeConnect");
         setPlanStatus('ACTIVE');
       }

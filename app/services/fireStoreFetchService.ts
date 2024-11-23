@@ -8,7 +8,7 @@ export default async function fireStoreFetchService(collectionName: string, docu
         const doc = await getCollection.doc(documentName).get();
         const getDoc: any = doc.data();
 
-        return { success: true, data: getDoc };
+        return getDoc;
     } catch (error) {
         console.log("fireStoreFetchService ERROR", error);
         return { success: false };

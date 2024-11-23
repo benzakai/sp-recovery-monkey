@@ -13,7 +13,6 @@ export async function action({ request }: ActionFunctionArgs) {
         const responseData = await response.json();
         return json({responseData,storeId});
     } catch (error) {
-        console.error('Error fetching qr ', error);
         return json({});
     }
 }

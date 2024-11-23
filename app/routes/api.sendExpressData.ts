@@ -19,7 +19,6 @@ export async function action({ request }: ActionFunctionArgs) {
          const data = await response.json();
         return {data};
     } catch (error) {
-        console.error('Error fetching qr ', error);
         return { error: error.message };
     }
 }

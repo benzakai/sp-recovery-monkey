@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import '../Connect.css';
 import { Card, Page } from "@shopify/polaris";
 
-
 export default function Connect() {
   const [instances, setInstances] = useState([]);
   const [qrCode, setQRCode] = useState('');
@@ -24,11 +23,6 @@ export default function Connect() {
         id: result.idInstance,
         token: result.apiTokenInstance,
       });
-      console.log('Updated button data:', {
-        url: result.apiUrl,
-        id: result.idInstance,
-        token: result.apiTokenInstance,
-      });
 
       await sendDataToExpress({
         url: result.apiUrl,
@@ -42,14 +36,10 @@ export default function Connect() {
         phoneNumber: result.phone,
       };
       setPubsubData(pubsubUpdate);
-      console.log('Updated pubData:', pubsubUpdate);
 
       await sendDataToPubSub(pubsubUpdate);
-    } else {
-      console.log('Instance not found');
     }
   };
-
 
   const fetchPhoneNumber = async (phonedata) => {
     const response = await fetch('/api/fetchPhoneNumber', {
@@ -59,8 +49,8 @@ export default function Connect() {
       },
       body: JSON.stringify(phonedata),
     });
+
     const data = await response.json();
-    console.log('Phone number API response:', data);
     return data;
   };
 
@@ -73,8 +63,8 @@ export default function Connect() {
       },
       body: JSON.stringify({ message, topicNames }),
     });
+
     const data = await response.json();
-    console.log('Sent pubsub data:', data);
     setStateInstance('authorized');
   };
 
@@ -86,20 +76,15 @@ export default function Connect() {
       },
       body: JSON.stringify({ collectionName, documentName, data }),
     });
+
     const Responsedata = await response.json();
-    console.log('Sent firestore data:', Responsedata);
   }
-
-
-
-
 
   const fetchInstances = async () => {
     try {
       const response = await fetch('/api/getInstances');
       const data = await response.json();
       setInstances(data.instances);
-      console.log('Fetched instances:', data.instances);
     } catch (error) {
       console.error('Error fetching instances:', error);
     }
@@ -129,7 +114,7 @@ export default function Connect() {
       if (data.qrData?.type === 'qrCode') {
         setQRCode(`data:image/png;base64,${data.qrData.message}`);
       } else if (data.qrData?.type === 'alreadyLogged') {
-        console.log('Already logged in');
+        
         setStateInstance('authorized');
         const phoneNumberData = await fetchPhoneNumber(currentQRData);
         setPubsubData(async (prevState) => {
@@ -142,20 +127,16 @@ export default function Connect() {
             greenAPIUrl: currentQRData?.url,
           };
 
-          console.log('PubSubData:', updatedData);
           await sendDataToPubSub(updatedData);
           await setDataInFirestore('ConnectPagedata', `${updatedData?.storeId}`, updatedData)
 
           return updatedData;
         });
 
-        console.log('currentQRData', currentQRData);
-        // await sendDataToExpress(currentQRData);
-
       }
       if (data.storeId) setStoreId(data.storeId);
     } catch (error) {
-      console.error('Error fetching QR code:', error);
+      console.error('error', error);
     }
   };
 
@@ -168,7 +149,6 @@ export default function Connect() {
       body: JSON.stringify({ instance }),
     });
     const data = await response.json();
-    console.log('Sent to Express:', data);
   };
 
   const getDataFromFirestore = async () => {
@@ -180,12 +160,6 @@ export default function Connect() {
     });
     const Responsedata = await response.json();
     if (Responsedata.data) {
-      // Filter out the empty objects
-      // const storeId = Responsedata.storeId; // Assuming Responsedata contains storeId
-      // const filteredData = Responsedata.data.filter(item => 
-      //     Object.keys(item).length > 0 && item.storeId == storeId
-      // );
-      console.log('filteredData connectPage', Responsedata);
       return Responsedata.data;
     } else {
       return null;
@@ -209,7 +183,6 @@ export default function Connect() {
     }
   }
 
-
   useEffect(() => {
     const initializeFlow = async () => {
       await fetchInstances();
@@ -223,12 +196,12 @@ export default function Connect() {
 
     const getFireData = async () => {
       const fireStoreData = await getDataFromFirestore();
-      // console.log('fireStoreData',fireStoreData);
+
       if (Object.keys(fireStoreData).length === 0) {
         initializeFlow();
       } else {
         const stateInstanceData = await getInstanceState(fireStoreData?.greenAPIUrl, fireStoreData?.greenAPIId, fireStoreData?.greenAPIKey);
-        // console.log('stateInstanceData',stateInstanceData);
+
         if (stateInstanceData?.responseData?.stateInstance == 'authorized') {
           setStateInstance('authorized');
         } else if (stateInstanceData?.responseData?.stateInstance == 'notAuthorized') {
@@ -238,15 +211,10 @@ export default function Connect() {
         } else {
           initializeFlow();
         }
-
-
       }
-
     }
 
     getFireData();
-
-
   }, [instances.length, currentQRData]);
 
   useEffect(() => {
@@ -254,7 +222,7 @@ export default function Connect() {
     if (stateInstance !== 'authorized' && currentQRData.url && currentQRData.id && currentQRData.token) {
       intervalId = setInterval(() => {
         fetchQR(currentQRData.url, currentQRData.id, currentQRData.token);
-      }, 3000); // Poll every 3 seconds
+      }, 3000);
     }
     return () => clearInterval(intervalId);
   }, [stateInstance, currentQRData]);
@@ -280,10 +248,7 @@ export default function Connect() {
                     ) : (
                       <div className="spinner"></div>
                     )}
-                    {/* {qrCode && <img src={qrCode} alt="QR Code" />} */}
                   </div>
-
-
                 </>
               )}
             </div>

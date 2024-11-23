@@ -8,12 +8,8 @@ import { BillingInterval } from '@shopify/shopify-app-remix/server';
 
 
 export const action = async ({ request }) => {
-    console.log('action');
     const formData = await request.formData();
     const planName = formData.get("planName") || MONTHLY_PLAN;
-    console.log('plan: ', planName);
-
-
     const { billing } = await authenticate.admin(request);
 
     const okay = await billing.require({
@@ -25,10 +21,6 @@ export const action = async ({ request }) => {
         }),
     });
 
-
-
-    console.log("Billing setup:", okay);
-
     return null;
 };
 
@@ -38,7 +30,6 @@ const Settings = () => {
     const submit = useSubmit();
 
     const handlePlanSelect = (planName) => {
-        // setPlanName(planName);
         const formData = new FormData();
         formData.append("planName", planName);
 
@@ -54,7 +45,6 @@ const Settings = () => {
         });
         const Responsedata = await response.json();
         if (Responsedata.data) {
-            console.log('plans data', Responsedata.data);
             return Responsedata.data;
         } else {
             return null;
@@ -65,21 +55,14 @@ const Settings = () => {
         const getFireData = async () => {
             const fireStoreData = await getDataFromFirestore();
             if (Object.keys(fireStoreData).length === 0) {
-                console.log('INACTIVE');
-
                 setPlanName('NO_PLAN');
             } else {
-                // console.log('ACTIVE');
                 setPlanName(fireStoreData?.plan);
             }
-
         }
 
         getFireData();
     }, []);
-
-
-
 
     return (
         <div className="body">
@@ -93,7 +76,7 @@ const Settings = () => {
                         </div>
                         <div className='start_main_container_sub_heading'>
                             <Text variant="headingXl" as="h4">
-                               Choose the right plan for your needs
+                                Choose the right plan for your needs
                             </Text>
                         </div>
                         <div className="start_price_container">

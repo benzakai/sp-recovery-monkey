@@ -10,15 +10,9 @@ import bagLogo from './images/bag.png';
 import dollarLogo from './images/dollar.png';
 import tickmarkLogo from './images/TickMark.png';
 
-
-
 export const action = async ({ request }) => {
-    console.log('action');
     const formData = await request.formData();
-    // const price = parseFloat(formData.get("price"));
     const planName = formData.get("planName") || MONTHLY_PLAN;
-    console.log('price', planName);
-
 
     const { billing } = await authenticate.admin(request);
 
@@ -31,17 +25,13 @@ export const action = async ({ request }) => {
         }),
     });
 
-
-
-    console.log("Billing setup:", okay);
-
     return null;
 };
-
 
 const LetsStart = () => {
     const [planName, setPlanName] = useState('not set');
     const [getData, setData] = useState([]);
+    const [getAcrRate, setAcrRate] = React.useState(null);
     const submit = useSubmit();
     let sum = 0;
     let recoveredSum = 0;
@@ -213,11 +203,8 @@ const LetsStart = () => {
         setPlanName(planName);
         const formData = new FormData();
         formData.append("planName", planName);
-        // formData.append("price", price);
-
         submit(formData, { method: "post" });
     };
-
 
     const AllOverValue = () => {
         getData?.forEach(function (item) {
@@ -227,8 +214,6 @@ const LetsStart = () => {
                 count++;
             }
         })
-        // console.log('count', count);
-
     };
 
     const recoveredCheckoutsTotalPrice = () => {
@@ -238,6 +223,7 @@ const LetsStart = () => {
             }
         })
     };
+
     const storeCurrency = () => {
         getData?.forEach(function (item) {
             let currencyCode = item?.currency?.currency || item?.currency;
@@ -245,18 +231,10 @@ const LetsStart = () => {
                 currencySymbol = currencySymbols[currencyCode] || currencyCode
             }
         })
-        console.log('currencySymbol', currencySymbol);
-
     }
 
-
-
     useEffect(() => {
-        console.log('useefect running');
-
         handleFetchAbandonedCheckouts();
-
-
     }, []);
 
     AllOverValue();
@@ -318,7 +296,12 @@ const LetsStart = () => {
                                         className='start_pricing_plans_card'
                                     >
                                         <div className='start_plan_content_logo_container'><img className='start_plan_content_logo' src={tickmarkLogo} alt="" /></div>
-                                        <div className='start_plan_content_value'>0.0%</div>
+                                        <div className='start_plan_content_value'>{
+                                            count && getAcrRate != null ?
+                                                isNaN(getAcrRate) ? "0.00%" : `${getAcrRate}%`
+                                                :
+                                                (<div style={{ height: "20px", paddingLeft: "20px" }}><SkeletonDisplayText size="small" /></div>)
+                                        }</div>
                                         <div className='start_plan_content_heading'>ACR Rate</div>
                                         <div className='start_plan_content_sub_heading'>The amount of income waiting for recovery</div>
                                     </div>
@@ -347,9 +330,7 @@ const LetsStart = () => {
                                                 <li className='start_plan_list_item'>Up to 10 abandoned carts per month</li>
                                                 <li className='start_plan_list_item'>Potential to generate up to $1,000 in additional revenue per month!</li>
                                             </ul>
-
                                         </div>
-                                        {/* <div className="start_plan_extra_dialogue">Potential to generate up to $1,000 in additional revenue per month!</div> */}
                                     </div>
                                 </Card>
                                 <Card>
@@ -368,7 +349,6 @@ const LetsStart = () => {
                                             </ul>
 
                                         </div>
-                                        {/* <div className="start_plan_extra_dialogue">Potential to generate up to $10,000 in additional revenue per month!</div> */}
                                     </div>
                                     <div className='popular_badge'>
                                         Most Popular
@@ -388,31 +368,23 @@ const LetsStart = () => {
                                                 <li className='start_plan_list_item'>Up to 100 abandoned carts per month</li>
                                                 <li className='start_plan_list_item'>Potential to generate up to $100,000 in additional revenue per month!</li>
                                             </ul>
-
                                         </div>
-                                        {/* <div className="start_plan_extra_dialogue">Potential to generate up to $100000 in additional revenue per month!</div> */}
                                     </div>
-
                                 </Card>
-
-
                             </div>
                         </div>
                     </div>
-
                 </Page>
             </div>
         </div>
     );
 
     async function handleFetchAbandonedCheckouts() {
-
-
         try {
             const response = await fetch("/api/abandoned-checkouts/get");
             if (response.ok == true && response.status == 200) {
                 const responseData = await response.json();
-                // console.log('api response',responseData?.data || []);
+                setAcrRate(responseData?.acrRate);
                 setData(responseData?.data || []);
             }
         } catch (error) {

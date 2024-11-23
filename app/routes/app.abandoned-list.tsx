@@ -1,7 +1,6 @@
 import * as React from 'react';
 import '../AbandonedCarts.css'
 import { Card, Page } from '@shopify/polaris';
-import { mainModule } from 'process';
 
 export default function AbandonedCheckouts() {
     const [getData, setData] = React.useState([]);
@@ -10,8 +9,7 @@ export default function AbandonedCheckouts() {
     const [currentPage, setCurrentPage] = React.useState(1);
     const itemsPerPage = 10;
     const [searchTerm, setSearchTerm] = React.useState('');
-    // const [currencySymbol, setCurrencySymbol] = React.useState('');
-    let currencySymbol='';
+    let currencySymbol = '';
     const currencySymbols = {
         AED: "د.إ", // United Arab Emirates Dirham
         AFN: "؋",   // Afghan Afghani
@@ -172,8 +170,8 @@ export default function AbandonedCheckouts() {
         ZAR: "R",   // South African Rand
         ZMW: "ZK",  // Zambian Kwacha
         ZWL: "$",   // Zimbabwean Dollar
-      };
-      
+    };
+
     let sum = 0;
     let recoveredSum = 0;
     let count = 0;
@@ -187,16 +185,13 @@ export default function AbandonedCheckouts() {
         })
     };
 
-    const storeCurrency =()=>{
+    const storeCurrency = () => {
         getData?.forEach(function (item) {
-                let currencyCode = item?.currency?.currency || item?.currency;
-                if(!currencySymbol){
-                    currencySymbol = currencySymbols[currencyCode] || currencyCode
-                }
-            
+            let currencyCode = item?.currency?.currency || item?.currency;
+            if (!currencySymbol) {
+                currencySymbol = currencySymbols[currencyCode] || currencyCode
+            }
         })
-        console.log('currencySymbol',currencySymbol);
-        
     }
 
     const recoveredCheckoutsTotalPrice = () => {
@@ -207,13 +202,11 @@ export default function AbandonedCheckouts() {
         })
     };
 
-
     const sortedData = [...getData].sort((a, b) => {
         const dateA = new Date(a[sortBy]);
         const dateB = new Date(b[sortBy]);
         return dateB - dateA;
     });
-
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -225,16 +218,12 @@ export default function AbandonedCheckouts() {
     AllOverValue();
     recoveredCheckoutsTotalPrice();
     storeCurrency();
-    console.log(getData);
+
     const date = new Date();
-    const formattedDate = date.toISOString(); // Format as ISO 8601 (UTC time)
+    const formattedDate = date.toISOString();
     const dateObject = new Date(formattedDate);
     const timestamp = dateObject.getTime();
     const newDate = new Date(timestamp);
-    console.log('newDate', newDate);
-
-
-
 
     return (
         <Page>
@@ -270,19 +259,12 @@ export default function AbandonedCheckouts() {
                                 {currentItems.length > 0 ? (
                                     currentItems.map((item) => {
                                         let name = item.customer.first_name + item.customer.last_name;
-                                        // let currencyCode = item?.currency?.currency || item?.currency;
-                                        // console.log('currencyCode',currencyCode);
-                                        
-                                        // let currencySymbol = currencySymbols[currencyCode] || currencyCode;
-                                        // if(!currencySymbol){
-                                        //     setCurrencySymbol(currencySymbols[currencyCode] || currencyCode)
-                                        // }
-                                        // console.log('currencySymbol',currencySymbol);
+
                                         return (
                                             <div className="item-row" key={item.id}>
                                                 <div className="item-icon"><svg style={{ width: '17px', height: '17px' }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512l388.6 0c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304l-91.4 0z" /></svg></div>
                                                 <div style={{ width: '49%', marginRight: '5px' }}>{item.created_at ? item.created_at.split("T")[0] : 'N/A'}</div>
-                                                {/* <div style={{ width: '45%', marginRight: '5px' }}>{item.customer.first_name || 'N/A'} {item.customer.last_name || 'N/A'}</div> */}
+
                                                 <div style={{ width: '45%', marginRight: '5px' }}>{name ? name : 'N/A'}</div>
                                                 <div style={{ width: '43%', marginRight: '5px' }}>{currencySymbol}{item.total_price || 'N/A'}</div>
                                                 <div style={{ width: '15%', marginRight: '5px' }}>
@@ -300,14 +282,10 @@ export default function AbandonedCheckouts() {
                                 )}
                             </div>
                         </div>
-
                     </div>
                 </div>
             </Card>
         </Page>
-
-
-
     )
 
     async function handleFetchAbandonedCheckouts() {
@@ -315,8 +293,6 @@ export default function AbandonedCheckouts() {
             const response = await fetch("/api/abandoned-checkouts/get");
             if (response.ok == true && response.status == 200) {
                 const responseData = await response.json();
-                // console.log('recoveredCarts',responseData?.recoveredCarts);
-
                 setData(responseData?.data || []);
             }
         } catch (error) {

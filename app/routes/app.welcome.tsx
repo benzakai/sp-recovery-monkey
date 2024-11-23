@@ -1,15 +1,6 @@
 import * as React from 'react';
 import '../Welcome.css'
 import { Card, Page } from '@shopify/polaris';
-// import { getsomething } from '~/services/sendDataFromWebhooks';
-
-
-// export const loader= async ()=>{
-//     const { getsomething } = await import('~/services/sendDataFromWebhooks');
-//     console.log('loader calling');
-
-//     await getsomething();
-// }
 
 export default function Welcome() {
     const [getData, setData] = React.useState([]);
@@ -36,7 +27,6 @@ export default function Welcome() {
 
     React.useEffect(() => {
         handleFetchAbandonedCheckouts();
-        // getsomething();
     }, []);
     AllOverValue();
     recoveredCheckoutsTotalPrice();
@@ -87,10 +77,6 @@ export default function Welcome() {
                 </div>
             </Card>
         </Page>
-
-
-
-
     )
 
     async function handleFetchAbandonedCheckouts() {

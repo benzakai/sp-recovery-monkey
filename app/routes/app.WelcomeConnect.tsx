@@ -201,7 +201,6 @@ const WelcomeConnect = () => {
             body: JSON.stringify(phonedata),
         });
         const data = await response.json();
-        console.log('Phone number API response:', data);
         return data;
     };
 
@@ -215,7 +214,6 @@ const WelcomeConnect = () => {
             body: JSON.stringify({ message, topicNames }),
         });
         const data = await response.json();
-        console.log('Sent pubsub data:', data);
         setStateInstance('authorized');
     };
 
@@ -228,7 +226,6 @@ const WelcomeConnect = () => {
             body: JSON.stringify({ collectionName, documentName, data }),
         });
         const Responsedata = await response.json();
-        console.log('Sent firestore data:', Responsedata);
     }
 
 
@@ -240,7 +237,6 @@ const WelcomeConnect = () => {
             const response = await fetch('/api/getInstances');
             const data = await response.json();
             setInstances(data.instances);
-            console.log('Fetched instances:', data.instances);
         } catch (error) {
             console.error('Error fetching instances:', error);
         }
@@ -258,7 +254,6 @@ const WelcomeConnect = () => {
     };
 
     const fetchQR = async (url, id, token) => {
-        console.log('fetchQr running');
 
         try {
             const response = await fetch('/api/fetchQR', {
@@ -272,7 +267,6 @@ const WelcomeConnect = () => {
             if (data.qrData?.type === 'qrCode') {
                 setQRCode(`data:image/png;base64,${data.qrData.message}`);
             } else if (data.qrData?.type === 'alreadyLogged') {
-                console.log('Already logged in');
                 setStateInstance('authorized');
                 const phoneNumberData = await fetchPhoneNumber(currentQRData);
                 setPubsubData(async (prevState) => {
@@ -285,24 +279,17 @@ const WelcomeConnect = () => {
                         greenAPIUrl: currentQRData?.url,
                     };
 
-                    console.log('PubSubData:', updatedData);
                     await sendDataToPubSub(updatedData);
                     await setDataInFirestore('ConnectPagedata', `${updatedData?.storeId}`, updatedData)
 
                     return updatedData;
                 });
-
-                console.log('currentQRData', currentQRData);
-                // await sendDataToExpress(currentQRData);
-
             }
             if (data.storeId) setStoreId(data.storeId);
         } catch (error) {
-            console.error('Error fetching QR code:', error);
+            console.error('error', error);
         }
     };
-
-
 
     const getDataFromFirestore = async () => {
         const response = await fetch('/api/firestore?collectionName=ConnectPagedata', {
@@ -313,12 +300,6 @@ const WelcomeConnect = () => {
         });
         const Responsedata = await response.json();
         if (Responsedata.data) {
-            // Filter out the empty objects
-            // const storeId = Responsedata.storeId; // Assuming Responsedata contains storeId
-            // const filteredData = Responsedata.data.filter(item => 
-            //     Object.keys(item).length > 0 && item.storeId == storeId
-            // );
-            console.log('filteredData connectPage', Responsedata);
             return Responsedata.data;
         } else {
             return null;
@@ -367,31 +348,24 @@ const WelcomeConnect = () => {
 
         const getFireData = async () => {
             const fireStoreData = await getDataFromFirestore();
-            // console.log('fireStoreData',fireStoreData);
             if (Object.keys(fireStoreData).length === 0) {
                 initializeFlow();
             } else {
                 const stateInstanceData = await getInstanceState(fireStoreData?.greenAPIUrl, fireStoreData?.greenAPIId, fireStoreData?.greenAPIKey);
-                // console.log('stateInstanceData',stateInstanceData);
+
                 if (stateInstanceData?.responseData?.stateInstance == 'authorized') {
                     setStateInstance('authorized');
                 } else if (stateInstanceData?.responseData?.stateInstance == 'notAuthorized') {
-                    console.log('notAuthorized');
                     await deleteConnectPageData();
                     initializeFlow();
 
                 } else {
                     initializeFlow();
                 }
-
-
             }
-
         }
 
         getFireData();
-
-
     }, [instances.length]);
 
     useEffect(() => {
@@ -399,12 +373,10 @@ const WelcomeConnect = () => {
         if (stateInstance !== 'authorized' && currentQRData.url && currentQRData.id && currentQRData.token) {
             intervalId = setInterval(() => {
                 fetchQR(currentQRData.url, currentQRData.id, currentQRData.token);
-            }, 3000); // Poll every 3 seconds
+            }, 3000);
         }
         return () => clearInterval(intervalId);
     }, [stateInstance, currentQRData]);
-
-
 
     const AllOverValue = () => {
         getData?.forEach(function (item) {
@@ -414,8 +386,6 @@ const WelcomeConnect = () => {
                 count++;
             }
         })
-        // console.log('count', count);
-
     };
 
     const recoveredCheckoutsTotalPrice = () => {
@@ -432,18 +402,10 @@ const WelcomeConnect = () => {
                 currencySymbol = currencySymbols[currencyCode] || currencyCode
             }
         })
-        console.log('currencySymbol', currencySymbol);
-
     }
 
-
-
     useEffect(() => {
-        console.log('useefect running');
-
         handleFetchAbandonedCheckouts();
-
-
     }, []);
 
     AllOverValue();
@@ -524,7 +486,7 @@ const WelcomeConnect = () => {
                                         <div className='start_plan_content_logo_container'><img className='start_plan_content_logo' src={tickmarkLogo} alt="" /></div>
                                         <div className='start_plan_content_value'>{
                                             count && getAcrRate != null ?
-                                                `${getAcrRate}%`
+                                                isNaN(getAcrRate) ? "0.00%" : `${getAcrRate}%`
                                                 :
                                                 (<div style={{ height: "20px", paddingLeft: "20px" }}><SkeletonDisplayText size="small" /></div>)
                                         }</div>
