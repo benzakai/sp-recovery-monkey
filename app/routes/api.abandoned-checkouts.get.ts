@@ -1,6 +1,7 @@
 import { ActionFunctionArgs, json } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
 import { getAppInstalledDate, getSubscriptionsData } from "~/services/sendDataFromWebhooks";
+import axios from "axios";
 
 const formatDateInCustomFormat = (date: Date): string => {
   const year = date.getFullYear();
@@ -39,6 +40,168 @@ function convertFirestoreTimestampToISO(timestamp) {
   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offsetSign}${offsetHours}:${offsetMinutes}`;
 }
 
+const currencySymbols: any = {
+  AED: "د.إ",
+  AFN: "؋",
+  ALL: "L",
+  AMD: "֏",
+  ANG: "ƒ",
+  AOA: "Kz",
+  ARS: "$",
+  AUD: "$",
+  AWG: "ƒ",
+  AZN: "₼",
+  BAM: "KM",
+  BBD: "$",
+  BDT: "৳",
+  BGN: "лв",
+  BHD: ".د.ب",
+  BIF: "FBu",
+  BMD: "$",
+  BND: "$",
+  BOB: "Bs.",
+  BRL: "R$",
+  BSD: "$",
+  BTN: "Nu.",
+  BWP: "P",
+  BYN: "Br",
+  BZD: "$",
+  CAD: "$",
+  CDF: "FC",
+  CHF: "CHF",
+  CLP: "$",
+  CNY: "¥",
+  COP: "$",
+  CRC: "₡",
+  CUP: "$",
+  CVE: "$",
+  CZK: "Kč",
+  DJF: "Fdj",
+  DKK: "kr",
+  DOP: "$",
+  DZD: "د.ج",
+  EGP: "£",
+  ERN: "Nfk",
+  ETB: "Br",
+  EUR: "€",
+  FJD: "$",
+  FKP: "£",
+  FOK: "kr",
+  GBP: "£",
+  GEL: "₾",
+  GGP: "£",
+  GHS: "₵",
+  GIP: "£",
+  GMD: "D",
+  GNF: "FG",
+  GTQ: "Q",
+  GYD: "$",
+  HKD: "$",
+  HNL: "L",
+  HRK: "kn",
+  HTG: "G",
+  HUF: "Ft",
+  IDR: "Rp",
+  ILS: "₪",
+  IMP: "£",
+  INR: "₹",
+  IQD: "ع.د",
+  IRR: "﷼",
+  ISK: "kr",
+  JEP: "£",
+  JMD: "$",
+  JOD: "د.ا",
+  JPY: "¥",
+  KES: "KSh",
+  KGS: "с",
+  KHR: "៛",
+  KID: "$",
+  KMF: "CF",
+  KRW: "₩",
+  KWD: "د.ك",
+  KYD: "$",
+  KZT: "₸",
+  LAK: "₭",
+  LBP: "ل.ل",
+  LKR: "Rs",
+  LRD: "$",
+  LSL: "L",
+  LYD: "ل.د",
+  MAD: "د.م.",
+  MDL: "L",
+  MGA: "Ar",
+  MKD: "ден",
+  MMK: "Ks",
+  MNT: "₮",
+  MOP: "P",
+  MRU: "UM",
+  MUR: "₨",
+  MVR: "Rf",
+  MWK: "MK",
+  MXN: "$",
+  MYR: "RM",
+  MZN: "MT",
+  NAD: "$",
+  NGN: "₦",
+  NIO: "C$",
+  NOK: "kr",
+  NPR: "₨",
+  NZD: "$",
+  OMR: "ر.ع.",
+  PAB: "B/.",
+  PEN: "S/",
+  PGK: "K",
+  PHP: "₱",
+  PKR: "₨",
+  PLN: "zł",
+  PYG: "₲",
+  QAR: "ر.ق",
+  RON: "lei",
+  RSD: "din",
+  RUB: "₽",
+  RWF: "FRw",
+  SAR: "﷼",
+  SBD: "$",
+  SCR: "₨",
+  SDG: "ج.س.",
+  SEK: "kr",
+  SGD: "$",
+  SHP: "£",
+  SLL: "Le",
+  SOS: "Sh",
+  SRD: "$",
+  SSP: "£",
+  STN: "Db",
+  SYP: "ل.س",
+  SZL: "L",
+  THB: "฿",
+  TJS: "ЅМ",
+  TMT: "m",
+  TND: "د.ت",
+  TOP: "T$",
+  TRY: "₺",
+  TTD: "$",
+  TWD: "NT$",
+  TZS: "Sh",
+  UAH: "₴",
+  UGX: "USh",
+  USD: "$",
+  UYU: "$U",
+  UZS: "лв",
+  VES: "Bs.",
+  VND: "₫",
+  VUV: "VT",
+  WST: "T",
+  XAF: "FCFA",
+  XCD: "$",
+  XOF: "CFA",
+  XPF: "₣",
+  YER: "﷼",
+  ZAR: "R",
+  ZMW: "ZK",
+  ZWL: "$",
+}
+
 export async function loader({ request }: ActionFunctionArgs) {
   const { admin, session } = await authenticate.admin(request);
   const today = new Date();
@@ -46,37 +209,91 @@ export async function loader({ request }: ActionFunctionArgs) {
   const last30Days = formatDateInCustomFormat(daysBefore30);
 
   let allCheckouts = [];
-  let lastId = null;
+  let hasNextPage = null
+  let endCursor = null;
 
   try {
 
-    do {
-      const response = await admin.rest.resources.AbandonedCheckout.checkouts({
-        session,
-        limit: "250",
-        ...(lastId && { since_id: lastId })
+    while (hasNextPage != false) {
+
+      const response = await axios({
+        url: `https://${session.shop}/admin/api/2024-10/graphql.json`,
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Shopify-Access-Token": session.accessToken,
+        },
+        data: {
+          query: `query {
+          ${hasNextPage != null ?
+              `abandonedCheckouts(first: 50, sortKey: CREATED_AT, reverse: true, after: "${endCursor}") {` :
+              `abandonedCheckouts(first: 50, sortKey: CREATED_AT, reverse: true) {`
+            }
+              edges {
+                node {
+                  id
+                  createdAt
+                  updatedAt
+                  completedAt
+                  totalPriceSet {
+                    shopMoney {
+                      amount
+                    }
+                  }
+                  customer {
+                    firstName
+                    lastName
+                    email
+                  }
+                }
+              }
+              pageInfo {
+                hasNextPage
+                endCursor
+              }
+          }
+          }`
+        }
       });
 
-      const checkouts = response.checkouts;
-      allCheckouts = [...allCheckouts, ...checkouts];
-
-      if (checkouts.length > 0) {
-
-        lastId = checkouts[checkouts.length - 1].id;
-      } else {
-        break;
-      }
-    } while (allCheckouts.length % 250 === 0);
+      allCheckouts.push(...response.data.data.abandonedCheckouts.edges);
+      hasNextPage = response.data.data.abandonedCheckouts.pageInfo.hasNextPage;
+      endCursor = response.data.data.abandonedCheckouts.pageInfo.endCursor;
+    }
 
     const appInstalledDate = await getAppInstalledDate(session);
+    const getShopCurrency = await admin.graphql(`query { shop { currencyCode }}`);
+    const getShopCurrencyJson = await getShopCurrency.json();
 
-    const getAbandonedCartsSinceAppInstall = allCheckouts.filter((item: any) => new Date(item.created_at).getTime() >= new Date(appInstalledDate?.appInstalledDate?.toDate()).getTime());
-    const getAbandonedCartsCount = getAbandonedCartsSinceAppInstall.filter((item: any) => item.completed_at == null).length;
-    const getAbandonedCartsRecoveredCount = getAbandonedCartsSinceAppInstall.filter((item: any) => item.completed_at != null).length;
+    const shopCurrency = currencySymbols[getShopCurrencyJson.data.shop.currencyCode];
+
+    const getAbandonedCartsSinceAppInstall = allCheckouts.filter((item: any) => new Date(item.node.createdAt).getTime() >= new Date(appInstalledDate?.appInstalledDate?.toDate()).getTime());
+
+    const getAbandonedCartsCount = getAbandonedCartsSinceAppInstall.filter((item: any) => item.node.completedAt == null).length;
+    const getAbandonedCartsRecoveredCount = getAbandonedCartsSinceAppInstall.filter((item: any) => item.node.completedAt != null).length;
 
     const calculateACRRate = ((getAbandonedCartsRecoveredCount / getAbandonedCartsCount) * 100).toFixed(2);
 
-    return json({ success: true, data: allCheckouts, acrRate: calculateACRRate });
+    const getAllAbandonedCarts = allCheckouts.filter((item: any) => item.node.completedAt == null);
+
+    let getAllAbandonedCartsSum: number = 0;
+    for (let i = 0; i < getAllAbandonedCarts.length; i++) getAllAbandonedCartsSum += parseFloat(getAllAbandonedCarts[i].node.totalPriceSet.shopMoney.amount);
+
+    const getAllRecoveredCarts = allCheckouts.filter((item: any) => item.node.completedAt != null);
+
+    let getAllRecoveredCartsSum: number = 0;
+    for (let i = 0; i < getAllRecoveredCarts.length; i++) getAllRecoveredCartsSum += parseFloat(getAllRecoveredCarts[i].node.totalPriceSet.shopMoney.amount);
+
+    return {
+      success: true,
+      allCarts: allCheckouts,
+      abandonedCarts: getAllAbandonedCarts,
+      abandonedCartsSum: getAllAbandonedCartsSum.toFixed(2),
+      recoveredCarts: getAllRecoveredCarts,
+      recoveredCartsSum: getAllRecoveredCartsSum.toFixed(2),
+      acrRate: calculateACRRate,
+      shopCurrency
+    };
 
   } catch (error) {
     console.log("ERROR", error);

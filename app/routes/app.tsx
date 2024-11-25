@@ -5,81 +5,50 @@ import { boundary } from "@shopify/shopify-app-remix/server";
 import { AppProvider } from "@shopify/shopify-app-remix/react";
 import { NavMenu } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
-
 import { authenticate } from "../shopify.server";
-import { useEffect, useState } from "react";
+import * as React from "react";
+import fireStoreFetchService from "~/services/fireStoreFetchService";
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { admin } = await authenticate.admin(request);
+  const { session } = await authenticate.admin(request);
 
-  return json({ apiKey: process.env.SHOPIFY_API_KEY || "" });
+  const getSubscriptionStatus = await fireStoreFetchService("subscriptions", session.shop);
+  let isSubscribed;
+
+  if (getSubscriptionStatus == undefined || getSubscriptionStatus?.status != "ACTIVE") isSubscribed = false;
+  else isSubscribed = true;
+
+  return json({ apiKey: process.env.SHOPIFY_API_KEY || "", isSubscribed });
 };
 
 export default function App() {
-  const { apiKey } = useLoaderData<typeof loader>();
-  const [planStatus,setPlanStatus] = useState('INACTIVE');
+  const { apiKey, isSubscribed } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
 
-  const getDataFromFirestore = async () => {
-    const response = await fetch('/api/firestore?collectionName=subscriptions', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const Responsedata = await response.json();
-    if(Responsedata.data){
-       return Responsedata.data;
-    }else{
-      return null;
-    }
-  };
-
-  useEffect(()=>{
-    const getFireData = async()=>{
-      const fireStoreData = await getDataFromFirestore();
-      if(Object.keys(fireStoreData).length === 0){
-        navigate("/app/LetsStart");
-        setPlanStatus('INACTIVE');
-      }else{
-        navigate("/app/WelcomeConnect");
-        setPlanStatus('ACTIVE');
-      }
-      
-    }
-
-    getFireData();
-  },[]);
+  React.useEffect(() => {
+    if (!isSubscribed) navigate("/app/LetsStart");
+    else navigate("/app/WelcomeConnect");
+  }, []);
 
   return (
     <AppProvider isEmbeddedApp apiKey={apiKey}>
-      
-        {/* <Link to="/app" rel="home">
-          Home
-        </Link> */}
-        {planStatus == 'INACTIVE'?(
+      {
+        !isSubscribed ? (
           <NavMenu>
-            <Link to="/app/LetsStart">let’s Start </Link>
+            <Link to="/app/LetsStart">Let’s Start</Link>
           </NavMenu>
-          
-        ):(
+        ) : (
           <NavMenu>
-            {/* <Link to="/app/welcome">Welcome</Link> */}
-            <Link to="/app/WelcomeConnect">Welcome</Link> 
+            <Link to="/app/WelcomeConnect">Welcome</Link>
             <Link to="/app/AbandonedList">Abandoned List</Link>
             <Link to="/app/ConvertPage">Convert</Link>
-            {/* <Link to="/app/abandoned-list">Abandoned List</Link> */}
-            {/* <Link to="/app/convert">Convert</Link> */}
-            {/* <Link to="/app/connect">Connect</Link> */}
-            {/* <Link to="/app/UpgradePlan">Upgrade Plan</Link> */}
             <Link to="/app/ConnectPage">Connect Page</Link>
             <Link to="/app/Settings">Settings</Link>
           </NavMenu>
-        )}
-        
-        
+        )
+      }
       <Outlet />
     </AppProvider>
   );
