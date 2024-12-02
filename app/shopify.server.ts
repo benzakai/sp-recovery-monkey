@@ -56,7 +56,7 @@ const shopify = shopifyApp({
     },
   },
   hooks: {
-    afterAuth: async ({ session }) => {
+    afterAuth: async ({ admin, session }) => {
       await shopify.registerWebhooks({ session });
       console.log("AFTER REGISTER WEBHOOKS");
       const isAppInstalled = await getAppInstalledDate(session);
@@ -69,11 +69,16 @@ const shopify = shopifyApp({
           storeId: session.shop
         }
 
-        const shopDetails = await getShopDetails(session.shop as string, session.accessToken as string);
+        const shopDetails = await getShopDetails(admin);
+
         if (shopDetails?.success == true) {
           data["phone"] = shopDetails?.phone;
           data["email"] = shopDetails?.email;
           data["country"] = shopDetails?.country;
+          data["currency"] = shopDetails?.currency;
+          data["ordersCount"] = shopDetails?.ordersCount;
+          data["ordersSum"] = shopDetails?.ordersSum;
+          data["shopCreatedAt"] = shopDetails?.createdAt;
         }
 
         await setAppInstalledDate(session, data);

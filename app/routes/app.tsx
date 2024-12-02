@@ -29,7 +29,10 @@ export default function App() {
 
   React.useEffect(() => {
     if (!isSubscribed) navigate("/app/LetsStart");
-    else navigate("/app/WelcomeConnect");
+    else {
+      if (window.location.pathname.includes("/app/")) navigate(`/app/${window.location.pathname.split("/app/")[1]}`);
+      else navigate("/app/WelcomeConnect");
+    }
   }, []);
 
   return (

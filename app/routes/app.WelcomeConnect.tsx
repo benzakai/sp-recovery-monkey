@@ -22,6 +22,8 @@ const WelcomeConnect = () => {
         success: null
     });
 
+    const topics = ['message'];
+
     React.useEffect(() => {
         handleFetchAbandonedCheckouts();
     }, []);

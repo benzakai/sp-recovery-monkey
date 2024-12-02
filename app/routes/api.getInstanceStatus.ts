@@ -11,8 +11,11 @@ export async function action({ request }: ActionFunctionArgs) {
     try {
         const response = await fetch(`${data?.url}/waInstance${data?.id}/getStateInstance/${data?.token}`);
         const responseData = await response.json();
-        return json({responseData,storeId});
+        return json({ responseData, storeId });
     } catch (error) {
-        return json({});
+        return json({
+            responseData: { stateInstance: "notAuthorized" },
+            storeId
+        });
     }
 }

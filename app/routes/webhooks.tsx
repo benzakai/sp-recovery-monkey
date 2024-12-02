@@ -37,17 +37,17 @@ function addDaysToFormattedDate(dateStr: any, daysToAdd: number) {
 
 const setSubscriptionData = async (data: any, storeId: string) => {
   try {
-    if (data?.app_subscription?.status == 'ACTIVE') {
-      const result = addDaysToFormattedDate(data?.app_subscription?.updated_at, 30);
+    // if (data?.app_subscription?.status == 'ACTIVE') {
+    const result = addDaysToFormattedDate(data?.app_subscription?.updated_at, 30);
 
-      await fireStoreCreateService("subscriptions", storeId, {
-        storeId,
-        plan: data?.app_subscription?.name,
-        status: data?.app_subscription?.status,
-        startDate: data?.app_subscription?.updated_at,
-        endDate: result
-      }, {});
-    }
+    await fireStoreCreateService("subscriptions", storeId, {
+      storeId,
+      plan: data?.app_subscription?.name,
+      status: data?.app_subscription?.status,
+      startDate: data?.app_subscription?.updated_at,
+      endDate: result
+    }, {});
+    // }
 
   } catch (error) {
     console.log("error", error);
@@ -104,7 +104,7 @@ const setUpdatesData = async (data: any, shopName: string) => {
     await fireStoreCreateService("checkoutUpdateData", String(data?.id), {
       STORE_ID: shopName,
       UpdateData: data
-    }, { merge: true });
+    }, {});
 
   } catch (error) {
     console.log("error", error);
@@ -125,7 +125,8 @@ const sendDataToPubSub = async (message: any) => {
 const checkSubscriptionStatus = async (storeId: string) => {
   subscriptionData = await getSubsciptionData(storeId);
 
-  if (!subscriptionData || subscriptionData?.status !== 'ACTIVE') {
+  // if (!subscriptionData || subscriptionData?.status !== 'ACTIVE') {
+  if (!subscriptionData) {
     return false;
   }
 
