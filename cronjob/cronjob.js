@@ -4,12 +4,19 @@ import { CronJob } from 'cron';
 import * as dotenv from "dotenv";
 dotenv.config();
 
-const job = CronJob.from({
-    cronTime: '*/10 * * * * *',
+const jobFirst = CronJob.from({
+    cronTime: '*/30 * * * * *',
     onTick: async function () {
-        console.log('You will see this message every 10 seconds');
         const response = await axios.get(process.env.CRON_API_URL);
-        console.log("response", response.data);
+    },
+    start: true,
+    timeZone: 'America/Los_Angeles'
+});
+
+const jobSecond = CronJob.from({
+    cronTime: '*/5 * * * *',
+    onTick: async function () {
+        const response = await axios.get(process.env.CRON_API_SECOND_URL);
     },
     start: true,
     timeZone: 'America/Los_Angeles'
