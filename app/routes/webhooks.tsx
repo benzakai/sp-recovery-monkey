@@ -152,6 +152,15 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
       if (await checkSubscriptionStatus(session?.shop as string)) {
         await setUpdatesData(payload, session?.shop as string);
+
+        if (payload?.phone == null) {
+          await fireStoreCreateService("CheckoutsWithoutPhoneNumber", String(payload.id), {
+            shop,
+            payload,
+            checkoutId: payload.id,
+            updatedAt: new Date()
+          }, {});
+        }
       }
       break;
     case "APP_UNINSTALLED":
