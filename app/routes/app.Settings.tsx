@@ -15,9 +15,11 @@ export const action = async ({ request }) => {
     const okay = await billing.require({
         plans: [planName],
         isTest: false,
+        trialDays: 0,
         onFailure: async () => billing.request({
             plan: planName,
-            isTest: false
+            isTest: false,
+            trialDays: 0
         }),
     });
 
