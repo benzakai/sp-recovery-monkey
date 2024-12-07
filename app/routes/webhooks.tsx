@@ -6,6 +6,7 @@ import publishMessagePubSubService from "~/services/publishMessagePubSubService"
 import fireStoreDeleteService from "~/services/fireStoreDeleteService";
 import fireStoreCreateService from "~/services/fireStoreCreateService";
 import fireStoreFetchService from "~/services/fireStoreFetchService";
+import handleOrdersPaidWebhookService from "~/services/handleOrdersPaidWebhookService";
 
 const firestoreDatabase = new Firestore();
 const checkoutCollection = firestoreDatabase.collection('users');
@@ -186,13 +187,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       break;
     case 'ORDERS_PAID':
       console.log("ORDERS_PAID:", payload.checkout_id);
-
-      const getDoc = await fireStoreFetchService("AbandonedCheckoutsData", String(payload.checkout_id));
-
-      if (getDoc != undefined) {
-        await publishMessagePubSubService("sales", JSON.stringify(payload));
-      }
-
+      await handleOrdersPaidWebhookService(payload, shop);
       break;
     case "CUSTOMERS_DATA_REQUEST":
     case "CUSTOMERS_REDACT":
