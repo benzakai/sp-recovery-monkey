@@ -204,13 +204,46 @@ async function sendDataToPubSub(checkout: any, session: any, phone: any) {
         if (SHOP_DOMAIN?.success == true) newObj["SHOP_DOMAIN"] = SHOP_DOMAIN?.data;
         if (Green_API_ID?.success == true) newObj["Green_API_ID"] = Green_API_ID?.data;
 
-        await publishMessagePubSubService("NewAbandonedCheckout", JSON.stringify(newObj));
-        await fireStoreDeleteService("CheckoutsWithoutPhoneNumber", String(checkout?.payload?.id));
-        console.log(checkout?.payload?.id, "CUSTOMER PHONE NUMBER IS PRESENT SEND DATA TO PUBSUB")
+        const recentOrders = await fetchOrders(session.shop, session.accessToken);
+        console.log("recentOrders", recentOrders);
+        const orderExists = recentOrders.some((order: any) => order.checkout_id == checkout?.payload?.id);
+        console.log("orderExists", orderExists);
+
+        if (orderExists) {
+            await fireStoreDeleteService("CheckoutsWithoutPhoneNumber", String(checkout?.payload?.id));
+            console.log("ORDER ALREADY EXISTS FOR THIS CHECKOUT. NOT SENDING TO PUB/SUB");
+        } else {
+            await publishMessagePubSubService("NewAbandonedCheckout", JSON.stringify(newObj));
+            await fireStoreDeleteService("CheckoutsWithoutPhoneNumber", String(checkout?.payload?.id));
+            console.log(checkout?.payload?.id, "CUSTOMER PHONE NUMBER IS PRESENT SEND DATA TO PUBSUB")
+        }
 
         return { success: true };
     } catch (error) {
         console.log("ERROR", error);
         return { success: false };
+    }
+}
+
+async function fetchOrders(shopName: string, token: string) {
+
+    try {
+        const response = await fetch(
+            `https://${shopName}/admin/api/2024-10/orders.json?status=any`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Shopify-Access-Token": token,
+                },
+            }
+        );
+
+        const responseData = await response.json();
+        console.log("responseData?.orders", responseData?.orders);
+        return responseData?.orders;
+    } catch (error) {
+        console.log("Error fetching orders from Shopify:", error);
+        return [];
     }
 }

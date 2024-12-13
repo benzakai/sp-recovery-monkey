@@ -167,6 +167,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     case "APP_UNINSTALLED":
       await deleteSubscriptionData(session?.shop as string);
       await deleteAppInstalledDate(session?.shop as string);
+      await publishMessagePubSubService("uninstall", JSON.stringify(payload));
       if (session) {
         await db.session.deleteMany({ where: { shop } });
       }
