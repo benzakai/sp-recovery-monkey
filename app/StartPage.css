@@ -17,6 +17,13 @@
     /* background-color: rgb(231 231 231); */
     padding: 4rem 10rem 120px 69px;
 }
+.lets_start_main_container {
+    /* border: 1px solid; */
+    width: 100%;
+    /* height: 10rem; */
+    /* background-color: rgb(231 231 231); */
+    padding: 4rem 0rem 120px 0px;
+}
 
 .start_main_container_heading {
     margin-bottom: 2px;
@@ -33,7 +40,8 @@
     display: flex;
     /* flex-wrap: wrap; */
     gap: 5rem;
-    padding: 39px 0px 24px 0px;
+    /* padding: 39px 0px 24px 0px; */
+    padding: 19px 0px 24px 0px;
 }
 .start_pricing_plans_card {
     /* width: 9rem; */

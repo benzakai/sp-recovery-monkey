@@ -3,42 +3,50 @@ import { authenticate } from "../shopify.server";
 import { getAppInstalledDate, getSubscriptionsData } from "~/services/sendDataFromWebhooks";
 import axios from "axios";
 
-const formatDateInCustomFormat = (date: Date): string => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
+// const formatDateInCustomFormat = (date: Date): string => {
+//   const year = date.getFullYear();
+//   const month = String(date.getMonth() + 1).padStart(2, '0');
+//   const day = String(date.getDate()).padStart(2, '0');
+//   const hours = String(date.getHours()).padStart(2, '0');
+//   const minutes = String(date.getMinutes()).padStart(2, '0');
+//   const seconds = String(date.getSeconds()).padStart(2, '0');
 
-  const timezoneOffset = -date.getTimezoneOffset();
-  const offsetHours = String(Math.floor(Math.abs(timezoneOffset) / 60)).padStart(2, '0');
-  const offsetMinutes = String(Math.abs(timezoneOffset) % 60).padStart(2, '0');
-  const offsetSign = timezoneOffset >= 0 ? '+' : '-';
+//   const timezoneOffset = -date.getTimezoneOffset();
+//   const offsetHours = String(Math.floor(Math.abs(timezoneOffset) / 60)).padStart(2, '0');
+//   const offsetMinutes = String(Math.abs(timezoneOffset) % 60).padStart(2, '0');
+//   const offsetSign = timezoneOffset >= 0 ? '+' : '-';
 
-  const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offsetSign}${offsetHours}:${offsetMinutes}`;
+//   const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offsetSign}${offsetHours}:${offsetMinutes}`;
 
-  return formattedDate;
+//   return formattedDate;
+// }
+
+const before12Days = () => {
+  const endDate = new Date().toISOString();
+  const today = new Date();
+  today.setMonth(today.getMonth() - 12);
+  const startDate = today.toISOString();
+  return { startDate, endDate }
 }
 
-function convertFirestoreTimestampToISO(timestamp) {
-  const milliseconds = timestamp._seconds * 1000 + timestamp._nanoseconds / 1000000;
-  const date = new Date(milliseconds);
+// function convertFirestoreTimestampToISO(timestamp: any) {
+//   const milliseconds = timestamp._seconds * 1000 + timestamp._nanoseconds / 1000000;
+//   const date = new Date(milliseconds);
 
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  const seconds = String(date.getSeconds()).padStart(2, '0');
+//   const year = date.getFullYear();
+//   const month = String(date.getMonth() + 1).padStart(2, '0');
+//   const day = String(date.getDate()).padStart(2, '0');
+//   const hours = String(date.getHours()).padStart(2, '0');
+//   const minutes = String(date.getMinutes()).padStart(2, '0');
+//   const seconds = String(date.getSeconds()).padStart(2, '0');
 
-  const timezoneOffset = -date.getTimezoneOffset();
-  const offsetHours = String(Math.floor(Math.abs(timezoneOffset) / 60)).padStart(2, '0');
-  const offsetMinutes = String(Math.abs(timezoneOffset) % 60).padStart(2, '0');
-  const offsetSign = timezoneOffset >= 0 ? '+' : '-';
+//   const timezoneOffset = -date.getTimezoneOffset();
+//   const offsetHours = String(Math.floor(Math.abs(timezoneOffset) / 60)).padStart(2, '0');
+//   const offsetMinutes = String(Math.abs(timezoneOffset) % 60).padStart(2, '0');
+//   const offsetSign = timezoneOffset >= 0 ? '+' : '-';
 
-  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offsetSign}${offsetHours}:${offsetMinutes}`;
-}
+//   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${offsetSign}${offsetHours}:${offsetMinutes}`;
+// }
 
 const currencySymbols: any = {
   AED: "د.إ",
@@ -202,21 +210,24 @@ const currencySymbols: any = {
   ZWL: "$",
 }
 
-export async function loader({ request }: ActionFunctionArgs) {
+export async function action({ request }: ActionFunctionArgs) {
+  const { appSubscriptionCreated, pageName } = JSON.parse(await request.text());
+  console.log("payload", appSubscriptionCreated, pageName);
   const { admin, session } = await authenticate.admin(request);
-  const today = new Date();
-  const daysBefore30 = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
-  const last30Days = formatDateInCustomFormat(daysBefore30);
-
+  // const today = new Date();
+  // const daysBefore30 = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+  // const last30Days = formatDateInCustomFormat(daysBefore30);
+  const { startDate, endDate } = before12Days()
   let allCheckouts = [];
-  let hasNextPage = null
+  let hasNextPage = null;
   let endCursor = null;
 
   try {
+    console.log("appSubscriptionCreated", appSubscriptionCreated);
 
     while (hasNextPage != false) {
 
-      const response = await axios({
+      const response: any = await axios({
         url: `https://${session.shop}/admin/api/2024-10/graphql.json`,
         method: "post",
         headers: {
@@ -225,54 +236,76 @@ export async function loader({ request }: ActionFunctionArgs) {
         },
         data: {
           query: `query {
-          ${hasNextPage != null ?
-              `abandonedCheckouts(first: 50, sortKey: CREATED_AT, reverse: true, after: "${endCursor}") {` :
-              `abandonedCheckouts(first: 50, sortKey: CREATED_AT, reverse: true) {`
+            ${hasNextPage != null ?
+              `abandonedCheckouts(first: 50, sortKey: CREATED_AT, reverse: true, after: "${endCursor}" ${pageName === "WelcomeConnect" ? `, query: "created_at:>=${appSubscriptionCreated}"` : `, query: "created_at:>=${startDate} AND created_at:<=${endDate}"`}) {` :
+              `abandonedCheckouts(first: 50, sortKey: CREATED_AT, reverse: true ${pageName === "WelcomeConnect" ? `, query: "created_at:>=${appSubscriptionCreated}"` : `, query: "created_at:>=${startDate} AND created_at:<=${endDate}" `}) {`
             }
-              edges {
-                node {
-                  id
-                  createdAt
-                  updatedAt
-                  completedAt
-                  totalPriceSet {
-                    shopMoney {
-                      amount
+                edges {
+                  node {
+                    id
+                    createdAt
+                    updatedAt
+                    completedAt
+                    totalPriceSet {
+                      shopMoney {
+                        amount
+                      }
+                    }
+                    customer {
+                      firstName
+                      lastName
+                      email
                     }
                   }
-                  customer {
-                    firstName
-                    lastName
-                    email
-                  }
                 }
-              }
-              pageInfo {
-                hasNextPage
-                endCursor
-              }
-          }
-          }`
+                pageInfo {
+                  hasNextPage
+                  endCursor
+                }
+            }
+            }`
         }
       });
-
+      // console.log("response of abandoned-checkouts", response.data.data);
       allCheckouts.push(...response.data.data.abandonedCheckouts.edges);
       hasNextPage = response.data.data.abandonedCheckouts.pageInfo.hasNextPage;
       endCursor = response.data.data.abandonedCheckouts.pageInfo.endCursor;
     }
 
-    const appInstalledDate = await getAppInstalledDate(session);
+    // const appInstalledDate = await getAppInstalledDate(session);
     const getShopCurrency = await admin.graphql(`query { shop { currencyCode }}`);
+
     const getShopCurrencyJson = await getShopCurrency.json();
 
+    console.log("allCheckouts", allCheckouts, "appSubscriptionCreated", appSubscriptionCreated);
+
     const shopCurrency = currencySymbols[getShopCurrencyJson.data.shop.currencyCode];
+    if (!allCheckouts.length) return {
+      success: true,
+      allCarts: [],
+      abandonedCarts: [],
+      abandonedCartsSum: '0.00',
+      recoveredCarts: [],
+      recoveredCartsSum: '0.00',
+      acrRate: 'NaN',
+      shopCurrency
+    }
+    // console.log(`allCheckouts.filter((item: any) => new Date(item.node.createdAt).getTime()`, allCheckouts.filter((item: any) => new Date(item.node.createdAt).getTime()))
+    // console.log(`new Date(appSubscriptionCreated).getTime()`, new Date(appSubscriptionCreated).getTime())
 
-    const getAbandonedCartsSinceAppInstall = allCheckouts.filter((item: any) => new Date(item.node.createdAt).getTime() >= new Date(appInstalledDate?.appInstalledDate?.toDate()).getTime());
+    // const getAbandonedCartsSinceAppInstall = allCheckouts.filter((item: any) => new Date(item.node.createdAt).getTime() >= new Date(appSubscriptionCreated).getTime());
+    // console.log("getAbandonedCartsSinceAppInstall", getAbandonedCartsSinceAppInstall);
 
-    const getAbandonedCartsCount = getAbandonedCartsSinceAppInstall.filter((item: any) => item.node.completedAt == null).length;
-    const getAbandonedCartsRecoveredCount = getAbandonedCartsSinceAppInstall.filter((item: any) => item.node.completedAt != null).length;
 
-    const calculateACRRate = ((getAbandonedCartsRecoveredCount / getAbandonedCartsCount) * 100).toFixed(2);
+    // const getAbandonedCartsCount = getAbandonedCartsSinceAppInstall.filter((item: any) => item.node.completedAt == null).length;
+
+    const getAllCartsCount = allCheckouts.length;
+
+    const getAbandonedCartsRecoveredCount = allCheckouts.filter((item: any) => item.node.completedAt != null).length;
+
+    console.log("getAbandonedCartsRecoveredCount", getAbandonedCartsRecoveredCount, "getAllCartsCount", getAllCartsCount);
+
+    const calculateACRRate = ((getAbandonedCartsRecoveredCount / getAllCartsCount) * 100).toFixed(2);
 
     const getAllAbandonedCarts = allCheckouts.filter((item: any) => item.node.completedAt == null);
 
@@ -296,7 +329,7 @@ export async function loader({ request }: ActionFunctionArgs) {
     };
 
   } catch (error) {
-    console.log("ERROR", error);
+    console.log("ERROR on abandoned-checkouts.get", error);
     return json({ success: false });
   }
 }

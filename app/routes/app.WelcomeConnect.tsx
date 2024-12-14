@@ -210,14 +210,14 @@ const WelcomeConnect = () => {
     }, [stateInstance, currentQRData]);
 
     return (
-        <div className="body">
+        <div className="flex justify-center bg-[#f1f1f1]">
             <div className='start_page'>
                 <Page fullWidth>
                     <div className='start_main_container'>
-                        <div >
-                            {stateInstance == 'authorized' ? (
+                        <div>
+                            {/* {stateInstance == 'authorized' ? (
                                 <>
-                                    <div className='connection_main_container_heading'>
+                                    <div className=''>
                                         <Text variant="heading3xl" as="h3">
                                             Welcome
                                         </Text>
@@ -229,16 +229,16 @@ const WelcomeConnect = () => {
                                     </div>
                                 </>
                             ) : (
-                                <div className='connection_main_container_heading'>
-                                    <Text variant="heading3xl" as="h3">
-                                        Welcome
-                                    </Text>
-                                </div>
-                            )}
-
+                            )} */}
+                            <div className='pb-8'>
+                                <Text variant="heading3xl" as="h3">
+                                    Welcome
+                                </Text>
+                            </div>
                         </div>
 
                         <div>
+                            <p className='font-bold text-2xl pb-6'>Here’s a Dashboard of Your Recovered Revenue</p>
                             <AbandonedCartsSummary getPageData={getPageData} />
                         </div>
 
@@ -304,7 +304,20 @@ const WelcomeConnect = () => {
 
     async function handleFetchAbandonedCheckouts() {
         try {
-            const response = await fetch("/api/abandoned-checkouts/get");
+            const appSubscription = await fetchAppSubscription();
+            // console.log("appSubscription", appSubscription);
+
+            const response = await fetch("/api/abandoned-checkouts/get", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    appSubscriptionCreated: appSubscription?.activeSubscriptions?.[0]?.createdAt,
+                    pageName: "WelcomeConnect"
+                })
+            });
+
             if (response.ok == true && response.status == 200) {
                 const responseData = await response.json();
 
@@ -313,10 +326,21 @@ const WelcomeConnect = () => {
                 }
             }
         } catch (error) {
-            console.log("handleFetchAbandonedCheckouts Error", error);
+            console.log("handleFetchAbandonedCheckouts Error on welcomeConnect", error);
         }
     }
 
+    async function fetchAppSubscription() {
+        try {
+            const response = await fetch("/api/active/subscription/get");
+            if (response.ok == true && response.status == 200) {
+                const responseJson = await response.json();
+                return responseJson;
+            }
+        } catch (error) {
+            console.log("fetchAppSubscription ERROR on welcomeConnect", error);
+        }
+    }
 };
 
 export default WelcomeConnect;

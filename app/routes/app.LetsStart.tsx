@@ -3,9 +3,9 @@ import React, { useEffect, useState } from 'react';
 import '../StartPage.css';
 import { useSubmit } from '@remix-run/react';
 import { authenticate, MONTHLY_PLAN } from "../shopify.server";
-import AbandonedCartsSummary from '~/components/AbandonedCartsSummary';
+import StartPageCartSummary from '~/components/StartPageCartSummary';
 
-export const action = async ({ request }) => {
+export const action = async ({ request }: any) => {
     const formData = await request.formData();
     const planName = formData.get("planName") || MONTHLY_PLAN;
 
@@ -37,7 +37,7 @@ const LetsStart = () => {
     const [planName, setPlanName] = useState('not set');
     const submit = useSubmit();
 
-    const handlePlanSelect = (planName) => {
+    const handlePlanSelect = (planName: any) => {
         setPlanName(planName);
         const formData = new FormData();
         formData.append("planName", planName);
@@ -52,19 +52,16 @@ const LetsStart = () => {
         <div className="body">
             <div className='start_page'>
                 <Page fullWidth>
-                    <div className='start_main_container'>
-                        <div className='start_main_container_heading'>
-                            <Text variant="heading3xl" as="h3">
+                    <div className='lets_start_main_container'>
+                        <div className='start_main_container_heading pb-8'>
+                            <Text variant="heading3xl" as="h3" >
                                 Let’s Start!
                             </Text>
                         </div>
-                        <div className='start_main_container_sub_heading'>
-                            <Text variant="headingLg" as="h5">
-                                Here’s a Dashboard of Your Lost Revenue
-                            </Text>
-                        </div>
+
                         <div>
-                            <AbandonedCartsSummary getPageData={getPageData} />
+                            <p className='font-bold text-2xl pb-6'>Here’s a Dashboard of Your Lost Revenue</p>
+                            <StartPageCartSummary getPageData={getPageData} />
                         </div>
 
                         <div className="start_price_container">
@@ -139,16 +136,42 @@ const LetsStart = () => {
 
     async function handleFetchAbandonedCheckouts() {
         try {
-            const response = await fetch("/api/abandoned-checkouts/get");
+            const appSubscription = await fetchAppSubscription();
+            // console.log("appSubscription from letsStart", appSubscription?.activeSubscriptions?.[0]?.createdAt);
+
+            const response = await fetch("/api/abandoned-checkouts/get", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    appSubscriptionCreated: appSubscription?.activeSubscriptions?.[0]?.createdAt,
+                    pageName: "letsStart"
+                })
+            });
+
             if (response.ok == true && response.status == 200) {
                 const responseData = await response.json();
+                // console.log("responseData letsStart", responseData);
 
                 if (responseData.success == true) {
                     setPageData({ ...responseData });
                 }
             }
         } catch (error) {
-            console.log("handleFetchAbandonedCheckouts Error", error);
+            console.log("handleFetchAbandonedCheckouts Error on letsStart", error);
+        }
+    }
+
+    async function fetchAppSubscription() {
+        try {
+            const response = await fetch("/api/active/subscription/get");
+            if (response.ok == true && response.status == 200) {
+                const responseJson = await response.json();
+                return responseJson;
+            }
+        } catch (error) {
+            console.log("fetchAppSubscription ERROR on letsStart", error);
         }
     }
 };

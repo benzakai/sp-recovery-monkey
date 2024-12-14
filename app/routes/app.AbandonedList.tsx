@@ -95,7 +95,9 @@ export default function NewAbandonedList() {
                             </div>
 
                             {loader ? (
-                                <div className='abandoned_list_spinner'> <Spinner accessibilityLabel="Spinner example" size="large" /></div>
+                                <div className="flex justify-center items-center h-full w-full mt-28">
+                                    <Spinner accessibilityLabel="Spinner example" size="large" />
+                                </div>
                             ) : (
                                 <LegacyCard>
                                     <DataTable
@@ -132,18 +134,42 @@ export default function NewAbandonedList() {
 
     async function handleFetchAbandonedCheckouts() {
         try {
-            setLoader(true);
-            const response = await fetch("/api/abandoned-checkouts/get");
+            setLoader(true)
+            const appSubscription = await fetchAppSubscription();
+            // console.log("appSubscription from abondonedList", appSubscription);
+
+            const response = await fetch("/api/abandoned-checkouts/get", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    appSubscriptionCreated: appSubscription?.activeSubscriptions?.[0]?.createdAt,
+                    pageName: "WelcomeConnect"
+                })
+            });
+
             if (response.ok == true && response.status == 200) {
                 const responseData = await response.json();
-
                 if (responseData.success == true) {
-                    setLoader(false);
                     setPageData({ ...responseData });
                 }
+                setLoader(false)
             }
         } catch (error) {
-            console.log("handleFetchAbandonedCheckouts Error", error);
+            console.log("handleFetchAbandonedCheckouts Error on AbandonedList ", error);
+        }
+    }
+
+    async function fetchAppSubscription() {
+        try {
+            const response = await fetch("/api/active/subscription/get");
+            if (response.ok == true && response.status == 200) {
+                const responseJson = await response.json();
+                return responseJson;
+            }
+        } catch (error) {
+            console.log("fetchAppSubscription ERROR on AbandonedList", error);
         }
     }
 }
