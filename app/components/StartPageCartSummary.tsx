@@ -1,7 +1,7 @@
 import AbandonedCartSVG from './SVGs/AbandonedCartSVG';
 import MissedRevenueSVG from './SVGs/MissedRevenueSVG';
-import RecoveredRevenueSVG from './RecoveredRevenueSVG';
-import ACRRateSVG from './ACRRateSVG';
+import RecoveredRevenueSVG from './SVGs/RecoveredRevenueSVG';
+import ACRRateSVG from './SVGs/ACRRateSVG';
 import * as React from "react";
 
 export default function StartPageCartSummary({ getPageData }: any) {

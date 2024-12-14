@@ -7,7 +7,7 @@ import { NavMenu } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 import { authenticate } from "../shopify.server";
 import * as React from "react";
-import { Frame, Loading } from '@shopify/polaris';
+import { Spinner } from '@shopify/polaris';
 import fireStoreFetchService from "~/services/fireStoreFetchService";
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
@@ -60,9 +60,9 @@ export default function App() {
   return (
     <AppProvider isEmbeddedApp apiKey={apiKey}>
       {isSubscribed === null ?
-        <Frame>
-          <Loading />
-        </Frame> :
+        <div className='flex justify-center items-center w-full h-full'>
+          <Spinner accessibilityLabel="Spinner example" size="large" /></div>
+        :
         <>
           {!isSubscribed ? (
             <NavMenu>

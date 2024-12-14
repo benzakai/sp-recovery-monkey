@@ -3,9 +3,9 @@ import cartLogo from '../routes/images/cart.png';
 import bagLogo from '../routes/images/bag.png';
 import dollarLogo from '../routes/images/dollar.png';
 import tickmarkLogo from '../routes/images/TickMark.png';
-import RecoveredCartsSVG from './RecoveredCartsSVG';
-import RecoveredRevenueSVG from './RecoveredRevenueSVG';
-import ACRRateSVG from './ACRRateSVG';
+import RecoveredCartsSVG from './SVGs/RecoveredCartsSVG';
+import RecoveredRevenueSVG from './SVGs/RecoveredRevenueSVG';
+import ACRRateSVG from './SVGs/ACRRateSVG';
 import * as React from "react";
 
 export default function AbandonedCartsSummary({ getPageData }: any) {

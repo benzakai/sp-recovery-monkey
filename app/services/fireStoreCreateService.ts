@@ -5,11 +5,11 @@ export default async function fireStoreCreateService(collectionName: string, doc
     try {
 
         const getCollection = firestoreDatabase.collection(collectionName);
-        await getCollection.doc(documentName).set(documentData, optionalData);
+        const data = await getCollection.doc(documentName).set(documentData, optionalData);
 
         console.log(`Document ${documentName} created for firestore collection ${collectionName}`);
 
-        return { success: true };
+        return { success: true, data };
     } catch (error) {
         console.log("fireStoreCreateService error", error)
         return { success: false };

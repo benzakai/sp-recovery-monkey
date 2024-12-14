@@ -277,7 +277,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
     const getShopCurrencyJson = await getShopCurrency.json();
 
-    console.log("allCheckouts", allCheckouts, "appSubscriptionCreated", appSubscriptionCreated);
+    // console.log("allCheckouts", allCheckouts, "appSubscriptionCreated", appSubscriptionCreated);
 
     const shopCurrency = currencySymbols[getShopCurrencyJson.data.shop.currencyCode];
     if (!allCheckouts.length) return {

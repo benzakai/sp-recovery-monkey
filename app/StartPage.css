@@ -24,7 +24,13 @@
     /* background-color: rgb(231 231 231); */
     padding: 4rem 0rem 120px 0px;
 }
-
+.messge_box_welcome {
+    width: 100%;
+    padding: 4rem 0rem 120px 0px;
+}
+.message_text_Welcome{
+    margin-bottom: 1rem;
+}
 .start_main_container_heading {
     margin-bottom: 2px;
 }
