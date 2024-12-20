@@ -261,6 +261,7 @@ export async function action({ request }: ActionFunctionArgs) {
                 pageInfo {
                   hasNextPage
                   endCursor
+                  hasPreviousPage
                 }
             }
             }`

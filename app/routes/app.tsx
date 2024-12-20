@@ -6,9 +6,11 @@ import { AppProvider } from "@shopify/shopify-app-remix/react";
 import { NavMenu } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 import { authenticate } from "../shopify.server";
-import * as React from "react";
+import React from "react";
 import { Spinner } from '@shopify/polaris';
 import fireStoreFetchService from "~/services/fireStoreFetchService";
+
+React.useLayoutEffect = React.useEffect
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
@@ -72,8 +74,9 @@ export default function App() {
             <NavMenu>
               <Link to="/app/WelcomeConnect">Welcome</Link>
               <Link to="/app/AbandonedList">Abandoned List</Link>
-              <Link to="/app/ConvertPage">Convert</Link>
-              <Link to="/app/ConnectPage">Connect Page</Link>
+              {/* <Link to="/app/ConvertPage">Convert</Link> */}
+              <Link to="/app/SmartBulk">Smart Bulk</Link>
+              {/* <Link to="/app/ConnectPage">Connect Page</Link> */}
               <Link to="/app/Settings">Settings</Link>
             </NavMenu>
           )}
