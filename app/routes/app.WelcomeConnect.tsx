@@ -29,6 +29,7 @@ const WelcomeConnect = () => {
     const [compareMessage, setCompareMessage] = useState()
     const [isSaveButtonLoading, setSaveButtonLoading] = useState(false)
     const [isMessageLoading, setMessageLoading] = useState(true)
+    const [isDisBtnLoading, setDisBtnLoading] = useState(false)
 
     const fetchPhoneNumber = async (phonedata) => {
         const response = await fetch('/api/fetchPhoneNumber', {
@@ -78,6 +79,7 @@ const WelcomeConnect = () => {
 
     const getAuthStatus = async () => {
         const unauthorizedInstance = instances.find(instance => instance.status === 'notAuthorized');
+        // console.log("instances.filter(instance => instance.status === 'notAuthorized');", instances.filter(instance => instance.status === 'notAuthorized'));
         if (unauthorizedInstance) {
             setCurrentQRData({
                 url: unauthorizedInstance.apiUrl,
@@ -101,6 +103,7 @@ const WelcomeConnect = () => {
             if (data.qrData?.type === 'qrCode') {
                 setQRCode(`data:image/png;base64,${data.qrData.message}`);
             } else if (data.qrData?.type === 'alreadyLogged') {
+                await handleFetchAbandonedCheckouts(true)
                 setStateInstance('authorized');
                 const phoneNumberData = await fetchPhoneNumber(currentQRData);
                 setPubsubData(async (prevState) => {
@@ -165,6 +168,37 @@ const WelcomeConnect = () => {
         } catch (error) {
             console.error('Error fetching instance status:', error);
             return {};
+        }
+    }
+
+    const disconnectInstance = async () => {
+        try {
+            setDisBtnLoading(true)
+            let fireStoreData;
+            if (Object.keys(currentQRData).length === 0) {
+                fireStoreData = await getDataFromFirestore();
+            }
+            // console.log("fireStoreData", fireStoreData);
+            // console.log("currentQRData", currentQRData);
+
+            const response = await fetch('/api/disconnectInstance', {
+                method: "POST",
+                body: JSON.stringify(Object.keys(currentQRData).length === 0 ? {
+                    url: fireStoreData.greenAPIUrl,
+                    id: fireStoreData.greenAPIId,
+                    token: fireStoreData.greenAPIKey
+                } : currentQRData)
+            })
+            if (response.ok) {
+                const data = await response.json()
+                console.log("data", data);
+                await handleFetchAbandonedCheckouts(false)
+                setStateInstance("notAuthorized")
+            }
+        } catch (error) {
+            console.log("error occured on disconnectInstance", error);
+        } finally {
+            setDisBtnLoading(false)
         }
     }
 
@@ -323,7 +357,7 @@ const WelcomeConnect = () => {
                                         <div className="start_price_container_cards">
                                             {stateInstance === 'authorized' ? (
                                                 <Card>
-                                                    <div className="start_price_choose_plan">
+                                                    <div className="start_price_choose_plan mb-4">
                                                         <div className='connection_alien_logo_section'>
                                                             <img className='connection_alien_logo' src={AlienLogo} alt="" />
                                                         </div>
@@ -331,6 +365,11 @@ const WelcomeConnect = () => {
                                                             <div className="connection_card_after_qr_dialogue">
                                                                 You should easiely send and receive WhatsApp messages!
                                                             </div>
+                                                        </div>
+                                                        <div className='mt-4 flex justify-end'>
+                                                            <Button onClick={disconnectInstance} disabled={isDisBtnLoading} loading={isDisBtnLoading} variant='primary'>
+                                                                Disconnect
+                                                            </Button>
                                                         </div>
                                                     </div>
                                                 </Card>
@@ -373,7 +412,7 @@ const WelcomeConnect = () => {
                                                 <Spinner accessibilityLabel="Small spinner example" size="large" />
                                             </div> : <div className="flex-col" >
                                                 <textarea
-                                                    className="w-full h-7 border-none outline-none text-base"
+                                                    className="w-full h-10 border-none outline-none text-base"
                                                     value={customMessage.header}
                                                     onChange={(e) => {
                                                         setCustomMessage((prev) => ({
