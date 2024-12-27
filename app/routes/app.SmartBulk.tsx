@@ -83,7 +83,7 @@ export default function SmartBulk() {
             const response = await fetch('/api/getSmartBulkMessage')
             if (response.ok) {
                 const { messageData } = await response.json()
-                console.log("messageData", messageData);
+                // console.log("messageData", messageData);
                 setCustomMessage(messageData)
                 setCompareMessage(messageData)
             }
@@ -122,7 +122,7 @@ export default function SmartBulk() {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log("Fetched data:", data);
+                // console.log("Fetched data:", data);
 
                 if (data?.abandonedCheckouts) {
                     setCustomers(data.abandonedCheckouts)
@@ -196,12 +196,12 @@ export default function SmartBulk() {
     }
 
     const handleSendMessageConfirmed = async () => {
-        console.log("selectedTableData", selectedTableData);
+        // console.log("selectedTableData", selectedTableData);
         const topicNames = ["bulk_sending"]
         hideModal();
         const checkouts = selectedTableData.map(selectedId => {
             const customer = customers.find(cust => cust.id === selectedId);
-            console.log("customer", customer);
+            // console.log("customer", customer);
 
             if (customer && customer.customer) {
                 return {
@@ -210,27 +210,17 @@ export default function SmartBulk() {
                 };
             }
         });
-        console.log("checkouts:", checkouts);
+        // console.log("checkouts:", checkouts);
         // return
-        const instanceResponse = await fetch('/api/getInstances');
+        const instanceResponse = await fetch('/api/getInstance');
         const instanceResponseData = await instanceResponse.json();
-        const unauthorizedInstance = instanceResponseData.instances.find((instance: any) => instance.status === 'notAuthorized');
-        const phoneNumberResponse = await fetch('/api/fetchPhoneNumber', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(unauthorizedInstance),
-        });
-        const phoneNumberResponseData = await phoneNumberResponse.json();
         const message = {
             messageContent: customMessage,
             checkouts,
-            greenAPIId: unauthorizedInstance.idInstance,
-            storeId: phoneNumberResponseData?.storeId,
-            // phoneNumber: phoneNumberResponseData?.reponseData?.phone,
-            greenAPIKey: unauthorizedInstance?.apiTokenInstance,
-            greenAPIUrl: unauthorizedInstance.apiUrl,
+            greenAPIId: instanceResponseData.instance.idInstance,
+            storeId: instanceResponseData.instance.shop,
+            greenAPIKey: instanceResponseData.instance?.apiTokenInstance,
+            greenAPIUrl: instanceResponseData.instance.apiUrl,
         }
         const response3 = await fetch('/api/sendPubSubData', {
             method: 'POST',
@@ -240,7 +230,7 @@ export default function SmartBulk() {
             body: JSON.stringify({ message, topicNames }),
         });
         const data3 = await response3.json();
-        console.log("data3", data3);
+        // console.log("data3", data3);
 
     }
 

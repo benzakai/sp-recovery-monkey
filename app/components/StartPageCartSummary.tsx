@@ -5,7 +5,7 @@ import ACRRateSVG from './SVGs/ACRRateSVG';
 import * as React from "react";
 
 export default function StartPageCartSummary({ getPageData }: any) {
-    console.log("getPageData StartPageCartSummary", getPageData);
+    // console.log("getPageData StartPageCartSummary", getPageData);
     const [getCards, setCards] = React.useState([
         {
             id: 1,

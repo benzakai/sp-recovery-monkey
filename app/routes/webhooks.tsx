@@ -171,6 +171,27 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       if (session) {
         await db.session.deleteMany({ where: { shop } });
       }
+      try {
+        const instanceData = await fireStoreFetchService("InstanceData", shop);
+        const responseDeleteInstance = await fetch(`${process.env.PARTNER_API_URL}/partner/deleteInstanceAccount/${process.env.PARTNER_TOKEN}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            idInstance: instanceData.idInstance
+          })
+        });
+        if (responseDeleteInstance.ok) {
+          const data = await responseDeleteInstance.json()
+          // console.log("responseDeleteInstance data on APP_UNINSTALLED:", data);
+          const deletedDBInstanceData = await fireStoreDeleteService("InstanceData", shop);
+          // console.log("deletedDBInstanceData on APP_UNINSTALLED", deletedDBInstanceData);
+        }
+      } catch (error) {
+        console.log("error occured on APP_UNINSTALLED responseDeleteInstance", error);
+      }
+
       console.log("APP UNINSTALLED WEBHOOK");
       break;
 

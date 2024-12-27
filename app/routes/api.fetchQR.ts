@@ -1,8 +1,6 @@
 import { ActionFunctionArgs } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
 
-
-
 export async function action({ request }: ActionFunctionArgs) {
     const { admin, session } = await authenticate.admin(request);
     const {url,id,token} = await request.json();

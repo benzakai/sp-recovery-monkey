@@ -4,15 +4,14 @@ import '../StartPage.css';
 import AlienLogo from './images/Alien.png'
 import AbandonedCartsSummary from '~/components/AbandonedCartsSummary';
 import StartPageCartSummary from '~/components/StartPageCartSummary';
-import { Link } from '@shopify/polaris';
 
 const WelcomeConnect = () => {
-    const [instances, setInstances] = useState([]);
+    const [instance, setInstance] = useState([]);
     const [qrCode, setQRCode] = useState('');
-    const [stateInstance, setStateInstance] = useState('notAuthorized');
-    const [storeId, setStoreId] = useState('');
+    const [stateInstance, setStateInstance] = useState('');
+    // const [storeId, setStoreId] = useState('');
     const [pubsubData, setPubsubData] = useState({});
-    const [currentQRData, setCurrentQRData] = useState({});
+    // const [currentQRData, setCurrentQRData] = useState({});
     const [getPageData, setPageData] = React.useState({
         abandonedCarts: [],
         abandonedCartsSum: 0,
@@ -31,19 +30,21 @@ const WelcomeConnect = () => {
     const [isMessageLoading, setMessageLoading] = useState(true)
     const [isDisBtnLoading, setDisBtnLoading] = useState(false)
 
-    const fetchPhoneNumber = async (phonedata) => {
+    const fetchPhoneNumber = async ({ url, id, token }: any) => {
         const response = await fetch('/api/fetchPhoneNumber', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(phonedata),
+            body: JSON.stringify({
+                url, id, token
+            }),
         });
         const data = await response.json();
         return data;
     }
 
-    const sendDataToPubSub = async (message) => {
+    const sendDataToPubSub = async (message: any) => {
         const topicNames = topics;
         const response = await fetch('/api/sendPubSubData', {
             method: 'POST',
@@ -53,10 +54,9 @@ const WelcomeConnect = () => {
             body: JSON.stringify({ message, topicNames }),
         });
         const data = await response.json();
-        setStateInstance('authorized');
     }
 
-    const setDataInFirestore = async (collectionName, documentName, data) => {
+    const setDataInFirestore = async (collectionName: any, documentName: any, data: any) => {
         const response = await fetch('/api/firestore', {
             method: 'POST',
             headers: {
@@ -67,31 +67,53 @@ const WelcomeConnect = () => {
         const Responsedata = await response.json();
     }
 
-    const fetchInstances = async () => {
+    const fetchInstance = async () => {
         try {
-            const response = await fetch('/api/getInstances');
+            const response = await fetch('/api/getInstance');
             const data = await response.json();
-            setInstances(data.instances);
+            setInstance(data.instance);
+            return data.instance
         } catch (error) {
-            console.error('Error fetching instances:', error);
+            console.error('Error fetching instance:', error);
         }
     };
 
-    const getAuthStatus = async () => {
-        const unauthorizedInstance = instances.find(instance => instance.status === 'notAuthorized');
-        // console.log("instances.filter(instance => instance.status === 'notAuthorized');", instances.filter(instance => instance.status === 'notAuthorized'));
-        if (unauthorizedInstance) {
-            setCurrentQRData({
-                url: unauthorizedInstance.apiUrl,
-                id: unauthorizedInstance.idInstance,
-                token: unauthorizedInstance.apiTokenInstance,
-            });
-        }
-    };
+    // const getAuthStatus = async () => {
+    //     const unauthorizedInstance = instances.find(instance => instance.status === 'notAuthorized');
+    //     // console.log("instances.filter(instance => instance.status === 'notAuthorized');", instances.filter(instance => instance.status === 'notAuthorized'));
+    //     if (unauthorizedInstance) {
+    //         setCurrentQRData({
+    //             url: unauthorizedInstance.apiUrl,
+    //             id: unauthorizedInstance.idInstance,
+    //             token: unauthorizedInstance.apiTokenInstance,
+    //         });
+    //     }
+    // };
 
-    const fetchQR = async (url, id, token) => {
-
+    const savePubSubAndDBData = async ({ url, id, token }: any) => {
         try {
+            const phoneNumberData = await fetchPhoneNumber({ url, id, token });
+            setPubsubData(async (prevState) => {
+                const updatedData = {
+                    ...prevState,
+                    greenAPIId: id,
+                    storeId: phoneNumberData?.storeId,
+                    phoneNumber: phoneNumberData?.reponseData?.phone,
+                    greenAPIKey: token,
+                    greenAPIUrl: url,
+                };
+                await sendDataToPubSub(updatedData);
+                await setDataInFirestore('ConnectPagedata', `${updatedData?.storeId}`, updatedData);
+                return updatedData;
+            });
+        } catch (error) {
+            console.log("error occured on savePubSubAndDBData ", error);
+        }
+    }
+
+    const fetchQR = async ({ url, id, token }: any) => {
+        try {
+            // console.log("fetcQR    url, id, token", url, id, token);
             const response = await fetch('/api/fetchQR', {
                 method: 'POST',
                 headers: {
@@ -99,51 +121,42 @@ const WelcomeConnect = () => {
                 },
                 body: JSON.stringify({ url, id, token }),
             });
-            const data = await response.json();
-            if (data.qrData?.type === 'qrCode') {
-                setQRCode(`data:image/png;base64,${data.qrData.message}`);
-            } else if (data.qrData?.type === 'alreadyLogged') {
-                await handleFetchAbandonedCheckouts(true)
-                setStateInstance('authorized');
-                const phoneNumberData = await fetchPhoneNumber(currentQRData);
-                setPubsubData(async (prevState) => {
-                    const updatedData = {
-                        ...prevState,
-                        greenAPIId: currentQRData.id,
-                        storeId: phoneNumberData?.storeId,
-                        phoneNumber: phoneNumberData?.reponseData?.phone,
-                        greenAPIKey: currentQRData?.token,
-                        greenAPIUrl: currentQRData?.url,
-                    };
+            if (response.ok) {
+                const data = await response.json();
+                // console.log("data of fetchQR", data);
+                if (data?.error?.includes("is deleted")) {
+                    window.location.reload()
+                }
 
-                    await sendDataToPubSub(updatedData);
-                    await setDataInFirestore('ConnectPagedata', `${updatedData?.storeId}`, updatedData)
-
-                    return updatedData;
-                });
+                if (data.qrData?.type === 'qrCode') {
+                    setQRCode(`data:image/png;base64,${data.qrData.message}`);
+                } else if (data.qrData?.type === 'alreadyLogged') {
+                    setStateInstance('authorized');
+                    savePubSubAndDBData({ url, id, token })
+                }
             }
-            if (data.storeId) setStoreId(data.storeId);
         } catch (error) {
             console.error('error', error);
         }
     };
 
-    const getDataFromFirestore = async () => {
-        const response = await fetch('/api/firestore?collectionName=ConnectPagedata', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        const Responsedata = await response.json();
-        if (Responsedata.data) {
-            return Responsedata.data;
-        } else {
-            return null;
-        }
-    };
 
-    const getInstanceState = async (url, id, token) => {
+    // const getDataFromFirestore = async () => {
+    //     const response = await fetch('/api/firestore?collectionName=ConnectPagedata', {
+    //         method: 'GET',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         },
+    //     });
+    //     const Responsedata = await response.json();
+    //     if (Responsedata.data) {
+    //         return Responsedata.data;
+    //     } else {
+    //         return null;
+    //     }
+    // };
+
+    const getInstanceState = async ({ url, id, token }: any) => {
         try {
             const response = await fetch('/api/getInstanceStatus', {
                 method: 'POST',
@@ -171,27 +184,23 @@ const WelcomeConnect = () => {
         }
     }
 
-    const disconnectInstance = async () => {
+    const disconnectInstance = async (url: any, id: any, token: any, isDeleteFromDB: any) => {
         try {
             setDisBtnLoading(true)
-            let fireStoreData;
-            if (Object.keys(currentQRData).length === 0) {
-                fireStoreData = await getDataFromFirestore();
-            }
             // console.log("fireStoreData", fireStoreData);
             // console.log("currentQRData", currentQRData);
-
             const response = await fetch('/api/disconnectInstance', {
                 method: "POST",
-                body: JSON.stringify(Object.keys(currentQRData).length === 0 ? {
-                    url: fireStoreData.greenAPIUrl,
-                    id: fireStoreData.greenAPIId,
-                    token: fireStoreData.greenAPIKey
-                } : currentQRData)
+                body: JSON.stringify({
+                    url,
+                    id,
+                    token,
+                    isDeleteFromDB
+                })
             })
             if (response.ok) {
                 const data = await response.json()
-                console.log("data", data);
+                // console.log("data", data);
                 await handleFetchAbandonedCheckouts(false)
                 setStateInstance("notAuthorized")
             }
@@ -202,57 +211,61 @@ const WelcomeConnect = () => {
         }
     }
 
+    const getMessageData = async () => {
+        try {
+            const response = await fetch('/api/getMainCustomMessage')
+            if (response.ok) {
+                const { messageData } = await response.json()
+                // console.log("messageData", messageData);
+                setCustomMessage(messageData)
+                setCompareMessage(messageData)
+            }
+        } catch (error) {
+            console.log("error occured on getMessageData", error);
+        }
+    }
+    const getFireData = async () => {
+        try {
+            const instanceData = await fetchInstance();
+            // console.log("instanceData", instanceData);
+            const stateInstanceData = await getInstanceState({ url: instanceData.apiUrl, id: instanceData.idInstance, token: instanceData.apiTokenInstance });
+            // console.log("stateInstanceData?.responseData?.stateInstance", stateInstanceData?.responseData?.stateInstance);
+            if (stateInstanceData?.responseData?.stateInstance == 'authorized') {
+                setStateInstance('authorized');
+                // await getMessageData()
+            } else if (stateInstanceData?.responseData?.stateInstance == 'notAuthorized') {
+                setStateInstance('notAuthorized');
+                deleteConnectPageData();
+            }
+            const isInstanceAuthorized = stateInstanceData?.responseData?.stateInstance === 'authorized'
+            // const isInstanceAuthorized1 = true
+            // setStateInstance('authorized');
+            // console.log("isInstanceAuthorized triggger", isInstanceAuthorized);
+            await handleFetchAbandonedCheckouts(isInstanceAuthorized);
+            return { url: instanceData.apiUrl, id: instanceData.idInstance, token: instanceData.apiTokenInstance }
+        } catch (error) {
+            console.log("got error on getFireData", error);
+        }
+    }
+
     useEffect(() => {
-        const initializeFlow = async () => {
-            await fetchInstances();
-            if (instances.length > 0) {
-                await getAuthStatus();
-                if (currentQRData.url && currentQRData.id && currentQRData.token) {
-                    await fetchQR(currentQRData.url, currentQRData.id, currentQRData.token);
+        const fetchDataAndFetchQR = async () => {
+            try {
+                const { url, id, token }: any = await getFireData();
+                if (url && id && token) {
+                    fetchQR({ url, id, token });
+                } else {
+                    console.error('Missing URL, ID, or Token');
                 }
+            } catch (error) {
+                console.log("error occured on fetchDataAndFetchQR", error);
+            } finally {
+                setLoadingPage(false)
             }
         };
 
-        const getFireData = async () => {
-            try {
-                const fireStoreData = await getDataFromFirestore();
-                let stateInstanceData;
-                if (Object.keys(fireStoreData).length === 0) {
-                    initializeFlow();
-                } else {
-                    stateInstanceData = await getInstanceState(fireStoreData?.greenAPIUrl, fireStoreData?.greenAPIId, fireStoreData?.greenAPIKey);
-                    if (stateInstanceData?.responseData?.stateInstance == 'authorized') {
-                        setStateInstance('authorized');
-                    } else if (stateInstanceData?.responseData?.stateInstance == 'notAuthorized') {
-                        await deleteConnectPageData();
-                        initializeFlow();
-                    } else {
-                        initializeFlow();
-                    }
-                }
-                const isInstanceAuthorized = stateInstanceData?.responseData?.stateInstance === 'authorized'
-                // const isInstanceAuthorized1 = true
-                // setStateInstance('authorized');
-                // console.log("isInstanceAuthorized triggger", isInstanceAuthorized);
-                await handleFetchAbandonedCheckouts(isInstanceAuthorized);
-
-                const response = await fetch('/api/getMainCustomMessage')
-                if (response.ok) {
-                    const { messageData } = await response.json()
-                    console.log("messageData", messageData);
-                    setCustomMessage(messageData)
-                    setCompareMessage(messageData)
-                }
-            } catch (error) {
-                console.log("got error on getFireData", error);
-            } finally {
-                // console.log("is loading false triggger");
-                setLoadingPage(false)
-            }
-        }
-
-        getFireData();
-    }, [instances.length]);
+        fetchDataAndFetchQR();
+    }, []);
 
     useEffect(() => {
         if (customMessage?.header) {
@@ -262,13 +275,23 @@ const WelcomeConnect = () => {
 
     useEffect(() => {
         let intervalId;
-        if (stateInstance !== 'authorized' && currentQRData.url && currentQRData.id && currentQRData.token) {
-            intervalId = setInterval(() => {
-                fetchQR(currentQRData.url, currentQRData.id, currentQRData.token);
+        if (stateInstance !== 'authorized' && instance?.apiUrl && instance?.idInstance && instance?.apiTokenInstance) {
+            intervalId = setInterval(async () => {
+                await fetchQR({ url: instance?.apiUrl, id: instance?.idInstance, token: instance?.apiTokenInstance });
             }, 3000);
+        } else if (stateInstance === 'authorized') {
+            const fetchData = async () => {
+                await handleFetchAbandonedCheckouts(true);
+                await getMessageData();
+            }
+            fetchData()
         }
-        return () => clearInterval(intervalId);
-    }, [stateInstance, currentQRData]);
+        return () => {
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
+        };
+    }, [stateInstance]);
 
     const handleSaveMessage = async () => {
         try {
@@ -367,7 +390,7 @@ const WelcomeConnect = () => {
                                                             </div>
                                                         </div>
                                                         <div className='mt-4 flex justify-end'>
-                                                            <Button onClick={disconnectInstance} disabled={isDisBtnLoading} loading={isDisBtnLoading} variant='primary'>
+                                                            <Button onClick={() => disconnectInstance(instance?.apiUrl, instance?.idInstance, instance?.apiTokenInstance, false)} disabled={isDisBtnLoading} loading={isDisBtnLoading} variant='primary'>
                                                                 Disconnect
                                                             </Button>
                                                         </div>
@@ -438,7 +461,7 @@ const WelcomeConnect = () => {
                                                     <Button
                                                         onClick={handleSaveMessage}
                                                         variant="primary"
-                                                        disabled={compareMessage.header === customMessage.header && compareMessage.content === customMessage.content}
+                                                        disabled={compareMessage?.header === customMessage?.header && compareMessage.content === customMessage.content}
                                                         loading={isSaveButtonLoading}
                                                     >Save Text</Button>
                                                 </div>
