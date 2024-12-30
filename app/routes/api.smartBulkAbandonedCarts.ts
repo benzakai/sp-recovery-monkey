@@ -218,6 +218,7 @@ export async function action({ request }: ActionFunctionArgs) {
                             completedAt
                             createdAt
                             updatedAt
+                            abandonedCheckoutUrl
                             customer {
                                 firstName
                                 lastName

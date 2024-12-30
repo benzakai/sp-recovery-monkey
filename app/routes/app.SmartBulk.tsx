@@ -11,6 +11,7 @@ interface Customer {
     createdAt: string;
     completedAt: string;
     updatedAt: string;
+    abandonedCheckoutUrl: string;
     customer: {
         firstName: string;
         lastName: string;
@@ -37,13 +38,13 @@ export default function SmartBulk() {
         const today = new Date();
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(today.getDate() - 7);
-    
+
         return {
             since: sevenDaysAgo.toISOString().split('T')[0],
             until: today.toISOString().split('T')[0]
         };
     });
-    
+
     const [customMessage, setCustomMessage] = useState()
     const [compareMessage, setCompareMessage] = useState()
     const [otherTableData, setOtherTableData] = useState({
@@ -201,12 +202,12 @@ export default function SmartBulk() {
         hideModal();
         const checkouts = selectedTableData.map(selectedId => {
             const customer = customers.find(cust => cust.id === selectedId);
-            // console.log("customer", customer);
-
             if (customer && customer.customer) {
                 return {
-                    name: (customer.customer.firstName && customer.customer.lastName) ? customer.customer.firstName + " " + customer.customer.lastName : "N/A",
-                    phoneNumber: customer.customer.phone ? customer.customer.phone : "N/A"
+                    name: (customer.customer.firstName || customer.customer.lastName) ? (customer.customer.firstName ? `${customer.customer.firstName} ` : "") + (customer.customer.lastName || "") : "N/A",
+                    phoneNumber: customer.customer.phone ? customer.customer.phone : "N/A",
+                    messageContent: customMessage,
+                    abandonedCheckoutUrl: customer.abandonedCheckoutUrl
                 };
             }
         });
@@ -215,7 +216,6 @@ export default function SmartBulk() {
         const instanceResponse = await fetch('/api/getInstance');
         const instanceResponseData = await instanceResponse.json();
         const message = {
-            messageContent: customMessage,
             checkouts,
             greenAPIId: instanceResponseData.instance.idInstance,
             storeId: instanceResponseData.instance.shop,
@@ -231,7 +231,6 @@ export default function SmartBulk() {
         });
         const data3 = await response3.json();
         // console.log("data3", data3);
-
     }
 
     const handleSaveMessage = async () => {
