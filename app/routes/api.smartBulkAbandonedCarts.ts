@@ -287,7 +287,7 @@ export async function action({ request }: ActionFunctionArgs) {
         // const getAllAbandonedCarts = responseData?.data?.abandonedCheckouts?.nodes?.filter((item: any) => item.completedAt == null);
         const getAllAbandonedCarts = responseData?.data?.abandonedCheckouts?.nodes
         let getAllAbandonedCartsSum: number = 0;
-        for (let i = 0; i < getAllAbandonedCarts.length; i++) getAllAbandonedCartsSum += parseFloat(getAllAbandonedCarts[i].totalPriceSet.shopMoney.amount);
+        for (let i = 0; i < getAllAbandonedCarts?.length; i++) getAllAbandonedCartsSum += parseFloat(getAllAbandonedCarts[i].totalPriceSet.shopMoney.amount);
 
         // console.log("allCheckouts", allCheckouts, "appSubscriptionCreated", appSubscriptionCreated);
 

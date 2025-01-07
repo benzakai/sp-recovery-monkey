@@ -214,7 +214,7 @@ export function DateRangePicker({ setSelectedDateValues }: any) {
             fullHeight
             activator={
                 <Button
-                    size="slim"
+                    size="large"
                     icon={CalendarIcon}
                     onClick={() => setPopoverActive(!popoverActive)}
                 >

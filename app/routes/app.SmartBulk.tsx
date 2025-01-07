@@ -1,10 +1,8 @@
-import { Box, Button, Card, Link, Page, SkeletonBodyText, Spinner, Text } from '@shopify/polaris'
+import { Box, Button, Card, Link, Page, Select, SkeletonBodyText, Spinner, Text } from '@shopify/polaris'
 import { useEffect, useState } from 'react';
 import { DateRangePicker } from '~/components/DateRangePicker'
 import SmartBulkTable from '~/components/SmartBulkTable'
 import ConfirmationModal from '~/components/ConfirmationModal';
-
-const PageSize = 15;
 
 interface Customer {
     id: string;
@@ -66,6 +64,8 @@ export default function SmartBulk() {
         endCursor: null,
         startCursor: null
     });
+    const [PageSize, setPageSize] = useState('15')
+
 
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
@@ -77,7 +77,7 @@ export default function SmartBulk() {
         return () => {
             clearTimeout(debounceTimer);
         };
-    }, [currentPage, selectedDateValues, queryValue, selectedFilter]);
+    }, [currentPage, selectedDateValues, queryValue, selectedFilter, PageSize]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -113,7 +113,7 @@ export default function SmartBulk() {
                     initialRender: ((!pageInfo.hasNextPage && !pageInfo.hasPreviousPage) || currentPage === copyOfCurrentPage) ? true : false,
                     endCursor: endCursorToFetch,
                     startCursor: startCursorToFetch,
-                    PageSize,
+                    PageSize: Number(PageSize),
                     selectedDateValues,
                     queryValue,
                     selectedFilter: selectedFilter[0],
@@ -253,6 +253,13 @@ export default function SmartBulk() {
         }
     }
 
+    const options = [
+        { label: '15/page', value: '15' },
+        { label: '50/page', value: '50' },
+        { label: '100/page', value: '100' },
+        { label: '500/page', value: '500' }
+    ];
+
     return (
         <Page fullWidth>
             <div className='px-36 mt-10 mb-16'>
@@ -327,6 +334,15 @@ export default function SmartBulk() {
                         </Text>
                     </div>
                     <div className='flex justify-center items-center'>
+                        <div className='mr-3'>
+                            <Select
+                                label="Show"
+                                labelInline
+                                options={options}
+                                onChange={(v) => setPageSize(v)}
+                                value={PageSize}
+                            />
+                        </div>
                         <div className='mr-3'>
                             <DateRangePicker
                                 setSelectedDateValues={setSelectedDateValues} />
