@@ -207,40 +207,58 @@ const handleOldCheckout = async (checkout: any, shop: string, token: string, ses
 
         let objj: any = {};
         objj = checkoutUpdateDoc;
-        
+
         objj["SHOP DOMAIN"] = shopDomain;
 
         if (getGreenAPIData.success == true) {
 
           objj["Green API ID"] = getGreenAPIData.data;
-          const HasToSend = await checkMatching(session);
 
-          if (HasToSend && HasToSend?.status == true) {
-            await sendDataToPubSub(objj);
-            await handleAddAbandonedCheckouts(checkoutId.toString(), shop, objj);
-            await setsubscriptionAbandonedCarts(objj);
-          } else if (HasToSend && HasToSend?.status == false) {
-            console.log('data not send to pubsub----------------------');
-          } else if (!HasToSend) {
-            await sendDataToPubSub(objj);
-            await handleAddAbandonedCheckouts(checkoutId.toString(), shop, objj);
-            await setsubscriptionAbandonedCarts(objj);
-          }
+          await sendDataToPubSub(objj);
+          await handleAddAbandonedCheckouts(checkoutId.toString(), shop, objj);
+          await setsubscriptionAbandonedCarts(objj);
+
+
+          // const HasToSend = await checkMatching(session);
+          // console.log("HasToSend", HasToSend)
+
+          // if (HasToSend && HasToSend?.status == true) {
+          //   await sendDataToPubSub(objj);
+          //   await handleAddAbandonedCheckouts(checkoutId.toString(), shop, objj);
+          //   await setsubscriptionAbandonedCarts(objj);
+          // } else if (HasToSend && HasToSend?.status == false) {
+          //   console.log('data not send to pubsub----------------------');
+          // } else if (!HasToSend) {
+          //   await sendDataToPubSub(objj);
+          //   await handleAddAbandonedCheckouts(checkoutId.toString(), shop, objj);
+          //   await setsubscriptionAbandonedCarts(objj);
+          // } else {
+          //   await fireStoreDeleteService("users", String(checkoutId));
+          //   await fireStoreDeleteService("checkoutUpdateData", String(checkoutId));
+          // }
 
 
         } else {
-          const HasToSend = await checkMatching(session);
-          if (HasToSend && HasToSend?.status == true) {
-            await sendDataToPubSub(objj);
-            await handleAddAbandonedCheckouts(checkoutId.toString(), shop, objj);
-            await setsubscriptionAbandonedCarts(objj);
-          } else if (HasToSend && HasToSend?.status == false) {
-            console.log('data not send to pubsub----------------------');
-          } else if (!HasToSend) {
-            await sendDataToPubSub(objj);
-            await handleAddAbandonedCheckouts(checkoutId.toString(), shop, objj);
-            await setsubscriptionAbandonedCarts(objj);
-          }
+          await sendDataToPubSub(objj);
+          await handleAddAbandonedCheckouts(checkoutId.toString(), shop, objj);
+          await setsubscriptionAbandonedCarts(objj);
+
+          // const HasToSend = await checkMatching(session);
+          // console.log("HasToSend", HasToSend);
+          // if (HasToSend && HasToSend?.status == true) {
+          //   await sendDataToPubSub(objj);
+          //   await handleAddAbandonedCheckouts(checkoutId.toString(), shop, objj);
+          //   await setsubscriptionAbandonedCarts(objj);
+          // } else if (HasToSend && HasToSend?.status == false) {
+          //   console.log('data not send to pubsub----------------------');
+          // } else if (!HasToSend) {
+          //   await sendDataToPubSub(objj);
+          //   await handleAddAbandonedCheckouts(checkoutId.toString(), shop, objj);
+          //   await setsubscriptionAbandonedCarts(objj);
+          // } else {
+          //   await fireStoreDeleteService("users", String(checkoutId));
+          //   await fireStoreDeleteService("checkoutUpdateData", String(checkoutId));
+          // }
 
         }
 
@@ -326,11 +344,39 @@ const getShopDomain = async (shopName: string, token: string) => {
 }
 
 export const sendDataFromWebhooks = async () => {
-  console.log("Cron Job Started");
+  console.log("Cron Job Started", new Date());
 
   try {
     const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
     const oldCheckoutsQuerySnapshot = await checkoutCollection.where("createdAt", "<=", tenMinutesAgo).get();
+    // const delay = (ms: any) => new Promise(resolve => setTimeout(resolve, ms));
+
+    console.log("oldCheckoutsQuerySnapshot.size", oldCheckoutsQuerySnapshot.size);
+    // let storeID;
+    // for (const doc of oldCheckoutsQuerySnapshot.docs) {
+    //   try {
+    //     const checkout = doc.data();
+    //     const session = await db.session.findFirst({ where: { shop: checkout.storeId } });
+    //     storeID = checkout.storeId
+    //     if (session) {
+    //       await handleOldCheckout(checkout, session.shop, session.accessToken, session);
+    //       // const hasValidSubscription = await storeSubscriptionActive(session.shop);
+
+    //       // if (hasValidSubscription?.success == true) {
+    //       //   await handleOldCheckout(checkout, session.shop, session.accessToken, session);
+    //       // } else {
+    //       //   console.log("Cron Job Stopped because the Store does not have Active Subscription.");
+    //       // }
+
+    //     } else {
+    //       console.log(`Session is Not Found for the ${checkout.storeId} in the Database, hence code not moving forward`);
+    //     }
+    //   } catch (error) {
+    //     console.error(`Error processing checkout with storeId ${storeID}:`, error);
+    //     console.log("Continuing to the next checkout...");
+    //   }
+    // }
+
 
     oldCheckoutsQuerySnapshot?.forEach(async (doc) => {
       const checkout = doc.data();
@@ -357,7 +403,7 @@ export const sendDataFromWebhooks = async () => {
     console.error("Error fetching old checkouts:", error);
   }
 
-  console.log("Cron Job Ended");
+  console.log("Cron Job Ended", new Date());
 }
 
 export const setAppInstalledDate = async (session: any, data: any) => {
@@ -391,46 +437,60 @@ const setsubscriptionAbandonedCarts = async (data: any) => {
 }
 
 export const checkMatching = async (session: any) => {
-  const collection = firestoreDatabase.collection('subscriptionAbandonedCarts');
-  const subscriptionQuerySnapshot = await collection.where("STORE_ID", "==", session.shop).get();
 
-  if (subscriptionQuerySnapshot.empty) {
-    return { data: 'No subscriptionAbandonedCarts found', status: true };
-  }
-  const recoveredCarts = await getAbandonedCarts(session);
-
-  for (const doc of subscriptionQuerySnapshot.docs) {
-    const docData = doc.data();
-    const checkoutId = docData?.UpdateData?.id || docData?.checkoutId || docData?.id || null;
-
-    if (recoveredCarts?.length > 0) {
-      const matchedCart = recoveredCarts.find(c => c.id == checkoutId);
-
-      if (matchedCart) {
-
-        let limit = 0;
-        const subscriptionData = await getSubscriptionsData(session);
-        const plan = subscriptionData?.plan;
-
-        if (plan === 'Starter') limit = 10;
-        else if (plan === 'Pro') limit = 49;
-        else if (plan === 'Advance') limit = 100;
-
-        const recoveredCount = recoveredCarts.length;
-
-        if (recoveredCount >= limit) {
-          return { data: 'Limit exceeded', status: false };
-        } else {
-          return { data: 'Limit not exceeded', status: true };
-        }
-      }
-
-    } else {
-      return { data: 'No recovered carts', status: true };
+  try {
+    return {
+      success: true
     }
-  }
+    const collection = firestoreDatabase.collection('subscriptionAbandonedCarts');
+    console.log("collectioncollection", session.shop);
+    const subscriptionQuerySnapshot = await collection.where("STORE_ID", "==", session.shop).get();
+    console.log("subscriptionQuerySnapshot", subscriptionQuerySnapshot);
 
-  return { data: 'No matching carts or limit not exceeded', status: true };
+    if (subscriptionQuerySnapshot.empty) {
+      return { data: 'No subscriptionAbandonedCarts found', status: true };
+    }
+    const recoveredCarts = await getAbandonedCarts(session);
+    console.log("recoveredCarts", recoveredCarts);
+
+    for (const doc of subscriptionQuerySnapshot.docs) {
+      const docData = doc.data();
+      const checkoutId = docData?.UpdateData?.id || docData?.checkoutId || docData?.id || null;
+
+      if (recoveredCarts?.length > 0) {
+        const matchedCart = recoveredCarts.find(c => c.id == checkoutId);
+        console.log("matchedCart", matchedCart);
+
+        if (matchedCart) {
+
+          let limit = 0;
+          const subscriptionData = await getSubscriptionsData(session);
+          const plan = subscriptionData?.plan;
+
+          if (plan === 'Starter') limit = 10;
+          else if (plan === 'Pro') limit = 49;
+          else if (plan === 'Advance') limit = 100;
+
+          const recoveredCount = recoveredCarts.length;
+
+          if (recoveredCount >= limit) {
+            return { data: 'Limit exceeded', status: false };
+          } else {
+            return { data: 'Limit not exceeded', status: true };
+          }
+        }
+
+      } else {
+        return { data: 'No recovered carts', status: true };
+      }
+    }
+
+    return { data: 'No matching carts or limit not exceeded', status: true };
+
+  } catch (error) {
+    console.log("error", error);
+    return { success: false, error: true }
+  }
 }
 
 export const getAbandonedCarts = async (session: any) => {
@@ -449,11 +509,14 @@ export const getAbandonedCarts = async (session: any) => {
           },
         }
       );
+      if (!response.ok) {
+        console.log("response of getAbandonedCarts", response);
+      }
 
       const responseData = await response.json();
       const checkouts = responseData.checkouts;
 
-      if (checkouts.length > 0) {
+      if (checkouts?.length > 0) {
         allCheckouts = [...allCheckouts, ...checkouts];
         lastId = checkouts[checkouts.length - 1].id;
       } else {
@@ -469,10 +532,10 @@ export const getAbandonedCarts = async (session: any) => {
 
     const referenceDate = new Date(referenceDateStr);
 
-    const filteredAbandonedCheckouts = allCheckouts.filter(item => {
+    const filteredAbandonedCheckouts = allCheckouts?.filter(item => {
 
-      if (item.created_at) {
-        const createdAtDate = new Date(item.created_at);
+      if (item?.created_at) {
+        const createdAtDate = new Date(item?.created_at);
 
         return createdAtDate > referenceDate;
       }
@@ -481,14 +544,14 @@ export const getAbandonedCarts = async (session: any) => {
 
 
     const filteredRecoveredCarts = () => {
-      return filteredAbandonedCheckouts.filter(item => item.completed_at !== null);
+      return filteredAbandonedCheckouts.filter(item => item?.completed_at !== null);
     };
     const recoveredCarts = filteredRecoveredCarts();
 
     return recoveredCarts;
 
   } catch (error) {
-    console.log("error", error);
+    console.log("error on getAbandonedCarts", error);
     return [];
   }
 }

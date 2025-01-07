@@ -50,32 +50,44 @@ export default async function withoutPhoneCheckoutService() {
         const firestoreDatabase = new Firestore();
         const CheckoutsWithoutPhoneNumberCollection = firestoreDatabase.collection('CheckoutsWithoutPhoneNumber');
         const CheckoutsWithoutPhoneNumberDocuments = await CheckoutsWithoutPhoneNumberCollection.get();
+        // console.log("CheckoutsWithoutPhoneNumberDocuments count", CheckoutsWithoutPhoneNumberDocuments.size);
+        // console.log("CheckoutsWithoutPhoneNumberDocuments.docs", CheckoutsWithoutPhoneNumberDocuments.docs.length);
 
-        CheckoutsWithoutPhoneNumberDocuments?.forEach(async (doc) => {
+        const delay = (ms: any) => new Promise(resolve => setTimeout(resolve, ms));
+
+        for (const doc of CheckoutsWithoutPhoneNumberDocuments.docs) {
             const checkout = doc.data();
-            console.log("Without Phone Number Checkout Id ", checkout.checkoutId);
+
+            // console.log("Without Phone Number Checkout Id ", checkout.checkoutId);
 
             if (checkout?.shop) {
                 const session = await getSession(checkout?.shop);
 
                 if (session) {
                     const getAbandonedCheckout = await publicGraphqlClient(session.shop, session.accessToken, AbandonedCheckoutsQuery(checkout?.payload?.id));
-                    console.log(checkout.checkoutId, "getAbandonedCheckout", getAbandonedCheckout);
+                    // console.log(checkout?.checkoutId, "getAbandonedCheckout", getAbandonedCheckout);
 
                     if (getAbandonedCheckout?.abandonedCheckouts?.nodes.length != 0) {
-                        console.log(checkout.checkoutId, "Abandoned Checkout in Shopify is Present");
+                        // console.log(checkout?.checkoutId, "Abandoned Checkout in Shopify is Present");
                         const abandonedCheckoutData = getAbandonedCheckout?.abandonedCheckouts?.nodes[0];
                         const customerId = abandonedCheckoutData?.customer?.id;
+                        // console.log("customerId", customerId);
 
                         if (customerId) {
-                            console.log(checkout.checkoutId, "CUSTOMER ID IS PRESENT");
+                            // console.log(checkout?.checkoutId, "CUSTOMER ID IS PRESENT");
                             const getCustomer = await publicGraphqlClient(session.shop, session.accessToken, CustomerQuery(customerId));
-                            const customerDetails = getCustomer.customer;
-                            console.log(checkout.checkoutId, "customerDetails", customerDetails);
+                            const customerDetails = getCustomer?.customer;
+                            // console.log(checkout?.checkoutId, "customerDetails", customerDetails);
 
                             await publishMessagePubSubService("costumer-ID", JSON.stringify({ ...checkout, customerDetails }));
 
                             if (customerDetails?.phone == null) {
+
+                                // console.log("CHECKOUT ID", checkout?.payload?.id);
+                                // console.log("customerDetails?.phone", customerDetails?.phone);
+                                // console.log("checkout?.payload?.phone", checkout?.payload?.phone)
+                                // console.log("checkout?.payload?.billing_address?.phone", checkout?.payload?.billing_address?.phone)
+                                // console.log("checkout?.payload?.shipping_address?.phone", checkout?.payload?.shipping_address?.phone);
 
                                 if (checkout?.payload?.phone != null && checkout?.payload?.phone != undefined) {
 
@@ -91,31 +103,100 @@ export default async function withoutPhoneCheckoutService() {
 
                                 } else {
 
-                                    console.log(checkout?.payload?.id, "CUSTOMER PHONE NUMBER IS ABSENT")
+                                    // console.log(checkout?.payload?.id, "CUSTOMER PHONE NUMBER IS ABSENT")
                                     await deleteOlderThan24HoursDocs(checkout?.updatedAt.toDate(), checkout?.payload?.id);
 
                                 }
 
-                            } else if (customerDetails.phone != null) {
+                            } else if (customerDetails?.phone != null) {
                                 await sendDataToPubSub(checkout, session, customerDetails?.phone);
                             }
 
                         } else {
-                            console.log(checkout.checkoutId, "CUSTOMER ID IS NOT PRESENT");
+                            // console.log(checkout?.checkoutId, "CUSTOMER ID IS NOT PRESENT");
                             await deleteOlderThan24HoursDocs(checkout?.updatedAt.toDate(), checkout?.payload?.id);
                         }
 
                     } else {
-                        console.log(checkout.checkoutId, "Abandoned Checkout in Shopify is Absent");
+                        // console.log(checkout?.checkoutId, "Abandoned Checkout in Shopify is Absent");
                         await deleteOlderThan24HoursDocs(checkout?.updatedAt.toDate(), checkout?.payload?.id);
                     }
 
                 } else {
-                    console.log(checkout.checkoutId, "Session is NOT PRESENT in the database");
+                    // console.log(checkout?.checkoutId, "Session is NOT PRESENT in the database");
                     await deleteOlderThan24HoursDocs(checkout?.updatedAt.toDate(), checkout?.payload?.id);
                 }
             }
-        });
+
+            await delay(200);
+        }
+
+        // CheckoutsWithoutPhoneNumberDocuments?.forEach(async (doc) => {
+        //     const checkout = doc.data();
+        //     console.log("Without Phone Number Checkout Id ", checkout.checkoutId);
+
+        //     if (checkout?.shop) {
+        //         const session = await getSession(checkout?.shop);
+
+        //         if (session) {
+        //             const getAbandonedCheckout = await publicGraphqlClient(session.shop, session.accessToken, AbandonedCheckoutsQuery(checkout?.payload?.id));
+        //             // console.log(checkout?.checkoutId, "getAbandonedCheckout", getAbandonedCheckout);
+
+        //             if (getAbandonedCheckout?.abandonedCheckouts?.nodes.length != 0) {
+        //                 // console.log(checkout?.checkoutId, "Abandoned Checkout in Shopify is Present");
+        //                 const abandonedCheckoutData = getAbandonedCheckout?.abandonedCheckouts?.nodes[0];
+        //                 const customerId = abandonedCheckoutData?.customer?.id;
+
+        //                 if (customerId) {
+        //                     // console.log(checkout?.checkoutId, "CUSTOMER ID IS PRESENT");
+        //                     const getCustomer = await publicGraphqlClient(session.shop, session.accessToken, CustomerQuery(customerId));
+        //                     const customerDetails = getCustomer?.customer;
+        //                     // console.log(checkout?.checkoutId, "customerDetails", customerDetails);
+
+        //                     await publishMessagePubSubService("costumer-ID", JSON.stringify({ ...checkout, customerDetails }));
+
+        //                     if (customerDetails?.phone == null) {
+
+        //                         if (checkout?.payload?.phone != null && checkout?.payload?.phone != undefined) {
+
+        //                             await sendDataToPubSub(checkout, session, checkout?.payload?.phone);
+
+        //                         } else if (checkout?.payload?.billing_address?.phone != null && checkout?.payload?.billing_address?.phone != undefined) {
+
+        //                             await sendDataToPubSub(checkout, session, checkout?.payload?.billing_address?.phone);
+
+        //                         } else if (checkout?.payload?.shipping_address?.phone != null && checkout?.payload?.shipping_address?.phone != undefined) {
+
+        //                             await sendDataToPubSub(checkout, session, checkout?.payload?.shipping_address?.phone);
+
+        //                         } else {
+
+        //                             // console.log(checkout?.payload?.id, "CUSTOMER PHONE NUMBER IS ABSENT")
+        //                             await deleteOlderThan24HoursDocs(checkout?.updatedAt.toDate(), checkout?.payload?.id);
+
+        //                         }
+
+        //                     } else if (customerDetails?.phone != null) {
+        //                         await sendDataToPubSub(checkout, session, customerDetails?.phone);
+        //                     }
+
+        //                 } else {
+        //                     // console.log(checkout?.checkoutId, "CUSTOMER ID IS NOT PRESENT");
+        //                     await deleteOlderThan24HoursDocs(checkout?.updatedAt.toDate(), checkout?.payload?.id);
+        //                 }
+
+        //             } else {
+        //                 // console.log(checkout?.checkoutId, "Abandoned Checkout in Shopify is Absent");
+        //                 await deleteOlderThan24HoursDocs(checkout?.updatedAt.toDate(), checkout?.payload?.id);
+        //             }
+
+        //         } else {
+        //             // console.log(checkout?.checkoutId, "Session is NOT PRESENT in the database");
+        //             await deleteOlderThan24HoursDocs(checkout?.updatedAt.toDate(), checkout?.payload?.id);
+        //         }
+        //     }
+        // });
+        // console.log("CheckoutsWithoutPhoneNumberDocuments count after", CheckoutsWithoutPhoneNumberDocuments.size);
 
         return { success: true };
     } catch (error) {
@@ -144,16 +225,19 @@ async function publicGraphqlClient(shop: string, accessToken: string, QUERY: str
             },
             data: { query: QUERY }
         });
+        // if (response?.status > 200) console.log("response of publicGraphqlClient of withoutPhoneCheckoutService", response);
 
         if (response.data.data) return response.data.data;
     } catch (error) {
-        console.log("ERROR", error);
+        console.log("ERROR on publicGraphqlClient of withoutPhoneCheckoutService", error);
     }
 }
 
+
 async function deleteOlderThan24HoursDocs(date: any, checkoutId: string) {
     const todaysDate = new Date().getTime();
-    const documentsDate = new Date(date).getTime() + (1 * 24 * 60 * 60 * 1000);
+    // const documentsDate = new Date(date).getTime() + (1 * 24 * 60 * 60 * 1000); // 24 hours
+    const documentsDate = new Date(date).getTime() + (4 * 60 * 60 * 1000); // 4 hour
     const compareDates = documentsDate > todaysDate;
 
     if (compareDates == false) {
@@ -205,17 +289,17 @@ async function sendDataToPubSub(checkout: any, session: any, phone: any) {
         if (Green_API_ID?.success == true) newObj["Green_API_ID"] = Green_API_ID?.data;
 
         const recentOrders = await fetchOrders(session.shop, session.accessToken);
-        console.log("recentOrders", recentOrders);
+        // console.log("recentOrders", recentOrders);
         const orderExists = recentOrders.some((order: any) => order.checkout_id == checkout?.payload?.id);
-        console.log("orderExists", orderExists);
+        // console.log("orderExists", orderExists);
 
         if (orderExists) {
             await fireStoreDeleteService("CheckoutsWithoutPhoneNumber", String(checkout?.payload?.id));
-            console.log("ORDER ALREADY EXISTS FOR THIS CHECKOUT. NOT SENDING TO PUB/SUB");
+            // console.log("ORDER ALREADY EXISTS FOR THIS CHECKOUT. NOT SENDING TO PUB/SUB");
         } else {
             await publishMessagePubSubService("NewAbandonedCheckout", JSON.stringify(newObj));
             await fireStoreDeleteService("CheckoutsWithoutPhoneNumber", String(checkout?.payload?.id));
-            console.log(checkout?.payload?.id, "CUSTOMER PHONE NUMBER IS PRESENT SEND DATA TO PUBSUB")
+            // console.log(checkout?.payload?.id, "CUSTOMER PHONE NUMBER IS PRESENT SEND DATA TO PUBSUB")
         }
 
         return { success: true };
@@ -238,12 +322,13 @@ async function fetchOrders(shopName: string, token: string) {
                 },
             }
         );
+        // if (response?.status > 200) console.log("response of fetching orders from Shopify from withoutPhoneCheckoutService:", response);
 
         const responseData = await response.json();
-        console.log("responseData?.orders", responseData?.orders);
+        // console.log("responseData?.orders", responseData?.orders);
         return responseData?.orders;
     } catch (error) {
-        console.log("Error fetching orders from Shopify:", error);
+        console.log("Error fetching orders from Shopify from withoutPhoneCheckoutService:", error);
         return [];
     }
 }
