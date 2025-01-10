@@ -40,7 +40,7 @@ export default function AbandonedCartsSummary({ getPageData }: any) {
             setCards([
                 {
                     id: 1,
-                    value: getPageData?.recoveredCarts?.length,
+                    value: getPageData?.recoveredCarts,
                     icon: <RecoveredCartsSVG />,
                     title: "Recovered Carts",
                     description: "Customers who completed their purchase"

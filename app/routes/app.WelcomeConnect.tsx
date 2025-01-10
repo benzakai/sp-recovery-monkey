@@ -484,28 +484,58 @@ const WelcomeConnect = () => {
     async function handleFetchAbandonedCheckouts(isInstanceAuthorized: boolean) {
         try {
             const appSubscription = await fetchAppSubscription();
-            // console.log("appSubscription", appSubscription);
-
-            const response = await fetch("/api/abandoned-checkouts/get", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    appSubscriptionCreated: appSubscription?.activeSubscriptions?.[0]?.createdAt,
-                    pageName: isInstanceAuthorized ? "WelcomeConnect" : "letsStart"
+            const [responseAbandoned, responseCards] = await Promise.all([
+                fetch("/api/abandoned-checkouts/get", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        appSubscriptionCreated: appSubscription?.activeSubscriptions?.[0]?.createdAt,
+                        pageName: isInstanceAuthorized ? "WelcomeConnect" : "letsStart"
+                    })
+                }),
+                fetch("/api/welcome-page/cards-data", {
+                    method: "GET",
                 })
-            });
+            ]);
 
-            if (response.ok == true && response.status == 200) {
-                const responseData = await response.json();
-
-                if (responseData.success == true) {
-                    setPageData({ ...responseData });
-                }
+            if (!responseAbandoned.ok) {
+                console.error("failed to fetch abandoned checkouts", responseAbandoned.status);
+                return;
+            }
+            if (!responseCards.ok) {
+                console.error("failed to fetch cards data", responseCards.status);
+                return;
+            }
+            const [responseAbandonedData, responseCardsData] = await Promise.all([
+                responseAbandoned.json(),
+                responseCards.json()
+            ]);
+            if (responseAbandonedData?.success && responseCardsData?.success) {
+                const {
+                    abandonedCarts,
+                    abandonedCartsSum,
+                    allCarts,
+                    shopCurrency,
+                    success
+                } = responseAbandonedData;
+                const { acr, sales_count, sum_of_sales, currency } = responseCardsData?.dashboardData;
+                setPageData({
+                    abandonedCarts,
+                    abandonedCartsSum,
+                    acrRate: acr?.toFixed(1),
+                    allCarts,
+                    recoveredCarts: sales_count,
+                    recoveredCartsSum: sum_of_sales,
+                    shopCurrency: currency || shopCurrency,
+                    success
+                });
+            } else {
+                console.error("abandoned data or cards data fetch was unsuccessful");
             }
         } catch (error) {
-            console.log("handleFetchAbandonedCheckouts Error on welcomeConnect", error);
+            console.error("handleFetchAbandonedCheckouts Error on welcomeConnect", error);
         }
     }
 
