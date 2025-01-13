@@ -155,7 +155,7 @@
 
 .start_plan_list {
     /* padding: 19px; */
-    padding-left: 19px;
+    padding-left: 10px;
     /* margin-left: -8px; */
     /* line-height: 23px; */
     /* padding-bottom: 53px; */
@@ -163,6 +163,8 @@
 }
 .start_plan_list_item{
     padding-bottom: 10px;
+    font-size: 14.5px;
+    line-height:normal;
 }
 .star_plan_limit_dialogue {
     color: black;

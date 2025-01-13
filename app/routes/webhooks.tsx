@@ -196,8 +196,12 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       break;
 
     case 'APP_SUBSCRIPTIONS_UPDATE':
-      console.log("APP_SUBSCRIPTIONS_UPDATE:", payload);
-      await setSubscriptionData(payload, session?.shop as string);
+      // console.log("APP_SUBSCRIPTIONS_UPDATE:", payload.app_subscription);
+      const subscriptionDataFound = await fireStoreFetchService("subscriptions", shop);
+      // console.log("subscriptionDataFound", subscriptionDataFound);
+      if (!subscriptionDataFound || (subscriptionDataFound?.name !== "Free" && payload.app_subscription.status !== "CANCELLED")) {
+        await setSubscriptionData(payload, session?.shop as string);
+      }
       break;
 
     case 'ORDERS_CREATE':

@@ -15,13 +15,24 @@ React.useLayoutEffect = React.useEffect
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { session } = await authenticate.admin(request);
+  const { session, billing } = await authenticate.admin(request);
+  // console.log("session.shop)", session.shop);
+  // const cancelledSubscription = await billing.cancel({
+  //   subscriptionId: "gid://shopify/AppSubscription/29688135931",
+  //   isTest: false,
+  //   prorate: true,
+  // });
+  // to check if user is on free plan
+  const doc = await fireStoreFetchService("subscriptions", session.shop);
+  // console.log("doc", doc);
+  const selectedPlanName = (doc?.plan === "Free" && doc?.status === "ACTIVE") ? "Free" : null
+
   // const getSubscriptionStatus = await fireStoreFetchService("subscriptions", session.shop);
-  return json({ apiKey: process.env.SHOPIFY_API_KEY || "" });
+  return json({ apiKey: process.env.SHOPIFY_API_KEY || "", selectedPlanName });
 };
 
 export default function App() {
-  const { apiKey } = useLoaderData<typeof loader>();
+  const { apiKey, selectedPlanName } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
   const [isSubscribed, setIsSubscribed] = React.useState<boolean | null>(null);
 
@@ -46,14 +57,19 @@ export default function App() {
     const checkSubscription = async () => {
       const subscribed: boolean = await fetchAppSubscription();
       // console.log("subscribed", subscribed);
-      if (!subscribed) navigate("/app/LetsStart");
-      else {
-        if (window.location.pathname.includes("/app/")) {
-          navigate(`/app/${window.location.pathname.split("/app/")[1]}`);
-        } else {
-          navigate("/app/WelcomeConnect");
-        }
-      }
+      // if (!subscribed) navigate("/app/LetsStart");
+      // else {
+      //   if (window.location.pathname.includes("/app/")) {
+      //     navigate(`/app/${window.location.pathname.split("/app/")[1]}`);
+      //   } else {
+      //     navigate("/app/WelcomeConnect");
+      //   }
+      // }
+      if (!subscribed && selectedPlanName !== "Free") navigate("/app/LetsStart");
+      else navigate("/app/WelcomeConnect");
+      // console.log(`!subscribed && selectedPlanName !== "Free"`, !subscribed && selectedPlanName !== "Free")
+      // console.log("subscribed", subscribed);
+      // console.log("selectedPlanName", selectedPlanName);
       setIsSubscribed(subscribed);
     };
     checkSubscription();
@@ -66,7 +82,7 @@ export default function App() {
           <Spinner accessibilityLabel="Spinner example" size="large" /></div>
         :
         <>
-          {!isSubscribed ? (
+          {(!isSubscribed && selectedPlanName !== "Free") ? (
             <NavMenu>
               <Link to="/app/LetsStart">Let’s Start</Link>
             </NavMenu>
