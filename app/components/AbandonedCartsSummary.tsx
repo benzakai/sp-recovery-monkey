@@ -7,9 +7,10 @@ import RecoveredCartsSVG from './SVGs/RecoveredCartsSVG';
 import RecoveredRevenueSVG from './SVGs/RecoveredRevenueSVG';
 import ACRRateSVG from './SVGs/ACRRateSVG';
 import * as React from "react";
+import AbandonedCartSVG from './SVGs/AbandonedCartSVG';
 
-export default function AbandonedCartsSummary({ getPageData }: any) {
-    console.log("getPageData AbandonedCartsSummary", getPageData);
+export default function AbandonedCartsSummary({ getPageData, forPageType }: any) {
+    // console.log("getPageData AbandonedCartsSummary", getPageData);
     const [getCards, setCards] = React.useState([
         {
             id: 1,
@@ -18,6 +19,13 @@ export default function AbandonedCartsSummary({ getPageData }: any) {
             title: "Recovered Carts",
             description: "Customers who completed their purchase"
         },
+        (forPageType === "WelcomeConnect" ? {
+            id: 4,
+            value: "Loading",
+            icon: <AbandonedCartSVG />,
+            title: "Abandoned Carts",
+            description: "Customers waiting for you to complete their purchase"
+        } : {}),
         {
             id: 2,
             value: "Loading",
@@ -40,11 +48,18 @@ export default function AbandonedCartsSummary({ getPageData }: any) {
             setCards([
                 {
                     id: 1,
-                    value: getPageData?.recoveredCarts,
+                    value: forPageType === "AbandonedList" ? getPageData?.recoveredCarts?.length : getPageData?.recoveredCarts,
                     icon: <RecoveredCartsSVG />,
                     title: "Recovered Carts",
                     description: "Customers who completed their purchase"
                 },
+                (forPageType === "WelcomeConnect" ? {
+                    id: 4,
+                    value: getPageData?.abandonedCarts?.length,
+                    icon: <AbandonedCartSVG />,
+                    title: "Abandoned Carts",
+                    description: "Customers waiting for you to complete their purchase"
+                } : {}),
                 {
                     id: 2,
                     value: `${getPageData?.shopCurrency}${getPageData?.recoveredCartsSum}`,

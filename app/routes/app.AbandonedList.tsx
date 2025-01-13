@@ -85,7 +85,7 @@ export default function NewAbandonedList() {
                             </div>
                         </div>
 
-                        <div><AbandonedCartsSummary getPageData={getPageData} /></div>
+                        <div><AbandonedCartsSummary getPageData={getPageData} forPageType="AbandonedList" /></div>
 
                         <div className='abandoned_list_container'>
                             <div className="start_price_container_heading">

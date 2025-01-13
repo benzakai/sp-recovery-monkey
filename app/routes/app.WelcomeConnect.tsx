@@ -1,9 +1,13 @@
-import { Card, Page, Button, Spinner, Text } from '@shopify/polaris';
+import { Card, Page, Button, Spinner, Text, BlockStack, Link } from '@shopify/polaris';
 import React, { useEffect, useState } from 'react';
 import '../StartPage.css';
 import AlienLogo from './images/Alien.png'
 import AbandonedCartsSummary from '~/components/AbandonedCartsSummary';
 import StartPageCartSummary from '~/components/StartPageCartSummary';
+import OneSVG from '~/components/SVGs/OneSVG';
+import TwoSVG from '~/components/SVGs/TwoSVG';
+import ThreeSVG from '~/components/SVGs/ThreeSVG';
+import AlienSVG from '~/components/SVGs/AlienSVG';
 
 const WelcomeConnect = () => {
     const [instance, setInstance] = useState([]);
@@ -201,7 +205,7 @@ const WelcomeConnect = () => {
             if (response.ok) {
                 const data = await response.json()
                 // console.log("data", data);
-                await handleFetchAbandonedCheckouts(false)
+                // await handleFetchAbandonedCheckouts(false)
                 setStateInstance("notAuthorized")
             }
         } catch (error) {
@@ -237,11 +241,11 @@ const WelcomeConnect = () => {
                 setStateInstance('notAuthorized');
                 deleteConnectPageData();
             }
-            const isInstanceAuthorized = stateInstanceData?.responseData?.stateInstance === 'authorized'
+            // const isInstanceAuthorized = stateInstanceData?.responseData?.stateInstance === 'authorized'
             // const isInstanceAuthorized1 = true
             // setStateInstance('authorized');
             // console.log("isInstanceAuthorized triggger", isInstanceAuthorized);
-            await handleFetchAbandonedCheckouts(isInstanceAuthorized);
+            // await handleFetchAbandonedCheckouts(isInstanceAuthorized);
             return { url: instanceData.apiUrl, id: instanceData.idInstance, token: instanceData.apiTokenInstance }
         } catch (error) {
             console.log("got error on getFireData", error);
@@ -263,7 +267,7 @@ const WelcomeConnect = () => {
                 setLoadingPage(false)
             }
         };
-
+        getMessageData();
         fetchDataAndFetchQR();
     }, []);
 
@@ -274,17 +278,15 @@ const WelcomeConnect = () => {
     }, [customMessage])
 
     useEffect(() => {
-        let intervalId;
+        let intervalId: any;
         if (stateInstance !== 'authorized' && instance?.apiUrl && instance?.idInstance && instance?.apiTokenInstance) {
             intervalId = setInterval(async () => {
                 await fetchQR({ url: instance?.apiUrl, id: instance?.idInstance, token: instance?.apiTokenInstance });
             }, 3000);
-        } else if (stateInstance === 'authorized') {
-            const fetchData = async () => {
-                await handleFetchAbandonedCheckouts(true);
-                await getMessageData();
-            }
-            fetchData()
+        }
+        // console.log("stateInstance==========>", stateInstance);
+        if (stateInstance) {
+            handleFetchAbandonedCheckouts(stateInstance === 'authorized' ? true : false);
         }
         return () => {
             if (intervalId) {
@@ -332,7 +334,7 @@ const WelcomeConnect = () => {
                     <div className='start_page'>
 
                         <Page fullWidth>
-                            <div className={stateInstance === 'authorized' ? "start_main_container" : "lets_start_main_container"}>
+                            <div className="lets_start_main_container">
                                 <div>
                                     {/* {stateInstance == 'authorized' ? (
                                 <>
@@ -358,7 +360,8 @@ const WelcomeConnect = () => {
 
                                 <div>
                                     <p className='font-bold text-2xl pb-6'>Here’s a Dashboard of Your {stateInstance === 'authorized' ? "Recovered" : "Lost"} Revenue</p>
-                                    {stateInstance === 'authorized' ? <AbandonedCartsSummary getPageData={getPageData} /> : <StartPageCartSummary getPageData={getPageData} />}
+                                    {/* {stateInstance === 'authorized' ? <AbandonedCartsSummary getPageData={getPageData} forPageType="WelcomeConnect" /> : <StartPageCartSummary getPageData={getPageData} />} */}
+                                    <AbandonedCartsSummary getPageData={getPageData} forPageType="WelcomeConnect" />
                                 </div>
                                 <div className='flex'>
                                     <div className="start_price_container">
@@ -372,7 +375,7 @@ const WelcomeConnect = () => {
                                                     <Text variant="headingLg" as="h5">
                                                         Let’s Connect
                                                     </Text>
-                                                    <div className='connection_card_sub_heading'>Open your WhatsApp app-&gt; Click ‘Setting’-&gt; Click ‘linked devices’</div>
+                                                    {/* <div className='connection_card_sub_heading'>Open your WhatsApp app-&gt; Click ‘Setting’-&gt; Click ‘linked devices’</div> */}
                                                 </>
                                             )}
 
@@ -380,16 +383,16 @@ const WelcomeConnect = () => {
                                         <div className="start_price_container_cards">
                                             {stateInstance === 'authorized' ? (
                                                 <Card>
-                                                    <div className="start_price_choose_plan mb-4">
+                                                    <div className="w-60" style={{ height: '24.5rem' }}>
                                                         <div className='connection_alien_logo_section'>
-                                                            <img className='connection_alien_logo' src={AlienLogo} alt="" />
+                                                            <AlienSVG />
                                                         </div>
-                                                        <div className='connection_card_dialogue_section'>
-                                                            <div className="connection_card_after_qr_dialogue">
+                                                        <div className='p-5'>
+                                                            <Text variant="bodyLg" as="p">
                                                                 You should easiely send and receive WhatsApp messages!
-                                                            </div>
+                                                            </Text>
                                                         </div>
-                                                        <div className='mt-4 flex justify-end'>
+                                                        <div className='mt-14 flex justify-end'>
                                                             <Button onClick={() => disconnectInstance(instance?.apiUrl, instance?.idInstance, instance?.apiTokenInstance, false)} disabled={isDisBtnLoading} loading={isDisBtnLoading} variant='primary'>
                                                                 Disconnect
                                                             </Button>
@@ -398,7 +401,7 @@ const WelcomeConnect = () => {
                                                 </Card>
                                             ) : (
                                                 <Card>
-                                                    <div className="start_price_choose_plan">
+                                                    <div className="w-60" style={{ height: '24.5rem' }}>
                                                         <div className='connection_alien_logo_section'>
                                                             <div className="connection_qr_code">
                                                                 {qrCode ? (
@@ -410,10 +413,26 @@ const WelcomeConnect = () => {
                                                             </div>
 
                                                         </div>
-                                                        <div className='connection_card_dialogue_section'>
-                                                            <div className="connection_card_before_qr_dialogue">
-                                                                Scan the Qr-code to present the dialogs on your own ﻿device.
-                                                            </div>
+                                                        <div className='connection_card_dialogue_section font-semibold text-'>
+                                                            <Text variant="headingMd" as="p">
+                                                                Scan the Qr-code to present the dialogs on your own ﻿device:
+                                                            </Text>
+                                                        </div>
+                                                        <div className='mb-9'>
+                                                            <BlockStack>
+                                                                <div className='flex flex-row gap-2 mb-2 mt-4'>
+                                                                    <OneSVG />
+                                                                    <Text variant="bodyMd" as="p">Open your WhatsApp app</Text>
+                                                                </div>
+                                                                <div className='flex flex-row gap-2 mb-2'>
+                                                                    <TwoSVG />
+                                                                    <Text variant="bodyMd" as="p">Click ‘Setting’</Text>
+                                                                </div>
+                                                                <div className='flex flex-row gap-2 mb-2'>
+                                                                    <ThreeSVG />
+                                                                    <Text variant="bodyMd" as="p">Click ‘linked devices’</Text>
+                                                                </div>
+                                                            </BlockStack>
                                                         </div>
                                                     </div>
                                                 </Card>
@@ -421,19 +440,19 @@ const WelcomeConnect = () => {
                                         </div>
                                     </div>
 
-                                    {stateInstance === 'authorized' ? <div
+                                    <div
                                         className=" ml-24 messge_box_welcome"
                                     // onClick={() => handleSelectCard(card.id)}
                                     >
                                         <div className="message_text_Welcome">
                                             <Text variant="headingLg" as="h5">
-                                                Write/edit the message that sent's to your customers
+                                                write/edit the message that sent's to your customers
                                             </Text>
                                         </div>
                                         <Card>
-                                            {isMessageLoading ? <div className='flex justify-center items-center h-72'>
+                                            {isMessageLoading ? <div className='flex justify-center items-center' style={{ height: "24.5rem" }}>
                                                 <Spinner accessibilityLabel="Small spinner example" size="large" />
-                                            </div> : <div className="flex-col" >
+                                            </div> : <div className="flex-col" style={{ height: "24.5rem" }}>
                                                 <textarea
                                                     className="w-full h-10 border-none outline-none text-base"
                                                     value={customMessage.header}
@@ -447,7 +466,7 @@ const WelcomeConnect = () => {
                                                     placeholder="Card Header"
                                                 />
                                                 <textarea
-                                                    className="w-full h-56 text-base border-none outline-none"
+                                                    className="w-full h-72 text-base border-none outline-none"
                                                     value={customMessage.content}
                                                     onChange={(e) => {
                                                         setCustomMessage((prev) => ({
@@ -467,17 +486,17 @@ const WelcomeConnect = () => {
                                                 </div>
                                             </div>}
                                         </Card>
-                                        {/* <div className='mt-5'>
-                                        <Text variant="headingMd" as="h5">
-                                        You can use the following article for crafting winning and conversion phrasing at the <Link url="https://help.shopify.com/manual" removeUnderline>link here.</Link>
-                                        </Text>
-                                    </div> */}
-                                    </div> : null}
+                                        {/* <div className='mt-4'>
+                                            <Text variant="bodyLg" as="p">
+                                                You can use the following article for crafting winning and conversion phrasing at the <Link url="https://help.shopify.com/manual" removeUnderline>link here.</Link>
+                                            </Text>
+                                        </div> */}
+                                    </div>
                                 </div>
                             </div>
                         </Page>
-                    </div>
-                </div>}
+                    </div >
+                </div >}
         </>
     );
 
