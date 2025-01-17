@@ -2,6 +2,7 @@ import { ActionFunctionArgs, json } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
 import { getAppInstalledDate, getSubscriptionsData } from "~/services/sendDataFromWebhooks";
 import axios from "axios";
+import fireStoreFetchService from "~/services/fireStoreFetchService";
 
 // const formatDateInCustomFormat = (date: Date): string => {
 //   const year = date.getFullYear();
@@ -21,13 +22,14 @@ import axios from "axios";
 //   return formattedDate;
 // }
 
-const before12Days = () => {
+const before1Year = () => {
   const endDate = new Date().toISOString();
   const today = new Date();
   today.setMonth(today.getMonth() - 12);
   const startDate = today.toISOString();
   return { startDate, endDate }
 }
+
 
 // function convertFirestoreTimestampToISO(timestamp: any) {
 //   const milliseconds = timestamp._seconds * 1000 + timestamp._nanoseconds / 1000000;
@@ -211,19 +213,28 @@ const currencySymbols: any = {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-  const { appSubscriptionCreated, pageName } = JSON.parse(await request.text());
+  const { appSubscriptionCreated, pageName, planType } = JSON.parse(await request.text());
   console.log("payload", appSubscriptionCreated, pageName);
   const { admin, session } = await authenticate.admin(request);
   // const today = new Date();
   // const daysBefore30 = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
   // const last30Days = formatDateInCustomFormat(daysBefore30);
-  const { startDate, endDate } = before12Days()
+  const { startDate, endDate } = before1Year()
   let allCheckouts = [];
   let hasNextPage = null;
   let endCursor = null;
 
+  const appInstalledDateData = await fireStoreFetchService("AppInstalledDate", session.shop);
+  const appInstalledDate = new Date(appInstalledDateData.appInstalledDate._seconds * 1000 + appInstalledDateData.appInstalledDate._nanoseconds / 1000000);
+  // console.log("appInstalledDate", appInstalledDate);
+  // console.log("appSubscriptionCreated", appSubscriptionCreated);
+  // console.log("planType", planType);
+  // console.log("pageName", pageName);
+  const asPerPlanDate = planType === "Free" ? appInstalledDate : appSubscriptionCreated
+  // console.log("asPerPlanDate", asPerPlanDate);
+
   try {
-    console.log("appSubscriptionCreated", appSubscriptionCreated);
+
 
     while (hasNextPage != false) {
 
@@ -237,8 +248,8 @@ export async function action({ request }: ActionFunctionArgs) {
         data: {
           query: `query {
             ${hasNextPage != null ?
-              `abandonedCheckouts(first: 50, sortKey: CREATED_AT, reverse: true, after: "${endCursor}" ${pageName === "WelcomeConnect" ? `, query: "created_at:>=${appSubscriptionCreated}"` : `, query: "created_at:>=${startDate} AND created_at:<=${endDate}"`}) {` :
-              `abandonedCheckouts(first: 50, sortKey: CREATED_AT, reverse: true ${pageName === "WelcomeConnect" ? `, query: "created_at:>=${appSubscriptionCreated}"` : `, query: "created_at:>=${startDate} AND created_at:<=${endDate}" `}) {`
+              `abandonedCheckouts(first: 50, sortKey: CREATED_AT, reverse: true, after: "${endCursor}" ${pageName === "WelcomeConnect" ? `, query: "created_at:>=${asPerPlanDate}"` : `, query: "created_at:>=${startDate} AND created_at:<=${endDate}"`}) {` :
+              `abandonedCheckouts(first: 50, sortKey: CREATED_AT, reverse: true ${pageName === "WelcomeConnect" ? `, query: "created_at:>=${asPerPlanDate}"` : `, query: "created_at:>=${startDate} AND created_at:<=${endDate}" `}) {`
             }
                 edges {
                   node {

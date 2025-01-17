@@ -48,7 +48,7 @@ export default function AbandonedCartsSummary({ getPageData, forPageType }: any)
             setCards([
                 {
                     id: 1,
-                    value: forPageType === "AbandonedList" ? getPageData?.recoveredCarts?.length : getPageData?.recoveredCarts,
+                    value: getPageData?.recoveredCarts,
                     icon: <RecoveredCartsSVG />,
                     title: "Recovered Carts",
                     description: "Customers who completed their purchase"

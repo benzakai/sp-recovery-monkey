@@ -545,8 +545,8 @@ const WelcomeConnect = () => {
                     abandonedCartsSum,
                     acrRate: acr?.toFixed(1),
                     allCarts,
-                    recoveredCarts: sales_count,
-                    recoveredCartsSum: sum_of_sales,
+                    recoveredCarts: Math.trunc(sales_count),
+                    recoveredCartsSum: Math.trunc(sum_of_sales),
                     shopCurrency: currency || shopCurrency,
                     success
                 });
