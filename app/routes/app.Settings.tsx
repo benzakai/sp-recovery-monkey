@@ -130,14 +130,14 @@ const Settings = () => {
                                         <Card>
                                             <div className="start_price_choose_plan">
                                                 <div className='start_plan_name'>Free Plan</div>
-                                                <div className="start_plan_ammount_section" style={{ marginBottom: "75px" }}>
+                                                <div className="start_plan_ammount_section" style={{ marginBottom: "145px" }}>
                                                     <div className="start_plan_ammount">Free</div>
                                                 </div>
 
-                                                <div className="start_plan_button_section">
-                                                    <Button size='large' disabled={planName === "Free"} loading={isLoadingPlanButton} onClick={() => handlePlanSelect('Free')} variant='primary' fullWidth>
+                                                <div className="start_plan_button_section" >
+                                                    {/* <Button size='large' disabled={planName === "Free"} loading={isLoadingPlanButton} onClick={() => handlePlanSelect('Free')} variant='primary' fullWidth>
                                                         {planName == 'Free' ? 'selected' : 'select'}
-                                                    </Button>
+                                                    </Button> */}
                                                 </div>
                                                 <div className="star_plan_limit_dialogue">
                                                     <ul className='start_plan_list'>
