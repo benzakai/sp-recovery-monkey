@@ -1,7 +1,6 @@
-import { Firestore } from "@google-cloud/firestore";
+import { Firestore, FieldValue } from "@google-cloud/firestore";
 import axios from "axios";
 import prisma from "~/db.server";
-import fireStoreDeleteService from "./fireStoreDeleteService";
 import fireStoreFetchService from "./fireStoreFetchService";
 import publishMessagePubSubService from "./publishMessagePubSubService";
 
@@ -44,91 +43,101 @@ const ShopQuery = `{
     }
 }`;
 
+const firestoreDatabase = new Firestore();
+
 export default async function withoutPhoneCheckoutService() {
 
     try {
-        const firestoreDatabase = new Firestore();
-        const CheckoutsWithoutPhoneNumberCollection = firestoreDatabase.collection('CheckoutsWithoutPhoneNumber');
+        const CheckoutsWithoutPhoneNumberCollection = firestoreDatabase.collection('TestCheckoutsWithoutPhoneNumber');
         const CheckoutsWithoutPhoneNumberDocuments = await CheckoutsWithoutPhoneNumberCollection.get();
-        // console.log("CheckoutsWithoutPhoneNumberDocuments count", CheckoutsWithoutPhoneNumberDocuments.size);
+        console.log("CheckoutsWithoutPhoneNumberDocuments count", CheckoutsWithoutPhoneNumberDocuments.size);
         // console.log("CheckoutsWithoutPhoneNumberDocuments.docs", CheckoutsWithoutPhoneNumberDocuments.docs.length);
 
         const delay = (ms: any) => new Promise(resolve => setTimeout(resolve, ms));
 
         for (const doc of CheckoutsWithoutPhoneNumberDocuments.docs) {
-            const checkout = doc.data();
+            const checkouts = doc.data();
+            const session = await getSession(doc.id);
+            // console.log("session", session);
 
-            // console.log("Without Phone Number Checkout Id ", checkout.checkoutId);
+            for (const checkoutId in checkouts) {
+                const checkout = checkouts[checkoutId];
+                console.log("Without Phone Number Checkout Id", checkout?.checkoutId);
+                console.log("Without Phone Number checkout?.storeId", checkout?.storeId);
 
-            if (checkout?.shop) {
-                const session = await getSession(checkout?.shop);
+                if (checkout?.storeId) {
+                    if (session) {
+                        // console.log("checkout?.updatedAt", checkout?.updatedAt);
+                        // console.log("checkout?.createdAt", checkout?.createdAt);                         
+                        // console.log("inside if session", session);
 
-                if (session) {
-                    const getAbandonedCheckout = await publicGraphqlClient(session.shop, session.accessToken, AbandonedCheckoutsQuery(checkout?.payload?.id));
-                    // console.log(checkout?.checkoutId, "getAbandonedCheckout", getAbandonedCheckout);
+                        const getAbandonedCheckout = await publicGraphqlClient(session.shop, session.accessToken, AbandonedCheckoutsQuery(checkout?.payload?.id));
+                        // console.log(checkout?.checkoutId, "getAbandonedCheckout", getAbandonedCheckout);
 
-                    if (getAbandonedCheckout?.abandonedCheckouts?.nodes.length != 0) {
-                        // console.log(checkout?.checkoutId, "Abandoned Checkout in Shopify is Present");
-                        const abandonedCheckoutData = getAbandonedCheckout?.abandonedCheckouts?.nodes[0];
-                        const customerId = abandonedCheckoutData?.customer?.id;
-                        // console.log("customerId", customerId);
+                        if (getAbandonedCheckout?.abandonedCheckouts?.nodes.length != 0) {
+                            // console.log(checkout?.checkoutId, "Abandoned Checkout in Shopify is Present");
+                            const abandonedCheckoutData = getAbandonedCheckout?.abandonedCheckouts?.nodes[0];
+                            const customerId = abandonedCheckoutData?.customer?.id;
+                            // console.log("customerId", customerId);
 
-                        if (customerId) {
-                            // console.log(checkout?.checkoutId, "CUSTOMER ID IS PRESENT");
-                            const getCustomer = await publicGraphqlClient(session.shop, session.accessToken, CustomerQuery(customerId));
-                            const customerDetails = getCustomer?.customer;
-                            // console.log(checkout?.checkoutId, "customerDetails", customerDetails);
+                            if (customerId) {
+                                // console.log(checkout?.checkoutId, "CUSTOMER ID IS PRESENT");
+                                const getCustomer = await publicGraphqlClient(session.shop, session.accessToken, CustomerQuery(customerId));
+                                const customerDetails = getCustomer?.customer;
+                                // console.log(checkout?.checkoutId, "customerDetails", customerDetails);
 
-                            await publishMessagePubSubService("costumer-ID", JSON.stringify({ ...checkout, customerDetails }));
+                                await publishMessagePubSubService("costumer-ID", JSON.stringify({ ...checkout, customerDetails }));
 
-                            if (customerDetails?.phone == null) {
+                                if (customerDetails?.phone == null) {
 
-                                // console.log("CHECKOUT ID", checkout?.payload?.id);
-                                // console.log("customerDetails?.phone", customerDetails?.phone);
-                                // console.log("checkout?.payload?.phone", checkout?.payload?.phone)
-                                // console.log("checkout?.payload?.billing_address?.phone", checkout?.payload?.billing_address?.phone)
-                                // console.log("checkout?.payload?.shipping_address?.phone", checkout?.payload?.shipping_address?.phone);
+                                    // console.log("CHECKOUT ID", checkout?.payload?.id);
+                                    // console.log("customerDetails?.phone", customerDetails?.phone);
+                                    // console.log("checkout?.payload?.phone", checkout?.payload?.phone)
+                                    // console.log("checkout?.payload?.billing_address?.phone", checkout?.payload?.billing_address?.phone)
+                                    // console.log("checkout?.payload?.shipping_address?.phone", checkout?.payload?.shipping_address?.phone);
 
-                                if (checkout?.payload?.phone != null && checkout?.payload?.phone != undefined) {
+                                    if (checkout?.payload?.phone != null && checkout?.payload?.phone != undefined) {
 
-                                    await sendDataToPubSub(checkout, session, checkout?.payload?.phone);
+                                        await sendDataToPubSub(checkout, session, checkout?.payload?.phone);
 
-                                } else if (checkout?.payload?.billing_address?.phone != null && checkout?.payload?.billing_address?.phone != undefined) {
+                                    } else if (checkout?.payload?.billing_address?.phone != null && checkout?.payload?.billing_address?.phone != undefined) {
 
-                                    await sendDataToPubSub(checkout, session, checkout?.payload?.billing_address?.phone);
+                                        await sendDataToPubSub(checkout, session, checkout?.payload?.billing_address?.phone);
 
-                                } else if (checkout?.payload?.shipping_address?.phone != null && checkout?.payload?.shipping_address?.phone != undefined) {
+                                    } else if (checkout?.payload?.shipping_address?.phone != null && checkout?.payload?.shipping_address?.phone != undefined) {
 
-                                    await sendDataToPubSub(checkout, session, checkout?.payload?.shipping_address?.phone);
+                                        await sendDataToPubSub(checkout, session, checkout?.payload?.shipping_address?.phone);
 
-                                } else {
+                                    } else {
 
-                                    // console.log(checkout?.payload?.id, "CUSTOMER PHONE NUMBER IS ABSENT")
-                                    await deleteOlderThan24HoursDocs(checkout?.updatedAt.toDate(), checkout?.payload?.id);
+                                        // console.log(checkout?.payload?.id, "CUSTOMER PHONE NUMBER IS ABSENT")
+                                        await deleteOlderThan4HoursDocs(checkout?.createdAt.toDate(), checkout?.payload?.id, session?.shop);
 
+                                    }
+
+                                } else if (customerDetails?.phone != null) {
+                                    await sendDataToPubSub(checkout, session, customerDetails?.phone);
                                 }
 
-                            } else if (customerDetails?.phone != null) {
-                                await sendDataToPubSub(checkout, session, customerDetails?.phone);
+                            } else {
+                                // console.log(checkout?.checkoutId, "CUSTOMER ID IS NOT PRESENT");
+                                await deleteOlderThan4HoursDocs(checkout?.createdAt.toDate(), checkout?.payload?.id, session?.shop);
                             }
 
                         } else {
-                            // console.log(checkout?.checkoutId, "CUSTOMER ID IS NOT PRESENT");
-                            await deleteOlderThan24HoursDocs(checkout?.updatedAt.toDate(), checkout?.payload?.id);
+                            // console.log(checkout?.checkoutId, "Abandoned Checkout in Shopify is Absent");
+                            await deleteOlderThan4HoursDocs(checkout?.createdAt.toDate(), checkout?.payload?.id, session?.shop);
                         }
 
                     } else {
-                        // console.log(checkout?.checkoutId, "Abandoned Checkout in Shopify is Absent");
-                        await deleteOlderThan24HoursDocs(checkout?.updatedAt.toDate(), checkout?.payload?.id);
+                        // console.log(checkout?.checkoutId, "Session is NOT PRESENT in the database");
+                        await deleteOlderThan4HoursDocs(checkout?.createdAt.toDate(), checkout?.payload?.id, checkout?.storeId);
                     }
-
-                } else {
-                    // console.log(checkout?.checkoutId, "Session is NOT PRESENT in the database");
-                    await deleteOlderThan24HoursDocs(checkout?.updatedAt.toDate(), checkout?.payload?.id);
                 }
+
+                await delay(200);
             }
 
-            await delay(200);
         }
 
         // CheckoutsWithoutPhoneNumberDocuments?.forEach(async (doc) => {
@@ -172,7 +181,7 @@ export default async function withoutPhoneCheckoutService() {
         //                         } else {
 
         //                             // console.log(checkout?.payload?.id, "CUSTOMER PHONE NUMBER IS ABSENT")
-        //                             await deleteOlderThan24HoursDocs(checkout?.updatedAt.toDate(), checkout?.payload?.id);
+        //                             await deleteOlderThan4HoursDocs(checkout?.updatedAt.toDate(), checkout?.payload?.id);
 
         //                         }
 
@@ -182,17 +191,17 @@ export default async function withoutPhoneCheckoutService() {
 
         //                 } else {
         //                     // console.log(checkout?.checkoutId, "CUSTOMER ID IS NOT PRESENT");
-        //                     await deleteOlderThan24HoursDocs(checkout?.updatedAt.toDate(), checkout?.payload?.id);
+        //                     await deleteOlderThan4HoursDocs(checkout?.updatedAt.toDate(), checkout?.payload?.id);
         //                 }
 
         //             } else {
         //                 // console.log(checkout?.checkoutId, "Abandoned Checkout in Shopify is Absent");
-        //                 await deleteOlderThan24HoursDocs(checkout?.updatedAt.toDate(), checkout?.payload?.id);
+        //                 await deleteOlderThan4HoursDocs(checkout?.updatedAt.toDate(), checkout?.payload?.id);
         //             }
 
         //         } else {
         //             // console.log(checkout?.checkoutId, "Session is NOT PRESENT in the database");
-        //             await deleteOlderThan24HoursDocs(checkout?.updatedAt.toDate(), checkout?.payload?.id);
+        //             await deleteOlderThan4HoursDocs(checkout?.updatedAt.toDate(), checkout?.payload?.id);
         //         }
         //     }
         // });
@@ -234,14 +243,20 @@ async function publicGraphqlClient(shop: string, accessToken: string, QUERY: str
 }
 
 
-async function deleteOlderThan24HoursDocs(date: any, checkoutId: string) {
+async function deleteOlderThan4HoursDocs(date: any, checkoutId: string, shop: string) {
+    // console.log("deleteOlderThan4HoursDocs shop", shop);
+
     const todaysDate = new Date().getTime();
     // const documentsDate = new Date(date).getTime() + (1 * 24 * 60 * 60 * 1000); // 24 hours
     const documentsDate = new Date(date).getTime() + (4 * 60 * 60 * 1000); // 4 hour
     const compareDates = documentsDate > todaysDate;
 
     if (compareDates == false) {
-        await fireStoreDeleteService("CheckoutsWithoutPhoneNumber", String(checkoutId));
+        const shopDocRef = firestoreDatabase.collection('TestCheckoutsWithoutPhoneNumber').doc(shop);
+        const deleteResponse = await shopDocRef.update({
+            [checkoutId]: FieldValue.delete(),
+        });
+        // console.log("deleteOlderThan4HoursDocs deleteResponse", deleteResponse);
     }
 
     return { success: true };
@@ -275,30 +290,41 @@ async function getShopDomain(shop: string, accessToken: string) {
 }
 
 async function sendDataToPubSub(checkout: any, session: any, phone: any) {
-    console.log("PHONE NUMBER", phone);
+    console.log("PHONE NUMBER from sendDataToPubSub", phone);
     try {
-        const STORE_ID = checkout?.shop;
+        const STORE_ID = checkout?.storeId;
         const UpdateData = checkout?.payload;
         const SHOP_DOMAIN = await getShopDomain(session.shop, session.accessToken);
-        const Green_API_ID = await getGreenApiData("ConnectPagedata", checkout?.shop);
+        const Green_API_ID = await getGreenApiData("ConnectPagedata", STORE_ID);
+        // console.log("session.shop on sendDataToPubSub", session.shop);
+        const shopDocRef = firestoreDatabase.collection('TestCheckoutsWithoutPhoneNumber').doc(session.shop);
 
         const newObj: any = { STORE_ID, UpdateData };
         newObj["UpdateData"]["phone"] = phone;
-
         if (SHOP_DOMAIN?.success == true) newObj["SHOP_DOMAIN"] = SHOP_DOMAIN?.data;
         if (Green_API_ID?.success == true) newObj["Green_API_ID"] = Green_API_ID?.data;
+        newObj["phonenumberfoundby"] = "addbybz"
 
         const recentOrders = await fetchOrders(session.shop, session.accessToken);
         // console.log("recentOrders", recentOrders);
         const orderExists = recentOrders.some((order: any) => order.checkout_id == checkout?.payload?.id);
         // console.log("orderExists", orderExists);
-
+        // console.log("checkout?.payload?.id", checkout?.payload?.id);
+        // console.log("recentOrders.some((order: any) => order.checkout_id);", recentOrders.some((order: any) => console.log("order.checkout_id", order.checkout_id)));
+        // console.log("newObj from sendDataToPubSUb", newObj);
         if (orderExists) {
-            await fireStoreDeleteService("CheckoutsWithoutPhoneNumber", String(checkout?.payload?.id));
+            const deleteResponse = await shopDocRef.update({
+                [checkout?.payload?.id]: FieldValue.delete(),
+            });
+            // console.log("orderExists deleteResponse", deleteResponse);
             // console.log("ORDER ALREADY EXISTS FOR THIS CHECKOUT. NOT SENDING TO PUB/SUB");
         } else {
-            await publishMessagePubSubService("NewAbandonedCheckout", JSON.stringify(newObj));
-            await fireStoreDeleteService("CheckoutsWithoutPhoneNumber", String(checkout?.payload?.id));
+            // await publishMessagePubSubService("NewAbandonedCheckout", JSON.stringify(newObj));
+            await publishMessagePubSubService("checkoutWithoutPhonenumber", JSON.stringify(newObj));
+            const deleteResponse = await shopDocRef.update({
+                [checkout?.payload?.id]: FieldValue.delete(),
+            });
+            // console.log("not orderExists deleteResponse", deleteResponse);
             // console.log(checkout?.payload?.id, "CUSTOMER PHONE NUMBER IS PRESENT SEND DATA TO PUBSUB")
         }
 

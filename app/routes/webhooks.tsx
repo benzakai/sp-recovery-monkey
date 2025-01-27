@@ -150,17 +150,27 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       break;
     case "CHECKOUTS_UPDATE":
       console.log("CHECKOUTS_UPDATE webhook triggered: Checkout ID => ", payload.id);
-
       if (await checkSubscriptionStatus(session?.shop as string)) {
         await setUpdatesData(payload, session?.shop as string);
-
         if (payload?.phone == null) {
-          await fireStoreCreateService("CheckoutsWithoutPhoneNumber", String(payload.id), {
-            shop,
-            payload,
+          const checkoutData = {
             checkoutId: payload.id,
-            updatedAt: new Date()
-          }, {});
+            updatedAt: new Date(),
+            createdAt: new Date(payload.created_at),
+            payload: payload,
+            storeId: session?.shop,
+          };
+          const shopDocRef = firestoreDatabase.collection('TestCheckoutsWithoutPhoneNumber').doc(shop);
+          const shopDoc = await shopDocRef.get();
+          if (shopDoc.exists) {
+            await shopDocRef.update({
+              [payload.id]: checkoutData,
+            });
+          } else {
+            await shopDocRef.set({
+              [payload.id]: checkoutData,
+            }, { merge: true });
+          }
         }
       }
       break;
