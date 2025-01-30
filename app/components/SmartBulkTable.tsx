@@ -26,6 +26,7 @@ export default function SmartBulkTable({
     setSortSelected,
     customers,
     otherTableData,
+    persistCustomers,
     currentPage,
     PageSize,
     totalCustomers,
@@ -81,14 +82,21 @@ export default function SmartBulkTable({
     const { selectedResources, allResourcesSelected, handleSelectionChange } =
         useIndexResourceState(customers);
 
+    // useEffect(() => {
+    //     console.log("selectedResources", selectedResources);
+    //     setSelectedTableData(selectedResources)
+    // }, [selectedResources])
+
     useEffect(() => {
-        console.log("selectedResources", selectedResources);
-        setSelectedTableData(selectedResources)
-    }, [selectedResources])
+        // console.log("selectedResources", selectedResources);
+        const filteredCustomers = persistCustomers.filter((data: any) => selectedResources.includes(data.id));
+        // console.log("filteredCustomers", filteredCustomers);
+        setSelectedTableData(filteredCustomers);
+    }, [selectedResources]);
 
     const rowMarkup = customers.length ? customers.map(
         (
-            { createdAt, id, customer, totalPriceSet }: any,
+            { id, createdAt, firstName, lastName, phone, email, emailMarketingConsent }: any,
             index: any,
         ) => {
             // if (customer?.emailMarketingConsent) {
@@ -96,7 +104,7 @@ export default function SmartBulkTable({
             // }
             return (
                 <Fragment key={id}>
-                    {index === 0 && (
+                    {/* {index === 0 && (
                         <IndexTable.Row
                             rowType="subheader"
                             id="total-row"
@@ -114,7 +122,7 @@ export default function SmartBulkTable({
                                 </Text>
                             </IndexTable.Cell>
                         </IndexTable.Row>
-                    )}
+                    )} */}
                     <IndexTable.Row
                         id={id}
                         key={id}
@@ -127,19 +135,19 @@ export default function SmartBulkTable({
                             </Text>
                         </IndexTable.Cell>
                         <IndexTable.Cell>
-                            {customer?.firstName || customer?.lastName
-                                ? `${customer?.firstName || ''} ${customer?.lastName || ''}`.trim()
-                                : customer?.email || 'N/A'}
+                            {firstName || lastName
+                                ? `${firstName || ''} ${lastName || ''}`.trim()
+                                : email || 'N/A'}
                         </IndexTable.Cell>
+                            <IndexTable.Cell>
+                                {phone}
+                            </IndexTable.Cell>
                         <IndexTable.Cell>
                             <Badge
-                                tone={customer?.emailMarketingConsent?.marketingState === "SUBSCRIBED" ? "success" : customer?.emailMarketingConsent?.marketingState === "UNSUBSCRIBED" ? "attention" : 'enabled'}
+                                tone={emailMarketingConsent?.marketingState === "SUBSCRIBED" ? "success" : emailMarketingConsent?.marketingState === "UNSUBSCRIBED" ? "attention" : 'enabled'}
                             >
-                                {((customer?.emailMarketingConsent?.marketingState === "SUBSCRIBED" || customer?.emailMarketingConsent?.marketingState === "UNSUBSCRIBED") && customer?.emailMarketingConsent?.marketingState) ? customer?.emailMarketingConsent?.marketingState.charAt(0).toUpperCase() + customer?.emailMarketingConsent?.marketingState.slice(1).toLowerCase() : "Not subscribed"}
+                                {((emailMarketingConsent?.marketingState === "SUBSCRIBED" || emailMarketingConsent?.marketingState === "UNSUBSCRIBED") && emailMarketingConsent?.marketingState) ? emailMarketingConsent?.marketingState.charAt(0).toUpperCase() + emailMarketingConsent?.marketingState.slice(1).toLowerCase() : "Not subscribed"}
                             </Badge>
-                        </IndexTable.Cell>
-                        <IndexTable.Cell>
-                            {otherTableData.shopCurrency}{totalPriceSet?.shopMoney?.amount}
                         </IndexTable.Cell>
                     </IndexTable.Row>
                 </Fragment>
@@ -187,15 +195,16 @@ export default function SmartBulkTable({
                 headings={[
                     { title: 'Date' },
                     { title: 'Name' },
-                    { title: 'Email subscription' },
-                    { title: 'Revenue' }
+                    { title: 'Phone' },
+                    { title: 'Email subscription' }
                 ]}
                 pagination={{
                     hasNext: isTableLoading ? false : pageInfo.hasNextPage,
                     hasPrevious: isTableLoading ? false : pageInfo.hasPreviousPage,
                     onNext: handleNext,
                     onPrevious: handlePrevious,
-                    label: `${(currentPage - 1) * PageSize + 1}-${Math.min(currentPage * PageSize, totalCustomers)} of ${totalCustomers} Abandoned carts`,
+                    // label: `${(currentPage - 1) * PageSize + 1}-${Math.min(currentPage * PageSize, totalCustomers)} of ${totalCustomers} Abandoned carts`,
+                    label:"  "
                 }}
             // loading={isTableLoading}
             >

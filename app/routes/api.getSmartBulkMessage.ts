@@ -11,8 +11,8 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
         if (!messageData) {
             const newMessage = await fireStoreCreateService("SmartBulkMessage", session.shop, {
                 shop: session.shop,
-                header: "Hi [Customer's Name]",
-                content: "it looks like you left some items in your cart! Just a heads-up, our stock is moving fast, so grab them while you can 🎯. If you need any assistance, feel free to reach out! [link to abandon cart recovery]"
+                header: "👋 Hi [Customer's Name],",
+                content: "✨ Exciting news from our store ✨\n 🎉 We’re running an exclusive limited-time sale on your favorite items! 🛍️ Don’t miss out – enjoy discounts of up to 30% off on selected products.\n 💡 Hurry, the sale ends soon, and stock is running out fast! 🕒 \n 👉 Shop the sale now: [Link to store]"
             }, {});
             console.log("Created new sync status:", newMessage);
             return json({ success: 'Message saved successfully', messageData: newMessage });

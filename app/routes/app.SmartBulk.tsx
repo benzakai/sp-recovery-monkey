@@ -53,6 +53,7 @@ export default function SmartBulk() {
     const [currentPage, setCurrentPage] = useState(1);
     const [copyOfCurrentPage, setCopyOfCurrentPage] = useState(1)
     const [customers, setCustomers] = useState<Customer[]>([]);
+    const [persistCustomers, setPersistCustomers] = useState<Customer[]>([]);
     const [selectedFilter, setSelectedFilter] = useState<string[]>(["revenue asc"]);
     const [queryValue, setQueryValue] = useState('');
     const [totalCustomers, setTotalCustomers] = useState(0);
@@ -64,13 +65,14 @@ export default function SmartBulk() {
         endCursor: null,
         startCursor: null
     });
-    const [PageSize, setPageSize] = useState('15')
+    const [PageSize, setPageSize] = useState('5')
 
 
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
             // console.log("selectedDateValues", selectedDateValues);
             if (!selectedFilter[0].includes("subscription")) {
+                // console.log("inside if ");
                 fetchPaginatedData();
             }
         }, 700);
@@ -107,7 +109,7 @@ export default function SmartBulk() {
             const endCursorToFetch = currentPage > copyOfCurrentPage ? pageInfo.endCursor : null
             const startCursorToFetch = currentPage < copyOfCurrentPage ? pageInfo.startCursor : null
             setCopyOfCurrentPage(currentPage)
-            const response = await fetch('/api/smartBulkAbandonedCarts', {
+            const response = await fetch('/api/customersWithPhoneNumbers', {
                 method: "POST",
                 body: JSON.stringify({
                     initialRender: ((!pageInfo.hasNextPage && !pageInfo.hasPreviousPage) || currentPage === copyOfCurrentPage) ? true : false,
@@ -123,10 +125,14 @@ export default function SmartBulk() {
 
             if (response.ok) {
                 const data = await response.json();
-                // console.log("Fetched data:", data);
 
-                if (data?.abandonedCheckouts) {
-                    setCustomers(data.abandonedCheckouts)
+                if (data?.customers) {
+                    // console.log("Fetched data of customersWithPhoneNumbers:", data.customers);
+                    setCustomers(data.customers)
+                    setPersistCustomers((pre) => ([
+                        ...pre,
+                        ...data.customers
+                    ]))
                     setTotalCustomers(data.totalCount || 0);
                     setOtherTableData({
                         abandonedCartsSum: data.abandonedCartsSum,
@@ -147,41 +153,6 @@ export default function SmartBulk() {
 
     };
 
-    // const sortData = (data: Customer[]) => {
-    //     if (selectedFilter.includes("lastUpdate asc")) {
-    //         const sortedCustomers = [...data].sort((a, b) => {
-    //             return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-    //         });
-    //         setCustomers(sortedCustomers);
-    //     } else if (selectedFilter.includes("lastUpdate desc")) {
-    //         const sortedCustomers = [...data].sort((a, b) => {
-    //             return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    //         });
-    //         setCustomers(sortedCustomers);
-    //     } else if (selectedFilter.includes("lastUpdate asc")) {
-    //         const sortedCustomers = [...data].sort((a, b) => {
-    //             return new Date(a.customer.emailMarketingConsent.consentUpdatedAt).getTime() - new Date(b.customer.emailMarketingConsent.consentUpdatedAt).getTime();
-    //         });
-    //         setCustomers(sortedCustomers);
-    //     } else if (selectedFilter.includes("lastUpdate desc")) {
-    //         const sortedCustomers = [...data].sort((a, b) => {
-    //             return new Date(b.customer.emailMarketingConsent.consentUpdatedAt).getTime() - new Date(b.customer.emailMarketingConsent.consentUpdatedAt).getTime();
-    //         });
-    //         setCustomers(sortedCustomers);
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     sortData(customers)
-    // }, [selectedFilter])
-
-    // useEffect(() => {
-    //     console.log("selectedTableData", selectedTableData);
-    //     console.log("selectedDateValues", selectedDateValues);
-    //     console.log("selectedFilter", selectedFilter);
-
-    // }, [selectedTableData, selectedDateValues, selectedFilter])
-
     const handleSendMessageInitial = () => {
         const modal = document.getElementById('confirmation_modal') as HTMLElement | null;
         if (modal) {
@@ -200,14 +171,12 @@ export default function SmartBulk() {
         // console.log("selectedTableData", selectedTableData);
         const topicNames = ["bulk_sending"]
         hideModal();
-        const checkouts = selectedTableData.map(selectedId => {
-            const customer = customers.find(cust => cust.id === selectedId);
-            if (customer && customer.customer) {
+        const checkouts = selectedTableData.map((data: any) => {
+            if (data && data.id) {
                 return {
-                    name: (customer.customer.firstName || customer.customer.lastName) ? (customer.customer.firstName ? `${customer.customer.firstName} ` : "") + (customer.customer.lastName || "") : "N/A",
-                    phoneNumber: customer.customer.phone ? customer.customer.phone : "N/A",
+                    name: (data.firstName || data.lastName) ? (data.firstName ? `${data.firstName} ` : "") + (data.lastName || "") : "N/A",
+                    phoneNumber: data.phone ? data.phone : "N/A",
                     messageContent: customMessage,
-                    abandonedCheckoutUrl: customer.abandonedCheckoutUrl
                 };
             }
         });
@@ -222,6 +191,8 @@ export default function SmartBulk() {
             greenAPIKey: instanceResponseData.instance?.apiTokenInstance,
             greenAPIUrl: instanceResponseData.instance.apiUrl,
         }
+        // console.log("message", message);
+        // return
         const response3 = await fetch('/api/sendPubSubData', {
             method: 'POST',
             headers: {
@@ -326,7 +297,7 @@ export default function SmartBulk() {
                 <div className='flex justify-between'>
                     <div className='mb-6'>
                         <Text variant="headingLg" as="p">
-                            Overview of Customers with Abandoned Carts
+                            Customers list
                         </Text>
                         <div className='mb-2'></div>
                         <Text variant="bodyLg" as="p">
@@ -369,6 +340,7 @@ export default function SmartBulk() {
                         sortSelected={selectedFilter}
                         setSortSelected={setSelectedFilter}
                         customers={customers}
+                        persistCustomers={persistCustomers}
                         currentPage={currentPage}
                         PageSize={PageSize}
                         totalCustomers={totalCustomers}
