@@ -1,4 +1,4 @@
-import { Card, Page, Button, Spinner, Text, BlockStack, Link } from '@shopify/polaris';
+import { Card, Page, Button, Spinner, Text, BlockStack, Link, SkeletonBodyText } from '@shopify/polaris';
 import React, { useEffect, useState } from 'react';
 import '../StartPage.css';
 import AlienLogo from './images/Alien.png'
@@ -26,7 +26,7 @@ const WelcomeConnect = () => {
         shopCurrency: null,
         success: null
     });
-    const [loadingPage, setLoadingPage] = useState(true)
+    const [isInstanceDataLoading, setInstanceDataLoading] = useState(true)
     const topics = ['message'];
     const [customMessage, setCustomMessage] = useState()
     const [compareMessage, setCompareMessage] = useState()
@@ -193,6 +193,7 @@ const WelcomeConnect = () => {
             setDisBtnLoading(true)
             // console.log("fireStoreData", fireStoreData);
             // console.log("currentQRData", currentQRData);
+            // the issue with disconnect instanec api is instance gets deleted
             const response = await fetch('/api/disconnectInstance', {
                 method: "POST",
                 body: JSON.stringify({
@@ -257,14 +258,14 @@ const WelcomeConnect = () => {
             try {
                 const { url, id, token }: any = await getFireData();
                 if (url && id && token) {
-                    fetchQR({ url, id, token });
+                    await fetchQR({ url, id, token });
                 } else {
                     console.error('Missing URL, ID, or Token');
                 }
             } catch (error) {
                 console.log("error occured on fetchDataAndFetchQR", error);
             } finally {
-                setLoadingPage(false)
+                setInstanceDataLoading(false)
             }
         };
         getMessageData();
@@ -327,16 +328,13 @@ const WelcomeConnect = () => {
 
     return (
         <>
-            {loadingPage ?
-                <div className='flex justify-center items-center w-full h-full'>
-                    <Spinner accessibilityLabel="Spinner example" size="large" /></div>
-                : <div className="flex justify-center bg-[#f1f1f1]">
-                    <div className='start_page'>
+            <div className="flex justify-center bg-[#f1f1f1]">
+                <div className='start_page'>
 
-                        <Page fullWidth>
-                            <div className="lets_start_main_container">
-                                <div>
-                                    {/* {stateInstance == 'authorized' ? (
+                    <Page fullWidth>
+                        <div className="lets_start_main_container">
+                            <div>
+                                {/* {stateInstance == 'authorized' ? (
                                 <>
                                     <div className=''>
                                         <Text variant="heading3xl" as="h3">
@@ -351,152 +349,167 @@ const WelcomeConnect = () => {
                                 </>
                             ) : (
                             )} */}
-                                    <div className='pb-8'>
-                                        <Text variant="heading3xl" as="h3">
-                                            Welcome
+                                <div className='pb-8'>
+                                    <Text variant="heading3xl" as="h3">
+                                        Welcome
+                                    </Text>
+                                </div>
+                            </div>
+
+                            <div>
+                                {isInstanceDataLoading ? <div className='w-64 pb-6'><SkeletonBodyText lines={2} /></div> : <p className='font-bold text-2xl pb-6'>Here’s a Dashboard of Your {stateInstance === 'authorized' ? "Recovered" : "Lost"} Revenue</p>}
+                                {/* {stateInstance === 'authorized' ? <AbandonedCartsSummary getPageData={getPageData} forPageType="WelcomeConnect" /> : <StartPageCartSummary getPageData={getPageData} />} */}
+                                <AbandonedCartsSummary getPageData={getPageData} forPageType="WelcomeConnect" />
+                            </div>
+                            <div className='flex'>
+                                <div className="start_price_container">
+                                    <div className="start_price_container_heading">
+                                        {isInstanceDataLoading ? <div className='w-64'><SkeletonBodyText lines={2} /></div> :
+                                            <>
+                                                {stateInstance === 'authorized' ? (
+                                                    <Text variant="headingLg" as="h5">
+                                                        your device is connected!
+                                                    </Text>
+                                                ) : (
+                                                    <>
+                                                        <Text variant="headingLg" as="h5">
+                                                            Let’s Connect
+                                                        </Text>
+                                                        {/* <div className='connection_card_sub_heading'>Open your WhatsApp app-&gt; Click ‘Setting’-&gt; Click ‘linked devices’</div> */}
+                                                    </>
+                                                )}
+                                            </>
+                                        }
+                                    </div>
+                                    <div className="start_price_container_cards">
+                                        {stateInstance === 'authorized' ? (
+                                            <Card>
+                                                <div className="w-60" style={{ height: '24.5rem' }}>
+                                                    <div className='connection_alien_logo_section'>
+                                                        <AlienSVG />
+                                                    </div>
+                                                    <div className='p-5'>
+                                                        <Text variant="bodyLg" as="p">
+                                                            You should easiely send and receive WhatsApp messages!
+                                                        </Text>
+                                                    </div>
+                                                    <div className='mt-14 flex justify-end'>
+                                                        <Button onClick={() => disconnectInstance(instance?.apiUrl, instance?.idInstance, instance?.apiTokenInstance, false)} disabled={isDisBtnLoading} loading={isDisBtnLoading} variant='primary'>
+                                                            Disconnect
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </Card>
+                                        ) : (
+                                            <Card>
+                                                <div className="w-60" style={{ height: '24.5rem' }}>
+                                                    <div className='connection_alien_logo_section'>
+                                                        <div className="connection_qr_code">
+                                                            {qrCode ? (
+                                                                <img className='qr_image_connection' src={qrCode} alt="QR Code" />
+                                                            ) : (
+                                                                <Spinner accessibilityLabel="Small spinner example" size="small" />
+                                                            )}
+
+                                                        </div>
+
+                                                    </div>
+                                                    {isInstanceDataLoading ?
+                                                        <>
+                                                            <div className='mx-auto w-60 mb-10'>
+                                                                <SkeletonBodyText lines={3} />
+                                                            </div>
+                                                            <div className='mx-auto w-48'>
+                                                                <SkeletonBodyText lines={4} />
+                                                            </div>
+                                                        </>
+                                                        : <>
+                                                            <div className='connection_card_dialogue_section font-semibold text-'>
+                                                                <Text variant="headingMd" as="p">
+                                                                    Scan the Qr-code to present the dialogs on your own ﻿device:
+                                                                </Text>
+                                                            </div>
+                                                            <div className='mb-9'>
+                                                                <BlockStack>
+                                                                    <div className='flex flex-row gap-2 mb-2 mt-4'>
+                                                                        <OneSVG />
+                                                                        <Text variant="bodyMd" as="p">Open your WhatsApp app</Text>
+                                                                    </div>
+                                                                    <div className='flex flex-row gap-2 mb-2'>
+                                                                        <TwoSVG />
+                                                                        <Text variant="bodyMd" as="p">Click ‘Setting’</Text>
+                                                                    </div>
+                                                                    <div className='flex flex-row gap-2 mb-2'>
+                                                                        <ThreeSVG />
+                                                                        <Text variant="bodyMd" as="p">Click ‘linked devices’</Text>
+                                                                    </div>
+                                                                </BlockStack>
+                                                            </div>
+                                                        </>}
+
+                                                </div>
+                                            </Card>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div
+                                    className=" ml-24 messge_box_welcome"
+                                // onClick={() => handleSelectCard(card.id)}
+                                >
+                                    <div className="message_text_Welcome">
+                                        <Text variant="headingLg" as="h5">
+                                            write/edit the message that sent's to your customers
                                         </Text>
                                     </div>
-                                </div>
-
-                                <div>
-                                    <p className='font-bold text-2xl pb-6'>Here’s a Dashboard of Your {stateInstance === 'authorized' ? "Recovered" : "Lost"} Revenue</p>
-                                    {/* {stateInstance === 'authorized' ? <AbandonedCartsSummary getPageData={getPageData} forPageType="WelcomeConnect" /> : <StartPageCartSummary getPageData={getPageData} />} */}
-                                    <AbandonedCartsSummary getPageData={getPageData} forPageType="WelcomeConnect" />
-                                </div>
-                                <div className='flex'>
-                                    <div className="start_price_container">
-                                        <div className="start_price_container_heading">
-                                            {stateInstance === 'authorized' ? (
-                                                <Text variant="headingLg" as="h5">
-                                                    your device is connected!
-                                                </Text>
-                                            ) : (
-                                                <>
-                                                    <Text variant="headingLg" as="h5">
-                                                        Let’s Connect
-                                                    </Text>
-                                                    {/* <div className='connection_card_sub_heading'>Open your WhatsApp app-&gt; Click ‘Setting’-&gt; Click ‘linked devices’</div> */}
-                                                </>
-                                            )}
-
-                                        </div>
-                                        <div className="start_price_container_cards">
-                                            {stateInstance === 'authorized' ? (
-                                                <Card>
-                                                    <div className="w-60" style={{ height: '24.5rem' }}>
-                                                        <div className='connection_alien_logo_section'>
-                                                            <AlienSVG />
-                                                        </div>
-                                                        <div className='p-5'>
-                                                            <Text variant="bodyLg" as="p">
-                                                                You should easiely send and receive WhatsApp messages!
-                                                            </Text>
-                                                        </div>
-                                                        <div className='mt-14 flex justify-end'>
-                                                            <Button onClick={() => disconnectInstance(instance?.apiUrl, instance?.idInstance, instance?.apiTokenInstance, false)} disabled={isDisBtnLoading} loading={isDisBtnLoading} variant='primary'>
-                                                                Disconnect
-                                                            </Button>
-                                                        </div>
-                                                    </div>
-                                                </Card>
-                                            ) : (
-                                                <Card>
-                                                    <div className="w-60" style={{ height: '24.5rem' }}>
-                                                        <div className='connection_alien_logo_section'>
-                                                            <div className="connection_qr_code">
-                                                                {qrCode ? (
-                                                                    <img className='qr_image_connection' src={qrCode} alt="QR Code" />
-                                                                ) : (
-                                                                    <Spinner accessibilityLabel="Small spinner example" size="small" />
-                                                                )}
-
-                                                            </div>
-
-                                                        </div>
-                                                        <div className='connection_card_dialogue_section font-semibold text-'>
-                                                            <Text variant="headingMd" as="p">
-                                                                Scan the Qr-code to present the dialogs on your own ﻿device:
-                                                            </Text>
-                                                        </div>
-                                                        <div className='mb-9'>
-                                                            <BlockStack>
-                                                                <div className='flex flex-row gap-2 mb-2 mt-4'>
-                                                                    <OneSVG />
-                                                                    <Text variant="bodyMd" as="p">Open your WhatsApp app</Text>
-                                                                </div>
-                                                                <div className='flex flex-row gap-2 mb-2'>
-                                                                    <TwoSVG />
-                                                                    <Text variant="bodyMd" as="p">Click ‘Setting’</Text>
-                                                                </div>
-                                                                <div className='flex flex-row gap-2 mb-2'>
-                                                                    <ThreeSVG />
-                                                                    <Text variant="bodyMd" as="p">Click ‘linked devices’</Text>
-                                                                </div>
-                                                            </BlockStack>
-                                                        </div>
-                                                    </div>
-                                                </Card>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <div
-                                        className=" ml-24 messge_box_welcome"
-                                    // onClick={() => handleSelectCard(card.id)}
-                                    >
-                                        <div className="message_text_Welcome">
-                                            <Text variant="headingLg" as="h5">
-                                                write/edit the message that sent's to your customers
-                                            </Text>
-                                        </div>
-                                        <Card>
-                                            {isMessageLoading ? <div className='flex justify-center items-center' style={{ height: "24.5rem" }}>
-                                                <Spinner accessibilityLabel="Small spinner example" size="large" />
-                                            </div> : <div className="flex-col" style={{ height: "24.5rem" }}>
-                                                <textarea
-                                                    className="w-full h-10 border-none outline-none text-base"
-                                                    value={customMessage.header}
-                                                    onChange={(e) => {
-                                                        setCustomMessage((prev) => ({
-                                                            ...prev,
-                                                            header: e.target.value
-                                                        }))
-                                                    }
-                                                    }
-                                                    placeholder="Card Header"
-                                                />
-                                                <textarea
-                                                    className="w-full h-72 text-base border-none outline-none"
-                                                    value={customMessage.content}
-                                                    onChange={(e) => {
-                                                        setCustomMessage((prev) => ({
-                                                            ...prev,
-                                                            content: e.target.value
-                                                        }))
-                                                    }}
-                                                    placeholder="Card Body"
-                                                />
-                                                <div className='flex justify-end pr-3 pt-4'>
-                                                    <Button
-                                                        onClick={handleSaveMessage}
-                                                        variant="primary"
-                                                        disabled={compareMessage?.header === customMessage?.header && compareMessage.content === customMessage.content}
-                                                        loading={isSaveButtonLoading}
-                                                    >Save Text</Button>
-                                                </div>
-                                            </div>}
-                                        </Card>
-                                        {/* <div className='mt-4'>
+                                    <Card>
+                                        {isMessageLoading ? <div className='flex justify-center items-center' style={{ height: "24.5rem" }}>
+                                            <Spinner accessibilityLabel="Small spinner example" size="large" />
+                                        </div> : <div className="flex-col" style={{ height: "24.5rem" }}>
+                                            <textarea
+                                                className="w-full h-10 border-none outline-none text-base"
+                                                value={customMessage.header}
+                                                onChange={(e) => {
+                                                    setCustomMessage((prev) => ({
+                                                        ...prev,
+                                                        header: e.target.value
+                                                    }))
+                                                }
+                                                }
+                                                placeholder="Card Header"
+                                            />
+                                            <textarea
+                                                className="w-full h-72 text-base border-none outline-none"
+                                                value={customMessage.content}
+                                                onChange={(e) => {
+                                                    setCustomMessage((prev) => ({
+                                                        ...prev,
+                                                        content: e.target.value
+                                                    }))
+                                                }}
+                                                placeholder="Card Body"
+                                            />
+                                            <div className='flex justify-end pr-3 pt-4'>
+                                                <Button
+                                                    onClick={handleSaveMessage}
+                                                    variant="primary"
+                                                    disabled={compareMessage?.header === customMessage?.header && compareMessage.content === customMessage.content}
+                                                    loading={isSaveButtonLoading}
+                                                >Save Text</Button>
+                                            </div>
+                                        </div>}
+                                    </Card>
+                                    {/* <div className='mt-4'>
                                             <Text variant="bodyLg" as="p">
                                                 You can use the following article for crafting winning and conversion phrasing at the <Link url="https://help.shopify.com/manual" removeUnderline>link here.</Link>
                                             </Text>
                                         </div> */}
-                                    </div>
                                 </div>
                             </div>
-                        </Page>
-                    </div >
-                </div >}
+                        </div>
+                    </Page>
+                </div >
+            </div >
         </>
     );
 

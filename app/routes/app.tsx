@@ -35,6 +35,7 @@ export default function App() {
   const { apiKey, selectedPlanName } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
   const [isSubscribed, setIsSubscribed] = React.useState<boolean | null>(null);
+  const [anySubscription, setAnySubscription] = React.useState<any>("loading");
 
   async function fetchAppSubscription(): Promise<boolean> {
     try {
@@ -65,8 +66,10 @@ export default function App() {
       //     navigate("/app/WelcomeConnect");
       //   }
       // }
-      if (!subscribed && selectedPlanName !== "Free") navigate("/app/LetsStart");
-      else navigate("/app/WelcomeConnect");
+      // if (!subscribed && selectedPlanName !== "Free") navigate("/app/LetsStart")
+      // else navigate("/app/WelcomeConnect")
+      if (!subscribed && selectedPlanName !== "Free") setAnySubscription(false)
+      else setAnySubscription(true)
       // console.log(`!subscribed && selectedPlanName !== "Free"`, !subscribed && selectedPlanName !== "Free")
       // console.log("subscribed", subscribed);
       // console.log("selectedPlanName", selectedPlanName);
@@ -77,28 +80,29 @@ export default function App() {
 
   return (
     <AppProvider isEmbeddedApp apiKey={apiKey}>
-      {isSubscribed === null ?
+      {/* {isSubscribed === null ?
         <div className='flex justify-center items-center w-full h-full'>
           <Spinner accessibilityLabel="Spinner example" size="large" /></div>
         :
-        <>
-          {(!isSubscribed && selectedPlanName !== "Free") ? (
-            <NavMenu>
-              <Link to="/app/LetsStart">Let’s Start</Link>
-            </NavMenu>
-          ) : (
-            <NavMenu>
-              <Link to="/app/WelcomeConnect">Welcome</Link>
-              <Link to="/app/AbandonedList">Abandoned List</Link>
-              {/* <Link to="/app/ConvertPage">Convert</Link> */}
-              <Link to="/app/SmartBulk">Smart Bulk</Link>
-              {/* <Link to="/app/ConnectPage">Connect Page</Link> */}
-              <Link to="/app/Settings">Settings</Link>
-            </NavMenu>
-          )}
-        </>
-      }
-      <Outlet />
+        <> */}
+      <NavMenu>
+        <Link to="/app" rel="home">Home</Link>
+        {(!isSubscribed && selectedPlanName !== "Free") ? (
+          <Link to="/app/LetsStart">Let’s Start</Link>
+        ) : (
+          <>
+            <Link to="/app/WelcomeConnect">Welcome</Link>
+            <Link to="/app/AbandonedList">Abandoned List</Link>
+            {/* <Link to="/app/ConvertPage">Convert</Link> */}
+            <Link to="/app/SmartBulk">Smart Bulk</Link>
+            {/* <Link to="/app/ConnectPage">Connect Page</Link> */}
+            <Link to="/app/Settings">Settings</Link>
+          </>
+        )}
+      </NavMenu>
+      {/* </>
+      } */}
+      <Outlet context={{ anySubscription, setAnySubscription }} />
     </AppProvider>
   );
 }

@@ -24,7 +24,7 @@ export default function AbandonedCartsSummary({ getPageData, forPageType }: any)
             value: "Loading",
             icon: <AbandonedCartSVG />,
             title: "Abandoned Carts",
-            description: "Customers waiting for you to complete their purchase"
+            description: "Picture the profits you missed from these abandoned carts."
         } : {}),
         {
             id: 2,
@@ -58,7 +58,7 @@ export default function AbandonedCartsSummary({ getPageData, forPageType }: any)
                     value: getPageData?.abandonedCarts?.length,
                     icon: <AbandonedCartSVG />,
                     title: "Abandoned Carts",
-                    description: "Customers waiting for you to complete their purchase"
+                    description: "Picture the profits you missed from these abandoned carts."
                 } : {}),
                 {
                     id: 2,

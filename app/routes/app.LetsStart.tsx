@@ -6,6 +6,10 @@ import { authenticate, MONTHLY_PLAN } from "../shopify.server";
 import StartPageCartSummary from '~/components/StartPageCartSummary';
 import fireStoreFetchService from '~/services/fireStoreFetchService';
 import fireStoreCreateService from '~/services/fireStoreCreateService';
+import AbandonedCartSVG from '~/components/SVGs/AbandonedCartSVG';
+import MissedRevenueSVG from '~/components/SVGs/MissedRevenueSVG';
+import RecoveredRevenueSVG from '~/components/SVGs/RecoveredRevenueSVG';
+import ACRRateSVG from '~/components/SVGs/ACRRateSVG';
 
 export const action = async ({ request }: any) => {
     const { session } = await authenticate.admin(request)
@@ -50,6 +54,80 @@ const LetsStart = () => {
     const submit = useSubmit();
     const actionData = useActionData()
     const navigate = useNavigate()
+    const [getCards, setCards] = React.useState([
+        {
+            id: 1,
+            value: "Loading",
+            icon: <AbandonedCartSVG />,
+            title: "Abandoned Carts",
+            description: "Customers waiting for you to complete their purchase",
+            handleNavigate: () => {}
+        },
+        {
+            id: 2,
+            value: "Loading",
+            icon: <MissedRevenueSVG />,
+            title: "Missed Revenue",
+            description: "The amount you could have earned from these carts",
+            handleNavigate: () => {}
+        },
+        {
+            id: 3,
+            value: "Loading",
+            icon: <RecoveredRevenueSVG />,
+            title: "Recovered Revenue",
+            description: "When you make money with our help, it appears here",
+            handleNavigate: () => {}
+        },
+        {
+            id: 4,
+            value: "Loading",
+            icon: <ACRRateSVG />,
+            title: "ACR Rate",
+            description: "The amount of income waiting for recovery",
+            handleNavigate: () => {}
+        }
+    ]);
+
+    useEffect(() => {
+        if (getPageData && getPageData?.success) {
+            // console.log("triggered", getPageData);
+            setCards([
+                {
+                    id: 1,
+                    value: getPageData?.abandonedCarts?.length,
+                    icon: <AbandonedCartSVG />,
+                    title: "Abandoned Carts",
+                    description: "Customers waiting for you to complete their purchase",
+                    handleNavigate: () => {}
+                },
+                {
+                    id: 2,
+                    value: `${getPageData?.shopCurrency}${getPageData?.abandonedCartsSum}`,
+                    icon: <MissedRevenueSVG />,
+                    title: "Missed Revenue",
+                    description: "The amount you could have earned from these carts",
+                    handleNavigate: () => {}
+                },
+                {
+                    id: 3,
+                    value: `${getPageData?.shopCurrency}${getPageData?.recoveredCartsSum}`,
+                    icon: <RecoveredRevenueSVG />,
+                    title: "Recovered Revenue",
+                    description: "When you make money with our help, it appears here",
+                    handleNavigate: () => {}
+                },
+                {
+                    id: 4,
+                    value: isNaN(getPageData?.acrRate) ? "0.00%" : `${getPageData?.acrRate}%`,
+                    icon: <ACRRateSVG />,
+                    title: "ACR Rate",
+                    description: "The amount of income waiting for recovery",
+                    handleNavigate: () => {}
+                }
+            ]);
+        }
+    }, [getPageData]);
 
     useEffect(() => {
         if (actionData?.success) {
@@ -59,6 +137,11 @@ const LetsStart = () => {
         }
     }, [actionData])
 
+    useEffect(() => {
+        handleFetchAbandonedCheckouts();
+    }, []);
+    
+    
     const handlePlanSelect = (planName: any) => {
         if (planName === "Free") setLoadingPlanButton(true)
         setPlanName(planName);
@@ -66,10 +149,6 @@ const LetsStart = () => {
         formData.append("planName", planName);
         submit(formData, { method: "post" });
     };
-
-    useEffect(() => {
-        handleFetchAbandonedCheckouts();
-    }, []);
 
     return (
         <div className="body">
@@ -84,7 +163,7 @@ const LetsStart = () => {
 
                         <div>
                             <p className='font-bold text-2xl pb-6'>Here’s a Dashboard of Your Lost Revenue</p>
-                            <StartPageCartSummary getPageData={getPageData} />
+                            <StartPageCartSummary getCards={getCards} />
                         </div>
 
                         <div className="start_price_container">
