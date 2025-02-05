@@ -357,7 +357,9 @@ const WelcomeConnect = () => {
                             </div>
 
                             <div>
-                                {isInstanceDataLoading ? <div className='w-64 pb-6'><SkeletonBodyText lines={2} /></div> : <p className='font-bold text-2xl pb-6'>Here’s a Dashboard of Your {stateInstance === 'authorized' ? "Recovered" : "Lost"} Revenue</p>}
+                                {isInstanceDataLoading ? <div className='w-64' style={{ paddingBottom: "28px" }}><SkeletonBodyText lines={2} /></div> :
+                                    <p className='font-bold text-2xl pb-6'>Here’s a Dashboard of Your {stateInstance === 'authorized' ? "Recovered" : "Lost"} Revenue</p>
+                                }
                                 {/* {stateInstance === 'authorized' ? <AbandonedCartsSummary getPageData={getPageData} forPageType="WelcomeConnect" /> : <StartPageCartSummary getPageData={getPageData} />} */}
                                 <AbandonedCartsSummary getPageData={getPageData} forPageType="WelcomeConnect" />
                             </div>
@@ -515,73 +517,77 @@ const WelcomeConnect = () => {
 
     async function handleFetchAbandonedCheckouts(isInstanceAuthorized: boolean) {
         try {
-            const appSubscription = await fetchAppSubscription();
-            const [responseAbandoned, responseCards] = await Promise.all([
-                fetch("/api/abandoned-checkouts/get", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        appSubscriptionCreated: appSubscription?.activeSubscriptions?.[0]?.createdAt,
-                        pageName: isInstanceAuthorized ? "WelcomeConnect" : "letsStart"
-                    })
-                }),
-                fetch("/api/welcome-page/cards-data", {
-                    method: "GET",
-                })
-            ]);
+            // const appSubscription = await fetchAppSubscription();
 
-            if (!responseAbandoned.ok) {
-                console.error("failed to fetch abandoned checkouts", responseAbandoned.status);
-                return;
-            }
+            const responseCards = await fetch("/api/welcome-page/cards-data", {
+                method: "GET",
+            })
             if (!responseCards.ok) {
                 console.error("failed to fetch cards data", responseCards.status);
                 return;
             }
-            const [responseAbandonedData, responseCardsData] = await Promise.all([
-                responseAbandoned.json(),
-                responseCards.json()
-            ]);
-            if (responseAbandonedData?.success && responseCardsData?.success) {
-                const {
-                    abandonedCarts,
-                    abandonedCartsSum,
-                    allCarts,
-                    shopCurrency,
-                    success
-                } = responseAbandonedData;
-                const { acr, sales_count, sum_of_sales, currency } = responseCardsData?.dashboardData;
-                setPageData({
-                    abandonedCarts,
-                    abandonedCartsSum,
+            const responseCardsData = await responseCards.json()
+            if (responseCardsData?.success) {
+                const { acr, sales_count, sum_of_sales, currency, checkout_count, shopCurrency } = responseCardsData?.dashboardData;
+                setPageData((prev) => ({
+                    ...prev,
                     acrRate: acr?.toFixed(1),
-                    allCarts,
                     recoveredCarts: Math.trunc(sales_count),
                     recoveredCartsSum: Math.trunc(sum_of_sales),
-                    shopCurrency: currency || shopCurrency,
-                    success
-                });
-            } else {
-                console.error("abandoned data or cards data fetch was unsuccessful");
+                    shopCurrency: currency,
+                    abandonedCarts: checkout_count,
+                    success: true
+                }));
             }
+
+            //.....................................//...................................//
+
+            // const responseAbandoned = await fetch("/api/abandoned-checkouts/get", {
+            //     method: "POST",
+            //     headers: {
+            //         "Content-Type": "application/json"
+            //     },
+            //     body: JSON.stringify({
+            //         appSubscriptionCreated: appSubscription?.activeSubscriptions?.[0]?.createdAt,
+            //         pageName: isInstanceAuthorized ? "WelcomeConnect" : "letsStart"
+            //     })
+            // })
+            // if (!responseAbandoned.ok) {
+            //     console.error("failed to fetch abandoned checkouts", responseAbandoned.status);
+            //     return;
+            // }
+            // const responseAbandonedData = await responseAbandoned.json()
+            // if (responseAbandonedData?.success) {
+            //     const {
+            //         abandonedCarts,
+            //         abandonedCartsSum,
+            //         allCarts,
+            //         shopCurrency
+            //     } = responseAbandonedData;
+            //     setPageData((prev) => ({
+            //         ...prev,
+            //         abandonedCarts,
+            //         abandonedCartsSum,
+            //         allCarts,
+            //         shopCurrency: shopCurrency
+            //     }));
+            // }
         } catch (error) {
             console.error("handleFetchAbandonedCheckouts Error on welcomeConnect", error);
         }
     }
 
-    async function fetchAppSubscription() {
-        try {
-            const response = await fetch("/api/active/subscription/get");
-            if (response.ok == true && response.status == 200) {
-                const responseJson = await response.json();
-                return responseJson;
-            }
-        } catch (error) {
-            console.log("fetchAppSubscription ERROR on welcomeConnect", error);
-        }
-    }
+    // async function fetchAppSubscription() {
+    //     try {
+    //         const response = await fetch("/api/active/subscription/get");
+    //         if (response.ok == true && response.status == 200) {
+    //             const responseJson = await response.json();
+    //             return responseJson;
+    //         }
+    //     } catch (error) {
+    //         console.log("fetchAppSubscription ERROR on welcomeConnect", error);
+    //     }
+    // }
 };
 
 export default WelcomeConnect;

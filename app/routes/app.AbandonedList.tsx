@@ -84,7 +84,6 @@ export default function NewAbandonedList() {
                                 </Text>
                             </div>
                         </div>
-
                         <div><AbandonedCartsSummary getPageData={getPageData} forPageType="AbandonedList" /></div>
 
                         <div className='abandoned_list_container'>
@@ -138,59 +137,59 @@ export default function NewAbandonedList() {
             const appSubscription = await fetchAppSubscription();
             // console.log("appSubscription from abondonedList==========>>>", appSubscription);
 
-            const [responseAbandoned, responseCards] = await Promise.all([
-                fetch("/api/abandoned-checkouts/get", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        appSubscriptionCreated: appSubscription?.activeSubscriptions?.[0]?.createdAt,
-                        pageName: "WelcomeConnect",
-                        planType: "Free"
-                    })
-                }),
-                fetch("/api/welcome-page/cards-data", {
-                    method: "GET",
-                })
-            ]);
-            if (!responseAbandoned.ok) {
-                console.error("failed to fetch abandoned checkouts from AbandonedList", responseAbandoned.status);
-                return;
-            }
+            const responseCards = await fetch("/api/welcome-page/cards-data", {
+                method: "GET",
+            })
             if (!responseCards.ok) {
-                console.error("failed to fetch cards data from AbandonedList", responseCards.status);
+                console.error("failed to fetch cards data", responseCards.status);
                 return;
             }
-            const [responseAbandonedData, responseCardsData] = await Promise.all([
-                responseAbandoned.json(),
-                responseCards.json()
-            ]);
+            const responseCardsData = await responseCards.json()
+            if (responseCardsData?.success) {
+                const { acr, sales_count, sum_of_sales, currency, checkout_count, shopCurrency } = responseCardsData?.dashboardData;
+                setPageData((prev) => ({
+                    ...prev,
+                    acrRate: acr?.toFixed(1),
+                    recoveredCarts: Math.trunc(sales_count),
+                    recoveredCartsSum: Math.trunc(sum_of_sales),
+                    shopCurrency: currency,
+                    abandonedCarts: checkout_count,
+                    success: true
+                }));
+            }
 
-            if (responseAbandonedData?.success && responseCardsData?.success) {
+            //.....................................//...................................//
+
+            const responseAbandoned = await fetch("/api/abandoned-checkouts/get", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    appSubscriptionCreated: appSubscription?.activeSubscriptions?.[0]?.createdAt,
+                    pageName: "WelcomeConnect",
+                    planType: "Free"
+                })
+            })
+            if (!responseAbandoned.ok) {
+                console.error("failed to fetch abandoned checkouts", responseAbandoned.status);
+                return;
+            }
+            const responseAbandonedData = await responseAbandoned.json()
+            if (responseAbandonedData?.success) {
                 const {
                     abandonedCarts,
                     abandonedCartsSum,
                     allCarts,
-                    shopCurrency,
-                    success
+                    shopCurrency
                 } = responseAbandonedData;
-                const { acr, sales_count, sum_of_sales, currency } = responseCardsData?.dashboardData;
-                setPageData({
-                    abandonedCarts,
+                setPageData((prev) => ({
+                    ...prev,
                     abandonedCartsSum,
-                    acrRate: acr?.toFixed(1),
-                    allCarts,
-                    recoveredCarts: Math.trunc(sales_count),
-                    recoveredCartsSum: Math.trunc(sum_of_sales),
-                    shopCurrency: currency || shopCurrency,
-                    success
-                });
-                setLoader(false)
-            } else {
-                console.error("abandoned data or cards data fetch was unsuccessful from AbandonedList");
+                    allCarts
+                }));
             }
-
+            setLoader(false)
         } catch (error) {
             console.log("handleFetchAbandonedCheckouts Error on AbandonedList ", error);
         }

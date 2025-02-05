@@ -55,7 +55,7 @@ export default function AbandonedCartsSummary({ getPageData, forPageType }: any)
                 },
                 (forPageType === "WelcomeConnect" ? {
                     id: 4,
-                    value: getPageData?.abandonedCarts?.length,
+                    value: getPageData?.abandonedCarts,
                     icon: <AbandonedCartSVG />,
                     title: "Abandoned Carts",
                     description: "Picture the profits you missed from these abandoned carts."
@@ -86,14 +86,14 @@ export default function AbandonedCartsSummary({ getPageData, forPageType }: any)
                         return <div className='flex flex-col justify-center items-center text-center'>
                             <div>{card.icon}</div>
                             {card.value === "Loading" ? (
-                                <div className="animate-pulse space-y-2 my-3">
-                                    <div className="bg-gray-300 rounded h-5 w-24"></div>
+                                <div className="animate-pulse space-y-2 pt-4 pb-3">
+                                    <div className="bg-gray-300 rounded h-8 w-28"></div>
                                 </div>
                             ) : (
                                 <div className='font-bold text-2xl pt-4 pb-3'>{card.value}</div>
                             )}
                             <div className='font-semibold text-2xl pb-1'>{card.title}</div>
-                            <div className='text-base text-[#6B7177] w-[75%]'>{card.description}</div>
+                            <div className='text-base text-[#6B7177] w-[85%]'>{card.description}</div>
                         </div>
                     })
                 }

@@ -13,8 +13,8 @@ export default function StartPageCartSummary({ getCards }: StartPageCartSummaryP
                                 <div className='cursor-pointer' onClick={card?.handleNavigate}>{card.icon}</div>
                                 {card?.value ? <>
                                     {card.value === "Loading" ? (
-                                        <div className="animate-pulse space-y-2 my-3">
-                                            <div className="bg-gray-300 rounded h-5 w-24"></div>
+                                        <div className="animate-pulse space-y-2 pt-4 pb-3">
+                                            <div className="bg-gray-300 rounded h-8 w-28"></div>
                                         </div>
                                     ) : (
                                         <div className='font-bold text-2xl pt-4 pb-3'>{card.value}</div>
