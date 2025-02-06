@@ -106,7 +106,7 @@ const setUpdatesData = async (data: any, shopName: string) => {
       STORE_ID: shopName,
       UpdateData: data
     }, {});
-
+    // console.log("......setUpdatesData process finish.......");
   } catch (error) {
     console.log("error", error);
   }
@@ -150,29 +150,35 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       break;
     case "CHECKOUTS_UPDATE":
       console.log("CHECKOUTS_UPDATE webhook triggered: Checkout ID => ", payload.id);
-      if (await checkSubscriptionStatus(session?.shop as string)) {
-        await setUpdatesData(payload, session?.shop as string);
-        if (payload?.phone == null) {
-          const checkoutData = {
-            checkoutId: payload.id,
-            updatedAt: new Date(),
-            createdAt: new Date(payload.created_at),
-            payload: payload,
-            storeId: session?.shop,
-          };
-          const shopDocRef = firestoreDatabase.collection('TestCheckoutsWithoutPhoneNumber').doc(shop);
-          const shopDoc = await shopDocRef.get();
-          if (shopDoc.exists) {
-            await shopDocRef.update({
-              [payload.id]: checkoutData,
-            });
-          } else {
-            await shopDocRef.set({
-              [payload.id]: checkoutData,
-            }, { merge: true });
+      const processCheckoutsUpdate = async () => {
+        // console.log("-----------------> processCheckoutsUpdate triggered <----------------");
+        if (await checkSubscriptionStatus(session?.shop as string)) {
+          await setUpdatesData(payload, session?.shop as string);
+          // console.log("......after setUpdatesData function call, payload?.phone:", payload?.phone);
+          if (payload?.phone == null) {
+            const checkoutData = {
+              checkoutId: payload.id,
+              updatedAt: new Date(),
+              createdAt: new Date(payload.created_at),
+              payload: payload,
+              storeId: session?.shop,
+            };
+            const shopDocRef = firestoreDatabase.collection('TestCheckoutsWithoutPhoneNumber').doc(shop);
+            const shopDoc = await shopDocRef.get();
+            if (shopDoc.exists) {
+              await shopDocRef.update({
+                [payload.id]: checkoutData,
+              });
+            } else {
+              await shopDocRef.set({
+                [payload.id]: checkoutData,
+              }, { merge: true });
+            }
           }
         }
+        // console.log("-----------------> processCheckoutsUpdate FINISHED <----------------");
       }
+      processCheckoutsUpdate()
       break;
     case "APP_UNINSTALLED":
       await deleteSubscriptionData(session?.shop as string);
@@ -223,7 +229,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       break;
     case 'ORDERS_PAID':
       console.log("ORDERS_PAID:", payload.checkout_id);
-      await handleOrdersPaidWebhookService(payload, shop);
+      handleOrdersPaidWebhookService(payload, shop);
       break;
     case "CUSTOMERS_DATA_REQUEST":
     case "CUSTOMERS_REDACT":
