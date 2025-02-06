@@ -145,7 +145,7 @@ export default function NewAbandonedList() {
                 return;
             }
             const responseCardsData = await responseCards.json()
-            if (responseCardsData?.success) {
+            if (responseCardsData?.success && responseCardsData?.dashboardData) {
                 const { acr, sales_count, sum_of_sales, currency, checkout_count, shopCurrency } = responseCardsData?.dashboardData;
                 setPageData((prev) => ({
                     ...prev,
@@ -154,6 +154,16 @@ export default function NewAbandonedList() {
                     recoveredCartsSum: Math.trunc(sum_of_sales),
                     shopCurrency: currency,
                     abandonedCarts: checkout_count,
+                    success: true
+                }));
+            } else {
+                setPageData((prev) => ({
+                    ...prev,
+                    acrRate: 0,
+                    recoveredCarts: 0,
+                    recoveredCartsSum: 0,
+                    shopCurrency: "",
+                    abandonedCarts: 0,
                     success: true
                 }));
             }
