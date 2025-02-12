@@ -27,8 +27,8 @@ export async function action({ request }: ActionFunctionArgs) {
     });
 
     const messageIds = await Promise.all(publishPromises);
-    // console.log("messageIds from pubsubdata",messageIds);
-    // console.log("topicNames from pubsubdata",topicNames);
+    console.log("messageIds from pubsubdata",messageIds);
+    console.log("topicNames from pubsubdata",topicNames);
 
     // function listenForMessages(subscriptionNameOrId, timeout) {
     //   // References an existing subscription; if you are unsure if the

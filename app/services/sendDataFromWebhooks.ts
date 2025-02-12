@@ -187,12 +187,13 @@ const getFirestoreData = async (collectionName: string, storeId: string) => {
 
 const handleOldCheckout = async (checkout: any, shop: string, token: string, session: any) => {
   const checkoutId = checkout.checkoutId;
-
+  // console.log(`==================> on sendDataFromWebhooks handleOldCheckout checkoutId: ${checkoutId}, shop: ${shop} <====================`);
   try {
 
     const recentOrders = await fetchOrders(shop, token);
     const shopDomain = await getShopDomain(shop, token);
     const orderExists = recentOrders.some((order: any) => order.checkout_id === checkoutId);
+    // console.log(`=====================> on sendDataFromWebhooks orderExists for ${shop}:`, orderExists);
 
     if (orderExists) {
       await fireStoreDeleteService("users", String(checkoutId));
@@ -201,8 +202,10 @@ const handleOldCheckout = async (checkout: any, shop: string, token: string, ses
       console.log(`Checkout ${checkoutId} is abandoned.`);
 
       const checkoutUpdateDoc = await fireStoreFetchService("checkoutUpdateData", checkoutId.toString());
+      // console.log("===========>checkoutUpdateDoc", checkoutUpdateDoc, "shop", shop);
 
       if (checkoutUpdateDoc) {
+        // console.log("===========>inside if checkoutUpdateDoc", checkoutUpdateDoc, "shop", shop);
         const getGreenAPIData = await getFirestoreData("ConnectPagedata", shop);
 
         let objj: any = {};

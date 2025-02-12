@@ -142,93 +142,132 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
   switch (topic) {
     case "CHECKOUTS_CREATE":
-      console.log("CHECKOUTS_CREATE webhook triggered: Checkout ID => ", payload.id);
-
-      if (await checkSubscriptionStatus(session?.shop as string)) {
-        await setCheckoutData(payload, session?.shop as string);
+      const processCheckoutsCreate = async () => {
+        try {
+          console.log("CHECKOUTS_CREATE webhook triggered: Checkout ID => ", payload?.id);
+          if (await checkSubscriptionStatus(session?.shop as string)) {
+            await setCheckoutData(payload, session?.shop as string);
+          }
+        } catch (error) {
+          console.log("error on processCheckoutsCreate", error);
+        } finally {
+          console.log("==========>CHECKOUTS_CREATE on process end<===========");
+        }
       }
+      processCheckoutsCreate()
       break;
     case "CHECKOUTS_UPDATE":
-      console.log("CHECKOUTS_UPDATE webhook triggered: Checkout ID => ", payload.id);
       const processCheckoutsUpdate = async () => {
-        // console.log("-----------------> processCheckoutsUpdate triggered <----------------");
-        if (await checkSubscriptionStatus(session?.shop as string)) {
-          await setUpdatesData(payload, session?.shop as string);
-          // console.log("......after setUpdatesData function call, payload?.phone:", payload?.phone);
-          if (payload?.phone == null) {
-            const checkoutData = {
-              checkoutId: payload.id,
-              updatedAt: new Date(),
-              createdAt: new Date(payload.created_at),
-              payload: payload,
-              storeId: session?.shop,
-            };
-            const shopDocRef = firestoreDatabase.collection('TestCheckoutsWithoutPhoneNumber').doc(shop);
-            const shopDoc = await shopDocRef.get();
-            if (shopDoc.exists) {
-              await shopDocRef.update({
-                [payload.id]: checkoutData,
-              });
-            } else {
-              await shopDocRef.set({
-                [payload.id]: checkoutData,
-              }, { merge: true });
+        try {
+          console.log("CHECKOUTS_UPDATE webhook triggered: Checkout ID => ", payload?.id);
+          // console.log("-----------------> processCheckoutsUpdate triggered <----------------");
+          if (await checkSubscriptionStatus(session?.shop as string)) {
+            await setUpdatesData(payload, session?.shop as string);
+            // console.log("......after setUpdatesData function call, payload?.phone:", payload?.phone);
+            if (payload?.phone == null) {
+              const checkoutData = {
+                checkoutId: payload.id,
+                updatedAt: new Date(),
+                createdAt: new Date(payload.created_at),
+                payload: payload,
+                storeId: session?.shop,
+              };
+              const shopDocRef = firestoreDatabase.collection('TestCheckoutsWithoutPhoneNumber').doc(shop);
+              const shopDoc = await shopDocRef.get();
+              if (shopDoc.exists) {
+                await shopDocRef.update({
+                  [payload.id]: checkoutData,
+                });
+              } else {
+                await shopDocRef.set({
+                  [payload.id]: checkoutData,
+                }, { merge: true });
+              }
             }
           }
+        } catch (error) {
+          console.log("error on processCheckoutsUpdate", error);
+        } finally {
+          console.log("==========>CHECKOUTS_UPDATE on process end<==========");
         }
         // console.log("-----------------> processCheckoutsUpdate FINISHED <----------------");
       }
       processCheckoutsUpdate()
       break;
     case "APP_UNINSTALLED":
-      await deleteSubscriptionData(session?.shop as string);
-      await deleteAppInstalledDate(session?.shop as string);
-      await publishMessagePubSubService("uninstall", JSON.stringify(payload));
-      if (session) {
-        await db.session.deleteMany({ where: { shop } });
-      }
-      try {
-        const instanceData = await fireStoreFetchService("InstanceData", shop);
-        const responseDeleteInstance = await fetch(`${process.env.PARTNER_API_URL}/partner/deleteInstanceAccount/${process.env.PARTNER_TOKEN}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            idInstance: instanceData.idInstance
-          })
-        });
-        if (responseDeleteInstance.ok) {
-          const data = await responseDeleteInstance.json()
-          // console.log("responseDeleteInstance data on APP_UNINSTALLED:", data);
-          const deletedDBInstanceData = await fireStoreDeleteService("InstanceData", shop);
-          // console.log("deletedDBInstanceData on APP_UNINSTALLED", deletedDBInstanceData);
+      const processAppUninstalled = async () => {
+        try {
+          console.log("Triggered APP_UNINSTALLED for shop:", session?.shop);
+          await deleteSubscriptionData(session?.shop as string);
+          await deleteAppInstalledDate(session?.shop as string);
+          await publishMessagePubSubService("uninstall", JSON.stringify(payload));
+          if (session) {
+            await db.session.deleteMany({ where: { shop } });
+          }
+          try {
+            const instanceData = await fireStoreFetchService("InstanceData", shop);
+            const responseDeleteInstance = await fetch(`${process.env.PARTNER_API_URL}/partner/deleteInstanceAccount/${process.env.PARTNER_TOKEN}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                idInstance: instanceData.idInstance
+              })
+            });
+            if (responseDeleteInstance.ok) {
+              const data = await responseDeleteInstance.json()
+              // console.log("responseDeleteInstance data on APP_UNINSTALLED:", data);
+              const deletedDBInstanceData = await fireStoreDeleteService("InstanceData", shop);
+              // console.log("deletedDBInstanceData on APP_UNINSTALLED", deletedDBInstanceData);
+            }
+          } catch (error) {
+            console.log("error occured on APP_UNINSTALLED responseDeleteInstance", error);
+          }
+        } catch (error) {
+          console.log("error on processAppUninstalled", error);
+        } finally {
+          console.log("==========>APP_UNINSTALLED on process end<===========");
         }
-      } catch (error) {
-        console.log("error occured on APP_UNINSTALLED responseDeleteInstance", error);
       }
-
-      console.log("APP UNINSTALLED WEBHOOK");
+      processAppUninstalled()
       break;
 
     case 'APP_SUBSCRIPTIONS_UPDATE':
-      // console.log("APP_SUBSCRIPTIONS_UPDATE:", payload.app_subscription);
-      const subscriptionDataFound = await fireStoreFetchService("subscriptions", shop);
-      // console.log("subscriptionDataFound", subscriptionDataFound);
-      if (!subscriptionDataFound || (subscriptionDataFound?.name !== "Free" && payload.app_subscription.status !== "CANCELLED")) {
-        await setSubscriptionData(payload, session?.shop as string);
+      const processAppSubscriptionsUpdate = async () => {
+        try {
+          console.log("APP_SUBSCRIPTIONS_UPDATE:", payload?.app_subscription);
+          const subscriptionDataFound = await fireStoreFetchService("subscriptions", shop);
+          // console.log("subscriptionDataFound", subscriptionDataFound);
+          if (!subscriptionDataFound || (subscriptionDataFound?.name !== "Free" && payload.app_subscription.status !== "CANCELLED")) {
+            await setSubscriptionData(payload, session?.shop as string);
+          }
+        } catch (error) {
+          console.log("error on processAppSubscriptionsUpdate", error);
+        } finally {
+          console.log("==========>APP_SUBSCRIPTIONS_UPDATE on process end<===========");
+        }
       }
+      processAppSubscriptionsUpdate()
       break;
 
     case 'ORDERS_CREATE':
-      console.log("ORDERS_CREATE webhook triggered: Order ID => ", payload?.id, " Checkout ID => ", payload?.checkout_id);
-
-      if (await checkSubscriptionStatus(session?.shop as string)) {
-        await sendDataToPubSub(payload);
+      const processOrdersCreate = async () => {
+        try {
+          console.log("ORDERS_CREATE webhook triggered: Order ID => ", payload?.id, " Checkout ID => ", payload?.checkout_id);
+          if (await checkSubscriptionStatus(session?.shop as string)) {
+            await sendDataToPubSub(payload);
+          }
+        } catch (error) {
+          console.log("error on processOrdersCreate", error);
+        } finally {
+          console.log("ORDERS_CREATE on process end");
+        }
       }
+      processOrdersCreate()
       break;
     case 'ORDERS_PAID':
-      console.log("ORDERS_PAID:", payload.checkout_id);
+      console.log("ORDERS_PAID:", payload?.checkout_id);
       handleOrdersPaidWebhookService(payload, shop);
       break;
     case "CUSTOMERS_DATA_REQUEST":
