@@ -1,7 +1,7 @@
 import { Badge, Button, Card, Page, Text, SkeletonDisplayText } from '@shopify/polaris';
 import React, { useEffect, useState } from 'react';
 import '../StartPage.css';
-import { redirect, useActionData, useNavigate, useSubmit } from '@remix-run/react';
+import { redirect, useActionData, useNavigate, useOutletContext, useSubmit } from '@remix-run/react';
 import { authenticate, MONTHLY_PLAN } from "../shopify.server";
 import StartPageCartSummary from '~/components/StartPageCartSummary';
 import fireStoreFetchService from '~/services/fireStoreFetchService';
@@ -54,6 +54,7 @@ const LetsStart = () => {
     const submit = useSubmit();
     const actionData = useActionData()
     const navigate = useNavigate()
+    const { setAnySubscription }: any = useOutletContext()
     const [getCards, setCards] = React.useState([
         {
             id: 1,
@@ -132,6 +133,7 @@ const LetsStart = () => {
     useEffect(() => {
         if (actionData?.success) {
             if (planName === "Free") {
+                setAnySubscription(true)
                 navigate('/app/WelcomeConnect')
             }
         }

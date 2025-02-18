@@ -1,14 +1,12 @@
 import type { HeadersFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Link, Outlet, useLoaderData, useNavigate, useRouteError } from "@remix-run/react";
+import { Link, Outlet, useLoaderData, useRouteError } from "@remix-run/react";
 import { boundary } from "@shopify/shopify-app-remix/server";
 import { AppProvider } from "@shopify/shopify-app-remix/react";
 import { NavMenu } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 import { authenticate } from "../shopify.server";
 import React from "react";
-import { Spinner } from '@shopify/polaris';
-import fireStoreFetchService from "~/services/fireStoreFetchService";
 
 React.useLayoutEffect = React.useEffect
 
@@ -22,30 +20,23 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   //   isTest: false,
   //   prorate: true,
   // });
-  // to check if user is on free plan
-  const doc = await fireStoreFetchService("subscriptions", session.shop);
-  // console.log("doc", doc);
-  const selectedPlanName = (doc?.plan === "Free" && doc?.status === "ACTIVE") ? "Free" : null
-
   // const getSubscriptionStatus = await fireStoreFetchService("subscriptions", session.shop);
-  return json({ apiKey: process.env.SHOPIFY_API_KEY || "", selectedPlanName });
+  return json({ apiKey: process.env.SHOPIFY_API_KEY || "" });
 };
 
 export default function App() {
-  const { apiKey, selectedPlanName } = useLoaderData<typeof loader>();
-  const navigate = useNavigate();
+  const { apiKey } = useLoaderData<typeof loader>();
   const [isSubscribed, setIsSubscribed] = React.useState<boolean | null>(null);
   const [anySubscription, setAnySubscription] = React.useState<any>("loading");
 
-  async function fetchAppSubscription(): Promise<boolean> {
+  async function fetchAppSubscription(): Promise<any> {
     try {
       const response = await fetch("/api/active/subscription/get");
       if (response.ok && response.status === 200) {
         const responseJson = await response.json();
         // console.log("responseJson fetchAppSubscription", responseJson);
-
         // console.log(`responseJson?.activeSubscriptions?.[0]?.status === "ACTIVE";`,responseJson?.activeSubscriptions?.[0]?.status === "ACTIVE");
-        return responseJson?.activeSubscriptions?.[0]?.status === "ACTIVE";
+        return { subscribed: responseJson?.activeSubscriptions?.[0]?.status === "ACTIVE", planName: responseJson.selectedPlanName };
         // return false
       }
     } catch (error) {
@@ -56,7 +47,7 @@ export default function App() {
 
   React.useEffect(() => {
     const checkSubscription = async () => {
-      const subscribed: boolean = await fetchAppSubscription();
+      const { subscribed, planName }: any = await fetchAppSubscription();
       // console.log("subscribed", subscribed);
       // if (!subscribed) navigate("/app/LetsStart");
       // else {
@@ -68,15 +59,12 @@ export default function App() {
       // }
       // if (!subscribed && selectedPlanName !== "Free") navigate("/app/LetsStart")
       // else navigate("/app/WelcomeConnect")
-      if (!subscribed && selectedPlanName !== "Free") setAnySubscription(false)
+      if (!subscribed && planName !== "Free") setAnySubscription(false)
       else setAnySubscription(true)
-      // console.log(`!subscribed && selectedPlanName !== "Free"`, !subscribed && selectedPlanName !== "Free")
-      // console.log("subscribed", subscribed);
-      // console.log("selectedPlanName", selectedPlanName);
-      setIsSubscribed(subscribed);
+      setIsSubscribed((!subscribed && planName !== "Free") ? false : true);
     };
     checkSubscription();
-  }, []);
+  }, [anySubscription]);
 
   return (
     <AppProvider isEmbeddedApp apiKey={apiKey}>
@@ -87,7 +75,7 @@ export default function App() {
         <> */}
       <NavMenu>
         <Link to="/app" rel="home">Home</Link>
-        {(!isSubscribed && selectedPlanName !== "Free") ? (
+        {(isSubscribed === null) ? (<></>) : (!isSubscribed) ? (
           <Link to="/app/LetsStart">Let’s Start</Link>
         ) : (
           <>
