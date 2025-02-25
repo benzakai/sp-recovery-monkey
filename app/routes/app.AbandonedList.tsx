@@ -1,8 +1,27 @@
 import * as React from 'react';
 import "../StartPage.css";
 import '../AbandonedCarts.css'
-import { Page, LegacyCard, DataTable, Icon, Text, Spinner } from '@shopify/polaris';
+import { Page, LegacyCard, DataTable, Icon, Text, Spinner, Card, SkeletonDisplayText } from '@shopify/polaris';
 import AbandonedCartsSummary from '~/components/AbandonedCartsSummary';
+
+function formatDate(dateString: any) {
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const dateParts = dateString.split(/[\s/:]/);
+    const day = parseInt(dateParts[0], 10);
+    const month = months[parseInt(dateParts[1], 10) - 1];
+    const year = dateParts[2];
+    const hour = dateParts[3];
+    const minute = dateParts[4];
+    const second = dateParts[5];
+
+    return `${month} ${day} ${hour}:${minute}:${second}`;
+}
+
+function parseDate(dateString: any) {
+    const [day, month, year, hour, minute, second] = dateString.split(/[\s/:]/).map(Number);
+    return new Date(year, month - 1, day, hour, minute, second);
+}
+
 
 export default function NewAbandonedList() {
     const [getPageData, setPageData] = React.useState({
@@ -15,10 +34,10 @@ export default function NewAbandonedList() {
         shopCurrency: null,
         success: null
     });
-
-    // const [currentPage, setCurrentPage] = React.useState(1);
-    // const itemsPerPage = 15;
-    // const [loader, setLoader] = React.useState(false);
+    const [customerData, setCustomerData] = React.useState([]);
+    const [currentPage, setCurrentPage] = React.useState(1);
+    const itemsPerPage = 5;
+    const [loader, setLoader] = React.useState(true);
 
     // const CrossiconContent = () => {
     //     return (
@@ -32,45 +51,60 @@ export default function NewAbandonedList() {
     //     );
     // };
 
-    // const sortedData = [...getPageData.allCarts];
+    const sortedData = customerData.sort((a, b) => parseDate(b.DateTime).getTime() - parseDate(a.DateTime).getTime());
+    const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
 
-    // const totalPages = Math.ceil(sortedData.length / itemsPerPage);
-    // const indexOfLastItem = currentPage * itemsPerPage;
-    // const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    // const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
+    const handleNext = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
 
-    // const handleNext = () => {
-    //     if (currentPage < totalPages) {
-    //         setCurrentPage(currentPage + 1);
-    //     }
-    // };
-
-    // const handlePrevious = () => {
-    //     if (currentPage > 1) {
-    //         setCurrentPage(currentPage - 1);
-    //     }
-    // };
+    const handlePrevious = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
 
     React.useEffect(() => {
         handleFetchAbandonedCheckouts();
+        handleFetchTableData();
     }, []);
 
-    // const GetDataRow = currentItems?.map((item) => [
-    //     <div>{item.node.createdAt?.split("T")[0] || 'N/A'}</div>,
-    //     <div>
-    //         {item.node.customer?.firstName || item.node.customer?.lastName
-    //             ? `${item.node.customer?.firstName || ''} ${item.node.customer?.lastName || ''}`.trim()
-    //             : item.node.customer?.email || 'N/A'}
-    //     </div>,
-    //     <div className='abandoned_list_price'>{getPageData.shopCurrency} {item.node.totalPriceSet.shopMoney.amount}</div>,
-    //     <div className="list_status_section">
-    //         {item.node.completedAt ? (
-    //             <Icon source={CheckiconContent} tone="base" />
-    //         ) : (
-    //             <Icon source={CrossiconContent} tone="base" />
-    //         )}
-    //     </div>,
-    // ]);
+    const GetDataRow: any = (currentItems ?? [])?.map((item: any) => [
+        <div>{formatDate(item.DateTime)}</div>,
+        <div>
+            {item.Name}
+        </div>,
+        <div className='abandoned_list_price'>{item?.["Total Price"] ? (item.Currency ?? "") : ""}{(item?.["Total Price"] ?? "N/A")}</div>,
+    ]);
+
+    async function handleFetchTableData() {
+        try {
+            const response = await fetch("/api/abandonedListCustomer", {
+                method: "POST",
+                body: JSON.stringify({}),
+            });
+
+            if (!response.ok) {
+                console.error("Failed to fetch abandonedListCustomer", response.status);
+                return;
+            }
+
+            const responseData = await response.json();
+            // console.log("responseData", responseData);
+            if (responseData?.success && responseData?.abandonedListCustomer.length) {
+                setCustomerData(responseData?.abandonedListCustomer);
+            }
+        } catch (error) {
+            console.error("Error fetching abandoned carts:", error);
+        } finally {
+            setLoader(false)
+        }
+    }
 
     return (
         <div className="body">
@@ -86,10 +120,10 @@ export default function NewAbandonedList() {
                         </div>
                         <div><AbandonedCartsSummary getPageData={getPageData} forPageType="AbandonedList" /></div>
 
-                        {/* <div className='abandoned_list_container'>
+                        <div className='abandoned_list_container'>
                             <div className="start_price_container_heading">
                                 <Text variant="headingLg" as="h5">
-                                    Overview of Customers with Abandoned Carts
+                                    Latest Cart Recovery Messages
                                 </Text>
                             </div>
 
@@ -98,33 +132,31 @@ export default function NewAbandonedList() {
                                     <Spinner accessibilityLabel="Spinner example" size="large" />
                                 </div>
                             ) : (
-                                <LegacyCard>
+                                <Card
+                                    padding={{ xs: '190', sm: '190' }}>
                                     <DataTable
                                         columnContentTypes={[
                                             'text',
                                             'text',
-                                            'numeric',
-                                            'numeric',
+                                            'text'
                                         ]}
                                         headings={[
-                                            'Date',
+                                            'Time and Date',
                                             'Name',
-                                            'Revenue',
-                                            'status',
+                                            'Checkout price',
                                         ]}
                                         rows={GetDataRow}
-                                        totals={['', '', `${getPageData?.shopCurrency}${getPageData?.abandonedCartsSum}`, getPageData?.allCarts?.length]}
                                         pagination={{
                                             hasNext: currentPage < totalPages,
                                             hasPrevious: currentPage > 1,
                                             onNext: handleNext,
                                             onPrevious: handlePrevious,
-                                            label: `${(currentPage - 1) * itemsPerPage + 1}-${Math.min(currentPage * itemsPerPage, getPageData?.allCarts?.length)} of ${getPageData?.allCarts?.length} Abandoned carts`,
+                                            label: `${(currentPage - 1) * itemsPerPage + 1}-${Math.min(currentPage * itemsPerPage, customerData?.length)} of ${customerData?.length} Abandoned carts`,
                                         }}
                                     />
-                                </LegacyCard>
+                                </Card>
                             )}
-                        </div> */}
+                        </div>
                     </div>
                 </Page>
             </div>
