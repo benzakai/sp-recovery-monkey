@@ -270,6 +270,7 @@ const WelcomeConnect = () => {
         };
         getMessageData();
         fetchDataAndFetchQR();
+        handleFetchAbandonedCheckouts();
     }, []);
 
     useEffect(() => {
@@ -287,7 +288,7 @@ const WelcomeConnect = () => {
         }
         // console.log("stateInstance==========>", stateInstance);
         if (stateInstance) {
-            handleFetchAbandonedCheckouts(stateInstance === 'authorized' ? true : false);
+            // handleFetchAbandonedCheckouts(stateInstance === 'authorized' ? true : false);
         }
         return () => {
             if (intervalId) {
@@ -515,10 +516,10 @@ const WelcomeConnect = () => {
         </>
     );
 
-    async function handleFetchAbandonedCheckouts(isInstanceAuthorized: boolean) {
+    async function handleFetchAbandonedCheckouts() {
         try {
             // const appSubscription = await fetchAppSubscription();
-
+            // console.log("started handleFetchAbandonedCheckouts on welcomeConnect")
             const responseCards = await fetch("/api/welcome-page/cards-data", {
                 method: "GET",
             })
@@ -549,7 +550,7 @@ const WelcomeConnect = () => {
                     success: true
                 }));
             }
-
+            // console.log("ended handleFetchAbandonedCheckouts on welcomeConnect")
             //.....................................//...................................//
 
             // const responseAbandoned = await fetch("/api/abandoned-checkouts/get", {

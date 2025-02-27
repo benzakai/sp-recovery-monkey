@@ -60,7 +60,35 @@ export default function App() {
       // if (!subscribed && selectedPlanName !== "Free") navigate("/app/LetsStart")
       // else navigate("/app/WelcomeConnect")
       if (!subscribed && planName !== "Free") setAnySubscription(false)
-      else setAnySubscription(true)
+      else {
+        setAnySubscription(true);
+        try {
+          const settingsResponse = await fetch('/api/firestore?collectionName=settings', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          const settingsResponseData = await settingsResponse.json();
+          // console.log("settingsResponseData", Object.keys(settingsResponseData.data).length === 0);
+          if (Object.keys(settingsResponseData.data).length === 0) {
+            const saveSettingsRes = await fetch('/api/saveSettings', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                durationToSendMessage: "After 10 min",
+                notificationStatus: true,
+              }),
+            });
+            const saveSettingsData = await saveSettingsRes.json();
+            console.log(saveSettingsData.success ? "Settings saved successfully" : "Error saving settings");
+          }
+        } catch (error) {
+          console.error("Error fetching or saving settings", error);
+        }
+      }
       setIsSubscribed((!subscribed && planName !== "Free") ? false : true);
     };
     checkSubscription();
