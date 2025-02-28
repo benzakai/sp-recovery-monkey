@@ -27,6 +27,7 @@ const WelcomeConnect = () => {
         success: null
     });
     const [isInstanceDataLoading, setInstanceDataLoading] = useState(true)
+    const [isShowConnectionStatus, setShowConnectionStatus] = useState(false)
     const topics = ['message'];
     const [customMessage, setCustomMessage] = useState()
     const [compareMessage, setCompareMessage] = useState()
@@ -325,6 +326,14 @@ const WelcomeConnect = () => {
         }
     }
 
+    const handleShowConnectionClick = () => {
+        if (isInstanceDataLoading) {
+            shopify.toast.show("Please wait, loading connection status...");
+        } else {
+            setShowConnectionStatus(true)
+        }
+    }
+
 
 
     return (
@@ -335,21 +344,6 @@ const WelcomeConnect = () => {
                     <Page fullWidth>
                         <div className="lets_start_main_container">
                             <div>
-                                {/* {stateInstance == 'authorized' ? (
-                                <>
-                                    <div className=''>
-                                        <Text variant="heading3xl" as="h3">
-                                            Welcome
-                                        </Text>
-                                    </div>
-                                    <div className='connection_main_container_sub_heading'>
-                                        <Text variant="headingLg" as="h5">
-                                            Here’s a Dashboard of Your Lost Revenue
-                                        </Text>
-                                    </div>
-                                </>
-                            ) : (
-                            )} */}
                                 <div className='pb-8'>
                                     <Text variant="heading3xl" as="h3">
                                         Welcome
@@ -358,75 +352,50 @@ const WelcomeConnect = () => {
                             </div>
 
                             <div>
-                                {isInstanceDataLoading ? <div className='w-64' style={{ paddingBottom: "28px" }}><SkeletonBodyText lines={2} /></div> :
-                                    <p className='font-bold text-2xl pb-6'>Here’s a Dashboard of Your {stateInstance === 'authorized' ? "Recovered" : "Lost"} Revenue</p>
-                                }
-                                {/* {stateInstance === 'authorized' ? <AbandonedCartsSummary getPageData={getPageData} forPageType="WelcomeConnect" /> : <StartPageCartSummary getPageData={getPageData} />} */}
+                                <p className='font-bold text-2xl pb-6'>View your revenue, write message, and connect to send messages.</p>
                                 <AbandonedCartsSummary getPageData={getPageData} forPageType="WelcomeConnect" />
                             </div>
                             <div className='flex'>
-                                <div className="start_price_container">
+                                <div className="start_price_container w-2/6">
                                     <div className="start_price_container_heading">
-                                        {isInstanceDataLoading ? <div className='w-64'><SkeletonBodyText lines={2} /></div> :
-                                            <>
-                                                {stateInstance === 'authorized' ? (
-                                                    <Text variant="headingLg" as="h5">
-                                                        your device is connected!
-                                                    </Text>
-                                                ) : (
-                                                    <>
-                                                        <Text variant="headingLg" as="h5">
-                                                            Let’s Connect
-                                                        </Text>
-                                                        {/* <div className='connection_card_sub_heading'>Open your WhatsApp app-&gt; Click ‘Setting’-&gt; Click ‘linked devices’</div> */}
-                                                    </>
-                                                )}
-                                            </>
-                                        }
+                                        <Text variant="headingLg" as="h5">
+                                            {!isShowConnectionStatus ? "Click the button to check your connection." : stateInstance === 'authorized' ?
+                                                "your device is connected!" :
+                                                "Let’s Connect"
+                                            }
+                                        </Text>
                                     </div>
                                     <div className="start_price_container_cards">
-                                        {stateInstance === 'authorized' ? (
-                                            <Card>
-                                                <div className="w-60" style={{ height: '24.5rem' }}>
-                                                    <div className='connection_alien_logo_section'>
-                                                        <AlienSVG />
-                                                    </div>
-                                                    <div className='p-5'>
-                                                        <Text variant="bodyLg" as="p">
-                                                            You should easiely send and receive WhatsApp messages!
-                                                        </Text>
-                                                    </div>
-                                                    <div className='mt-14 flex justify-end'>
-                                                        <Button onClick={() => disconnectInstance(instance?.apiUrl, instance?.idInstance, instance?.apiTokenInstance, false)} disabled={isDisBtnLoading} loading={isDisBtnLoading} variant='primary'>
-                                                            Disconnect
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            </Card>
-                                        ) : (
-                                            <Card>
-                                                <div className="w-60" style={{ height: '24.5rem' }}>
-                                                    <div className='connection_alien_logo_section'>
-                                                        <div className="connection_qr_code">
-                                                            {qrCode ? (
-                                                                <img className='qr_image_connection' src={qrCode} alt="QR Code" />
-                                                            ) : (
-                                                                <Spinner accessibilityLabel="Small spinner example" size="small" />
-                                                            )}
-
-                                                        </div>
-
-                                                    </div>
-                                                    {isInstanceDataLoading ?
+                                        <Card>
+                                            <div className="w-60" style={{ height: '24.5rem' }}>
+                                                {isShowConnectionStatus ? <>
+                                                    {stateInstance === 'authorized' ? (
                                                         <>
-                                                            <div className='mx-auto w-60 mb-10'>
-                                                                <SkeletonBodyText lines={3} />
+                                                            <div className='connection_alien_logo_section'>
+                                                                <AlienSVG />
                                                             </div>
-                                                            <div className='mx-auto w-48'>
-                                                                <SkeletonBodyText lines={4} />
+                                                            <div className='p-5'>
+                                                                <Text variant="bodyLg" as="p">
+                                                                    You should easiely send and receive WhatsApp messages!
+                                                                </Text>
+                                                            </div>
+                                                            <div className='mt-14 flex justify-end'>
+                                                                <Button onClick={() => disconnectInstance(instance?.apiUrl, instance?.idInstance, instance?.apiTokenInstance, false)} disabled={isDisBtnLoading} loading={isDisBtnLoading} variant='primary'>
+                                                                    Disconnect
+                                                                </Button>
                                                             </div>
                                                         </>
-                                                        : <>
+                                                    ) : (
+                                                        <>
+                                                            <div className='connection_alien_logo_section'>
+                                                                <div className="connection_qr_code">
+                                                                    {qrCode ? (
+                                                                        <img className='qr_image_connection' src={qrCode} alt="QR Code" />
+                                                                    ) : (
+                                                                        <Spinner accessibilityLabel="Small spinner example" size="small" />
+                                                                    )}
+                                                                </div>
+                                                            </div>
                                                             <div className='connection_card_dialogue_section font-semibold text-'>
                                                                 <Text variant="headingMd" as="p">
                                                                     Scan the Qr-code to present the dialogs on your own ﻿device:
@@ -448,11 +417,40 @@ const WelcomeConnect = () => {
                                                                     </div>
                                                                 </BlockStack>
                                                             </div>
-                                                        </>}
+                                                        </>
+                                                    )}
+                                                </> :
+                                                    <div >
+                                                        {/* <div className="blur-2xl">
+                                                            <>
+                                                                <div className='connection_alien_logo_section'>
+                                                                    <AlienSVG />
+                                                                </div>
+                                                                <div className='p-5'>
+                                                                    <Text variant="bodyLg" as="p">
+                                                                        You should easiely send and receive WhatsApp messages!
+                                                                    </Text>
+                                                                </div>
+                                                                <div className='mt-14 flex justify-end'>
+                                                                    <Button variant='primary'>
+                                                                        Disconnect
+                                                                    </Button>
+                                                                </div>
+                                                            </>
 
-                                                </div>
-                                            </Card>
-                                        )}
+                                                        </div> */}
+                                                        <div className=" absolute inset-0 flex items-center justify-center">
+                                                            <div className="mt-4">
+                                                                <Button variant="primary" size='large' onClick={handleShowConnectionClick}>
+                                                                    Show connection status
+                                                                </Button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                }
+                                            </div>
+                                        </Card>
                                     </div>
                                 </div>
 
