@@ -46,7 +46,7 @@ const ShopQuery = `{
 const firestoreDatabase = new Firestore();
 
 export default async function withoutPhoneCheckoutService() {
-
+    console.log("withoutPhoneCheckout CRON STARTED!")
     try {
         const CheckoutsWithoutPhoneNumberCollection = firestoreDatabase.collection('TestCheckoutsWithoutPhoneNumber');
         const CheckoutsWithoutPhoneNumberDocuments = await CheckoutsWithoutPhoneNumberCollection.get();
@@ -62,8 +62,8 @@ export default async function withoutPhoneCheckoutService() {
 
             for (const checkoutId in checkouts) {
                 const checkout = checkouts[checkoutId];
-                console.log("Without Phone Number Checkout Id", checkout?.checkoutId);
-                console.log("Without Phone Number checkout?.storeId", checkout?.storeId);
+                // console.log("Without Phone Number Checkout Id", checkout?.checkoutId);
+                // console.log("Without Phone Number checkout?.storeId", checkout?.storeId);
 
                 if (checkout?.storeId) {
                     if (session) {
@@ -211,6 +211,8 @@ export default async function withoutPhoneCheckoutService() {
     } catch (error) {
         console.log("ERROR", error);
         return { success: false };
+    } finally {
+        console.log("withoutPhoneCheckout CRON ENDED!")
     }
 }
 

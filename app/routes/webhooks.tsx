@@ -144,7 +144,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     case "CHECKOUTS_CREATE":
       const processCheckoutsCreate = async () => {
         try {
-          console.log("CHECKOUTS_CREATE webhook triggered: Checkout ID => ", payload?.id);
+          console.log("CHECKOUTS_CREATE webhook triggered: Checkout ID => ", payload?.id, "shop =>", shop);
           if (await checkSubscriptionStatus(session?.shop as string)) {
             await setCheckoutData(payload, session?.shop as string);
           }
@@ -159,7 +159,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     case "CHECKOUTS_UPDATE":
       const processCheckoutsUpdate = async () => {
         try {
-          console.log("CHECKOUTS_UPDATE webhook triggered: Checkout ID => ", payload?.id);
+          console.log("CHECKOUTS_UPDATE webhook triggered: Checkout ID => ", payload?.id, "shop =>", shop);
           // console.log("-----------------> processCheckoutsUpdate triggered <----------------");
           if (await checkSubscriptionStatus(session?.shop as string)) {
             await setUpdatesData(payload, session?.shop as string);

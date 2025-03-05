@@ -277,6 +277,7 @@ const handleOldCheckout = async (checkout: any, shop: string, token: string, ses
 }
 
 const sendDataToPubSub = async (message: any) => {
+  console.log("from sendDataFromWebhooks sending data to pubsub of this store", message?.["SHOP DOMAIN"])
   const messageJson = JSON.stringify(message);
   const topicName = "NewAbandonedCheckout";
 
