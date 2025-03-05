@@ -4,32 +4,6 @@ import { DateRangePicker } from '~/components/DateRangePicker'
 import SmartBulkTable from '~/components/SmartBulkTable'
 import ConfirmationModal from '~/components/ConfirmationModal';
 
-interface Customer {
-    id: string;
-    createdAt: string;
-    completedAt: string;
-    updatedAt: string;
-    abandonedCheckoutUrl: string;
-    customer: {
-        firstName: string;
-        lastName: string;
-        email: string;
-        phone: string;
-        emailMarketingConsent: {
-            marketingState: string;
-            consentUpdatedAt: string;
-        };
-    };
-    totalPriceSet: {
-        shopMoney: {
-            amount: string;
-        };
-    };
-    shippingAddress: {
-        country: string;
-    };
-}
-
 export default function SmartBulk() {
     const [selectedTableData, setSelectedTableData] = useState([]);
     const [selectedDateValues, setSelectedDateValues] = useState(() => {
@@ -52,8 +26,8 @@ export default function SmartBulk() {
     const [isSaveButtonLoading, setSaveButtonLoading] = useState(false)
     const [currentPage, setCurrentPage] = useState(1);
     const [copyOfCurrentPage, setCopyOfCurrentPage] = useState(1)
-    const [customers, setCustomers] = useState<Customer[]>([]);
-    const [persistCustomers, setPersistCustomers] = useState<Customer[]>([]);
+    const [customers, setCustomers] = useState<any>([]);
+    const [persistCustomers, setPersistCustomers] = useState<any>([]);
     const [selectedFilter, setSelectedFilter] = useState<string[]>(["revenue asc"]);
     const [queryValue, setQueryValue] = useState('');
     const [totalCustomers, setTotalCustomers] = useState(0);
@@ -65,7 +39,7 @@ export default function SmartBulk() {
         endCursor: null,
         startCursor: null
     });
-    const [PageSize, setPageSize] = useState('5')
+    const [PageSize, setPageSize] = useState('15')
 
 
     useEffect(() => {
@@ -173,9 +147,18 @@ export default function SmartBulk() {
         hideModal();
         const checkouts = selectedTableData.map((data: any) => {
             if (data && data.id) {
+                let foundPhoneNumber;
+                const addressPhone = data.addresses.find((d: any) => d.phone)?.phone
+                if (data?.phone) {
+                    foundPhoneNumber = data.phone;
+                } else if (addressPhone) {
+                    foundPhoneNumber = addressPhone
+                } else if (data?.defaultAddress?.phone) {
+                    foundPhoneNumber = data.defaultAddress.phone
+                }
                 return {
                     name: (data.firstName || data.lastName) ? (data.firstName ? `${data.firstName} ` : "") + (data.lastName || "") : "N/A",
-                    phoneNumber: data.phone ? data.phone : "N/A",
+                    phoneNumber: foundPhoneNumber ? foundPhoneNumber : "N/A",
                     messageContent: customMessage,
                 };
             }
@@ -186,10 +169,10 @@ export default function SmartBulk() {
         const instanceResponseData = await instanceResponse.json();
         const message = {
             checkouts,
-            greenAPIId: instanceResponseData.instance.idInstance,
-            storeId: instanceResponseData.instance.shop,
-            greenAPIKey: instanceResponseData.instance?.apiTokenInstance,
-            greenAPIUrl: instanceResponseData.instance.apiUrl,
+            greenAPIId: instanceResponseData?.instance?.idInstance,
+            storeId: instanceResponseData?.instance?.shop,
+            greenAPIKey: instanceResponseData?.instance?.apiTokenInstance,
+            greenAPIUrl: instanceResponseData?.instance.apiUrl,
         }
         // console.log("message", message);
         // return
@@ -228,7 +211,7 @@ export default function SmartBulk() {
         { label: '15/page', value: '15' },
         { label: '50/page', value: '50' },
         { label: '100/page', value: '100' },
-        { label: '500/page', value: '500' }
+        { label: '250/page', value: '250' }
     ];
 
     return (

@@ -96,9 +96,19 @@ export default function SmartBulkTable({
 
     const rowMarkup = customers.length ? customers.map(
         (
-            { id, createdAt, firstName, lastName, phone, email, emailMarketingConsent }: any,
+            { id, createdAt, firstName, lastName, phone, email, emailMarketingConsent, addresses, defaultAddress }: any,
             index: any,
         ) => {
+            let foundPhoneNumber;
+            const addressPhone = addresses.find((d: any) => d?.phone)?.phone
+            if (phone) {
+                foundPhoneNumber = phone;
+            } else if (addressPhone) {
+                foundPhoneNumber = addressPhone
+            } else if (defaultAddress?.phone) {
+                foundPhoneNumber = defaultAddress.phone
+            }
+            // console.log("foundPhoneNumber", foundPhoneNumber)
             // if (customer?.emailMarketingConsent) {
             //     customer.emailMarketingConsent.marketingState = "UNSUBSCRIBED";
             // }
@@ -139,9 +149,9 @@ export default function SmartBulkTable({
                                 ? `${firstName || ''} ${lastName || ''}`.trim()
                                 : email || 'N/A'}
                         </IndexTable.Cell>
-                            <IndexTable.Cell>
-                                {phone}
-                            </IndexTable.Cell>
+                        <IndexTable.Cell>
+                            {foundPhoneNumber}
+                        </IndexTable.Cell>
                         <IndexTable.Cell>
                             <Badge
                                 tone={emailMarketingConsent?.marketingState === "SUBSCRIBED" ? "success" : emailMarketingConsent?.marketingState === "UNSUBSCRIBED" ? "attention" : 'enabled'}
@@ -204,7 +214,7 @@ export default function SmartBulkTable({
                     onNext: handleNext,
                     onPrevious: handlePrevious,
                     // label: `${(currentPage - 1) * PageSize + 1}-${Math.min(currentPage * PageSize, totalCustomers)} of ${totalCustomers} Abandoned carts`,
-                    label:"  "
+                    label: "  "
                 }}
             // loading={isTableLoading}
             >

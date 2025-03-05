@@ -222,6 +222,18 @@ export async function action({ request }: ActionFunctionArgs) {
                                 consentUpdatedAt
                                 marketingState
                             }
+                            addresses {
+                                id
+                                firstName
+                                lastName
+                                phone
+                            }
+                            defaultAddress {
+                                id
+                                firstName
+                                lastName
+                                phone
+                            }
                         }    
                         pageInfo {
                             hasNextPage
