@@ -89,9 +89,12 @@ export default function SmartBulkTable({
 
     useEffect(() => {
         // console.log("selectedResources", selectedResources);
-        const filteredCustomers = persistCustomers.filter((data: any) => selectedResources.includes(data.id));
-        // console.log("filteredCustomers", filteredCustomers);
-        setSelectedTableData(filteredCustomers);
+        const selectedResourcesSet = new Set(selectedResources);
+        const filteredSelectedResources = persistCustomers.filter((data: any) =>
+            selectedResourcesSet.has(data.id)
+        );
+        // console.log("filteredSelectedResources", filteredSelectedResources);
+        setSelectedTableData(filteredSelectedResources);
     }, [selectedResources]);
 
     const rowMarkup = customers.length ? customers.map(

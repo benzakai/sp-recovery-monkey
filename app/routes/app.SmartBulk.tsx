@@ -103,9 +103,14 @@ export default function SmartBulk() {
                 if (data?.customers) {
                     // console.log("Fetched data of customersWithPhoneNumbers:", data.customers);
                     setCustomers(data.customers)
-                    setPersistCustomers((pre) => ([
+                    const filteredCustomers = data?.customers?.filter((d: any) =>
+                        !persistCustomers.some((pd: any) => pd.id === d.id)
+                    );
+                    // console.log("filteredCustomers", filteredCustomers)
+                    // const filteredCustomers = data.customers.filter
+                    setPersistCustomers((pre: any) => ([
                         ...pre,
-                        ...data.customers
+                        ...filteredCustomers
                     ]))
                     setTotalCustomers(data.totalCount || 0);
                     setOtherTableData({
@@ -159,7 +164,6 @@ export default function SmartBulk() {
                 return {
                     name: (data.firstName || data.lastName) ? (data.firstName ? `${data.firstName} ` : "") + (data.lastName || "") : "N/A",
                     phoneNumber: foundPhoneNumber ? foundPhoneNumber : "N/A",
-                    messageContent: customMessage,
                 };
             }
         });
@@ -169,6 +173,7 @@ export default function SmartBulk() {
         const instanceResponseData = await instanceResponse.json();
         const message = {
             checkouts,
+            messageContent: customMessage,
             greenAPIId: instanceResponseData?.instance?.idInstance,
             storeId: instanceResponseData?.instance?.shop,
             greenAPIKey: instanceResponseData?.instance?.apiTokenInstance,
