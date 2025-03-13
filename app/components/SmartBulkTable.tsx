@@ -25,11 +25,9 @@ export default function SmartBulkTable({
     sortSelected,
     setSortSelected,
     customers,
-    otherTableData,
+    disabled,
     persistCustomers,
     currentPage,
-    PageSize,
-    totalCustomers,
     setCurrentPage,
     pageInfo,
     isTableLoading,
@@ -172,6 +170,7 @@ export default function SmartBulkTable({
         <>
             <IndexFilters
                 sortOptions={sortOptions}
+                disabled={disabled}
                 sortSelected={sortSelected}
                 queryPlaceholder="Search Customers"
                 onQueryChange={handleFiltersQueryChange}
@@ -214,8 +213,8 @@ export default function SmartBulkTable({
                 pagination={{
                     hasNext: isTableLoading ? false : pageInfo.hasNextPage,
                     hasPrevious: isTableLoading ? false : pageInfo.hasPreviousPage,
-                    onNext: handleNext,
-                    onPrevious: handlePrevious,
+                    onNext: disabled ? () => { shopify.toast.show("Upgrade to Pro or Higher Plan to access this feature", { isError: true }) } : handleNext,
+                    onPrevious: disabled ? () => { shopify.toast.show("Upgrade to Pro or Higher Plan to access this feature", { isError: true }) } : handlePrevious,
                     // label: `${(currentPage - 1) * PageSize + 1}-${Math.min(currentPage * PageSize, totalCustomers)} of ${totalCustomers} Abandoned carts`,
                     label: "  "
                 }}

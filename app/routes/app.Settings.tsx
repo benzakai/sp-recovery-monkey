@@ -1,14 +1,15 @@
-import { Badge, BlockStack, Button, Card, InlineGrid, Page, Select, SkeletonBodyText, SkeletonDisplayText, Spinner, Text, TextField } from '@shopify/polaris';
-import React, { useEffect, useState } from 'react';
+import { Badge, BlockStack, Button, Card, Page, Select, SkeletonBodyText, SkeletonDisplayText, Spinner, Text } from '@shopify/polaris';
+import { useEffect, useState } from 'react';
 import '../StartPage.css';
 import { useSubmit } from '@remix-run/react';
 import { authenticate, MONTHLY_PLAN, STARTER_PLAN, PRO_PLAN, ADVANCE_PLAN } from "../shopify.server";
-import { ActionFunctionArgs, useActionData, useNavigate } from 'react-router';
-import { BillingInterval } from '@shopify/shopify-app-remix/server';
+import { useActionData, useOutletContext } from 'react-router';
 import fireStoreCreateService from '~/services/fireStoreCreateService';
+import MultiselectTagCombobox from '~/components/MultiselectTagCombobox';
+import { isProPlanOrHigher } from '~/utils/plans';
 
 
-export const action = async ({ request }) => {
+export const action = async ({ request }: any) => {
     const formData = await request.formData();
     const planName = formData.get("planName") || MONTHLY_PLAN;
     const { billing, session } = await authenticate.admin(request);
@@ -18,7 +19,6 @@ export const action = async ({ request }) => {
             plans: [MONTHLY_PLAN, STARTER_PLAN, PRO_PLAN, ADVANCE_PLAN],
             onFailure: async () => billing.request({ plan: MONTHLY_PLAN }),
         });
-
         const subscription = billingCheck.appSubscriptions[0];
         const cancelledSubscription = await billing.cancel({
             subscriptionId: subscription.id,
@@ -26,7 +26,6 @@ export const action = async ({ request }) => {
             // prorate: true,
         });
         // console.log("cancelledSubscription", cancelledSubscription);
-
         await fireStoreCreateService("subscriptions", session.shop, {
             storeId: session.shop,
             plan: "Free",
@@ -47,14 +46,14 @@ export const action = async ({ request }) => {
         });
     }
 
-
     return { success: true, planName };
 };
 
+const languages = ['English', 'Español', 'العربية', 'Português', 'Deutsch']
 
 const Settings = () => {
     const [planName, setPlanName] = useState('not set');
-    const [isLoadingPlanButton, setLoadingPlanButton] = useState(false)
+    // const [isLoadingPlanButton, setLoadingPlanButton] = useState(false)
     const submit = useSubmit();
     const [loadingPage, setLoadingPage] = useState(true)
     const actionData = useActionData()
@@ -62,20 +61,29 @@ const Settings = () => {
     const [settings, setSettings] = useState({
         durationToSendMessage: "After 10 min",
         notificationStatus: true,
+        preferredLanguages: ['English'],
+        followUpMessage: {
+            header: "Hi [Customer’s Name]",
+            content: "it looks like you left some items in your cart! Just a heads-up, our stock is moving fast, so grab them while you can 🎯. If you need any assistance, feel free to reach out! [link to abandon cart recovery]"
+        }
     });
     const [isSaveButtonLoading, setSaveButtonLoading] = useState(false);
+    const [languageSearchValue, setLanguageSearchValue] = useState('');
+    const [isMessageLoading, setMessageLoading] = useState(true)
+    const [messageToCompare, setMessageToCompare] = useState("")
+    const { selectedPlanName }: any = useOutletContext()
 
     useEffect(() => {
         if (actionData?.success) {
             if (actionData?.planName === "Free") {
-                setLoadingPlanButton(false)
+                // setLoadingPlanButton(false)
                 setPlanName(actionData?.planName)
             }
         }
     }, [actionData])
 
     const handlePlanSelect = (planName) => {
-        if (planName === "Free") setLoadingPlanButton(true)
+        // if (planName === "Free") setLoadingPlanButton(true)
         const formData = new FormData();
         formData.append("planName", planName);
         submit(formData, { method: "post" });
@@ -116,6 +124,7 @@ const Settings = () => {
             console.log("error on fetchSettings", error);
         } finally {
             setSettingsLoading(false)
+            setMessageLoading(false)
         }
     };
 
@@ -126,8 +135,10 @@ const Settings = () => {
             const subscriptionData = await getSubscriptionData();
             const settingsData = await fetchSettings()
             console.log("settingsData", settingsData);
-
-            settingsData && setSettings(settingsData);
+            if (settingsData) {
+                setSettings((prev) => ({ ...prev, settingsData }));
+                setMessageToCompare(settingsData?.followUpMessage)
+            }
             if (Object.keys(subscriptionData).length === 0) {
                 setPlanName('NO_PLAN');
             } else {
@@ -169,34 +180,42 @@ const Settings = () => {
         // console.log("pubSubResponeData", pubSubResponeData);
     };
 
-    const handleSaveSettings = async (data: any) => {
-        // console.log("data   ssssssssssssssss", { durationToSendMessage: data.durationToSendMessage })
-        // console.log("data   dddddddddddddddddd", { ...data, notificationStatus: new Boolean(data.notificationStatus).toString() })
-        const response = await fetch('/api/saveSettings', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ durationToSendMessage: data.durationToSendMessage }),
-        })
+    const handleSaveSettings = async ({
+        durationToSendMessage,
+        notificationStatus,
+        followUpMessage,
+        preferredLanguages }: any) => {
+        try {
+            const settingsData = {
+                durationToSendMessage,
+                notificationStatus: new Boolean(notificationStatus).toString(),
+                followUpMessage: followUpMessage || "",
+                preferredLanguages: preferredLanguages || []
+            };
+            // console.log('settingsData.................>', settingsData)
+            const response = await fetch('/api/saveSettings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(settingsData),
+            })
 
-        const responsedata = await response.json();
-        if (responsedata.success) {
-            // const dataToSend = { ...data, notificationStatus: new Boolean(data.notificationStatus).toString() };
-            // console.log("data", JSON.stringify(dataToSend));
-            sendPubSubData({ durationToSendMessage: data.durationToSendMessage })
-            shopify.toast.show("Settings saved successfully")
-        } else {
-            shopify.toast.show("Failed to save settings")
+            const responsedata = await response.json();
+            if (responsedata.success) {
+                setMessageToCompare(settingsData.followUpMessage)
+                sendPubSubData(settingsData)
+                shopify.toast.show("Settings saved successfully")
+            } else {
+                shopify.toast.show("Failed to save settings")
+            }
+        } catch (error) {
+            console.log("error occured on handleSaveSettings", error)
         }
     }
 
     return (
-
         <div className="body">
-            {/* <div>
-
-            </div> */}
             <div className='start_page'>
                 <Page fullWidth>
                     <div className='start_main_container'>
@@ -220,27 +239,10 @@ const Settings = () => {
                             <BlockStack gap="400">
                                 <Card roundedAbove="sm">
                                     {isSettingsLoading ? (
-                                        <div>
-                                            <BlockStack gap="600">
-                                                <BlockStack gap="400">
-                                                    <div className="w-1/3 mt-1">
-                                                        <SkeletonBodyText lines={1} />
-                                                    </div>
-                                                    <div className="w-1/2 mt-6 mb-4">
-                                                        <SkeletonBodyText lines={2} />
-                                                    </div>
-                                                </BlockStack>
-                                            </BlockStack>
-                                        </div>
+                                        <SkeletonLoading />
                                     ) : (
-                                        <BlockStack gap="600">
-                                            <BlockStack gap="300">
-                                                <Text as="p" variant="bodyLg" fontWeight="bold">
-                                                    Schedule Messages
-                                                </Text>
-                                                <Text as="p" variant="bodyLg">
-                                                    Set the perfect time to send messages to your customers.
-                                                </Text>
+                                        <SettingsSecondBlock
+                                            children={
                                                 <div className="w-1/3">
                                                     <Select
                                                         options={options}
@@ -252,8 +254,10 @@ const Settings = () => {
                                                         value={settings.durationToSendMessage}
                                                     />
                                                 </div>
-                                            </BlockStack>
-                                        </BlockStack>
+                                            }
+                                            title={"Schedule Messages"}
+                                            description={"Set the perfect time to send messages to your customers."}
+                                        />
                                     )}
                                 </Card>
                                 {/* <Card roundedAbove="sm">
@@ -295,6 +299,102 @@ const Settings = () => {
                                         </BlockStack>
                                     )}
                                 </Card>*/}
+                                <Card roundedAbove="sm">
+                                    {isSettingsLoading ? (
+                                        <SkeletonLoading
+                                            secondLines={4}
+                                        />
+                                    ) : (
+                                        <SettingsSecondBlock
+                                            children={
+                                                <div className="w-3/4">
+                                                    <MultiselectTagCombobox
+                                                        data={languages}
+                                                        selectedTags={settings.preferredLanguages}
+                                                        setSelectedTags={(v: any) => {
+                                                            if (v?.length === 0) return shopify.toast.show("Multi-Language Messaging field cannot be empty.")
+                                                            setSettings({ ...settings, preferredLanguages: v })
+                                                            handleSaveSettings({ ...settings, preferredLanguages: v })
+                                                        }}
+                                                        value={languageSearchValue}
+                                                        setValue={setLanguageSearchValue}
+                                                        isDisabled={!isProPlanOrHigher(selectedPlanName)}
+                                                    />
+                                                </div>
+                                            }
+                                            title={"Multi-Language Messaging."}
+                                            description={"Select the languages you want to send messages in and reach your customers in their preferred language."}
+                                            availableOn={"Pro"}
+                                        />
+                                    )}
+                                </Card>
+                                <Card roundedAbove="sm">
+                                    {isSettingsLoading ? (
+                                        <SkeletonLoading
+                                            secondClass='w-4/5 mt-8 mb-4'
+                                            secondLines={14}
+                                        />
+                                    ) : (
+                                        <SettingsSecondBlock
+                                            children={
+                                                <div className="w-4/5 mb-6">
+                                                    <Card>
+                                                        {isMessageLoading ? <div className='flex justify-center items-center h-72'>
+                                                            <Spinner accessibilityLabel="Small spinner example" size="large" />
+                                                        </div> : <div className="flex-col" >
+                                                            <textarea
+                                                                className="w-full h-7 border-none outline-none text-base"
+                                                                value={settings?.followUpMessage?.header}
+                                                                onChange={(e) => {
+                                                                    setSettings((prev) => ({
+                                                                        ...prev,
+                                                                        followUpMessage: {
+                                                                            ...prev.followUpMessage,
+                                                                            header: e.target.value
+                                                                        }
+                                                                    }))
+                                                                }
+                                                                }
+                                                                placeholder="Heading"
+                                                                disabled={!isProPlanOrHigher(selectedPlanName)}
+                                                            />
+                                                            <textarea
+                                                                className="w-full h-40 text-base border-none outline-none"
+                                                                value={settings?.followUpMessage?.content}
+                                                                onChange={(e) => {
+                                                                    setSettings((prev) => ({
+                                                                        ...prev,
+                                                                        followUpMessage: {
+                                                                            ...prev.followUpMessage,
+                                                                            content: e.target.value
+                                                                        }
+                                                                    }))
+                                                                }}
+                                                                placeholder="Please write your content here..."
+                                                                disabled={!isProPlanOrHigher(selectedPlanName)}
+                                                            />
+                                                            <div className='flex justify-end pr-3 pt-4'>
+                                                                <Button
+                                                                    onClick={async () => {
+                                                                        setSaveButtonLoading(true)
+                                                                        await handleSaveSettings(settings)
+                                                                        setSaveButtonLoading(false)
+                                                                    }}
+                                                                    variant="primary"
+                                                                    disabled={messageToCompare?.header === settings?.followUpMessage?.header && messageToCompare?.content === settings?.followUpMessage?.content}
+                                                                    loading={isSaveButtonLoading}
+                                                                >Save Text</Button>
+                                                            </div>
+                                                        </div>}
+                                                    </Card>
+                                                </div>
+                                            }
+                                            title={"Follow-Up Messages"}
+                                            description={"Craft a follow-up message to check in after the initial cart abandonment reminder."}
+                                            availableOn={"Pro"}
+                                        />
+                                    )}
+                                </Card>
                             </BlockStack>
                         </div>
                         <div className='mb-20'></div>
@@ -429,5 +529,36 @@ const Settings = () => {
         </div>
     );
 };
+
+const SkeletonLoading = ({ firstClass = "w-1/3 mt-1", secondClass = "w-1/2 mt-6 mb-4", firstLines = 1, secondLines = 3 }) => {
+    return (<BlockStack gap="600">
+        <BlockStack gap="400">
+            <div className={firstClass}>
+                <SkeletonBodyText lines={firstLines} />
+            </div>
+            <div className={secondClass}>
+                <SkeletonBodyText lines={secondLines} />
+            </div>
+        </BlockStack>
+    </BlockStack>)
+}
+
+const SettingsSecondBlock = ({ children = <></>, title = 'Title', description = 'Setting Description', availableOn = '', toneType = "info" }: any) => {
+    return (
+        <div className='p-4'>
+            <BlockStack gap="600">
+                <BlockStack gap="300">
+                    <Text as="p" variant="bodyLg" fontWeight="bold">
+                        {title} <span className='pl-2'>{availableOn && <Badge tone={toneType} >{availableOn}</Badge>}</span>
+                    </Text>
+                    <Text as="p" variant="bodyLg">
+                        {description}
+                    </Text>
+                    {children}
+                </BlockStack>
+            </BlockStack>
+        </div>
+    )
+}
 
 export default Settings;

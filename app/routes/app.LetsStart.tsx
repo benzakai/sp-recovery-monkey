@@ -54,7 +54,7 @@ const LetsStart = () => {
     const submit = useSubmit();
     const actionData = useActionData()
     const navigate = useNavigate()
-    const { setAnySubscription }: any = useOutletContext()
+    const { setAnySubscription, setSelectedPlanName }: any = useOutletContext()
     const [getCards, setCards] = React.useState([
         {
             id: 1,
@@ -62,7 +62,7 @@ const LetsStart = () => {
             icon: <AbandonedCartSVG />,
             title: "Abandoned Carts",
             description: "Customers waiting for you to complete their purchase",
-            handleNavigate: () => {}
+            handleNavigate: () => { }
         },
         {
             id: 2,
@@ -70,7 +70,7 @@ const LetsStart = () => {
             icon: <MissedRevenueSVG />,
             title: "Missed Revenue",
             description: "The amount you could have earned from these carts",
-            handleNavigate: () => {}
+            handleNavigate: () => { }
         },
         {
             id: 3,
@@ -78,7 +78,7 @@ const LetsStart = () => {
             icon: <RecoveredRevenueSVG />,
             title: "Recovered Revenue",
             description: "When you make money with our help, it appears here",
-            handleNavigate: () => {}
+            handleNavigate: () => { }
         },
         {
             id: 4,
@@ -86,7 +86,7 @@ const LetsStart = () => {
             icon: <ACRRateSVG />,
             title: "ACR Rate",
             description: "The amount of income waiting for recovery",
-            handleNavigate: () => {}
+            handleNavigate: () => { }
         }
     ]);
 
@@ -100,7 +100,7 @@ const LetsStart = () => {
                     icon: <AbandonedCartSVG />,
                     title: "Abandoned Carts",
                     description: "Customers waiting for you to complete their purchase",
-                    handleNavigate: () => {}
+                    handleNavigate: () => { }
                 },
                 {
                     id: 2,
@@ -108,7 +108,7 @@ const LetsStart = () => {
                     icon: <MissedRevenueSVG />,
                     title: "Missed Revenue",
                     description: "The amount you could have earned from these carts",
-                    handleNavigate: () => {}
+                    handleNavigate: () => { }
                 },
                 {
                     id: 3,
@@ -116,7 +116,7 @@ const LetsStart = () => {
                     icon: <RecoveredRevenueSVG />,
                     title: "Recovered Revenue",
                     description: "When you make money with our help, it appears here",
-                    handleNavigate: () => {}
+                    handleNavigate: () => { }
                 },
                 {
                     id: 4,
@@ -124,7 +124,7 @@ const LetsStart = () => {
                     icon: <ACRRateSVG />,
                     title: "ACR Rate",
                     description: "The amount of income waiting for recovery",
-                    handleNavigate: () => {}
+                    handleNavigate: () => { }
                 }
             ]);
         }
@@ -134,6 +134,7 @@ const LetsStart = () => {
         if (actionData?.success) {
             if (planName === "Free") {
                 setAnySubscription(true)
+                setSelectedPlanName("Free")
                 navigate('/app/WelcomeConnect')
             }
         }
@@ -142,8 +143,8 @@ const LetsStart = () => {
     useEffect(() => {
         handleFetchAbandonedCheckouts();
     }, []);
-    
-    
+
+
     const handlePlanSelect = (planName: any) => {
         if (planName === "Free") setLoadingPlanButton(true)
         setPlanName(planName);

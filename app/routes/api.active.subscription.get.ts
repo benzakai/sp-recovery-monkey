@@ -35,15 +35,17 @@ export async function loader({ request }: LoaderFunctionArgs) {
     // to check if user is on free plan
     const doc = await fireStoreFetchService("subscriptions", session.shop);
     // console.log("doc", doc);
-    const selectedPlanName = (doc?.plan === "Free" && doc?.status === "ACTIVE") ? "Free" : null
-
-    if (data.data.currentAppInstallation.activeSubscriptions.length > 0) return {
-      success: true,
-      activeSubscriptions: data.data.currentAppInstallation.activeSubscriptions,
-      selectedPlanName
+    let selectedPlanName;
+    if (data.data.currentAppInstallation.activeSubscriptions.length > 0) {
+      return {
+        success: true,
+        activeSubscriptions: data.data.currentAppInstallation.activeSubscriptions,
+        selectedPlanName: data.data.currentAppInstallation.activeSubscriptions?.[0].name
+      }
+    } else {
+      return { success: true, selectedPlanName: (doc?.plan === "Free" && doc?.status === "ACTIVE") ? "Free" : null };
     }
 
-    return { success: false, selectedPlanName };
   } catch (error) {
     console.log("ERROR on active.subscription.get", error);
     return { success: false };

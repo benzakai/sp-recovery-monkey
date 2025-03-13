@@ -1,8 +1,10 @@
-import { Box, Button, Card, Link, Page, Select, SkeletonBodyText, Spinner, Text } from '@shopify/polaris'
+import { Badge, Box, Button, Card, Link, Page, Select, SkeletonBodyText, Spinner, Text } from '@shopify/polaris'
 import { useEffect, useState } from 'react';
 import { DateRangePicker } from '~/components/DateRangePicker'
 import SmartBulkTable from '~/components/SmartBulkTable'
 import ConfirmationModal from '~/components/ConfirmationModal';
+import { isProPlanOrHigher } from '~/utils/plans';
+import { useOutletContext } from '@remix-run/react';
 
 export default function SmartBulk() {
     const [selectedTableData, setSelectedTableData] = useState([]);
@@ -39,7 +41,8 @@ export default function SmartBulk() {
         endCursor: null,
         startCursor: null
     });
-    const [PageSize, setPageSize] = useState('15')
+    const [PageSize, setPageSize] = useState('10')
+    const { selectedPlanName }: any = useOutletContext()
 
 
     useEffect(() => {
@@ -227,9 +230,14 @@ export default function SmartBulk() {
                 // onClick={() => handleSelectCard(card.id)}
                 >
                     <div className="mb-8">
-                        <Text variant="heading3xl" as="h3">
-                            Smart Bulk
-                        </Text>
+                        <div className='flex flex-row gap-3'>
+                            <Text variant="heading3xl" as="h3">
+                                Smart Bulk
+                            </Text>
+                            <div className='pt-3.5'>
+                                <Badge tone='info' >Pro</Badge>
+                            </div>
+                        </div>
                         <Text variant="headingXl" as="h4">
                             Boost your sales with custom messages to multiple customers
                         </Text>
@@ -258,6 +266,7 @@ export default function SmartBulk() {
                                     }
                                     }
                                     placeholder="Heading"
+                                    disabled={!isProPlanOrHigher(selectedPlanName)}
                                 />
                                 <textarea
                                     className="w-full h-56 text-base border-none outline-none"
@@ -269,6 +278,7 @@ export default function SmartBulk() {
                                         }))
                                     }}
                                     placeholder="Please write your content here..."
+                                    disabled={!isProPlanOrHigher(selectedPlanName)}
                                 />
                                 <div className='flex justify-end pr-3 pt-4'>
                                     <Button
@@ -284,9 +294,14 @@ export default function SmartBulk() {
                 </div> : null}
                 <div className='flex justify-between'>
                     <div className='mb-6'>
-                        <Text variant="headingLg" as="p">
-                            Customers list
-                        </Text>
+                        <div className='flex flex-row gap-2'>
+                            <Text variant="headingLg" as="p">
+                                Customers list
+                            </Text>
+                            <div>
+                                <Badge tone='info' >Pro</Badge>
+                            </div>
+                        </div>
                         <div className='mb-2'></div>
                         <Text variant="bodyLg" as="p">
                             Select multiple users in bulk with checkboxes, then click 'Send Message'
@@ -300,15 +315,17 @@ export default function SmartBulk() {
                                 options={options}
                                 onChange={(v) => setPageSize(v)}
                                 value={PageSize}
+                                disabled={!isProPlanOrHigher(selectedPlanName)}
                             />
                         </div>
                         <div className='mr-3'>
                             <DateRangePicker
+                                disabled={!isProPlanOrHigher(selectedPlanName)}
                                 setSelectedDateValues={setSelectedDateValues} />
                         </div>
                         <Button
                             variant="primary"
-                            disabled={(selectedTableData.length && customMessage?.content && customMessage?.header) ? false : true}
+                            disabled={(selectedTableData.length && customMessage?.content && customMessage?.header && isProPlanOrHigher(selectedPlanName)) ? false : true}
                             onClick={handleSendMessageInitial}
                         >
                             Send Message
@@ -330,10 +347,8 @@ export default function SmartBulk() {
                         customers={customers}
                         persistCustomers={persistCustomers}
                         currentPage={currentPage}
-                        PageSize={PageSize}
-                        totalCustomers={totalCustomers}
+                        disabled={!isProPlanOrHigher(selectedPlanName)}
                         setCurrentPage={setCurrentPage}
-                        otherTableData={otherTableData}
                         pageInfo={pageInfo}
                         isTableLoading={isTableLoading}
                         setQueryValue={setQueryValue}

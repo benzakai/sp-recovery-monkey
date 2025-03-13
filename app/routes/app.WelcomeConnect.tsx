@@ -1,9 +1,9 @@
-import { Card, Page, Button, Spinner, Text, BlockStack, Link, SkeletonBodyText } from '@shopify/polaris';
-import React, { useEffect, useState } from 'react';
+import { Card, Page, Button, Spinner, Text, BlockStack } from '@shopify/polaris';
+import React, { useEffect, useState, useTransition } from 'react';
 import '../StartPage.css';
-import AlienLogo from './images/Alien.png'
+// import AlienLogo from './images/Alien.png'
 import AbandonedCartsSummary from '~/components/AbandonedCartsSummary';
-import StartPageCartSummary from '~/components/StartPageCartSummary';
+// import StartPageCartSummary from '~/components/StartPageCartSummary';
 import OneSVG from '~/components/SVGs/OneSVG';
 import TwoSVG from '~/components/SVGs/TwoSVG';
 import ThreeSVG from '~/components/SVGs/ThreeSVG';
@@ -34,6 +34,7 @@ const WelcomeConnect = () => {
     const [isSaveButtonLoading, setSaveButtonLoading] = useState(false)
     const [isMessageLoading, setMessageLoading] = useState(true)
     const [isDisBtnLoading, setDisBtnLoading] = useState(false)
+    const [isPending, startTransition] = useTransition();
 
     const fetchPhoneNumber = async ({ url, id, token }: any) => {
         const response = await fetch('/api/fetchPhoneNumber', {
@@ -269,9 +270,11 @@ const WelcomeConnect = () => {
                 setInstanceDataLoading(false)
             }
         };
-        getMessageData();
-        fetchDataAndFetchQR();
         handleFetchAbandonedCheckouts();
+        getMessageData();
+        startTransition(() => {
+            fetchDataAndFetchQR();
+        })
     }, []);
 
     useEffect(() => {

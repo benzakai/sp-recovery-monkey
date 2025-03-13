@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import {
     CalendarIcon, ArrowRightIcon
 } from '@shopify/polaris-icons';
-export function DateRangePicker({ setSelectedDateValues }: any) {
+export function DateRangePicker({ setSelectedDateValues, disabled }: any) {
     const { mdDown, lgUp } = useBreakpoints();
     const shouldShowMultiMonth = lgUp;
     const today = new Date(new Date().setHours(0, 0, 0, 0));
@@ -217,6 +217,7 @@ export function DateRangePicker({ setSelectedDateValues }: any) {
                     size="large"
                     icon={CalendarIcon}
                     onClick={() => setPopoverActive(!popoverActive)}
+                    disabled={disabled}
                 >
                     {buttonValue}
                 </Button>
@@ -319,12 +320,12 @@ export function DateRangePicker({ setSelectedDateValues }: any) {
             <Popover.Pane fixed>
                 <Popover.Section>
                     <div className="my-2">
-                    <InlineStack align="end">
-                        <div className="mr-2"><Button onClick={cancel}>Cancel</Button></div>
-                        <Button primary onClick={apply}>
-                            Apply
-                        </Button>
-                    </InlineStack>
+                        <InlineStack align="end">
+                            <div className="mr-2"><Button onClick={cancel}>Cancel</Button></div>
+                            <Button primary onClick={apply}>
+                                Apply
+                            </Button>
+                        </InlineStack>
                     </div>
                 </Popover.Section>
             </Popover.Pane>
