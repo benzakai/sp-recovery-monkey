@@ -9,7 +9,7 @@ import {
 } from '@shopify/polaris';
 import { useState, useCallback, useMemo } from 'react';
 
-export default function MultiselectTagCombobox({ data, selectedTags, setSelectedTags, value, setValue, isDisabled = false }: any) {
+export default function MultiselectTagCombobox({ data, selectedTags, setSelectedTags, value, setValue, isDisabled = false, placeholder = "Search tags" }: any) {
 
   const [suggestion, setSuggestion] = useState('');
 
@@ -161,7 +161,7 @@ export default function MultiselectTagCombobox({ data, selectedTags, setSelected
             labelHidden
             value={value}
             suggestion={suggestion}
-            placeholder="Search tags"
+            placeholder={placeholder}
             verticalContent={verticalContentMarkup}
             onChange={setValue}
           />

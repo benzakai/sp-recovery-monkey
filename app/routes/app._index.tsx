@@ -1,5 +1,5 @@
-import { Spinner, Card, Button, Text, Page, Badge } from '@shopify/polaris';
-import { useNavigate, useActionData, useSubmit, useOutletContext } from '@remix-run/react';
+import { Spinner, Card, Button, Text, Page, Badge, Select, Icon } from '@shopify/polaris';
+import { useNavigate, useActionData, useSubmit, useOutletContext, useLoaderData } from '@remix-run/react';
 import '../StartPage.css';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import StartPageCartSummary from '~/components/StartPageCartSummary';
@@ -10,7 +10,9 @@ import CustomerListSVG from '~/components/SVGs/CustomerListSVG';
 import Dashboard2SVG from '~/components/SVGs/Dashboard2SVG';
 import ChatSVG from '~/components/SVGs/ChatSVG';
 import MailSVG from '~/components/SVGs/MailSVG';
-
+import { useTranslation } from 'react-i18next';
+import { LanguageFilledIcon } from '@shopify/polaris-icons';
+import db from '../db.server';
 export interface Card {
   id: number;
   icon: JSX.Element;
@@ -27,79 +29,122 @@ export interface StartPageCartSummaryProps {
 export const action = async ({ request }: any) => {
   const { session, billing } = await authenticate.admin(request)
   const formData = await request.formData();
-  const planName = formData.get("planName") || MONTHLY_PLAN;
-  if (planName === "Free") {
-    await fireStoreCreateService("subscriptions", session.shop, {
-      storeId: session.shop,
-      plan: "Free",
-      status: "ACTIVE",
-      startDate: new Date().toISOString(),
-      endDate: ""
-    }, {});
-  } else {
-    await billing.require({
-      plans: [planName],
-      isTest: false,
-      onFailure: async () => billing.request({
-        plan: planName,
-        isTest: false
-      }),
+  const actionType = formData.get("actionType");
+  const selectedAppLanugage = formData.get("selectedAppLanugage");
+  let savedLanguage;
+  if (actionType === "languageChange") {
+    const existingLanguage = await db.appLanguages.findUnique({
+      where: {
+        shop: session.shop,
+      },
     });
+
+    if (existingLanguage) {
+      savedLanguage = await db.appLanguages.update({
+        where: {
+          shop: session.shop,
+        },
+        data: {
+          language: selectedAppLanugage,
+        },
+      });
+    } else {
+      savedLanguage = await db.appLanguages.create({
+        data: {
+          language: selectedAppLanugage,
+          shop: session.shop,
+        },
+      });
+    }
+  } else if (actionType === "planSelect") {
+    const planName = formData.get("planName") || MONTHLY_PLAN;
+    if (planName === "Free") {
+      await fireStoreCreateService("subscriptions", session.shop, {
+        storeId: session.shop,
+        plan: "Free",
+        status: "ACTIVE",
+        startDate: new Date().toISOString(),
+        endDate: ""
+      }, {});
+    } else {
+      await billing.require({
+        plans: [planName],
+        isTest: false,
+        onFailure: async () => billing.request({
+          plan: planName,
+          isTest: false
+        }),
+      });
+    }
   }
-  return { success: true };
+  return { success: true, savedAppLangnuage: savedLanguage?.language };
 };
 
+export const loader = async ({ request }: any) => {
+  const { session } = await authenticate.admin(request);
+  const languageData = await db.appLanguages.findUnique({
+    where: {
+      shop: session.shop
+    }
+  })
+  return { userSelectedLanguage: languageData?.language || "en" };
+}
+
 export default function Index() {
+  const { t, i18n } = useTranslation()
+  const loaderData: any = useLoaderData()
   const navigate = useNavigate();
   const [planName, setPlanName] = useState('not set');
   const [isLoadingPlanButton, setLoadingPlanButton] = useState(false);
   const submit = useSubmit();
-  const actionData = useActionData();
+  const actionData: any = useActionData();
   const { anySubscription, setAnySubscription, setSelectedPlanName }: any = useOutletContext();
   const anySubscriptionRef = useRef(anySubscription);
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
   const getCards = useMemo(
     () => [
       {
         id: 1,
         icon: <DashboardSVG />,
         value: null,
-        title: "Dashboard",
-        description: "Track your recovered carts and revenue",
+        title: t("global.icons.dashboard"),
+        description: t("global.icons.dashboardDescription"),
         handleNavigate: () => handleIconsNavigate(anySubscriptionRef.current ? "/app/WelcomeConnect" : null)
       },
       {
         id: 2,
         icon: <CustomerListSVG />,
         value: null,
-        title: "Customer List",
-        description: "View your CartKeeper purchases",
+        title: t("global.icons.customerList"),
+        description: t("global.icons.customerListDescription"),
         handleNavigate: () => handleIconsNavigate(anySubscriptionRef.current ? "/app/AbandonedList" : null)
       },
       {
         id: 3,
         icon: <Dashboard2SVG />,
         value: null,
-        title: "Bulk Campaign",
-        description: "Message all your store customers",
+        title: t("global.icons.bulkCampaign"),
+        description: t("global.icons.bulkCampaignDescription"),
         handleNavigate: () => handleIconsNavigate(anySubscriptionRef.current ? "/app/SmartBulk" : null)
       }
     ],
-    [anySubscriptionRef.current]);
-
-  const handleIconsNavigate = useCallback((data: any) => {
-    if (anySubscriptionRef.current !== "loading") {
-      data ? navigate(data) : shopify.toast.show("Please select a plan to access this page.");
-    } else {
-      shopify.toast.show('Loading subscription details. Please wait.');
-    }
-  }, [anySubscription, navigate])
+    [anySubscriptionRef.current,t]);
 
   useEffect(() => {
-    if (actionData?.success && planName === "Free") {
+    if (loaderData) {
+      setSelectedLanguage(loaderData.userSelectedLanguage)
+    }
+  }, [loaderData])
+
+  useEffect(() => {
+    if (actionData?.success) {
       if (planName === "Free") {
         setSelectedPlanName("Free")
         setAnySubscription(true);
-        shopify.toast.show("Your subscription is successfully created!");
+        shopify.toast.show(t("global.toastMessage.successSubscriptionCreated"));
+      } else if (actionData?.savedAppLangnuage) {
+        i18n.changeLanguage(actionData?.savedAppLangnuage)
+        shopify.toast.show(t("global.toastMessage.languageChangeSuccess"))
       }
     }
   }, [actionData, planName, setAnySubscription]);
@@ -107,6 +152,14 @@ export default function Index() {
   useEffect(() => {
     anySubscriptionRef.current = anySubscription;
   }, [anySubscription]);
+
+  const handleIconsNavigate = useCallback((data: any) => {
+    if (anySubscriptionRef.current !== "loading") {
+      data ? navigate(data) : shopify.toast.show(t("global.toastMessage.pagePlanLimit"));
+    } else {
+      shopify.toast.show(t("global.toastMessage.loadingSubscription"));
+    }
+  }, [anySubscription, navigate])
 
   const handleRedirectToMail = useCallback(() => {
     try {
@@ -129,155 +182,190 @@ export default function Index() {
     setPlanName(planName);
     const formData = new FormData();
     formData.append("planName", planName);
+    formData.append("actionType", "planSelect");
     submit(formData, { method: "post" });
   };
+
+  const handleLanguageChange = (value: any) => {
+    setSelectedLanguage(value);
+    const formData = new FormData()
+    formData.append("selectedAppLanugage", value);
+    formData.append("actionType", "languageChange");
+    submit(formData, { method: "post" });
+  }
+
+
+  const languageOptions = [
+    {
+      label: 'English',
+      value: 'en',
+      prefix: <Icon source={LanguageFilledIcon} />,
+    },
+    {
+      label: 'Español',
+      value: 'es',
+      prefix: <Icon source={LanguageFilledIcon} />,
+    },
+  ];
+
 
   return (
     <div className="body">
       <div className='start_page'>
-        <Page fullWidth>
-          <div className='start_main_container' style={{ padding: "4rem 12rem 10rem 6rem" }}>
+      <div className='start_main_container' style={{ padding: "4rem 12rem 10rem 6rem" }}>
+          <div className='flex flex-row justify-between'>
             <div className='start_main_container_heading pb-8'>
               <Text variant="heading3xl" as="h3">
-                Welcome
+                {t("home.title")}
+              </Text>
+            </div>
+            <Select
+              label=""
+              options={languageOptions}
+              onChange={handleLanguageChange}
+              value={selectedLanguage}
+            />
+          </div>
+
+          <div>
+            <p className='font-bold text-2xl pb-6'>{t("home.subTitle")}</p>
+            <StartPageCartSummary getCards={getCards} />
+          </div>
+
+          <div className="start_price_container">
+            <div className="start_price_container_heading">
+              <Text variant="headingLg" as="h5">
+                {t("home.contactSectionTitle")}
               </Text>
             </div>
 
-            <div>
-              <p className='font-bold text-2xl pb-6'>How to start with CartKeeper?</p>
-              <StartPageCartSummary getCards={getCards} />
-            </div>
-
-            <div className="start_price_container">
-              <div className="start_price_container_heading">
-                <Text variant="headingLg" as="h5">
-                  We're Here For You
-                </Text>
-              </div>
-
-              <Card>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6">
-                  <div className="p-6 shadow-lg rounded-2xl border border-gray-200 relative h-48" style={{ backgroundColor: "#f8faff" }}>
-                    <div className='flex flex-row items-center'>
-                      <ChatSVG />
-                      <h2 className="text-lg font-semibold text-gray-800">whatsapp chat</h2>
-                    </div>
-                    <div className='mb-4 mt-4'>
-                      <p className="text-gray-600 text-base">Talk to us directly via WhatsApp chat to get help with your question.</p>
-                    </div>
-                    <div className=''>
-                      <Button fullWidth size='large' variant='primary' onClick={handleRedirectToWhatsapp}>
-                        Message us on WhatsApp
-                      </Button>
-                    </div>
+            <Card>
+              <div className="flex flex-row gap-6 p-6 w-full">
+                <div className="p-6 shadow-lg rounded-2xl border border-gray-200 relative h-48 w-1/2" style={{ backgroundColor: "#f8faff" }}>
+                  <div className='flex flex-row items-center'>
+                    <ChatSVG />
+                    <h2 className="text-lg font-semibold text-gray-800">{t("home.whatsappChatTitle")}</h2>
                   </div>
-
-                  <div className="p-6 shadow-lg rounded-2xl border border-gray-200 relative h-48" style={{ backgroundColor: "#f8faff" }}>
-                    <div className='flex flex-row items-center'>
-                      <MailSVG />
-                      <h2 className="text-lg font-semibold text-gray-800">contact via email</h2>
-                    </div>
-                    <div className='mb-4 mt-4'>
-                      <p className="text-gray-600 text-base">Contact us directly via email for help or support.</p>
-                    </div>
-                    <div className='mt-10'>
-                      <Button fullWidth size='large' variant='primary' onClick={handleRedirectToMail}>
-                        Send us an Email
-                      </Button>
-                    </div>
+                  <div className='mb-4 mt-4'>
+                    <p className="text-gray-600 text-base">{t("home.whatsappChatDescription")}</p>
+                  </div>
+                  <div>
+                    <Button fullWidth size='large' variant='primary' onClick={handleRedirectToWhatsapp}>
+                      {t("home.whatsappChatButtonText")}
+                    </Button>
                   </div>
                 </div>
-              </Card>
-            </div>
 
-            {anySubscription === "loading" ? (
-              <div className="flex justify-center items-center h-full w-full mt-28">
-                <Spinner accessibilityLabel="Spinner example" size="large" />
-              </div>
-            ) : (
-              !anySubscription && (
-                <div className="start_price_container">
-                  <div className="start_price_container_heading">
-                    <Text variant="headingLg" as="h5">
-                      Choose a plan and start Growing!
-                    </Text>
+                <div className="p-6 shadow-lg rounded-2xl border border-gray-200 relative h-48 w-1/2" style={{ backgroundColor: "#f8faff" }}>
+                  <div className='flex flex-row items-center'>
+                    <MailSVG />
+                    <h2 className="text-lg font-semibold text-gray-800">{t("home.emailContactTitle")}</h2>
                   </div>
-                  <div className="start_price_container_cards">
-                    <Card>
-                      <div className="start_price_choose_plan">
-                        <div className='start_plan_name'>Free Plan</div>
-                        <div className="start_plan_ammount_section" style={{ marginBottom: "75px" }}>
-                          <div className="start_plan_ammount">Free</div>
-                        </div>
-                        <div className="start_plan_button_section"><Button size='large' loading={isLoadingPlanButton} onClick={() => handlePlanSelect('Free')} variant='primary' fullWidth>select</Button></div>
-                        <div className="star_plan_limit_dialogue">
-                          <ul className='start_plan_list'>
-                            <li className='start_plan_list_item'>Up to 5 sales recovery carts</li>
-                            <li className='start_plan_list_item'>Potential to generate up to $1,000 in additional revenue per month!</li>
-                          </ul>
-                        </div>
-                      </div>
-                    </Card>
-                    <Card>
-                      <div className="start_price_choose_plan">
-                        <div className='start_plan_name'>Starter</div>
-                        <div className="start_plan_ammount_section">
-                          <div className="start_plan_ammount">19$</div>
-                          <div className="start_plan_ammount_suffix">/  Month</div>
-                        </div>
-                        <div className="start_plan_trial"><Badge size="small" tone="info">7 day free trial</Badge> </div>
-                        <div className="start_plan_button_section"><Button size='large' onClick={() => handlePlanSelect('Starter')} variant='primary' fullWidth>select</Button></div>
-                        <div className="star_plan_limit_dialogue">
-                          <ul className='start_plan_list'>
-                            <li className='start_plan_list_item'>Up to 10 sales recovery carts per month</li>
-                            <li className='start_plan_list_item'>Potential to generate up to $2,000 in additional revenue per month!</li>
-                          </ul>
-                        </div>
-                      </div>
-                    </Card>
-                    <Card>
-                      <div className="start_price_choose_plan">
-                        <div className='start_plan_name'>Pro</div>
-                        <div className="start_plan_ammount_section">
-                          <div className="start_plan_ammount">49$</div>
-                          <div className="start_plan_ammount_suffix">/  Month</div>
-                        </div>
-                        <div className="start_plan_trial"><Badge tone="info">7 day free trial</Badge> </div>
-                        <div className="start_plan_button_section"><Button size='large' onClick={() => handlePlanSelect('Pro')} variant='primary' fullWidth>select</Button></div>
-                        <div className="star_plan_limit_dialogue">
-                          <ul className='start_plan_list'>
-                            <li className='start_plan_list_item'>Up to 49 sales recovery carts per month</li>
-                            <li className='start_plan_list_item'>Potential to generate up to $10,000 in additional revenue per month!</li>
-                          </ul>
-                        </div>
-                      </div>
-                      <div className='popular_badge'>
-                        Most Popular
-                      </div>
-                    </Card>
-                    <Card>
-                      <div className="start_price_choose_plan">
-                        <div className='start_plan_name'>Advanced</div>
-                        <div className="start_plan_ammount_section">
-                          <div className="start_plan_ammount">99$</div>
-                          <div className="start_plan_ammount_suffix">/  Month</div>
-                        </div>
-                        <div className="start_plan_trial"><Badge tone="info">7 day free trial</Badge> </div>
-                        <div className="start_plan_button_section"><Button size='large' onClick={() => handlePlanSelect('Advance')} variant='primary' fullWidth>select</Button></div>
-                        <div className="star_plan_limit_dialogue">
-                          <ul className='start_plan_list'>
-                            <li className='start_plan_list_item'>Up to 100 sales recovery carts per month</li>
-                            <li className='start_plan_list_item'>Potential to generate up to $100000 more revenue per month</li>
-                          </ul>
-                        </div>
-                      </div>
-                    </Card>
+                  <div className='mb-4 mt-4'>
+                    <p className="text-gray-600 text-base">{t("home.emailContactDescription")}</p>
+                  </div>
+                  <div className={i18n.language === "en" ? "mt-10" : ""}>
+                    <Button fullWidth size='large' variant='primary' onClick={handleRedirectToMail}>
+                      {t("home.emailContactButtonText")}
+                    </Button>
                   </div>
                 </div>
-              )
-            )}
+              </div>
+            </Card>
           </div>
-        </Page>
+
+          {anySubscription === "loading" ? (
+            <div className="flex justify-center items-center h-full w-full mt-28">
+              <Spinner accessibilityLabel="Spinner example" size="large" />
+            </div>
+          ) : (
+            !anySubscription && (
+              <div className="start_price_container">
+                <div className="start_price_container_heading">
+                  <Text variant="headingLg" as="h5">
+                    {t("home.priceSectionTitle")}
+                  </Text>
+                </div>
+                <div className="start_price_container_cards">
+                  <Card>
+                    <div className="start_price_choose_plan">
+                      <div className='start_plan_name'>{t("settings.planName1")}</div>
+                      <div className="start_plan_ammount_section" style={{ marginBottom: "75px" }}>
+                        <div className="start_plan_ammount">{t("settings.planPrice1")}</div>
+                      </div>
+                      <div className="start_plan_button_section"><Button size='large' loading={isLoadingPlanButton} onClick={() => handlePlanSelect('Free')} variant='primary' fullWidth>{t("settings.planNotSelectedText")}</Button></div>
+                      <div className="star_plan_limit_dialogue">
+                        <ul className='start_plan_list'>
+                          <li className='start_plan_list_item'>- {t("settings.starterBenefit1")}</li>
+                          <li className='start_plan_list_item'>- {t("settings.starterBenefit2")}</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </Card>
+                  <Card>
+                    <div className="start_price_choose_plan">
+                      <div className='start_plan_name'>{t("settings.planName2")}</div>
+                      <div className="start_plan_ammount_section">
+                        <div className="start_plan_ammount">19$</div>
+                        <div className="start_plan_ammount_suffix">{t("settings.planPrice2")}</div>
+                      </div>
+                      <div className="start_plan_trial"><Badge size="small" tone="info">{t("settings.freeTrileText")}</Badge> </div>
+                      <div className="start_plan_button_section"><Button size='large' onClick={() => handlePlanSelect('Starter')} variant='primary' fullWidth>{t("settings.planNotSelectedText")}</Button></div>
+                      <div className="star_plan_limit_dialogue">
+                        <ul className='start_plan_list'>
+                          <li className='start_plan_list_item'>- {t("settings.starterBenefit1")}</li>
+                          <li className='start_plan_list_item'>- {t("settings.starterBenefit2")}</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </Card>
+                  <Card>
+                    <div className="start_price_choose_plan">
+                      <div className='start_plan_name'>{t("settings.planName3")}</div>
+                      <div className="start_plan_ammount_section">
+                        <div className="start_plan_ammount">49$</div>
+                        <div className="start_plan_ammount_suffix">{t("settings.planPrice3")}</div>
+                      </div>
+                      <div className="start_plan_trial"><Badge tone="info">{t("settings.freeTrileText")}</Badge> </div>
+                      <div className="start_plan_button_section"><Button size='large' onClick={() => handlePlanSelect('Pro')} variant='primary' fullWidth>{t("settings.planNotSelectedText")}</Button></div>
+                      <div className="star_plan_limit_dialogue">
+                        <ul className='start_plan_list'>
+                          <li className='start_plan_list_item'>- {t("settings.proBenefit1")}</li>
+                          <li className='start_plan_list_item'>- {t("settings.proBenefit2")}</li>
+                          <li className='start_plan_list_item'>- {t("settings.proBenefit3")}</li>
+                          <li className='start_plan_list_item'>- {t("settings.proBenefit4")}</li>
+                          <li className='start_plan_list_item'>- {t("settings.proBenefit5")}</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div className='popular_badge'>
+                      {t("settings.popularBadgeText")}
+                    </div>
+                  </Card>
+                  <Card>
+                    <div className="start_price_choose_plan">
+                      <div className='start_plan_name'>{t("settings.planName4")}</div>
+                      <div className="start_plan_ammount_section">
+                        <div className="start_plan_ammount">99$</div>
+                        <div className="start_plan_ammount_suffix">{t("settings.planPrice4")}</div>
+                      </div>
+                      <div className="start_plan_trial"><Badge tone="info">{t("settings.freeTrileText")}</Badge> </div>
+                      <div className="start_plan_button_section"><Button size='large' onClick={() => handlePlanSelect('Advance')} variant='primary' fullWidth>{t("settings.planNotSelectedText")}</Button></div>
+                      <div className="star_plan_limit_dialogue">
+                        <ul className='start_plan_list'>
+                          <li className='start_plan_list_item'>- {t("settings.advancedBenefit1")}</li>
+                          <li className='start_plan_list_item'>- {t("settings.advancedBenefit2")}</li>
+                          <li className='start_plan_list_item'>- {t("settings.advancedBenefit3")}</li>
+                          <li className='start_plan_list_item'>- {t("settings.advancedBenefit4")}</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              </div>
+            )
+          )}
+        </div>
       </div>
     </div>
   );

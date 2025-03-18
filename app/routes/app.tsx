@@ -7,6 +7,7 @@ import { NavMenu } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 import { authenticate } from "../shopify.server";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 React.useLayoutEffect = React.useEffect;
 
@@ -22,6 +23,7 @@ export default function App() {
   const [anySubscription, setAnySubscription] = React.useState<any>("loading");
   const [selectedPlanName, setSelectedPlanName] = React.useState<any>(null);
   const [permissions, setPermissions] = React.useState<any>({})
+  const { t } = useTranslation()
 
   async function fetchAppSubscription(): Promise<any> {
     try {
@@ -106,15 +108,15 @@ export default function App() {
   return (
     <AppProvider isEmbeddedApp apiKey={apiKey}>
       <NavMenu>
-        <Link to="/app" rel="home">Home</Link>
+        <Link to="/app" rel="home">{t("home.title")}</Link>
         {(anySubscription === "loading") ? (<></>) : (!anySubscription) ? (
-          <Link to="/app/LetsStart">Let’s Start</Link>
+          <Link to="/app/LetsStart">{t("letsStart.title")}</Link>
         ) : (
           <>
-            <Link to="/app/WelcomeConnect">Welcome</Link>
-            <Link to="/app/AbandonedList">Abandoned List</Link>
-            <Link to="/app/SmartBulk">Smart Bulk</Link>
-            <Link to="/app/Settings">Settings</Link>
+            <Link to="/app/WelcomeConnect">{t("welcome.title")}</Link>
+            <Link to="/app/AbandonedList">{t("abandonedList.title")}</Link>
+            <Link to="/app/SmartBulk">{t("smartBulk.title")}</Link>
+            <Link to="/app/Settings">{t("settings.title")}</Link>
           </>
         )}
       </NavMenu>

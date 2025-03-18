@@ -11,6 +11,7 @@ import {
 } from '@shopify/polaris';
 import type { IndexFiltersProps } from '@shopify/polaris';
 import { useState, useCallback, useEffect, Fragment } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const emptyStateMarkup = (
     <EmptySearchResult
@@ -34,14 +35,15 @@ export default function SmartBulkTable({
     queryValue,
     setQueryValue
 }: any) {
+    const { t } = useTranslation()
     const [selected, setSelected] = useState(0);
     const sortOptions: IndexFiltersProps['sortOptions'] = [
-        { label: 'Last update', value: 'lastUpdate asc', directionLabel: 'Oldest to newest' },
-        { label: 'Last update', value: 'lastUpdate desc', directionLabel: 'Newest to oldest' },
-        { label: 'Subscription', value: 'subscription asc', directionLabel: 'Oldest to newest' },
-        { label: 'Subscription', value: 'subscription desc', directionLabel: 'Newest to oldest' },
-        { label: 'Revenue', value: 'revenue asc', directionLabel: 'Highest to lowest' },
-        { label: 'Revenue', value: 'revenue desc', directionLabel: 'Lowest to highest' }
+        { label: t("smartBulk.sortOption1"), value: 'lastUpdate asc', directionLabel: t("smartBulk.sortOptionDirection1A") },
+        { label: t("smartBulk.sortOption1"), value: 'lastUpdate desc', directionLabel: t("smartBulk.sortOptionDirection1B") },
+        { label: t("smartBulk.sortOption2"), value: 'subscription asc', directionLabel: t("smartBulk.sortOptionDirection1A") },
+        { label: t("smartBulk.sortOption2"), value: 'subscription desc', directionLabel: t("smartBulk.sortOptionDirection1B") },
+        { label: t("smartBulk.sortOption3"), value: 'revenue asc', directionLabel: t("smartBulk.sortOptionDirection2A") },
+        { label: t("smartBulk.sortOption3"), value: 'revenue desc', directionLabel: t("smartBulk.sortOptionDirection2B") }
         // { label: 'Higher revenue', value: 'higherRevenue asc', directionLabel: 'Oldest to newest' },
         // { label: 'Higher revenue', value: 'higherRevenue desc', directionLabel: 'Newest to oldest' },
         // { label: 'Lowest revenue', value: 'lowestRevenue asc', directionLabel: 'Oldest to newest' },
@@ -172,7 +174,7 @@ export default function SmartBulkTable({
                 sortOptions={sortOptions}
                 disabled={disabled}
                 sortSelected={sortSelected}
-                queryPlaceholder="Search Customers"
+                queryPlaceholder={t("smartBulk.searchCustomers")}
                 onQueryChange={handleFiltersQueryChange}
                 queryValue={queryValue}
                 onQueryClear={() => setQueryValue('')}
@@ -205,16 +207,16 @@ export default function SmartBulkTable({
                 onSelectionChange={handleSelectionChange}
                 emptyState={emptyStateMarkup}
                 headings={[
-                    { title: 'Date' },
-                    { title: 'Name' },
-                    { title: 'Phone' },
-                    { title: 'Email subscription' }
+                    { title: t("smartBulk.tableColumnHeading1") },
+                    { title: t("smartBulk.tableColumnHeading2") },
+                    { title: t("smartBulk.tableColumnHeading3") },
+                    { title: t("smartBulk.tableColumnHeading4") }
                 ]}
                 pagination={{
                     hasNext: isTableLoading ? false : pageInfo.hasNextPage,
                     hasPrevious: isTableLoading ? false : pageInfo.hasPreviousPage,
-                    onNext: disabled ? () => { shopify.toast.show("Upgrade to Pro or Higher Plan to access this feature", { isError: true }) } : handleNext,
-                    onPrevious: disabled ? () => { shopify.toast.show("Upgrade to Pro or Higher Plan to access this feature", { isError: true }) } : handlePrevious,
+                    onNext: disabled ? () => { shopify.toast.show(t("global.toastMessage.smartBulkNextWarning"), { isError: true }) } : handleNext,
+                    onPrevious: disabled ? () => { shopify.toast.show(t("global.toastMessage.smartBulkPreviousWarning"), { isError: true }) } : handlePrevious,
                     // label: `${(currentPage - 1) * PageSize + 1}-${Math.min(currentPage * PageSize, totalCustomers)} of ${totalCustomers} Abandoned carts`,
                     label: "  "
                 }}

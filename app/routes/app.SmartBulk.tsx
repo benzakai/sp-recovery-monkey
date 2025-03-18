@@ -5,8 +5,10 @@ import SmartBulkTable from '~/components/SmartBulkTable'
 import ConfirmationModal from '~/components/ConfirmationModal';
 import { isProPlanOrHigher } from '~/utils/plans';
 import { useOutletContext } from '@remix-run/react';
+import { useTranslation } from 'react-i18next';
 
 export default function SmartBulk() {
+    const { t } = useTranslation()
     const [selectedTableData, setSelectedTableData] = useState([]);
     const [selectedDateValues, setSelectedDateValues] = useState(() => {
         const today = new Date();
@@ -216,10 +218,10 @@ export default function SmartBulk() {
     }
 
     const options = [
-        { label: '15/page', value: '15' },
-        { label: '50/page', value: '50' },
-        { label: '100/page', value: '100' },
-        { label: '250/page', value: '250' }
+        { label: t("smartBulk.15perPageLabel"), value: '15' },
+        { label: t("smartBulk.50perPageLabel"), value: '50' },
+        { label: t("smartBulk.100perPageLabel"), value: '100' },
+        { label: t("smartBulk.200perPageLabel"), value: '250' }
     ];
 
     return (
@@ -232,22 +234,22 @@ export default function SmartBulk() {
                     <div className="mb-8">
                         <div className='flex flex-row gap-3'>
                             <Text variant="heading3xl" as="h3">
-                                Smart Bulk
+                                {t("smartBulk.title")}
                             </Text>
                             <div className='pt-3.5'>
                                 <Badge tone='info' >Pro</Badge>
                             </div>
                         </div>
                         <Text variant="headingXl" as="h4">
-                            Boost your sales with custom messages to multiple customers
+                            {t("smartBulk.subtitle")}
                         </Text>
                         <div className='mb-5'></div>
                         <Text variant="headingLg" fontWeight='regular' as="p">
-                            {`Choose the text that suits you best-> Edit the text to fit your needs-> Click "Save"`}
+                            {t("smartBulk.messageBoxTitle")}
                         </Text>
                         <div className='mb-3'></div>
                         <Text variant="bodyLg" as="p">
-                            You can use the following article for crafting winning and conversion phrasing at the <Link removeUnderline>link here.</Link>
+                            {t("smartBulk.messageBoxDescription")} <Link removeUnderline>{t("smartBulk.messageBoxLinkText")}</Link>
                         </Text>
                     </div>
                     <div className="w-1/2 mb-20">
@@ -265,7 +267,7 @@ export default function SmartBulk() {
                                         }))
                                     }
                                     }
-                                    placeholder="Heading"
+                                    placeholder={t("settings.messageBoxHeadingPlaceholder")}
                                     disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
                                 />
                                 <textarea
@@ -277,7 +279,7 @@ export default function SmartBulk() {
                                             content: e.target.value
                                         }))
                                     }}
-                                    placeholder="Please write your content here..."
+                                    placeholder={t("settings.messageBoxContentPlaceholder")}
                                     disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
                                 />
                                 <div className='flex justify-end pr-3 pt-4'>
@@ -286,7 +288,7 @@ export default function SmartBulk() {
                                         variant="primary"
                                         disabled={compareMessage?.header === customMessage?.header && compareMessage?.content === customMessage?.content}
                                         loading={isSaveButtonLoading}
-                                    >Save Text</Button>
+                                    >{t("settings.messageBoxSaveButton")}</Button>
                                 </div>
                             </div>}
                         </Card>
@@ -296,7 +298,7 @@ export default function SmartBulk() {
                     <div className='mb-6'>
                         <div className='flex flex-row gap-2'>
                             <Text variant="headingLg" as="p">
-                                Customers list
+                                {t("smartBulk.customersTableTitle")}
                             </Text>
                             <div>
                                 <Badge tone='info' >Pro</Badge>
@@ -304,13 +306,13 @@ export default function SmartBulk() {
                         </div>
                         <div className='mb-2'></div>
                         <Text variant="bodyLg" as="p">
-                            Select multiple users in bulk with checkboxes, then click 'Send Message'
+                            {t("smartBulk.customersTableDescription")}
                         </Text>
                     </div>
                     <div className='flex justify-center items-center'>
                         <div className='mr-3'>
                             <Select
-                                label="Show"
+                                label={t("smartBulk.show")}
                                 labelInline
                                 options={options}
                                 onChange={(v) => setPageSize(v)}
@@ -321,14 +323,14 @@ export default function SmartBulk() {
                         <div className='mr-3'>
                             <DateRangePicker
                                 disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
-                                setSelectedDateValues={setSelectedDateValues} />
+                                setSelectedDateValues={setSelectedDateValues} t={t} />
                         </div>
                         <Button
                             variant="primary"
                             disabled={(selectedTableData.length && customMessage?.content && customMessage?.header && (isProPlanOrHigher(selectedPlanName) || isProPlanOrHigher(permissions?.manualPlan))) ? false : true}
                             onClick={handleSendMessageInitial}
                         >
-                            Send Message
+                            {t("smartBulk.sendMessageButton")}
                         </Button>
                     </div>
                 </div>
@@ -360,10 +362,10 @@ export default function SmartBulk() {
             <ConfirmationModal
                 handlePrimaryClick={handleSendMessageConfirmed}
                 handleSecondClick={hideModal}
-                primaryButtonText={"Send Message"}
-                secondaryButtonText={"Cancel"}
-                content={"Are you sure you want to send the message to the selected customers?"}
-                title={"Send Message"}
+                primaryButtonText={t("smartBulk.sendMessageButton")}
+                secondaryButtonText={t("smartBulk.cancelButton")}
+                content={t("smartBulk.sendConfirmationDescription")}
+                title={t("smartBulk.sendMessageButton")}
             />
         </Page>
     )

@@ -5,16 +5,47 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "@remix-run/react";
 import stylesheet from "~/tailwind.css?url";
+import { useTranslation } from "react-i18next";
+import { useChangeLanguage } from "remix-i18next/react";
+import { authenticate } from "./shopify.server";
+import db from './db.server'
+
+interface LoaderData {
+  userSelectedLanguage: string;
+}
+
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
 
+export async function loader({ request }: any) {
+  const { session } = await authenticate.admin(request)
+  // console.log("session from rooot", session.shop);
+  const languageData = await db.appLanguages.findUnique({
+    where: {
+      shop: session.shop
+    }
+  })
+  // console.log(
+  //   "languageData----------------------------------------->",
+  //   languageData,
+  // );
+  return { userSelectedLanguage: languageData?.language || "en" };
+}
+
 export default function App() {
+  // console.log("loaded");
+  const { userSelectedLanguage }: LoaderData = useLoaderData();
+  const { i18n } = useTranslation();
+
+  useChangeLanguage(userSelectedLanguage);
+
   return (
-    <html>
+    <html lang={userSelectedLanguage} dir={i18n.dir()}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />

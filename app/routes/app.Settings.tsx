@@ -1,71 +1,117 @@
-import { Badge, BlockStack, Button, Card, Page, Select, SkeletonBodyText, SkeletonDisplayText, Spinner, Text } from '@shopify/polaris';
+import { Badge, BlockStack, Button, Card, Icon, Page, Select, SkeletonBodyText, SkeletonDisplayText, Spinner, Text } from '@shopify/polaris';
 import { useEffect, useState } from 'react';
 import '../StartPage.css';
-import { useSubmit } from '@remix-run/react';
+import { useLoaderData, useSubmit } from '@remix-run/react';
 import { authenticate, MONTHLY_PLAN, STARTER_PLAN, PRO_PLAN, ADVANCE_PLAN } from "../shopify.server";
 import { useActionData, useOutletContext } from 'react-router';
 import fireStoreCreateService from '~/services/fireStoreCreateService';
 import MultiselectTagCombobox from '~/components/MultiselectTagCombobox';
 import { isProPlanOrHigher } from '~/utils/plans';
+import {
+    LanguageFilledIcon
+} from '@shopify/polaris-icons';
+import db from '../db.server';
+import { useTranslation } from 'react-i18next';
 
 
 export const action = async ({ request }: any) => {
     const formData = await request.formData();
-    const planName = formData.get("planName") || MONTHLY_PLAN;
     const { billing, session } = await authenticate.admin(request);
-
-    if (planName === "Free") {
-        const billingCheck = await billing.require({
-            plans: [MONTHLY_PLAN, STARTER_PLAN, PRO_PLAN, ADVANCE_PLAN],
-            onFailure: async () => billing.request({ plan: MONTHLY_PLAN }),
+    const actionType = formData.get("actionType");
+    const selectedAppLanugage = formData.get("selectedAppLanugage");
+    const planName = formData.get("planName") || MONTHLY_PLAN;
+    let savedLanguage;
+    if (actionType === "languageChange") {
+        const existingLanguage = await db.appLanguages.findUnique({
+            where: {
+                shop: session.shop,
+            },
         });
-        const subscription = billingCheck.appSubscriptions[0];
-        const cancelledSubscription = await billing.cancel({
-            subscriptionId: subscription.id,
-            isTest: false,
-            // prorate: true,
-        });
-        // console.log("cancelledSubscription", cancelledSubscription);
-        await fireStoreCreateService("subscriptions", session.shop, {
-            storeId: session.shop,
-            plan: "Free",
-            status: "ACTIVE",
-            startDate: new Date().toISOString(),
-            endDate: ""
-        }, {});
-    } else {
-        const okay = await billing.require({
-            plans: [planName],
-            isTest: false,
-            trialDays: 0,
-            onFailure: async () => billing.request({
-                plan: planName,
+        if (existingLanguage) {
+            savedLanguage = await db.appLanguages.update({
+                where: {
+                    shop: session.shop,
+                },
+                data: {
+                    language: selectedAppLanugage,
+                },
+            });
+        } else {
+            savedLanguage = await db.appLanguages.create({
+                data: {
+                    language: selectedAppLanugage,
+                    shop: session.shop,
+                },
+            });
+        }
+    } else if (actionType === "planChange") {
+        if (planName === "Free") {
+            const billingCheck = await billing.require({
+                plans: [MONTHLY_PLAN, STARTER_PLAN, PRO_PLAN, ADVANCE_PLAN],
+                onFailure: async () => billing.request({ plan: MONTHLY_PLAN }),
+            });
+            const subscription = billingCheck.appSubscriptions[0];
+            const cancelledSubscription = await billing.cancel({
+                subscriptionId: subscription.id,
                 isTest: false,
-                trialDays: 0
-            }),
-        });
+                // prorate: true,
+            });
+            // console.log("cancelledSubscription", cancelledSubscription);
+            await fireStoreCreateService("subscriptions", session.shop, {
+                storeId: session.shop,
+                plan: "Free",
+                status: "ACTIVE",
+                startDate: new Date().toISOString(),
+                endDate: ""
+            }, {});
+        } else {
+            const okay = await billing.require({
+                plans: [planName],
+                isTest: false,
+                trialDays: 0,
+                onFailure: async () => billing.request({
+                    plan: planName,
+                    isTest: false,
+                    trialDays: 0
+                }),
+            });
+        }
     }
 
-    return { success: true, planName };
+    return { success: true, planName, savedAppLangnuage: savedLanguage?.language };
 };
 
-const languages = ['English', 'Español', 'العربية', 'Português', 'Deutsch']
+export const loader = async ({ request }: any) => {
+    const { session } = await authenticate.admin(request);
+    const languageData = await db.appLanguages.findUnique({
+        where: {
+            shop: session.shop
+        }
+    })
+    return { userSelectedLanguage: languageData?.language || "en" };
+}
+
+const languages = ['English', 'Español', 'العربية', 'Português', 'Deutsch', 'Français', 'Italiano']
 
 const Settings = () => {
+    const { i18n, t } = useTranslation()
     const [planName, setPlanName] = useState('not set');
     // const [isLoadingPlanButton, setLoadingPlanButton] = useState(false)
     const submit = useSubmit();
     const [loadingPage, setLoadingPage] = useState(true)
-    const actionData = useActionData()
+    const loaderData: any = useLoaderData()
+    const actionData: any = useActionData()
     const [isSettingsLoading, setSettingsLoading] = useState(true);
     const [settings, setSettings] = useState({
-        durationToSendMessage: "After 10 min",
+        durationToSendMessage: "After 24 hours",
         notificationStatus: true,
         preferredLanguages: ['English'],
         followUpMessage: {
-            header: "Hi [Customer’s Name]",
-            content: "it looks like you left some items in your cart! Just a heads-up, our stock is moving fast, so grab them while you can 🎯. If you need any assistance, feel free to reach out! [link to abandon cart recovery]"
-        }
+            header: t("settings.messageHeadingText"),
+            content: t("settings.messageContentText")
+        },
+        durationToSendFollowUpMessage: "After 10 min",
+        selectedLanguage: "en"
     });
     const [isSaveButtonLoading, setSaveButtonLoading] = useState(false);
     const [languageSearchValue, setLanguageSearchValue] = useState('');
@@ -78,14 +124,25 @@ const Settings = () => {
             if (actionData?.planName === "Free") {
                 // setLoadingPlanButton(false)
                 setPlanName(actionData?.planName)
+            } else if (actionData?.savedAppLangnuage) {
+                i18n.changeLanguage(actionData?.savedAppLangnuage)
+                handleSaveSettings({ ...settings })
+                shopify.toast.show(t("global.toastMessage.languageChangeSuccess"))
             }
         }
     }, [actionData])
 
-    const handlePlanSelect = (planName) => {
+    useEffect(() => {
+        if (loaderData) {
+            setSettings((p: any) => ({ ...p, selectedLanguage: loaderData.userSelectedLanguage }))
+        }
+    }, [loaderData])
+
+    const handlePlanSelect = (planName: any) => {
         // if (planName === "Free") setLoadingPlanButton(true)
         const formData = new FormData();
         formData.append("planName", planName);
+        formData.append("actionType", "planChange");
         submit(formData, { method: "post" });
     };
 
@@ -139,6 +196,7 @@ const Settings = () => {
                 setSettings(prevSettings => ({
                     ...prevSettings,
                     ...settingsData,
+                    selectedLanguage: prevSettings?.selectedLanguage,
                     followUpMessage: {
                         ...prevSettings.followUpMessage,
                         ...settingsData?.followUpMessage,
@@ -157,11 +215,16 @@ const Settings = () => {
     }, []);
 
     const options = [
-        { label: 'After 10 min', value: 'After 10 min' },
-        { label: 'After 15 min', value: 'After 15 min' },
-        { label: 'After 20 min', value: 'After 20 min' },
-        { label: 'After 25 min', value: 'After 25 min' },
-        { label: 'After 30 min', value: 'After 30 min' },
+        { label: t("settings.durationLable10Min"), value: 'After 10 min' },
+        { label: t("settings.durationLable15Min"), value: 'After 15 min' },
+        { label: t("settings.durationLable20Min"), value: 'After 20 min' },
+        { label: t("settings.durationLable25Min"), value: 'After 25 min' },
+        { label: t("settings.durationLable30Min"), value: 'After 30 min' },
+    ];
+
+    const followUpMessageDuration = [
+        { label: t("settings.messageDurationLable24Hours"), value: 'After 24 hours' },
+        { label: t("settings.messageDurationLable48Hours"), value: 'After 48 hours' }
     ];
 
     const sendPubSubData = async (data: any) => {
@@ -191,13 +254,16 @@ const Settings = () => {
         durationToSendMessage,
         notificationStatus,
         followUpMessage,
+        durationToSendFollowUpMessage,
         preferredLanguages }: any) => {
         try {
             const settingsData = {
                 durationToSendMessage,
                 notificationStatus: new Boolean(notificationStatus).toString(),
                 followUpMessage: followUpMessage || "",
-                preferredLanguages: preferredLanguages || []
+                durationToSendFollowUpMessage,
+                preferredLanguages: preferredLanguages || [],
+                selectedLanguage: settings.selectedLanguage
             };
             // console.log('settingsData.................>', settingsData)
             const response = await fetch('/api/saveSettings', {
@@ -212,62 +278,90 @@ const Settings = () => {
             if (responsedata.success) {
                 setMessageToCompare(settingsData.followUpMessage)
                 sendPubSubData(settingsData)
-                shopify.toast.show("Settings saved successfully")
+                shopify.toast.show(t("global.toastMessage.successSettingsSaved"))
             } else {
-                shopify.toast.show("Failed to save settings")
+                shopify.toast.show(t("global.toastMessage.faliedSettingsSaved"))
             }
         } catch (error) {
             console.log("error occured on handleSaveSettings", error)
         }
     }
 
+    const languageOptions = [
+        {
+            label: 'English',
+            value: 'en',
+            prefix: <Icon source={LanguageFilledIcon} />,
+        },
+        {
+            label: 'Español',
+            value: 'es',
+            prefix: <Icon source={LanguageFilledIcon} />,
+        },
+    ];
+
+    const handleLanguageChange = (value: any) => {
+        setSettings((p: any) => ({ ...p, selectedLanguage: value }))
+        const formData = new FormData()
+        formData.append("selectedAppLanugage", value);
+        formData.append("actionType", "languageChange");
+        submit(formData, { method: "post" });
+    }
+
     return (
         <div className="body">
-            <div className='start_page'>
-                <Page fullWidth>
-                    <div className='start_main_container'>
+            <div >
+                <div className='start_main_container'>
+                    <div className='flex flex-row justify-between'>
                         <div className='start_main_container_heading'>
                             <Text variant="heading3xl" as="h3">
-                                Settings
+                                {t('settings.title')}
                             </Text>
                         </div>
+                        <Select
+                            label=""
+                            options={languageOptions}
+                            onChange={handleLanguageChange}
+                            value={settings.selectedLanguage}
+                        />
+                    </div>
+                    <div className='start_main_container_sub_heading'>
+                        <Text variant="headingXl" as="h3">
+                            {t('settings.subtitle')}
+                        </Text>
+                    </div>
+                    <div className='mb-14'></div>
+                    <div className='settings_secion-1 w-4/5'>
                         <div className='start_main_container_sub_heading'>
                             <Text variant="headingXl" as="h3">
-                                Manage messages and reminders to enhance customer experience
+                                {t('settings.general')}
                             </Text>
                         </div>
-                        <div className='mb-14'></div>
-                        <div className='settings_secion-1 w-4/5'>
-                            <div className='start_main_container_sub_heading'>
-                                <Text variant="headingXl" as="h3">
-                                    General
-                                </Text>
-                            </div>
-                            <BlockStack gap="400">
-                                <Card roundedAbove="sm">
-                                    {isSettingsLoading ? (
-                                        <SkeletonLoading />
-                                    ) : (
-                                        <SettingsSecondBlock
-                                            children={
-                                                <div className="w-1/3">
-                                                    <Select
-                                                        options={options}
-                                                        label=""
-                                                        onChange={(v) => {
-                                                            setSettings({ ...settings, durationToSendMessage: v })
-                                                            handleSaveSettings({ ...settings, durationToSendMessage: v })
-                                                        }}
-                                                        value={settings.durationToSendMessage}
-                                                    />
-                                                </div>
-                                            }
-                                            title={"Schedule Messages"}
-                                            description={"Set the perfect time to send messages to your customers."}
-                                        />
-                                    )}
-                                </Card>
-                                {/* <Card roundedAbove="sm">
+                        <BlockStack gap="400">
+                            <Card roundedAbove="sm">
+                                {isSettingsLoading ? (
+                                    <SkeletonLoading />
+                                ) : (
+                                    <SettingsSecondBlock
+                                        children={
+                                            <div className="w-1/3">
+                                                <Select
+                                                    options={options}
+                                                    label=""
+                                                    onChange={(v) => {
+                                                        setSettings({ ...settings, durationToSendMessage: v })
+                                                        handleSaveSettings({ ...settings, durationToSendMessage: v })
+                                                    }}
+                                                    value={settings.durationToSendMessage}
+                                                />
+                                            </div>
+                                        }
+                                        title={t("settings.scheduleMessages")}
+                                        description={t("settings.scheduleMessagesDescription")}
+                                    />
+                                )}
+                            </Card>
+                            {/* <Card roundedAbove="sm">
                                     {isSettingsLoading ? (
                                         <BlockStack gap="400">
                                             <BlockStack gap="200">
@@ -306,232 +400,258 @@ const Settings = () => {
                                         </BlockStack>
                                     )}
                                 </Card>*/}
-                                <Card roundedAbove="sm">
-                                    {isSettingsLoading ? (
-                                        <SkeletonLoading
-                                            secondLines={4}
-                                        />
-                                    ) : (
-                                        <SettingsSecondBlock
-                                            children={
-                                                <div className="w-3/4">
-                                                    <MultiselectTagCombobox
-                                                        data={languages}
-                                                        selectedTags={settings.preferredLanguages}
-                                                        setSelectedTags={(v: any) => {
-                                                            if (v?.length === 0) return shopify.toast.show("Multi-Language Messaging field cannot be empty.")
-                                                            setSettings({ ...settings, preferredLanguages: v })
-                                                            handleSaveSettings({ ...settings, preferredLanguages: v })
-                                                        }}
-                                                        value={languageSearchValue}
-                                                        setValue={setLanguageSearchValue}
-                                                        isDisabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
-                                                    />
-                                                </div>
-                                            }
-                                            title={"Multi-Language Messaging."}
-                                            description={"Select the languages you want to send messages in and reach your customers in their preferred language."}
-                                            availableOn={"Pro"}
-                                        />
-                                    )}
-                                </Card>
-                                <Card roundedAbove="sm">
-                                    {isSettingsLoading ? (
-                                        <SkeletonLoading
-                                            secondClass='w-4/5 mt-8 mb-4'
-                                            secondLines={14}
-                                        />
-                                    ) : (
-                                        <SettingsSecondBlock
-                                            children={
-                                                <div className="w-4/5 mb-6">
-                                                    <Card>
-                                                        {isMessageLoading ? <div className='flex justify-center items-center h-72'>
-                                                            <Spinner accessibilityLabel="Small spinner example" size="large" />
-                                                        </div> : <div className="flex-col" >
-                                                            <textarea
-                                                                className="w-full h-7 border-none outline-none text-base"
-                                                                value={settings?.followUpMessage?.header}
-                                                                onChange={(e) => {
-                                                                    setSettings((prev) => ({
-                                                                        ...prev,
-                                                                        followUpMessage: {
-                                                                            ...prev.followUpMessage,
-                                                                            header: e.target.value
-                                                                        }
-                                                                    }))
-                                                                }
-                                                                }
-                                                                placeholder="Heading"
-                                                                disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
-                                                            />
-                                                            <textarea
-                                                                className="w-full h-40 text-base border-none outline-none"
-                                                                value={settings?.followUpMessage?.content}
-                                                                onChange={(e) => {
-                                                                    setSettings((prev) => ({
-                                                                        ...prev,
-                                                                        followUpMessage: {
-                                                                            ...prev.followUpMessage,
-                                                                            content: e.target.value
-                                                                        }
-                                                                    }))
-                                                                }}
-                                                                placeholder="Please write your content here..."
-                                                                disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
-                                                            />
-                                                            <div className='flex justify-end pr-3 pt-4'>
-                                                                <Button
-                                                                    onClick={async () => {
-                                                                        setSaveButtonLoading(true)
-                                                                        await handleSaveSettings(settings)
-                                                                        setSaveButtonLoading(false)
-                                                                    }}
-                                                                    variant="primary"
-                                                                    disabled={messageToCompare?.header === settings?.followUpMessage?.header && messageToCompare?.content === settings?.followUpMessage?.content}
-                                                                    loading={isSaveButtonLoading}
-                                                                >Save Text</Button>
-                                                            </div>
-                                                        </div>}
-                                                    </Card>
-                                                </div>
-                                            }
-                                            title={"Follow-Up Messages"}
-                                            description={"Craft a follow-up message to check in after the initial cart abandonment reminder."}
-                                            availableOn={"Pro"}
-                                        />
-                                    )}
-                                </Card>
-                            </BlockStack>
-                        </div>
-                        <div className='mb-20'></div>
-                        <div className='settings_secion-2'>
-                            <div className='start_main_container_sub_heading' style={{ marginBottom: "2px" }}>
-                                <Text variant="headingXl" as="h3">
-                                    Choose the right plan for your needs
-                                </Text>
-                            </div>
-                            <div className="start_price_container">
-                                <div className="upgrade_page_container_heading">
-                                    {loadingPage ? <div className='w-56'><SkeletonBodyText lines={2} /> </div> :
-                                        <div className='upgrade_page_container_heading_text'>Your Current Plan is {planName}</div>}
-                                </div>
-                                <div className="start_price_container_cards">
-                                    <Card>
-                                        <div className="start_price_choose_plan">
-                                            <div className='start_plan_name'>Free Plan</div>
-                                            <div className="start_plan_ammount_section" style={{ marginBottom: "145px" }}>
-                                                <div className="start_plan_ammount">Free</div>
+                            <Card roundedAbove="sm">
+                                {isSettingsLoading ? (
+                                    <SkeletonLoading
+                                        secondLines={4}
+                                    />
+                                ) : (
+                                    <SettingsSecondBlock
+                                        children={
+                                            <div className="w-3/4">
+                                                <MultiselectTagCombobox
+                                                    placeholder={t("settings.multiLanguageFieldPlaceholder")}
+                                                    data={languages}
+                                                    selectedTags={settings.preferredLanguages}
+                                                    setSelectedTags={(v: any) => {
+                                                        if (v?.length === 0) return shopify.toast.show(t("global.toastMessage.multiLanguageFieldWarning"))
+                                                        setSettings({ ...settings, preferredLanguages: v })
+                                                        handleSaveSettings({ ...settings, preferredLanguages: v })
+                                                    }}
+                                                    value={languageSearchValue}
+                                                    setValue={setLanguageSearchValue}
+                                                    isDisabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
+                                                />
                                             </div>
+                                        }
+                                        title={t("settings.multiLanguageTitle")}
+                                        description={t("settings.multiLanguageDescription")}
+                                        availableOn={"Pro"}
+                                    />
+                                )}
+                            </Card>
+                            <Card roundedAbove="sm">
+                                {isSettingsLoading ? (
+                                    <SkeletonLoading
+                                        secondClass='w-4/5 mt-8 mb-4'
+                                        secondLines={14}
+                                    />
+                                ) : (
+                                    <SettingsSecondBlock
+                                        children={
+                                            <div className="w-4/5">
+                                                <Card>
+                                                    {isMessageLoading ? <div className='flex justify-center items-center h-72'>
+                                                        <Spinner accessibilityLabel="Small spinner example" size="large" />
+                                                    </div> : <div className="flex-col" >
+                                                        <textarea
+                                                            className="w-full h-7 border-none outline-none text-base"
+                                                            value={settings?.followUpMessage?.header}
+                                                            onChange={(e) => {
+                                                                setSettings((prev) => ({
+                                                                    ...prev,
+                                                                    followUpMessage: {
+                                                                        ...prev.followUpMessage,
+                                                                        header: e.target.value
+                                                                    }
+                                                                }))
+                                                            }
+                                                            }
+                                                            placeholder={t("settings.messageBoxHeadingPlaceholder")}
+                                                            disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
+                                                        />
+                                                        <textarea
+                                                            className="w-full h-40 text-base border-none outline-none"
+                                                            value={settings?.followUpMessage?.content}
+                                                            onChange={(e) => {
+                                                                setSettings((prev) => ({
+                                                                    ...prev,
+                                                                    followUpMessage: {
+                                                                        ...prev.followUpMessage,
+                                                                        content: e.target.value
+                                                                    }
+                                                                }))
+                                                            }}
+                                                            placeholder={t("settings.messageBoxContentPlaceholder")}
+                                                            disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
+                                                        />
+                                                        <div className='flex justify-end pr-3 pt-4'>
+                                                            <Button
+                                                                onClick={async () => {
+                                                                    setSaveButtonLoading(true)
+                                                                    await handleSaveSettings(settings)
+                                                                    setSaveButtonLoading(false)
+                                                                }}
+                                                                variant="primary"
+                                                                disabled={messageToCompare?.header === settings?.followUpMessage?.header && messageToCompare?.content === settings?.followUpMessage?.content}
+                                                                loading={isSaveButtonLoading}
+                                                            >{t("settings.messageBoxSaveButton")}</Button>
+                                                        </div>
+                                                    </div>}
+                                                </Card>
+                                            </div>
+                                        }
+                                        title={t("settings.messageBoxTitle")}
+                                        description={t("settings.messageBoxDescription")}
+                                        availableOn={"Pro"}
+                                    />
+                                )}
+                                {isSettingsLoading ? (
+                                    <SkeletonLoading />
+                                ) : (
+                                    <SettingsSecondBlock
+                                        children={
+                                            <div className="w-1/3">
+                                                <Select
+                                                    options={followUpMessageDuration}
+                                                    label=""
+                                                    onChange={(v) => {
+                                                        setSettings({ ...settings, durationToSendFollowUpMessage: v })
+                                                        handleSaveSettings({ ...settings, durationToSendFollowUpMessage: v })
+                                                    }}
+                                                    value={settings.durationToSendFollowUpMessage}
+                                                />
+                                            </div>
+                                        }
+                                        title={""}
+                                        description={t("settings.messageBoxDurationDescription")}
+                                    />
+                                )}
 
-                                            <div className="start_plan_button_section" >
-                                                {/* {loadingPage ?
+                            </Card>
+                        </BlockStack>
+                    </div>
+                    <div className='mb-20'></div>
+                    <div className='settings_secion-2'>
+                        <div className='start_main_container_sub_heading' style={{ marginBottom: "2px" }}>
+                            <Text variant="headingXl" as="h3">
+                                {t("settings.planSectionTitle")}
+                            </Text>
+                        </div>
+                        <div className="start_price_container">
+                            <div className="upgrade_page_container_heading">
+                                {loadingPage ? <div className='w-56'><SkeletonBodyText lines={2} /> </div> :
+                                    <div className='upgrade_page_container_heading_text'>{t("settings.planSectionDescription", { planName })}</div>}
+                            </div>
+                            <div className="start_price_container_cards">
+                                <Card>
+                                    <div className="start_price_choose_plan">
+                                        <div className='start_plan_name'>{t("settings.planName1")}</div>
+                                        <div className="start_plan_ammount_section" style={{ marginBottom: "145px" }}>
+                                            <div className="start_plan_ammount">{t("settings.planPrice1")}</div>
+                                        </div>
+
+                                        <div className="start_plan_button_section" >
+                                            {/* {loadingPage ?
                                                 <SkeletonDisplayText size="large" maxWidth={`${30}ch`} />
                                                 :
                                                 <Button size='large' disabled={planName === "Free"} loading={isLoadingPlanButton} onClick={() => handlePlanSelect('Free')} variant='primary' fullWidth>
                                                     {planName == 'Free' ? 'selected' : 'select'}
                                                 </Button>} */}
-                                            </div>
-                                            <div className="star_plan_limit_dialogue">
-                                                <ul className='start_plan_list'>
-                                                    <li className='start_plan_list_item'>Up to 5 sales recovery carts</li>
-                                                    <li className='start_plan_list_item'>Potential to generate up to $1,000 in additional revenue per month!</li>
-                                                </ul>
-                                            </div>
                                         </div>
-                                    </Card>
-                                    <Card>
-                                        <div className="start_price_choose_plan">
-                                            <div className='start_plan_name'>Starter</div>
-                                            <div className="start_plan_ammount_section">
-                                                <div className="start_plan_ammount">19$</div>
-                                                <div className="start_plan_ammount_suffix">/  Month</div>
-                                            </div>
-                                            <div className="start_plan_trial"><Badge size="small" tone="info">7 day free trial</Badge> </div>
-                                            <div className="start_plan_button_section">
-                                                {loadingPage ?
-                                                    <SkeletonDisplayText size="large" maxWidth={`${30}ch`} />
-                                                    :
-                                                    <Button loading={loadingPage} disabled={planName === 'Starter'} size='large' onClick={() => handlePlanSelect('Starter')} variant='primary' fullWidth>
-                                                        {planName == 'Starter' ? 'selected' : 'select'}
-
-                                                    </Button>}
-
-                                            </div>
-                                            <div className="star_plan_limit_dialogue">
-                                                <ul className='start_plan_list'>
-                                                    <li className='start_plan_list_item'>Up to 10 sales recovery carts per month</li>
-                                                    <li className='start_plan_list_item'>Potential to generate up to $2,000 in additional revenue per month!</li>
-                                                </ul>
-                                                {/* <div>Up to 10 abandoned carts per month</div> */}
-
-                                            </div>
+                                        <div className="star_plan_limit_dialogue">
+                                            <ul className='start_plan_list'>
+                                                <li className='start_plan_list_item'>- {t("settings.freeBenefit1")}</li>
+                                                <li className='start_plan_list_item'>- {t("settings.freeBenefit2")}</li>
+                                            </ul>
                                         </div>
-                                    </Card>
-                                    <Card>
-                                        <div className="start_price_choose_plan">
-                                            <div className='start_plan_name'>Pro</div>
-                                            <div className="start_plan_ammount_section">
-                                                <div className="start_plan_ammount">49$</div>
-                                                <div className="start_plan_ammount_suffix">/  Month</div>
-                                            </div>
-                                            <div className="start_plan_trial"><Badge tone="info">7 day free trial</Badge> </div>
-                                            <div className="start_plan_button_section">
-                                                {loadingPage ?
-                                                    <SkeletonDisplayText size="large" maxWidth={`${30}ch`} />
-                                                    :
-                                                    <Button loading={loadingPage} disabled={planName === 'Pro'} size='large' onClick={() => handlePlanSelect('Pro')} variant='primary' fullWidth>
-                                                        {planName == 'Pro' ? 'selected' : 'select'}
-                                                    </Button>}
-
-                                            </div>
-                                            <div className="star_plan_limit_dialogue">
-                                                <ul className='start_plan_list'>
-                                                    <li className='start_plan_list_item'>Up to 49 sales recovery carts per month</li>
-                                                    <li className='start_plan_list_item'>Potential to generate up to $10,000 in additional revenue per month!</li>
-                                                </ul>
-                                                {/* <div>Up to 49 sales recovery carts per month</div> */}
-
-                                            </div>
+                                    </div>
+                                </Card>
+                                <Card>
+                                    <div className="start_price_choose_plan">
+                                        <div className='start_plan_name'>{t("settings.planName2")}</div>
+                                        <div className="start_plan_ammount_section">
+                                            <div className="start_plan_ammount">19$</div>
+                                            <div className="start_plan_ammount_suffix">{t("settings.planPrice2")}</div>
                                         </div>
-                                        <div className='popular_badge'>
-                                            Most Popular
+                                        <div className="start_plan_trial"><Badge size="small" tone="info">{t("settings.freeTrileText")}</Badge> </div>
+                                        <div className="start_plan_button_section">
+                                            {loadingPage ?
+                                                <SkeletonDisplayText size="large" maxWidth={`${30}ch`} />
+                                                :
+                                                <Button loading={loadingPage} disabled={planName === 'Starter'} size='large' onClick={() => handlePlanSelect('Starter')} variant='primary' fullWidth>
+                                                    {planName == 'Starter' ? t("settings.planSelectedText") : t("settings.planNotSelectedText")}
+
+                                                </Button>}
+
                                         </div>
-                                    </Card>
-                                    <Card>
-                                        <div className="start_price_choose_plan">
-                                            <div className='start_plan_name'>Advanced</div>
-                                            <div className="start_plan_ammount_section">
-                                                <div className="start_plan_ammount">99$</div>
-                                                <div className="start_plan_ammount_suffix">/  Month</div>
-                                            </div>
-                                            <div className="start_plan_trial"><Badge tone="info">7 day free trial</Badge> </div>
-                                            <div className="start_plan_button_section">
+                                        <div className="star_plan_limit_dialogue">
+                                            <ul className='start_plan_list'>
+                                                <li className='start_plan_list_item'>- {t("settings.starterBenefit1")}</li>
+                                                <li className='start_plan_list_item'>- {t("settings.starterBenefit2")}</li>
+                                            </ul>
+                                            {/* <div>Up to 10 abandoned carts per month</div> */}
 
-                                                {loadingPage ?
-                                                    <SkeletonDisplayText size="large" maxWidth={`${30}ch`} />
-                                                    :
-                                                    <Button disabled={planName === 'Advance'} size='large' onClick={() => handlePlanSelect('Advance')} variant='primary' fullWidth>
-                                                        {planName == 'Advance' ? 'selected' : 'select'}
-                                                    </Button>}
-                                            </div>
-                                            <div className="star_plan_limit_dialogue">
-                                                <ul className='start_plan_list'>
-                                                    <li className='start_plan_list_item'>Up to 100 sales recovery carts per month</li>
-                                                    <li className='start_plan_list_item'>Potential to generate up to $100000 more revenue per month</li>
-                                                </ul>
-                                                {/* <div>Up to 100 abandoned carts per month</div> */}
-
-                                            </div>
                                         </div>
+                                    </div>
+                                </Card>
+                                <Card>
+                                    <div className="start_price_choose_plan">
+                                        <div className='start_plan_name'>{t("settings.planName3")}</div>
+                                        <div className="start_plan_ammount_section">
+                                            <div className="start_plan_ammount">49$</div>
+                                            <div className="start_plan_ammount_suffix">{t("settings.planPrice3")}</div>
+                                        </div>
+                                        <div className="start_plan_trial"><Badge tone="info">{t("settings.freeTrileText")}</Badge> </div>
+                                        <div className="start_plan_button_section">
+                                            {loadingPage ?
+                                                <SkeletonDisplayText size="large" maxWidth={`${30}ch`} />
+                                                :
+                                                <Button loading={loadingPage} disabled={planName === 'Pro'} size='large' onClick={() => handlePlanSelect('Pro')} variant='primary' fullWidth>
+                                                    {planName == 'Pro' ? t("settings.planSelectedText") : t("settings.planNotSelectedText")}
+                                                </Button>}
 
-                                    </Card>
-                                </div>
+                                        </div>
+                                        <div className="star_plan_limit_dialogue">
+                                            <ul className='start_plan_list'>
+                                                <li className='start_plan_list_item'>- {t("settings.proBenefit1")}</li>
+                                                <li className='start_plan_list_item'>- {t("settings.proBenefit2")}</li>
+                                                <li className='start_plan_list_item'>- {t("settings.proBenefit3")}</li>
+                                                <li className='start_plan_list_item'>- {t("settings.proBenefit4")}</li>
+                                                <li className='start_plan_list_item'>- {t("settings.proBenefit5")}</li>
+                                            </ul>
+                                            {/* <div>Up to 49 sales recovery carts per month</div> */}
+
+                                        </div>
+                                    </div>
+                                    <div className='popular_badge'>
+                                        {t("settings.popularBadgeText")}
+                                    </div>
+                                </Card>
+                                <Card>
+                                    <div className="start_price_choose_plan">
+                                        <div className='start_plan_name'>{t("settings.planName4")}</div>
+                                        <div className="start_plan_ammount_section">
+                                            <div className="start_plan_ammount">99$</div>
+                                            <div className="start_plan_ammount_suffix">{t("settings.planPrice4")}</div>
+                                        </div>
+                                        <div className="start_plan_trial"><Badge tone="info">{t("settings.freeTrileText")}</Badge> </div>
+                                        <div className="start_plan_button_section">
+
+                                            {loadingPage ?
+                                                <SkeletonDisplayText size="large" maxWidth={`${30}ch`} />
+                                                :
+                                                <Button disabled={planName === 'Advance'} size='large' onClick={() => handlePlanSelect('Advance')} variant='primary' fullWidth>
+                                                    {planName == 'Advance' ? t("settings.planSelectedText") : t("settings.planNotSelectedText")}
+                                                </Button>}
+                                        </div>
+                                        <div className="star_plan_limit_dialogue">
+                                            <ul className='start_plan_list'>
+                                                <li className='start_plan_list_item'>- {t("settings.advancedBenefit1")}</li>
+                                                <li className='start_plan_list_item'>- {t("settings.advancedBenefit2")}</li>
+                                                <li className='start_plan_list_item'>- {t("settings.advancedBenefit3")}</li>
+                                                <li className='start_plan_list_item'>- {t("settings.advancedBenefit4")}</li>
+                                            </ul>
+                                            {/* <div>Up to 100 abandoned carts per month</div> */}
+
+                                        </div>
+                                    </div>
+
+                                </Card>
                             </div>
                         </div>
                     </div>
-
-                </Page>
+                </div>
             </div>
         </div>
     );
@@ -555,9 +675,9 @@ const SettingsSecondBlock = ({ children = <></>, title = 'Title', description = 
         <div className='p-4'>
             <BlockStack gap="600">
                 <BlockStack gap="300">
-                    <Text as="p" variant="bodyLg" fontWeight="bold">
+                    {title && <Text as="p" variant="bodyLg" fontWeight="bold">
                         {title} <span className='pl-2'>{availableOn && <Badge tone={toneType} >{availableOn}</Badge>}</span>
-                    </Text>
+                    </Text>}
                     <Text as="p" variant="bodyLg">
                         {description}
                     </Text>

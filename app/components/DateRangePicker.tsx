@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import {
     CalendarIcon, ArrowRightIcon
 } from '@shopify/polaris-icons';
-export function DateRangePicker({ setSelectedDateValues, disabled }: any) {
+export function DateRangePicker({ setSelectedDateValues, disabled, t }: any) {
     const { mdDown, lgUp } = useBreakpoints();
     const shouldShowMultiMonth = lgUp;
     const today = new Date(new Date().setHours(0, 0, 0, 0));
@@ -12,7 +12,7 @@ export function DateRangePicker({ setSelectedDateValues, disabled }: any) {
     );
     const ranges = [
         {
-            title: "Today",
+            title: t("smartBulk.calendar.today"),
             alias: "today",
             period: {
                 since: today,
@@ -20,7 +20,7 @@ export function DateRangePicker({ setSelectedDateValues, disabled }: any) {
             },
         },
         {
-            title: "Yesterday",
+            title: t("smartBulk.calendar.yesterday"),
             alias: "yesterday",
             period: {
                 since: yesterday,
@@ -28,7 +28,7 @@ export function DateRangePicker({ setSelectedDateValues, disabled }: any) {
             },
         },
         {
-            title: "Last 7 days",
+            title: t("smartBulk.calendar.last7Days"),
             alias: "last7days",
             period: {
                 since: new Date(
@@ -321,9 +321,9 @@ export function DateRangePicker({ setSelectedDateValues, disabled }: any) {
                 <Popover.Section>
                     <div className="my-2">
                         <InlineStack align="end">
-                            <div className="mr-2"><Button onClick={cancel}>Cancel</Button></div>
+                            <div className="mr-2"><Button onClick={cancel}>{t("smartBulk.calendar.cancel")}</Button></div>
                             <Button primary onClick={apply}>
-                                Apply
+                                {t("smartBulk.calendar.apply")}
                             </Button>
                         </InlineStack>
                     </div>

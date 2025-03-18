@@ -4,12 +4,12 @@ import { StartPageCartSummaryProps } from "~/routes/app._index";
 export default function StartPageCartSummary({ getCards }: StartPageCartSummaryProps) {
 
     return (
-        <div className='bg-white rounded-xl shadow-sm border border-solid border-[#B5B5B5] p-6'>
-            <div className='flex justify-around items-center'>
-                {
+        <div className='bg-white rounded-xl shadow-sm border border-solid border-[#B5B5B5]'>
+            <div className='flex flex-row gap-4 justify-between items-start pt-6 pb-8 font-inter'>
+            {
                     getCards?.map((card) => {
                         return (
-                            <div key={card.id} className='flex flex-col w-1/4 justify-center items-center text-center'>
+                            <div key={card.id} className='flex flex-col justify-center items-center text-center w-1/4'>
                                 <div className='cursor-pointer' onClick={card?.handleNavigate}>{card.icon}</div>
                                 {card?.value ? <>
                                     {card.value === "Loading" ? (
@@ -21,7 +21,7 @@ export default function StartPageCartSummary({ getCards }: StartPageCartSummaryP
                                     )}
                                 </> : <div className='font-bold text-2xl pt-4'>{card.value}</div>}
                                 <div className='font-semibold text-2xl pb-1'>{card.title}</div>
-                                <div className='text-base text-[#6B7177] w-[75%]'>{card.description}</div>
+                                <div className='text-base text-[#6B7177] w-[85%]'>{card.description}</div>
                             </div>
                         );
                     })

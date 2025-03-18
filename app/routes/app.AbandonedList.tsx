@@ -3,6 +3,7 @@ import "../StartPage.css";
 import '../AbandonedCarts.css'
 import { Page, DataTable, Text, Spinner, Card } from '@shopify/polaris';
 import AbandonedCartsSummary from '~/components/AbandonedCartsSummary';
+import { useTranslation } from 'react-i18next';
 
 function formatDate(dateString: any) {
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -23,6 +24,7 @@ function parseDate(dateString: any) {
 }
 
 export default function NewAbandonedList() {
+    const { t } = useTranslation()
     const [getPageData, setPageData] = React.useState({
         abandonedCarts: [],
         abandonedCartsSum: 0,
@@ -135,7 +137,7 @@ export default function NewAbandonedList() {
                         <div className='abandoned_list_main_container_heading'>
                             <div className='start_main_container_sub_heading'>
                                 <Text variant="heading3xl" as="h3">
-                                    Abandoned carts
+                                    {t('abandonedList.title')}
                                 </Text>
                             </div>
                         </div>
@@ -144,7 +146,7 @@ export default function NewAbandonedList() {
                         <div className='abandoned_list_container'>
                             <div className="start_price_container_heading">
                                 <Text variant="headingLg" as="h5">
-                                    Latest Cart Recovery Messages
+                                    {t("abandonedList.latestCartRecovery")}
                                 </Text>
                             </div>
 
@@ -162,9 +164,9 @@ export default function NewAbandonedList() {
                                             'text'
                                         ]}
                                         headings={[
-                                            'Time and Date',
-                                            'Name',
-                                            'Checkout price',
+                                            t("abandonedList.tableColumnHeading1"),
+                                            t("abandonedList.tableColumnHeading2"),
+                                            t("abandonedList.tableColumnHeading3"),
                                         ]}
                                         rows={GetDataRow}
                                         pagination={{

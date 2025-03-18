@@ -1,4 +1,4 @@
-import { Card, Page, Button, Spinner, Text, BlockStack } from '@shopify/polaris';
+import { Card, Page, Button, Spinner, Text, BlockStack, Link } from '@shopify/polaris';
 import React, { useEffect, useState, useTransition } from 'react';
 import '../StartPage.css';
 // import AlienLogo from './images/Alien.png'
@@ -8,8 +8,10 @@ import OneSVG from '~/components/SVGs/OneSVG';
 import TwoSVG from '~/components/SVGs/TwoSVG';
 import ThreeSVG from '~/components/SVGs/ThreeSVG';
 import AlienSVG from '~/components/SVGs/AlienSVG';
+import { useTranslation } from 'react-i18next';
 
 const WelcomeConnect = () => {
+    const { t } = useTranslation()
     const [instance, setInstance] = useState([]);
     const [qrCode, setQRCode] = useState('');
     const [stateInstance, setStateInstance] = useState('');
@@ -331,7 +333,7 @@ const WelcomeConnect = () => {
 
     const handleShowConnectionClick = () => {
         if (isInstanceDataLoading) {
-            shopify.toast.show("Please wait, loading connection status...");
+            shopify.toast.show(t("global.toastMessage.loadingConnection"));
         } else {
             setShowConnectionStatus(true)
         }
@@ -349,28 +351,28 @@ const WelcomeConnect = () => {
                             <div>
                                 <div className='pb-8'>
                                     <Text variant="heading3xl" as="h3">
-                                        Welcome
+                                        {t("welcome.title")}
                                     </Text>
                                 </div>
                             </div>
 
                             <div>
-                                <p className='font-bold text-2xl pb-6'>View your revenue, write message, and connect to send messages.</p>
+                                <p className='font-bold text-2xl pb-6'>{t("welcome.subTitle")}</p>
                                 <AbandonedCartsSummary getPageData={getPageData} forPageType="WelcomeConnect" />
                             </div>
                             <div className='flex'>
-                                <div className="start_price_container w-2/6">
+                                <div className="start_price_container w-2/5">
                                     <div className="start_price_container_heading">
                                         <Text variant="headingLg" as="h5">
-                                            {!isShowConnectionStatus ? "Click the button to check your connection." : stateInstance === 'authorized' ?
-                                                "your device is connected!" :
-                                                "Let’s Connect"
+                                            {!isShowConnectionStatus ? t("welcome.connectSectionTitle") : stateInstance === 'authorized' ?
+                                                t("welcome.connectedTitle") :
+                                                t("welcome.notConnectedTitle")
                                             }
                                         </Text>
                                     </div>
                                     <div className="start_price_container_cards">
                                         <Card>
-                                            <div className="w-60" style={{ height: '24.5rem' }}>
+                                            <div className="w-64" style={{ height: '26rem' }}>
                                                 {isShowConnectionStatus ? <>
                                                     {stateInstance === 'authorized' ? (
                                                         <>
@@ -379,12 +381,12 @@ const WelcomeConnect = () => {
                                                             </div>
                                                             <div className='p-5'>
                                                                 <Text variant="bodyLg" as="p">
-                                                                    You should easiely send and receive WhatsApp messages!
+                                                                    {t("welcome.connectedMessage")}
                                                                 </Text>
                                                             </div>
-                                                            <div className='mt-14 flex justify-end'>
+                                                            <div className='mt-16 flex justify-end'>
                                                                 <Button onClick={() => disconnectInstance(instance?.apiUrl, instance?.idInstance, instance?.apiTokenInstance, false)} disabled={isDisBtnLoading} loading={isDisBtnLoading} variant='primary'>
-                                                                    Disconnect
+                                                                    {t("welcome.disconnectButtonText")}
                                                                 </Button>
                                                             </div>
                                                         </>
@@ -399,24 +401,24 @@ const WelcomeConnect = () => {
                                                                     )}
                                                                 </div>
                                                             </div>
-                                                            <div className='connection_card_dialogue_section font-semibold text-'>
+                                                            <div className='connection_card_dialogue_section font-semibold '>
                                                                 <Text variant="headingMd" as="p">
-                                                                    Scan the Qr-code to present the dialogs on your own ﻿device:
+                                                                    {t("welcome.qrScanText")}
                                                                 </Text>
                                                             </div>
                                                             <div className='mb-9'>
                                                                 <BlockStack>
                                                                     <div className='flex flex-row gap-2 mb-2 mt-4'>
                                                                         <OneSVG />
-                                                                        <Text variant="bodyMd" as="p">Open your WhatsApp app</Text>
+                                                                        <Text variant="bodyMd" as="p">{t("welcome.qrScanStep1")}</Text>
                                                                     </div>
                                                                     <div className='flex flex-row gap-2 mb-2'>
                                                                         <TwoSVG />
-                                                                        <Text variant="bodyMd" as="p">Click ‘Setting’</Text>
+                                                                        <Text variant="bodyMd" as="p">{t("welcome.qrScanStep2")}</Text>
                                                                     </div>
                                                                     <div className='flex flex-row gap-2 mb-2'>
                                                                         <ThreeSVG />
-                                                                        <Text variant="bodyMd" as="p">Click ‘linked devices’</Text>
+                                                                        <Text variant="bodyMd" as="p">{t("welcome.qrScanStep3")}</Text>
                                                                     </div>
                                                                 </BlockStack>
                                                             </div>
@@ -445,7 +447,7 @@ const WelcomeConnect = () => {
                                                         <div className=" absolute inset-0 flex items-center justify-center">
                                                             <div className="mt-4">
                                                                 <Button variant="primary" size='large' onClick={handleShowConnectionClick}>
-                                                                    Show connection status
+                                                                    {t("welcome.connectionStatusViewButton")}
                                                                 </Button>
                                                             </div>
                                                         </div>
@@ -463,13 +465,13 @@ const WelcomeConnect = () => {
                                 >
                                     <div className="message_text_Welcome">
                                         <Text variant="headingLg" as="h5">
-                                            write/edit the message that sent's to your customers
+                                            {t("welcome.messageBoxTitle")}
                                         </Text>
                                     </div>
                                     <Card>
                                         {isMessageLoading ? <div className='flex justify-center items-center' style={{ height: "24.5rem" }}>
                                             <Spinner accessibilityLabel="Small spinner example" size="large" />
-                                        </div> : <div className="flex-col" style={{ height: "24.5rem" }}>
+                                        </div> : <div className="flex-col" style={{ height: '26rem' }}>
                                             <textarea
                                                 className="w-full h-10 border-none outline-none text-base"
                                                 value={customMessage.header}
@@ -480,7 +482,7 @@ const WelcomeConnect = () => {
                                                     }))
                                                 }
                                                 }
-                                                placeholder="Card Header"
+                                                placeholder={t("settings.messageBoxHeadingPlaceholder")}
                                             />
                                             <textarea
                                                 className="w-full h-72 text-base border-none outline-none"
@@ -491,7 +493,7 @@ const WelcomeConnect = () => {
                                                         content: e.target.value
                                                     }))
                                                 }}
-                                                placeholder="Card Body"
+                                                placeholder={t("settings.messageBoxContentPlaceholder")}
                                             />
                                             <div className='flex justify-end pr-3 pt-4'>
                                                 <Button
@@ -499,15 +501,15 @@ const WelcomeConnect = () => {
                                                     variant="primary"
                                                     disabled={compareMessage?.header === customMessage?.header && compareMessage.content === customMessage.content}
                                                     loading={isSaveButtonLoading}
-                                                >Save Text</Button>
+                                                >{t("settings.messageBoxSaveButton")}</Button>
                                             </div>
                                         </div>}
                                     </Card>
                                     {/* <div className='mt-4'>
-                                            <Text variant="bodyLg" as="p">
-                                                You can use the following article for crafting winning and conversion phrasing at the <Link url="https://help.shopify.com/manual" removeUnderline>link here.</Link>
-                                            </Text>
-                                        </div> */}
+                                        <Text variant="bodyLg" as="p">
+                                            {t("welcome.messageBoxBeforeLinkText")} <Link url="https://help.shopify.com/manual" removeUnderline>{t("welcome.messageBoxAfterLinkText")}</Link>
+                                        </Text>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>
@@ -552,6 +554,7 @@ const WelcomeConnect = () => {
                 }));
             }
             // console.log("ended handleFetchAbandonedCheckouts on welcomeConnect")
+
             //.....................................//...................................//
 
             // const responseAbandoned = await fetch("/api/abandoned-checkouts/get", {
