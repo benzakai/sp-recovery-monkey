@@ -42,7 +42,7 @@ export default function SmartBulk() {
         startCursor: null
     });
     const [PageSize, setPageSize] = useState('10')
-    const { selectedPlanName }: any = useOutletContext()
+    const { selectedPlanName, permissions }: any = useOutletContext()
 
 
     useEffect(() => {
@@ -266,7 +266,7 @@ export default function SmartBulk() {
                                     }
                                     }
                                     placeholder="Heading"
-                                    disabled={!isProPlanOrHigher(selectedPlanName)}
+                                    disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
                                 />
                                 <textarea
                                     className="w-full h-56 text-base border-none outline-none"
@@ -278,7 +278,7 @@ export default function SmartBulk() {
                                         }))
                                     }}
                                     placeholder="Please write your content here..."
-                                    disabled={!isProPlanOrHigher(selectedPlanName)}
+                                    disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
                                 />
                                 <div className='flex justify-end pr-3 pt-4'>
                                     <Button
@@ -315,17 +315,17 @@ export default function SmartBulk() {
                                 options={options}
                                 onChange={(v) => setPageSize(v)}
                                 value={PageSize}
-                                disabled={!isProPlanOrHigher(selectedPlanName)}
+                                disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
                             />
                         </div>
                         <div className='mr-3'>
                             <DateRangePicker
-                                disabled={!isProPlanOrHigher(selectedPlanName)}
+                                disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
                                 setSelectedDateValues={setSelectedDateValues} />
                         </div>
                         <Button
                             variant="primary"
-                            disabled={(selectedTableData.length && customMessage?.content && customMessage?.header && isProPlanOrHigher(selectedPlanName)) ? false : true}
+                            disabled={(selectedTableData.length && customMessage?.content && customMessage?.header && (isProPlanOrHigher(selectedPlanName) || isProPlanOrHigher(permissions?.manualPlan))) ? false : true}
                             onClick={handleSendMessageInitial}
                         >
                             Send Message
@@ -347,7 +347,7 @@ export default function SmartBulk() {
                         customers={customers}
                         persistCustomers={persistCustomers}
                         currentPage={currentPage}
-                        disabled={!isProPlanOrHigher(selectedPlanName)}
+                        disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
                         setCurrentPage={setCurrentPage}
                         pageInfo={pageInfo}
                         isTableLoading={isTableLoading}

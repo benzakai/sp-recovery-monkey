@@ -21,6 +21,7 @@ export default function App() {
   const { apiKey } = useLoaderData<typeof loader>();
   const [anySubscription, setAnySubscription] = React.useState<any>("loading");
   const [selectedPlanName, setSelectedPlanName] = React.useState<any>(null);
+  const [permissions, setPermissions] = React.useState<any>({})
 
   async function fetchAppSubscription(): Promise<any> {
     try {
@@ -33,7 +34,28 @@ export default function App() {
         // return false
       }
     } catch (error) {
-      console.log("ERROR", error);
+      console.log("ERROR on fetchAppSubscription", error);
+    }
+    return false;
+  }
+
+  async function fetchPermissions(): Promise<any> {
+    try {
+      const permissionResponse = await fetch('/api/firestore?collectionName=permissions', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (permissionResponse.ok) {
+        const permissionResponseData = await permissionResponse.json();
+        // console.log("permissionResponseData==================+>", permissionResponseData.data)
+        return {
+          manualPlan: permissionResponseData?.data?.manualPlan || null
+        };
+      }
+    } catch (error) {
+      console.log("ERROR on fetchPermissions", error);
     }
     return false;
   }
@@ -41,7 +63,6 @@ export default function App() {
   React.useEffect(() => {
     const checkSubscription = async () => {
       const { subscribed, planName }: any = await fetchAppSubscription();
-      setSelectedPlanName(planName)
       if (!subscribed && planName !== "Free") {
         setAnySubscription(false);
       } else {
@@ -75,6 +96,9 @@ export default function App() {
           console.error("Error fetching or saving settings", error);
         }
       }
+      const { manualPlan }: any = await fetchPermissions();
+      setPermissions((prev: any) => ({ ...prev, manualPlan }))
+      setSelectedPlanName(planName)
     };
     checkSubscription();
   }, []);
@@ -94,7 +118,7 @@ export default function App() {
           </>
         )}
       </NavMenu>
-      <Outlet context={{ anySubscription, setAnySubscription, selectedPlanName, setSelectedPlanName }} />
+      <Outlet context={{ anySubscription, setAnySubscription, selectedPlanName, setSelectedPlanName, permissions }} />
     </AppProvider>
   );
 }

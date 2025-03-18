@@ -71,7 +71,7 @@ const Settings = () => {
     const [languageSearchValue, setLanguageSearchValue] = useState('');
     const [isMessageLoading, setMessageLoading] = useState(true)
     const [messageToCompare, setMessageToCompare] = useState("")
-    const { selectedPlanName }: any = useOutletContext()
+    const { selectedPlanName, permissions }: any = useOutletContext()
 
     useEffect(() => {
         if (actionData?.success) {
@@ -136,7 +136,14 @@ const Settings = () => {
             const settingsData = await fetchSettings()
             console.log("settingsData", settingsData);
             if (settingsData) {
-                setSettings((prev) => ({ ...prev, settingsData }));
+                setSettings(prevSettings => ({
+                    ...prevSettings,
+                    ...settingsData,
+                    followUpMessage: {
+                        ...prevSettings.followUpMessage,
+                        ...settingsData?.followUpMessage,
+                    }
+                }));
                 setMessageToCompare(settingsData?.followUpMessage)
             }
             if (Object.keys(subscriptionData).length === 0) {
@@ -318,7 +325,7 @@ const Settings = () => {
                                                         }}
                                                         value={languageSearchValue}
                                                         setValue={setLanguageSearchValue}
-                                                        isDisabled={!isProPlanOrHigher(selectedPlanName)}
+                                                        isDisabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
                                                     />
                                                 </div>
                                             }
@@ -356,7 +363,7 @@ const Settings = () => {
                                                                 }
                                                                 }
                                                                 placeholder="Heading"
-                                                                disabled={!isProPlanOrHigher(selectedPlanName)}
+                                                                disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
                                                             />
                                                             <textarea
                                                                 className="w-full h-40 text-base border-none outline-none"
@@ -371,7 +378,7 @@ const Settings = () => {
                                                                     }))
                                                                 }}
                                                                 placeholder="Please write your content here..."
-                                                                disabled={!isProPlanOrHigher(selectedPlanName)}
+                                                                disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
                                                             />
                                                             <div className='flex justify-end pr-3 pt-4'>
                                                                 <Button

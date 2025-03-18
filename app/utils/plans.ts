@@ -1,5 +1,8 @@
 
 export const isProPlanOrHigher = (planName: any) => {
-    if (planName === "Pro" || planName === "Advance") return true
-    else return false
+    // console.log("planName from isProPlanOrHigher", planName);
+    if (planName) {
+        if (planName === "Pro" || planName === "Advance") return true
+        else return false
+    } else return false
 }
