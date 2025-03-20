@@ -76,12 +76,12 @@ export default function AbandonedCartsSummary({ getPageData, forPageType }: any)
 
     return (
         <div className='bg-white rounded-xl shadow-sm border border-solid border-[#B5B5B5]'>
-            <div className='flex flex-row gap-4 justify-between items-start pt-6 pb-8 font-inter'>
+            <div className='flex flex-row gap-4 justify-center items-start pt-6 pb-8 font-inter welcome_wrapper'>
                 {
                     getCards.map((card) => {
                         if (!card?.id) return null;
                         return (
-                            <div key={card.id} className='flex flex-col justify-center items-center text-center w-1/4 m-4'>
+                            <div key={card.id} className='flex flex-col justify-center items-center text-center w-1/4 m-4 welcome_wrapper_content'>
                                 <div>{card.icon}</div>
                                 {card.value === "Loading" ? (
                                     <div className="animate-pulse space-y-2 pt-4 pb-3">

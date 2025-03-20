@@ -19,7 +19,8 @@ async function hydrate() {
       ns: [],
       // ns: getInitialNamespaces(),
       backend: {
-        loadPath: `/locales/{{lng}}/{{ns}}.json`,
+        loadPath: `/locales/{{lng}}/{{ns}}.json?${new Date().getTime()}`,
+        cache: "no-cache",
       },
       detection: {
         order: ["htmlTag"],

@@ -343,90 +343,89 @@ const WelcomeConnect = () => {
 
     return (
         <>
-            <div className="flex justify-center bg-[#f1f1f1]">
-                <div className='start_page'>
+             <div className="flex justify-center bg-[#f1f1f1]">
+                <div className='start_page start_page_wrapper'>
 
-                    <Page fullWidth>
-                        <div className="lets_start_main_container">
-                            <div>
-                                <div className='pb-8'>
-                                    <Text variant="heading3xl" as="h3">
-                                        {t("welcome.title")}
+                    <div className="lets_start_main_container">
+                        <div>
+                            <div className='pb-8'>
+                                <Text variant="heading3xl" as="h3">
+                                    {t("welcome.title")}
+                                </Text>
+                            </div>
+                        </div>
+
+                        <div>
+                            <p className='font-bold text-2xl pb-6'>{t("welcome.subTitle")}</p>
+                            <AbandonedCartsSummary getPageData={getPageData} forPageType="WelcomeConnect" />
+                        </div>
+                        <div className='flex gap-20 gap-y-8 start_price_new_wrapper'>
+                            <div className="start_price_container w-2/5">
+                                <div className="start_price_container_heading" style={{ ...(isShowConnectionStatus ? { paddingBottom: '1.5rem' } : {}) }}>
+                                    <Text variant="headingLg" as="h5">
+                                        {!isShowConnectionStatus ? t("welcome.connectSectionTitle") : stateInstance === 'authorized' ?
+                                            t("welcome.connectedTitle") :
+                                            t("welcome.notConnectedTitle")
+                                        }
                                     </Text>
                                 </div>
-                            </div>
-
-                            <div>
-                                <p className='font-bold text-2xl pb-6'>{t("welcome.subTitle")}</p>
-                                <AbandonedCartsSummary getPageData={getPageData} forPageType="WelcomeConnect" />
-                            </div>
-                            <div className='flex'>
-                                <div className="start_price_container w-2/5">
-                                    <div className="start_price_container_heading">
-                                        <Text variant="headingLg" as="h5">
-                                            {!isShowConnectionStatus ? t("welcome.connectSectionTitle") : stateInstance === 'authorized' ?
-                                                t("welcome.connectedTitle") :
-                                                t("welcome.notConnectedTitle")
-                                            }
-                                        </Text>
-                                    </div>
-                                    <div className="start_price_container_cards">
-                                        <Card>
-                                            <div className="w-64" style={{ height: '26rem' }}>
-                                                {isShowConnectionStatus ? <>
-                                                    {stateInstance === 'authorized' ? (
-                                                        <>
-                                                            <div className='connection_alien_logo_section'>
-                                                                <AlienSVG />
+                                <div className="start_price_container_cards">
+                                    <Card>
+                                        <div className="start_price_content" style={{ height: '26rem' }}>
+                                            {isShowConnectionStatus ? <>
+                                                {stateInstance === 'authorized' ? (
+                                                    <>
+                                                        <div className='connection_alien_logo_section'>
+                                                            <AlienSVG />
+                                                        </div>
+                                                        <div className='p-5'>
+                                                            <Text variant="bodyLg" as="p">
+                                                                {t("welcome.connectedMessage")}
+                                                            </Text>
+                                                        </div>
+                                                        <div className='mt-16 flex justify-end'>
+                                                            <Button onClick={() => disconnectInstance(instance?.apiUrl, instance?.idInstance, instance?.apiTokenInstance, false)} disabled={isDisBtnLoading} loading={isDisBtnLoading} variant='primary'>
+                                                                {t("welcome.disconnectButtonText")}
+                                                            </Button>
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <div className='connection_alien_logo_section'>
+                                                            <div className="connection_qr_code">
+                                                                {qrCode ? (
+                                                                    <img className='qr_image_connection' src={qrCode} alt="QR Code" />
+                                                                ) : (
+                                                                    <Spinner accessibilityLabel="Small spinner example" size="small" />
+                                                                )}
                                                             </div>
-                                                            <div className='p-5'>
-                                                                <Text variant="bodyLg" as="p">
-                                                                    {t("welcome.connectedMessage")}
-                                                                </Text>
-                                                            </div>
-                                                            <div className='mt-16 flex justify-end'>
-                                                                <Button onClick={() => disconnectInstance(instance?.apiUrl, instance?.idInstance, instance?.apiTokenInstance, false)} disabled={isDisBtnLoading} loading={isDisBtnLoading} variant='primary'>
-                                                                    {t("welcome.disconnectButtonText")}
-                                                                </Button>
-                                                            </div>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <div className='connection_alien_logo_section'>
-                                                                <div className="connection_qr_code">
-                                                                    {qrCode ? (
-                                                                        <img className='qr_image_connection' src={qrCode} alt="QR Code" />
-                                                                    ) : (
-                                                                        <Spinner accessibilityLabel="Small spinner example" size="small" />
-                                                                    )}
+                                                        </div>
+                                                        <div className='connection_card_dialogue_section font-semibold '>
+                                                            <Text variant="headingMd" as="p">
+                                                                {t("welcome.qrScanText")}
+                                                            </Text>
+                                                        </div>
+                                                        <div className='mb-9'>
+                                                            <BlockStack>
+                                                                <div className='flex flex-row gap-2 mb-2 mt-4'>
+                                                                    <OneSVG />
+                                                                    <Text variant="bodyMd" as="p">{t("welcome.qrScanStep1")}</Text>
                                                                 </div>
-                                                            </div>
-                                                            <div className='connection_card_dialogue_section font-semibold '>
-                                                                <Text variant="headingMd" as="p">
-                                                                    {t("welcome.qrScanText")}
-                                                                </Text>
-                                                            </div>
-                                                            <div className='mb-9'>
-                                                                <BlockStack>
-                                                                    <div className='flex flex-row gap-2 mb-2 mt-4'>
-                                                                        <OneSVG />
-                                                                        <Text variant="bodyMd" as="p">{t("welcome.qrScanStep1")}</Text>
-                                                                    </div>
-                                                                    <div className='flex flex-row gap-2 mb-2'>
-                                                                        <TwoSVG />
-                                                                        <Text variant="bodyMd" as="p">{t("welcome.qrScanStep2")}</Text>
-                                                                    </div>
-                                                                    <div className='flex flex-row gap-2 mb-2'>
-                                                                        <ThreeSVG />
-                                                                        <Text variant="bodyMd" as="p">{t("welcome.qrScanStep3")}</Text>
-                                                                    </div>
-                                                                </BlockStack>
-                                                            </div>
-                                                        </>
-                                                    )}
-                                                </> :
-                                                    <div >
-                                                        {/* <div className="blur-2xl">
+                                                                <div className='flex flex-row gap-2 mb-2'>
+                                                                    <TwoSVG />
+                                                                    <Text variant="bodyMd" as="p">{t("welcome.qrScanStep2")}</Text>
+                                                                </div>
+                                                                <div className='flex flex-row gap-2 mb-2'>
+                                                                    <ThreeSVG />
+                                                                    <Text variant="bodyMd" as="p">{t("welcome.qrScanStep3")}</Text>
+                                                                </div>
+                                                            </BlockStack>
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </> :
+                                                <div >
+                                                    {/* <div className="blur-2xl">
                                                             <>
                                                                 <div className='connection_alien_logo_section'>
                                                                     <AlienSVG />
@@ -444,76 +443,75 @@ const WelcomeConnect = () => {
                                                             </>
 
                                                         </div> */}
-                                                        <div className=" absolute inset-0 flex items-center justify-center">
-                                                            <div className="mt-4">
-                                                                <Button variant="primary" size='large' onClick={handleShowConnectionClick}>
-                                                                    {t("welcome.connectionStatusViewButton")}
-                                                                </Button>
-                                                            </div>
+                                                    <div className=" absolute inset-0 flex items-center justify-center">
+                                                        <div className="mt-4">
+                                                            <Button variant="primary" size='large' onClick={handleShowConnectionClick}>
+                                                                {t("welcome.connectionStatusViewButton")}
+                                                            </Button>
                                                         </div>
                                                     </div>
+                                                </div>
 
-                                                }
-                                            </div>
-                                        </Card>
-                                    </div>
-                                </div>
-
-                                <div
-                                    className=" ml-24 messge_box_welcome"
-                                // onClick={() => handleSelectCard(card.id)}
-                                >
-                                    <div className="message_text_Welcome">
-                                        <Text variant="headingLg" as="h5">
-                                            {t("welcome.messageBoxTitle")}
-                                        </Text>
-                                    </div>
-                                    <Card>
-                                        {isMessageLoading ? <div className='flex justify-center items-center' style={{ height: "24.5rem" }}>
-                                            <Spinner accessibilityLabel="Small spinner example" size="large" />
-                                        </div> : <div className="flex-col" style={{ height: '26rem' }}>
-                                            <textarea
-                                                className="w-full h-10 border-none outline-none text-base"
-                                                value={customMessage.header}
-                                                onChange={(e) => {
-                                                    setCustomMessage((prev) => ({
-                                                        ...prev,
-                                                        header: e.target.value
-                                                    }))
-                                                }
-                                                }
-                                                placeholder={t("settings.messageBoxHeadingPlaceholder")}
-                                            />
-                                            <textarea
-                                                className="w-full h-72 text-base border-none outline-none"
-                                                value={customMessage.content}
-                                                onChange={(e) => {
-                                                    setCustomMessage((prev) => ({
-                                                        ...prev,
-                                                        content: e.target.value
-                                                    }))
-                                                }}
-                                                placeholder={t("settings.messageBoxContentPlaceholder")}
-                                            />
-                                            <div className='flex justify-end pr-3 pt-4'>
-                                                <Button
-                                                    onClick={handleSaveMessage}
-                                                    variant="primary"
-                                                    disabled={compareMessage?.header === customMessage?.header && compareMessage.content === customMessage.content}
-                                                    loading={isSaveButtonLoading}
-                                                >{t("settings.messageBoxSaveButton")}</Button>
-                                            </div>
-                                        </div>}
+                                            }
+                                        </div>
                                     </Card>
-                                    {/* <div className='mt-4'>
+                                </div>
+                            </div>
+
+                            <div
+                                className="messge_box_welcome"
+                            // onClick={() => handleSelectCard(card.id)}
+                            >
+                                <div className="message_text_Welcome">
+                                    <Text variant="headingLg" as="h5">
+                                        {t("welcome.messageBoxTitle")}
+                                    </Text>
+                                </div>
+                                <Card>
+                                    {isMessageLoading ? <div className='flex justify-center items-center' style={{ height: "26rem" }}>
+                                        <Spinner accessibilityLabel="Small spinner example" size="large" />
+                                    </div> : <div className="flex-col" style={{ height: '26rem' }}>
+                                        <textarea
+                                            className="w-full h-10 border-none outline-none text-base"
+                                            value={customMessage.header}
+                                            onChange={(e) => {
+                                                setCustomMessage((prev) => ({
+                                                    ...prev,
+                                                    header: e.target.value
+                                                }))
+                                            }
+                                            }
+                                            placeholder={t("settings.messageBoxHeadingPlaceholder")}
+                                        />
+                                        <textarea
+                                            className="w-full h-72 text-base border-none outline-none"
+                                            value={customMessage.content}
+                                            onChange={(e) => {
+                                                setCustomMessage((prev) => ({
+                                                    ...prev,
+                                                    content: e.target.value
+                                                }))
+                                            }}
+                                            placeholder={t("settings.messageBoxContentPlaceholder")}
+                                        />
+                                        <div className='flex justify-end pr-3 pt-4'>
+                                            <Button
+                                                onClick={handleSaveMessage}
+                                                variant="primary"
+                                                disabled={compareMessage?.header === customMessage?.header && compareMessage.content === customMessage.content}
+                                                loading={isSaveButtonLoading}
+                                            >{t("settings.messageBoxSaveButton")}</Button>
+                                        </div>
+                                    </div>}
+                                </Card>
+                                {/* <div className='mt-4'>
                                         <Text variant="bodyLg" as="p">
                                             {t("welcome.messageBoxBeforeLinkText")} <Link url="https://help.shopify.com/manual" removeUnderline>{t("welcome.messageBoxAfterLinkText")}</Link>
                                         </Text>
                                     </div> */}
-                                </div>
                             </div>
                         </div>
-                    </Page>
+                    </div>
                 </div >
             </div >
         </>

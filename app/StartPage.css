@@ -2,7 +2,7 @@
     height: 20px !important;
 }
 
-.body{
+.body {
     display: flex;
     justify-content: center;
 }
@@ -10,6 +10,7 @@
 .start_page {
     width: 1288px;
 }
+
 .start_main_container {
     /* border: 1px solid; */
     width: 100%;
@@ -17,6 +18,7 @@
     /* background-color: rgb(231 231 231); */
     padding: 4rem 10rem 120px 69px;
 }
+
 .lets_start_main_container {
     /* border: 1px solid; */
     width: 100%;
@@ -24,18 +26,21 @@
     /* background-color: rgb(231 231 231); */
     padding: 4rem 0rem 120px 0px;
 }
+
 .messge_box_welcome {
     width: 60%;
     padding: 4rem 0rem 120px 0px;
 }
-.message_text_Welcome{
-    margin-bottom: 1rem;
+
+.message_text_Welcome {
+    margin-bottom: 2.3rem;
 }
+
 .start_main_container_heading {
     margin-bottom: 2px;
 }
 
-.start_main_container_sub_heading{
+.start_main_container_sub_heading {
 
     margin-bottom: 0.6rem;
 }
@@ -49,6 +54,7 @@
     /* padding: 39px 0px 24px 0px; */
     padding: 19px 0px 24px 0px;
 }
+
 .start_pricing_plans_card {
     /* width: 9rem; */
     /* border: 3.6px solid black; */
@@ -59,10 +65,12 @@
     transition: all 0.3s ease;
     /* background-color: white; */
 }
+
 .start_plan_content_logo {
     width: 6rem;
     padding-bottom: 24px;
 }
+
 .start_plan_content_value {
     font-weight: 600;
     font-size: 20px;
@@ -70,6 +78,7 @@
     margin-top: 10px;
     margin-bottom: 12px;
 }
+
 .start_plan_content_heading {
     color: #42474C;
     font-weight: 500;
@@ -77,6 +86,7 @@
     font-family: "Fira Sans";
     margin-bottom: 22px;
 }
+
 .start_plan_content_sub_heading {
     color: #6B7177;
 
@@ -85,9 +95,10 @@
     font-family: "Fira Sans";
 }
 
-.start_price_container{
+.start_price_container {
     color: black;
 }
+
 .start_price_container_heading {
     color: black;
     margin: 4rem 0rem 1rem 0rem;
@@ -98,6 +109,7 @@
     flex-direction: row;
     gap: 10px;
 }
+
 .start_price_choose_plan {
     color: black;
     width: 230px;
@@ -111,18 +123,21 @@
     margin-bottom: 10px;
     gap: 4px;
 }
+
 .start_plan_ammount {
     color: black;
     font-size: 20px;
     font-family: 'Inter';
     font-weight: 600;
 }
+
 .start_plan_ammount_suffix {
     color: black;
     font-size: 14px;
     font-family: 'Inter';
     font-weight: 400;
 }
+
 .start_plan_trial {
     /* color: black; */
     /* background-color: skyblue; */
@@ -133,6 +148,7 @@
     /* padding: 0px 0px 0px 6px; */
     margin-bottom: 44px;
 }
+
 .start_plan_button_section {
     margin-bottom: 38px;
 }
@@ -141,6 +157,7 @@
     margin-bottom: 13px;
     font-size: 14px;
 }
+
 .start_plan_button {
     color: #f9f6f6;
     background-color: black;
@@ -148,8 +165,9 @@
     border-radius: 7px;
     cursor: pointer;
 }
-.start_active_plan{
-    cursor:alias;
+
+.start_active_plan {
+    cursor: alias;
     background-color: rgb(108, 105, 105);
 }
 
@@ -161,11 +179,13 @@
     /* padding-bottom: 53px; */
     /* gap: 10px; */
 }
-.start_plan_list_item{
+
+.start_plan_list_item {
     padding-bottom: 10px;
     font-size: 14.5px;
-    line-height:normal;
+    line-height: normal;
 }
+
 .star_plan_limit_dialogue {
     color: black;
     font-family: 'Inter';
@@ -176,16 +196,19 @@
     margin-bottom: 12px;
     line-height: 16.94px;
 }
-.start_plan_extra_dialogue{
+
+.start_plan_extra_dialogue {
     color: black;
     font-weight: 400;
     font-size: 14px;
     line-height: 16.94px;
     margin-bottom: 5px;
-}   
-.Polaris-ShadowBevel{
+}
+
+.Polaris-ShadowBevel {
     position: relative;
 }
+
 .popular_badge {
     background-color: #D9D9D9;
     color: #000;
@@ -209,16 +232,19 @@
 
 
 
-.connection_main_container_heading{
+.connection_main_container_heading {
     margin-bottom: 5rem;
 }
-.connection_main_container_sub_heading{
+
+.connection_main_container_sub_heading {
     margin-bottom: 2rem;
 }
-.connection_card_sub_heading{
+
+.connection_card_sub_heading {
     font-size: 14px;
     font-weight: 400;
 }
+
 .connection_alien_logo_section {
     padding: 7px 7px 0 7px;
     height: 215px;
@@ -228,6 +254,7 @@
     justify-content: center;
     align-items: center;
 }
+
 .connection_qr_code {
     width: 85%;
     height: 85%;
@@ -236,32 +263,39 @@
     justify-content: center;
     align-items: center;
 }
-.qr_image_connection{
+
+.qr_image_connection {
     width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
-.connection_alien_logo{
+
+.connection_alien_logo {
     width: 100%;
     /* border: 1px solid; */
 }
-.connection_card_dialogue_section{
+
+.connection_card_dialogue_section {
     padding: 7px;
 }
+
 .connection_card_before_qr_dialogue {
     font-size: 14px;
     font-weight: 600;
     text-align: center;
 }
-.connection_card_after_qr_dialogue{
+
+.connection_card_after_qr_dialogue {
     font-size: 14px;
     font-weight: 400;
     text-align: center;
 }
 
-.connectPage_connect_message{
+.connectPage_connect_message {
     width: 100%;
     height: 45%;
     text-align: center;
-    
+
 }
 
 
@@ -271,6 +305,7 @@
     font-size: 14px;
     margin: 1.9rem 0rem 0.7rem 0rem;
 }
+
 @media (max-width: 1024px) {
     .start_main_container {
         padding: 3rem 2rem;
@@ -326,6 +361,10 @@
         padding: 1.5rem;
     }
 
+    .start_price_container_cards .Polaris-ShadowBevel {
+        width: 100%;
+    }
+
     .start_plan_content_logo {
         width: 3rem;
     }
@@ -345,6 +384,7 @@
     .start_price_container_heading {
         font-size: 1rem;
     }
+
     .upgrade_page_container_heading {
         color: black;
         font-size: 0.5rem;
@@ -369,5 +409,82 @@
 
     .start_plan_extra_dialogue {
         font-size: 9px;
+    }
+}
+
+
+/* welcome page css */
+
+@media (max-width: 1530px) {
+    .welcome_wrapper {
+        flex-wrap: wrap;
+    }
+}
+
+.start_page_wrapper {
+    padding: 0 var(--p-space-600);
+}
+
+@media (max-width: 1000px) {
+.start_page_wrapper {
+    width: 100%;
+}
+}
+
+@media (max-width: 749px) {
+    .welcome_wrapper_content {
+        width: 100% !important;
+    }
+    .start_price_new_wrapper {
+        flex-wrap: wrap !important;
+    }
+    .start_price_container, .messge_box_welcome {
+        width: 100% !important;
+        padding: 0 !important;
+    }
+}
+
+.start_price_container_cards .Polaris-ShadowBevel {
+    width: 100%;
+}
+
+.start_price_container.w-2\/5 {
+    width: 25%;
+}
+
+@media (max-width: 1400px) {
+    .start_price_container.w-2\/5  {
+        width: 33%;
+    }
+}
+
+@media (max-width: 1100px) {
+    .start_price_container.w-2\/5 {
+        width: 48%;
+    }
+    .messge_box_welcome {
+        width: 60%;
+    }
+}
+
+@media (max-width: 990px) {
+    .messge_box_welcome {
+        width: 100%;
+    }
+    .start_price_content {
+        min-height: 26rem;
+        height: 100% !important;
+    }
+}
+
+
+@media (max-width: 749px) {
+    .start_price_container.w-2\/5 {
+        width: 85%;
+    }
+    .qr_image_connection {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
     }
 }

@@ -34,10 +34,10 @@
     "title": "Welcome",
     "subTitle": "How to start with CartKeeper?",
     "contactSectionTitle": "We're Here For You",
-    "whatsappChatTitle": "whatsapp chat",
+    "whatsappChatTitle": "Whatsapp Chat",
     "whatsappChatDescription": "Talk to us directly via WhatsApp chat to get help with your question.",
     "whatsappChatButtonText": "Message us on WhatsApp",
-    "emailContactTitle": "contact via email",
+    "emailContactTitle": "Contact via Email",
     "emailContactDescription": "Contact us directly via email for help or support.",
     "emailContactButtonText": "Send us an Email",
     "priceSectionTitle": "Choose a plan and start Growing!"
@@ -77,7 +77,7 @@
   "smartBulk":{
     "title": "Smart Bulk",
     "subtitle": "Boost your sales with custom messages to multiple customers",
-    "messageBoxTitle": "Elige el texto que mejor se adapte a ti → Edita el texto según tus necesidades → Haz clic en \"Guardar\"",
+    "messageBoxTitle": "Choose the text that suits you best-> Edit the text to fit your needs-> Click \"Save\"",
     "messageBoxDescription": "You can use the following article for crafting winning and conversion phrasing at the",
     "messageBoxLinkText": "link here.",
     "messageHeadingText": "👋 Hi [Customer's Name],",
