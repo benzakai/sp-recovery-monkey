@@ -5,18 +5,6 @@ import { Page, DataTable, Text, Spinner, Card } from '@shopify/polaris';
 import AbandonedCartsSummary from '~/components/AbandonedCartsSummary';
 import { useTranslation } from 'react-i18next';
 
-function formatDate(dateString: any) {
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const dateParts = dateString.split(/[\s/:]/);
-    const day = parseInt(dateParts[0], 10);
-    const month = months[parseInt(dateParts[1], 10) - 1];
-    const year = dateParts[2];
-    const hour = dateParts[3];
-    const minute = dateParts[4];
-    const second = dateParts[5];
-
-    return `${month} ${day} ${hour}:${minute}:${second}`;
-}
 
 function parseDate(dateString: any) {
     const [day, month, year, hour, minute, second] = dateString.split(/[\s/:]/).map(Number);
@@ -62,6 +50,19 @@ export default function NewAbandonedList() {
         handleFetchAbandonedCheckouts();
         handleFetchTableData();
     }, []);
+
+
+    function formatDate(dateString: any) {
+        const dateParts = dateString.split(/[\s/:]/);
+        const day = parseInt(dateParts[0], 10);
+        const monthIndex = parseInt(dateParts[1], 10) - 1;
+        const year = dateParts[2];
+        const hour = dateParts[3];
+        const minute = dateParts[4];
+        const second = dateParts[5];
+        const month = t(`global.monthsShort.${monthIndex}`);
+        return `${month} ${day} ${hour}:${minute}:${second}`;
+    }
 
     const GetDataRow: any = (currentItems ?? [])?.map((item: any) => [
         <div>{formatDate(item.DateTime)}</div>,
@@ -174,7 +175,7 @@ export default function NewAbandonedList() {
                                             hasPrevious: currentPage > 1,
                                             onNext: handleNext,
                                             onPrevious: handlePrevious,
-                                            label: `${(currentPage - 1) * itemsPerPage + 1}-${Math.min(currentPage * itemsPerPage, customerData?.length)} of ${customerData?.length} Abandoned carts`,
+                                            label: t("abandonedList.paginationText", { currentPage: `${(currentPage - 1) * itemsPerPage + 1}-${Math.min(currentPage * itemsPerPage, customerData?.length)}`, totalPages: customerData?.length }),
                                         }}
                                     />
                                 </Card>

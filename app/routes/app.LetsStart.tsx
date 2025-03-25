@@ -188,8 +188,8 @@ const LetsStart = () => {
                                         <div className="start_plan_button_section"><Button size='large' loading={isLoadingPlanButton} onClick={() => handlePlanSelect('Free')} variant='primary' fullWidth>{t("settings.planNotSelectedText")}</Button></div>
                                         <div className="star_plan_limit_dialogue">
                                             <ul className='start_plan_list'>
-                                                <li className='start_plan_list_item'>- {t("settings.starterBenefit1")}</li>
-                                                <li className='start_plan_list_item'>- {t("settings.starterBenefit2")}</li>
+                                                <li className='start_plan_list_item'>- {t("settings.freeBenefit1")}</li>
+                                                <li className='start_plan_list_item'>- {t("settings.freeBenefit2")}</li>
                                             </ul>
                                         </div>
                                     </div>

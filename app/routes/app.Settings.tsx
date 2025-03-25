@@ -298,6 +298,11 @@ const Settings = () => {
             value: 'es',
             prefix: <Icon source={LanguageFilledIcon} />,
         },
+        {
+            label: 'Português',
+            value: 'pt',
+            prefix: <Icon source={LanguageFilledIcon} />,
+        }
     ];
 
     const handleLanguageChange = (value: any) => {
@@ -531,7 +536,7 @@ const Settings = () => {
                         <div className="start_price_container">
                             <div className="upgrade_page_container_heading">
                                 {loadingPage ? <div className='w-56'><SkeletonBodyText lines={2} /> </div> :
-                                    <div className='upgrade_page_container_heading_text'>{t("settings.planSectionDescription", { planName })}</div>}
+                                    <div className='upgrade_page_container_heading_text'>{t("settings.planSectionDescription", { planName: t(`global.planNames.${planName}`) })}</div>}
                             </div>
                             <div className="start_price_container_cards">
                                 <Card>

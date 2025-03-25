@@ -5,7 +5,7 @@ export default function StartPageCartSummary({ getCards }: StartPageCartSummaryP
 
     return (
         <div className='bg-white rounded-xl shadow-sm border border-solid border-[#B5B5B5]'>
-            <div className='flex flex-row gap-4 justify-between items-start pt-6 pb-8 font-inter'>
+            <div className='flex flex-row gap-4 justify-around items-start pt-6 pb-8 font-inter'>
             {
                     getCards?.map((card) => {
                         return (

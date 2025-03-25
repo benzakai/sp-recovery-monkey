@@ -112,8 +112,8 @@ export default function SmartBulkTable({
                 foundPhoneNumber = defaultAddress.phone
             }
             // console.log("foundPhoneNumber", foundPhoneNumber)
-            // if (customer?.emailMarketingConsent) {
-            //     customer.emailMarketingConsent.marketingState = "UNSUBSCRIBED";
+            // emailMarketingConsent = {
+            //     ["marketingState"]: "SUBSCRIBED"
             // }
             return (
                 <Fragment key={id}>
@@ -159,7 +159,10 @@ export default function SmartBulkTable({
                             <Badge
                                 tone={emailMarketingConsent?.marketingState === "SUBSCRIBED" ? "success" : emailMarketingConsent?.marketingState === "UNSUBSCRIBED" ? "attention" : 'enabled'}
                             >
-                                {((emailMarketingConsent?.marketingState === "SUBSCRIBED" || emailMarketingConsent?.marketingState === "UNSUBSCRIBED") && emailMarketingConsent?.marketingState) ? emailMarketingConsent?.marketingState.charAt(0).toUpperCase() + emailMarketingConsent?.marketingState.slice(1).toLowerCase() : "Not subscribed"}
+                                {((emailMarketingConsent?.marketingState === "SUBSCRIBED" || emailMarketingConsent?.marketingState === "UNSUBSCRIBED") && emailMarketingConsent?.marketingState)
+                                    ?
+                                    (emailMarketingConsent?.marketingState === "UNSUBSCRIBED" ? t("smartBulk.emailSubscription.unsubscribed") : t("smartBulk.emailSubscription.subscribed"))
+                                    : t("smartBulk.emailSubscription.notSubscribed")}
                             </Badge>
                         </IndexTable.Cell>
                     </IndexTable.Row>

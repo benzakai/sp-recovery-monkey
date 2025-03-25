@@ -1,5 +1,25 @@
 {
   "global": {
+    "planNames": {
+      "Free": "Gratuito",
+      "Starter": "Starter",
+      "Pro": "Pro",
+      "Advance": "Avançado"
+    },
+    "monthsShort": [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ],
     "toastMessage": {
       "multiLanguageFieldWarning": "Multi-Language Messaging field cannot be empty.",
       "successLanguageChange": "Language successfully changed",
@@ -46,7 +66,7 @@
     "title": "Let’s Start!",
     "subTitle": "Here’s a Dashboard of Your Lost Revenue",
     "abandonedCartsDescription": "Customers waiting for you to complete their purchase",
-    "missedRevenue":"Missed Revenue",
+    "missedRevenue": "Missed Revenue",
     "missedRevenueDescription": "The amount you could have earned from these carts"
   },
   "welcome": {
@@ -69,12 +89,13 @@
   },
   "abandonedList": {
     "title": "Abandoned carts",
-    "latestCartRecovery":"Latest Cart Recovery Messages",
+    "latestCartRecovery": "Latest Cart Recovery Messages",
     "tableColumnHeading1": "Time and Date",
     "tableColumnHeading2": "Name",
-    "tableColumnHeading3": "Checkout price"
+    "tableColumnHeading3": "Checkout price",
+    "paginationText": "{{currentPage}} of {{totalPages}} Abandoned carts"
   },
-  "smartBulk":{
+  "smartBulk": {
     "title": "Smart Bulk",
     "subtitle": "Boost your sales with custom messages to multiple customers",
     "messageBoxTitle": "Choose the text that suits you best-> Edit the text to fit your needs-> Click \"Save\"",
@@ -82,24 +103,24 @@
     "messageBoxLinkText": "link here.",
     "messageHeadingText": "👋 Hi [Customer's Name],",
     "messageContentText": "✨ Exciting news from our store ✨\n 🎉 We’re running an exclusive limited-time sale on your favorite items! 🛍️ Don’t miss out – enjoy discounts of up to 30% off on selected products.\n 💡 Hurry, the sale ends soon, and stock is running out fast! 🕒 \n 👉 Shop the sale now: [Link to store]",
-    "customersTableTitle":"Customers list",
-    "customersTableDescription":"Select multiple users in bulk with checkboxes, then click 'Send Message'",
-    "show":"Show",
-    "15perPageLabel":"15/page",
-    "50perPageLabel":"50/page",
-    "100perPageLabel":"100/page",
-    "200perPageLabel":"200/page",
-    "sendMessageButton":"Send Message",
-    "cancelButton":"Cancel",
+    "customersTableTitle": "Customers list",
+    "customersTableDescription": "Select multiple users in bulk with checkboxes, then click 'Send Message'",
+    "show": "Show",
+    "15perPageLabel": "15/page",
+    "50perPageLabel": "50/page",
+    "100perPageLabel": "100/page",
+    "200perPageLabel": "200/page",
+    "sendMessageButton": "Send Message",
+    "cancelButton": "Cancel",
     "sendConfirmationDescription": "Are you sure you want to send the message to the selected customers?",
-    "sortOption1":"Last update",
-    "sortOption2":"Subscription",
-    "sortOption3":"Revenue",
-    "sortOptionDirection1A":"Oldest to newest",
-    "sortOptionDirection1B":"Newest to oldest",
-    "sortOptionDirection2A":"Highest to lowest",
-    "sortOptionDirection2B":"Lowest to highest",
-    "searchCustomers":"Search Customers",
+    "sortOption1": "Last update",
+    "sortOption2": "Subscription",
+    "sortOption3": "Revenue",
+    "sortOptionDirection1A": "Oldest to newest",
+    "sortOptionDirection1B": "Newest to oldest",
+    "sortOptionDirection2A": "Highest to lowest",
+    "sortOptionDirection2B": "Lowest to highest",
+    "searchCustomers": "Search Customers",
     "tableColumnHeading1": "Date",
     "tableColumnHeading2": "Name",
     "tableColumnHeading3": "Phone",
@@ -110,6 +131,11 @@
       "last7Days": "Last 7 days",
       "apply": "Apply",
       "cancel": "Cancel"
+    },
+    "emailSubscription": {
+      "subscribed": "Subscribed",
+      "unsubscribed": "Unsubscribed",
+      "notSubscribed": "Not Subscribed"
     }
   },
   "settings": {

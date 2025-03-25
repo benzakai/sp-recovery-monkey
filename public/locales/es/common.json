@@ -1,5 +1,25 @@
 {
   "global": {
+    "planNames": {
+      "Free": "Gratuito",
+      "Starter": "Starter",
+      "Pro": "Pro",
+      "Advance": "Avançado"
+    },
+    "monthsShort": [
+      "Ene",
+      "Feb",
+      "Mar",
+      "Abr",
+      "May",
+      "Jun",
+      "Jul",
+      "Ago",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dic"
+    ],
     "toastMessage": {
       "multiLanguageFieldWarning": "El campo de mensajes multilingües no puede estar vacío.",
       "successLanguageChange": "Idioma cambiado con éxito",
@@ -72,7 +92,8 @@
     "latestCartRecovery": "Últimos Mensajes de Recuperación de Carritos",
     "tableColumnHeading1": "Hora y Fecha",
     "tableColumnHeading2": "Nombre",
-    "tableColumnHeading3": "Precio de Compra"
+    "tableColumnHeading3": "Precio de Compra",
+    "paginationText": "{{currentPage}} of {{totalPages}} Abandoned carts"
   },
   "smartBulk": {
     "title": "Envío Masivo Inteligente",
@@ -110,6 +131,11 @@
       "last7Days": "Últimos 7 días",
       "cancel": "Cancelar",
       "apply": "Aplicar"
+    },
+    "emailSubscription": {
+      "subscribed": "Suscrito",
+      "unsubscribed": "No suscrito",
+      "notSubscribed": "No suscrito"
     }
   },
   "settings": {

@@ -128,7 +128,7 @@ export default function Index() {
         handleNavigate: () => handleIconsNavigate(anySubscriptionRef.current ? "/app/SmartBulk" : null)
       }
     ],
-    [anySubscriptionRef.current,t]);
+    [anySubscriptionRef.current, t]);
 
   useEffect(() => {
     if (loaderData) {
@@ -206,13 +206,18 @@ export default function Index() {
       value: 'es',
       prefix: <Icon source={LanguageFilledIcon} />,
     },
+    {
+      label: 'Português',
+      value: 'pt',
+      prefix: <Icon source={LanguageFilledIcon} />,
+    }
   ];
 
 
   return (
     <div className="body">
       <div className='start_page'>
-      <div className='start_main_container' style={{ padding: "4rem 12rem 10rem 6rem" }}>
+        <div className='start_main_container' style={{ padding: "4rem 12rem 10rem 6rem" }}>
           <div className='flex flex-row justify-between'>
             <div className='start_main_container_heading pb-8'>
               <Text variant="heading3xl" as="h3">
@@ -296,8 +301,8 @@ export default function Index() {
                       <div className="start_plan_button_section"><Button size='large' loading={isLoadingPlanButton} onClick={() => handlePlanSelect('Free')} variant='primary' fullWidth>{t("settings.planNotSelectedText")}</Button></div>
                       <div className="star_plan_limit_dialogue">
                         <ul className='start_plan_list'>
-                          <li className='start_plan_list_item'>- {t("settings.starterBenefit1")}</li>
-                          <li className='start_plan_list_item'>- {t("settings.starterBenefit2")}</li>
+                          <li className='start_plan_list_item'>- {t("settings.freeBenefit1")}</li>
+                          <li className='start_plan_list_item'>- {t("settings.freeBenefit2")}</li>
                         </ul>
                       </div>
                     </div>
