@@ -327,6 +327,14 @@
     margin: 1.9rem 0rem 0.7rem 0rem;
 }
 
+.letstart .Polaris-Page.Polaris-Page--fullWidth {
+    max-width: 100% !important;
+}
+.lets_start_main_container{
+    max-width: 100%;
+}
+
+
 @media (max-width: 1024px) {
 
     .start_pricing_plans {

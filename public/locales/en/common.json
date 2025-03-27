@@ -31,7 +31,8 @@
       "loadingSubscription": "Loading subscription details. Please wait.",
       "successSubscriptionCreated": "Your subscription is successfully created!",
       "smartBulkNextWarning": "Upgrade to Pro or Higher Plan to access this feature",
-      "smartBulkPreviousWarning": "Upgrade to Pro or Higher Plan to access this feature"
+      "smartBulkPreviousWarning": "Upgrade to Pro or Higher Plan to access this feature",
+      "settingsActivateButtonStatus": "The feature has been {{status}} successfully."
     },
     "icons": {
       "recoveredCarts": "Recovered Carts",
@@ -188,6 +189,10 @@
     "advancedBenefit2": "Up to 100 sales recovery carts per month",
     "advancedBenefit3": "Potential to generate up to $100,000 in additional monthly revenue",
     "advancedBenefit4": "Enjoy unlimited free messaging",
-    "popularBadgeText": "Most Popular"
+    "popularBadgeText": "Most Popular",
+    "activated": "activated",
+    "activate": "Activate",
+    "deactivated": "deactivated",
+    "deactivate": "Deactivate"
   }
 }

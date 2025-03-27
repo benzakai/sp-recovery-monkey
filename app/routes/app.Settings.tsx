@@ -1,4 +1,4 @@
-import { Badge, BlockStack, Button, Card, Icon, Page, Select, SkeletonBodyText, SkeletonDisplayText, Spinner, Text } from '@shopify/polaris';
+import { Badge, BlockStack, Button, Card, Icon, InlineStack, Page, Select, SkeletonBodyText, SkeletonDisplayText, Spinner, Text } from '@shopify/polaris';
 import { useEffect, useState } from 'react';
 import '../StartPage.css';
 import { useLoaderData, useSubmit } from '@remix-run/react';
@@ -111,13 +111,25 @@ const Settings = () => {
             content: t("settings.messageContentText")
         },
         durationToSendFollowUpMessage: "After 10 min",
-        selectedLanguage: "en"
+        selectedLanguage: "en",
+        isDurationToSendMessageActivated: true,
+        isSelectedLanguageActivated: false,
+        isDurationToSendFollowUpMessageActivated: false
     });
-    const [isSaveButtonLoading, setSaveButtonLoading] = useState(false);
+    const [loading, setLoading]: any = useState({
+        saveButton: false,
+        saveMessageButton: false,
+        activeButton: null
+    })
     const [languageSearchValue, setLanguageSearchValue] = useState('');
     const [isMessageLoading, setMessageLoading] = useState(true)
     const [messageToCompare, setMessageToCompare] = useState("")
     const { selectedPlanName, permissions }: any = useOutletContext()
+    const activateButtons: { [key: string]: keyof typeof settings } = {
+        followUpMessageActivateButton: 'isDurationToSendFollowUpMessageActivated',
+        durationToSendMessageActivateButton: 'isDurationToSendMessageActivated',
+        languageSelectActivateButton: 'isSelectedLanguageActivated',
+    };
 
     useEffect(() => {
         if (actionData?.success) {
@@ -127,7 +139,7 @@ const Settings = () => {
             } else if (actionData?.savedAppLangnuage) {
                 i18n.changeLanguage(actionData?.savedAppLangnuage)
                 handleSaveSettings({ ...settings })
-                shopify.toast.show(t("global.toastMessage.languageChangeSuccess"))
+                // shopify.toast.show(t("global.toastMessage.languageChangeSuccess"))
             }
         }
     }, [actionData])
@@ -187,30 +199,30 @@ const Settings = () => {
 
 
 
-    useEffect(() => {
-        const getFireData = async () => {
-            const subscriptionData = await getSubscriptionData();
-            const settingsData = await fetchSettings()
-            console.log("settingsData", settingsData);
-            if (settingsData) {
-                setSettings(prevSettings => ({
-                    ...prevSettings,
-                    ...settingsData,
-                    selectedLanguage: prevSettings?.selectedLanguage,
-                    followUpMessage: {
-                        ...prevSettings.followUpMessage,
-                        ...settingsData?.followUpMessage,
-                    }
-                }));
-                setMessageToCompare(settingsData?.followUpMessage)
-            }
-            if (Object.keys(subscriptionData).length === 0) {
-                setPlanName('NO_PLAN');
-            } else {
-                setPlanName(subscriptionData?.plan);
-            }
-            setLoadingPage(false)
+    const getFireData = async () => {
+        const subscriptionData = await getSubscriptionData();
+        const settingsData = await fetchSettings()
+        console.log("settingsData", settingsData);
+        if (settingsData) {
+            setSettings(prevSettings => ({
+                ...prevSettings,
+                ...settingsData,
+                selectedLanguage: prevSettings?.selectedLanguage,
+                followUpMessage: {
+                    ...prevSettings.followUpMessage,
+                    ...settingsData?.followUpMessage,
+                }
+            }));
+            setMessageToCompare(settingsData?.followUpMessage)
         }
+        if (Object.keys(subscriptionData).length === 0) {
+            setPlanName('NO_PLAN');
+        } else {
+            setPlanName(subscriptionData?.plan);
+        }
+        setLoadingPage(false)
+    }
+    useEffect(() => {
         getFireData();
     }, []);
 
@@ -238,7 +250,6 @@ const Settings = () => {
             greenAPIKey: instanceResponseData.instance?.apiTokenInstance,
             greenAPIUrl: instanceResponseData.instance.apiUrl,
         }
-        // console.log("message on sendPubSubData of settingsSave", message);
         const pubSubRespone = await fetch('/api/sendPubSubData', {
             method: 'POST',
             headers: {
@@ -255,7 +266,10 @@ const Settings = () => {
         notificationStatus,
         followUpMessage,
         durationToSendFollowUpMessage,
-        preferredLanguages }: any) => {
+        preferredLanguages,
+        isDurationToSendFollowUpMessageActivated,
+        isDurationToSendMessageActivated,
+        isSelectedLanguageActivated }: any) => {
         try {
             const settingsData = {
                 durationToSendMessage,
@@ -263,7 +277,10 @@ const Settings = () => {
                 followUpMessage: followUpMessage || "",
                 durationToSendFollowUpMessage,
                 preferredLanguages: preferredLanguages || [],
-                selectedLanguage: settings.selectedLanguage
+                selectedLanguage: settings.selectedLanguage,
+                isDurationToSendFollowUpMessageActivated,
+                isDurationToSendMessageActivated,
+                isSelectedLanguageActivated
             };
             // console.log('settingsData.................>', settingsData)
             const response = await fetch('/api/saveSettings', {
@@ -279,6 +296,7 @@ const Settings = () => {
                 setMessageToCompare(settingsData.followUpMessage)
                 sendPubSubData(settingsData)
                 shopify.toast.show(t("global.toastMessage.successSettingsSaved"))
+                return { success: true }
             } else {
                 shopify.toast.show(t("global.toastMessage.faliedSettingsSaved"))
             }
@@ -307,6 +325,11 @@ const Settings = () => {
             label: 'Français',
             value: 'fr',
             prefix: <Icon source={LanguageFilledIcon} />,
+        },
+        {
+            label: 'Deutsch',
+            value: 'de',
+            prefix: <Icon source={LanguageFilledIcon} />,
         }
     ];
 
@@ -317,6 +340,21 @@ const Settings = () => {
         formData.append("actionType", "languageChange");
         submit(formData, { method: "post" });
     }
+
+    const handleActivateButton = async (buttonType: string) => {
+        const settingKey = activateButtons[buttonType];
+        setSettings((p: any) => ({ ...p, [settingKey]: !settings[settingKey] }))
+        if (settingKey) {
+            setLoading((p: any) => ({ ...p, activeButton: buttonType }))
+            const { success }: any = await handleSaveSettings({ ...settings, [settingKey]: !settings[settingKey] });
+            if (success) {
+                getFireData()
+            }
+            // shopify.toast.show(t("global.toastMessage.settingsActivateButtonStatus", { status: !settings[settingKey] ? t("settings.activated") : t("settings.deactivated") }))
+            setLoading((p: any) => ({ ...p, activeButton: null }))
+        }
+    };
+
 
     return (
         <div className="body">
@@ -369,6 +407,12 @@ const Settings = () => {
                                             }
                                             title={t("settings.scheduleMessages")}
                                             description={t("settings.scheduleMessagesDescription")}
+                                            activateButtonTitle={settings.isDurationToSendMessageActivated ? t("settings.deactivate") : t("settings.activate")}
+                                            isActivateButtonLoading={loading.activeButton === "durationToSendMessageActivateButton"}
+                                            isActivateButtonDisabled={loading.activeButton}
+                                            handleActivateButton={handleActivateButton}
+                                            buttonType={"durationToSendMessageActivateButton"}
+                                            isActivated={settings.isDurationToSendMessageActivated}
                                         />
                                     )}
                                 </Card>
@@ -397,10 +441,10 @@ const Settings = () => {
                                                     <Button
                                                         loading={isSaveButtonLoading}
                                                         onClick={async () => {
-                                                            setSaveButtonLoading(true)
+                                                            setLoading((p) => ({ ...p, saveButton: true }))
                                                             await handleSaveSettings({ ...settings, notificationStatus: !settings.notificationStatus })
                                                             setSettings({ ...settings, notificationStatus: !settings.notificationStatus })
-                                                            setSaveButtonLoading(false)
+                                                            setLoading((p) => ({ ...p, saveButton: true }))
                                                         }}
                                                     >{settings.notificationStatus ? "Deactivate" : "Activate"}</Button>
                                                 </InlineGrid>
@@ -438,6 +482,12 @@ const Settings = () => {
                                             title={t("settings.multiLanguageTitle")}
                                             description={t("settings.multiLanguageDescription")}
                                             availableOn={"Pro"}
+                                            activateButtonTitle={settings.isSelectedLanguageActivated ? t("settings.deactivate") : t("settings.activate")}
+                                            isActivateButtonLoading={loading.activeButton === "languageSelectActivateButton"}
+                                            isActivateButtonDisabled={loading.activeButton}
+                                            handleActivateButton={handleActivateButton}
+                                            buttonType={"languageSelectActivateButton"}
+                                            isActivated={settings.isSelectedLanguageActivated}
                                         />
                                     )}
                                 </Card>
@@ -489,13 +539,13 @@ const Settings = () => {
                                                             <div className='flex justify-end pr-3 pt-4'>
                                                                 <Button
                                                                     onClick={async () => {
-                                                                        setSaveButtonLoading(true)
+                                                                        setLoading((p: any) => ({ ...p, saveMessageButton: true }))
                                                                         await handleSaveSettings(settings)
-                                                                        setSaveButtonLoading(false)
+                                                                        setLoading((p: any) => ({ ...p, saveMessageButton: false }))
                                                                     }}
                                                                     variant="primary"
                                                                     disabled={messageToCompare?.header === settings?.followUpMessage?.header && messageToCompare?.content === settings?.followUpMessage?.content}
-                                                                    loading={isSaveButtonLoading}
+                                                                    loading={loading.saveMessageButton}
                                                                 >{t("settings.messageBoxSaveButton")}</Button>
                                                             </div>
                                                         </div>}
@@ -505,6 +555,12 @@ const Settings = () => {
                                             title={t("settings.messageBoxTitle")}
                                             description={t("settings.messageBoxDescription")}
                                             availableOn={"Pro"}
+                                            activateButtonTitle={settings.isDurationToSendFollowUpMessageActivated ? t("settings.deactivate") : t("settings.activate")}
+                                            isActivateButtonLoading={loading.activeButton === "followUpMessageActivateButton"}
+                                            isActivateButtonDisabled={loading.activeButton}
+                                            handleActivateButton={handleActivateButton}
+                                            buttonType={"followUpMessageActivateButton"}
+                                            isActivated={settings.isDurationToSendFollowUpMessageActivated}
                                         />
                                     )}
                                     {isSettingsLoading ? (
@@ -683,14 +739,34 @@ const SkeletonLoading = ({ firstClass = "w-1/3 mt-1", secondClass = "w-1/2 mt-6 
     </BlockStack>)
 }
 
-const SettingsSecondBlock = ({ children = <></>, title = 'Title', description = 'Setting Description', availableOn = '', toneType = "info" }: any) => {
+const SettingsSecondBlock = ({
+    children = <></>,
+    title = 'Title',
+    description = 'Setting Description',
+    availableOn = '',
+    toneType = "info",
+    activateButtonTitle = "Activate",
+    isActivated = false,
+    isActivateButtonLoading = false,
+    handleActivateButton,
+    buttonType = '',
+    isActivateButtonDisabled = false
+}: any) => {
     return (
         <div className='p-4'>
             <BlockStack gap="600">
                 <BlockStack gap="300">
-                    {title && <Text as="p" variant="bodyLg" fontWeight="bold">
-                        {title} <span className='pl-2'>{availableOn && <Badge tone={toneType} >{availableOn}</Badge>}</span>
-                    </Text>}
+                    <InlineStack direction="row" align="space-between">
+                        {title && <Text as="p" variant="bodyLg" fontWeight="bold">
+                            {title} <span className='pl-2'>{availableOn && <Badge tone={toneType} >{availableOn}</Badge>}</span>
+                        </Text>}
+                        {buttonType && <Button
+                            disabled={isActivateButtonDisabled}
+                            tone={isActivated ? 'critical' : 'success'}
+                            loading={isActivateButtonLoading}
+                            onClick={() => handleActivateButton(buttonType)}
+                        >{activateButtonTitle}</Button>}
+                    </InlineStack>
                     <Text as="p" variant="bodyLg">
                         {description}
                     </Text>

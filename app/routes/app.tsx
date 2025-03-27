@@ -90,7 +90,12 @@ export default function App() {
                   header: "Hi [Customer’s Name]",
                   content: "it looks like you left some items in your cart! Just a heads-up, our stock is moving fast, so grab them while you can 🎯. If you need any assistance, feel free to reach out! [link to abandon cart recovery]"
                 },
-                preferredLanguages: ['English']
+                preferredLanguages: ['English'],
+                durationToSendFollowUpMessage: "After 10 min",
+                selectedLanguage: "en",
+                isDurationToSendMessageActivated: true,
+                isSelectedLanguageActivated: false,
+                isDurationToSendFollowUpMessageActivated: false
               }),
             });
           }

@@ -31,7 +31,8 @@
       "loadingSubscription": "Chargement des détails de l'abonnement. Veuillez patienter.",
       "successSubscriptionCreated": "Votre abonnement a été créé avec succès !",
       "smartBulkNextWarning": "Mettez à niveau vers un plan Pro ou supérieur pour accéder à cette fonctionnalité",
-      "smartBulkPreviousWarning": "Mettez à niveau vers un plan Pro ou supérieur pour accéder à cette fonctionnalité"
+      "smartBulkPreviousWarning": "Mettez à niveau vers un plan Pro ou supérieur pour accéder à cette fonctionnalité",
+      "settingsActivateButtonStatus": "La fonctionnalité a été {{status}} avec succès."
     },
     "icons": {
       "recoveredCarts": "Paniers récupérés",
@@ -188,6 +189,10 @@
     "advancedBenefit2": "Jusqu'à 100 paniers récupérés par mois",
     "advancedBenefit3": "Potentiel pour générer jusqu'à 100 000 $ de revenus supplémentaires par mois",
     "advancedBenefit4": "Profitez de la messagerie gratuite illimitée",
-    "popularBadgeText": "Le plus populaire"
+    "popularBadgeText": "Le plus populaire",
+    "activated": "activé",
+    "activate": "Activer",
+    "deactivated": "désactivé",
+    "deactivate": "Désactiver"
   }
 }

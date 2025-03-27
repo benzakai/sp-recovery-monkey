@@ -31,7 +31,8 @@
       "loadingSubscription": "Carregando detalhes da assinatura. Por favor, aguarde.",
       "successSubscriptionCreated": "Sua assinatura foi criada com sucesso!",
       "smartBulkNextWarning": "Faça upgrade para o plano Pro ou superior para acessar este recurso",
-      "smartBulkPreviousWarning": "Faça upgrade para o plano Pro ou superior para acessar este recurso"
+      "smartBulkPreviousWarning": "Faça upgrade para o plano Pro ou superior para acessar este recurso",
+      "settingsActivateButtonStatus": "A funcionalidade foi {{status}} com sucesso."
     },
     "icons": {
       "recoveredCarts": "Carritos recuperados",
@@ -188,6 +189,10 @@
     "advancedBenefit2": "Até 100 carrinhos de recuperação de vendas por mês",
     "advancedBenefit3": "Potencial para gerar até $100.000 em receita adicional por mês",
     "advancedBenefit4": "Aproveite mensagens ilimitadas gratuitas",
-    "popularBadgeText": "Mais popular"
+    "popularBadgeText": "Mais popular",
+    "activated": "ativado",
+    "activate": "Ativar",
+    "deactivated": "desativado",
+    "deactivate": "Desativar"
   }
 }

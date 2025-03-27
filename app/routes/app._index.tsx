@@ -215,6 +215,11 @@ export default function Index() {
       label: 'Français',
       value: 'fr',
       prefix: <Icon source={LanguageFilledIcon} />,
+    },
+    {
+      label: 'Deutsch',
+      value: 'de',
+      prefix: <Icon source={LanguageFilledIcon} />,
     }
   ];
 
