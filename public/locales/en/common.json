@@ -1,10 +1,10 @@
 {
   "global": {
     "planNames": {
-      "Free": "Gratuito",
+      "Free": "Free",
       "Starter": "Starter",
       "Pro": "Pro",
-      "Advance": "Avançado"
+      "Advance": "Advance"
     },
     "monthsShort": [
       "Jan",
@@ -72,7 +72,6 @@
   "welcome": {
     "title": "Welcome",
     "subTitle": "View your revenue, write message, and connect to send messages.",
-    "connectedText": "You should easiely send and receive WhatsApp messages!",
     "connectSectionTitle": "Click the button to check your connection.",
     "connectedTitle": "your device is connected!",
     "notConnectedTitle": "Let’s Connect",

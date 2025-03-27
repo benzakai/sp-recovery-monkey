@@ -302,6 +302,11 @@ const Settings = () => {
             label: 'Português',
             value: 'pt',
             prefix: <Icon source={LanguageFilledIcon} />,
+        },
+        {
+            label: 'Français',
+            value: 'fr',
+            prefix: <Icon source={LanguageFilledIcon} />,
         }
     ];
 
@@ -315,7 +320,7 @@ const Settings = () => {
 
     return (
         <div className="body">
-            <div >
+            <div className='start_page'>
                 <div className='start_main_container'>
                     <div className='flex flex-row justify-between'>
                         <div className='start_main_container_heading'>
@@ -336,37 +341,38 @@ const Settings = () => {
                         </Text>
                     </div>
                     <div className='mb-14'></div>
-                    <div className='settings_secion-1 w-4/5'>
-                        <div className='start_main_container_sub_heading'>
-                            <Text variant="headingXl" as="h3">
-                                {t('settings.general')}
-                            </Text>
-                        </div>
-                        <BlockStack gap="400">
-                            <Card roundedAbove="sm">
-                                {isSettingsLoading ? (
-                                    <SkeletonLoading />
-                                ) : (
-                                    <SettingsSecondBlock
-                                        children={
-                                            <div className="w-1/3">
-                                                <Select
-                                                    options={options}
-                                                    label=""
-                                                    onChange={(v) => {
-                                                        setSettings({ ...settings, durationToSendMessage: v })
-                                                        handleSaveSettings({ ...settings, durationToSendMessage: v })
-                                                    }}
-                                                    value={settings.durationToSendMessage}
-                                                />
-                                            </div>
-                                        }
-                                        title={t("settings.scheduleMessages")}
-                                        description={t("settings.scheduleMessagesDescription")}
-                                    />
-                                )}
-                            </Card>
-                            {/* <Card roundedAbove="sm">
+                    <div className='setting-block'>
+                        <div className='settings_secion-1 w-4/5'>
+                            <div className='start_main_container_sub_heading'>
+                                <Text variant="headingXl" as="h3">
+                                    {t('settings.general')}
+                                </Text>
+                            </div>
+                            <BlockStack gap="400">
+                                <Card roundedAbove="sm">
+                                    {isSettingsLoading ? (
+                                        <SkeletonLoading />
+                                    ) : (
+                                        <SettingsSecondBlock
+                                            children={
+                                                <div className="w-1/3 field">
+                                                    <Select
+                                                        options={options}
+                                                        label=""
+                                                        onChange={(v) => {
+                                                            setSettings({ ...settings, durationToSendMessage: v })
+                                                            handleSaveSettings({ ...settings, durationToSendMessage: v })
+                                                        }}
+                                                        value={settings.durationToSendMessage}
+                                                    />
+                                                </div>
+                                            }
+                                            title={t("settings.scheduleMessages")}
+                                            description={t("settings.scheduleMessagesDescription")}
+                                        />
+                                    )}
+                                </Card>
+                                {/* <Card roundedAbove="sm">
                                     {isSettingsLoading ? (
                                         <BlockStack gap="400">
                                             <BlockStack gap="200">
@@ -405,127 +411,129 @@ const Settings = () => {
                                         </BlockStack>
                                     )}
                                 </Card>*/}
-                            <Card roundedAbove="sm">
-                                {isSettingsLoading ? (
-                                    <SkeletonLoading
-                                        secondLines={4}
-                                    />
-                                ) : (
-                                    <SettingsSecondBlock
-                                        children={
-                                            <div className="w-3/4">
-                                                <MultiselectTagCombobox
-                                                    placeholder={t("settings.multiLanguageFieldPlaceholder")}
-                                                    data={languages}
-                                                    selectedTags={settings.preferredLanguages}
-                                                    setSelectedTags={(v: any) => {
-                                                        if (v?.length === 0) return shopify.toast.show(t("global.toastMessage.multiLanguageFieldWarning"))
-                                                        setSettings({ ...settings, preferredLanguages: v })
-                                                        handleSaveSettings({ ...settings, preferredLanguages: v })
-                                                    }}
-                                                    value={languageSearchValue}
-                                                    setValue={setLanguageSearchValue}
-                                                    isDisabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
-                                                />
-                                            </div>
-                                        }
-                                        title={t("settings.multiLanguageTitle")}
-                                        description={t("settings.multiLanguageDescription")}
-                                        availableOn={"Pro"}
-                                    />
-                                )}
-                            </Card>
-                            <Card roundedAbove="sm">
-                                {isSettingsLoading ? (
-                                    <SkeletonLoading
-                                        secondClass='w-4/5 mt-8 mb-4'
-                                        secondLines={14}
-                                    />
-                                ) : (
-                                    <SettingsSecondBlock
-                                        children={
-                                            <div className="w-4/5">
-                                                <Card>
-                                                    {isMessageLoading ? <div className='flex justify-center items-center h-72'>
-                                                        <Spinner accessibilityLabel="Small spinner example" size="large" />
-                                                    </div> : <div className="flex-col" >
-                                                        <textarea
-                                                            className="w-full h-7 border-none outline-none text-base"
-                                                            value={settings?.followUpMessage?.header}
-                                                            onChange={(e) => {
-                                                                setSettings((prev) => ({
-                                                                    ...prev,
-                                                                    followUpMessage: {
-                                                                        ...prev.followUpMessage,
-                                                                        header: e.target.value
-                                                                    }
-                                                                }))
-                                                            }
-                                                            }
-                                                            placeholder={t("settings.messageBoxHeadingPlaceholder")}
-                                                            disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
-                                                        />
-                                                        <textarea
-                                                            className="w-full h-40 text-base border-none outline-none"
-                                                            value={settings?.followUpMessage?.content}
-                                                            onChange={(e) => {
-                                                                setSettings((prev) => ({
-                                                                    ...prev,
-                                                                    followUpMessage: {
-                                                                        ...prev.followUpMessage,
-                                                                        content: e.target.value
-                                                                    }
-                                                                }))
-                                                            }}
-                                                            placeholder={t("settings.messageBoxContentPlaceholder")}
-                                                            disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
-                                                        />
-                                                        <div className='flex justify-end pr-3 pt-4'>
-                                                            <Button
-                                                                onClick={async () => {
-                                                                    setSaveButtonLoading(true)
-                                                                    await handleSaveSettings(settings)
-                                                                    setSaveButtonLoading(false)
+                                <Card roundedAbove="sm">
+                                    {isSettingsLoading ? (
+                                        <SkeletonLoading
+                                            secondLines={4}
+                                        />
+                                    ) : (
+                                        <SettingsSecondBlock
+                                            children={
+                                                <div className="w-3/4">
+                                                    <MultiselectTagCombobox
+                                                        placeholder={t("settings.multiLanguageFieldPlaceholder")}
+                                                        data={languages}
+                                                        selectedTags={settings.preferredLanguages}
+                                                        setSelectedTags={(v: any) => {
+                                                            if (v?.length === 0) return shopify.toast.show(t("global.toastMessage.multiLanguageFieldWarning"))
+                                                            setSettings({ ...settings, preferredLanguages: v })
+                                                            handleSaveSettings({ ...settings, preferredLanguages: v })
+                                                        }}
+                                                        value={languageSearchValue}
+                                                        setValue={setLanguageSearchValue}
+                                                        isDisabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
+                                                    />
+                                                </div>
+                                            }
+                                            title={t("settings.multiLanguageTitle")}
+                                            description={t("settings.multiLanguageDescription")}
+                                            availableOn={"Pro"}
+                                        />
+                                    )}
+                                </Card>
+                                <Card roundedAbove="sm">
+                                    {isSettingsLoading ? (
+                                        <SkeletonLoading
+                                            secondClass='w-4/5 mt-8 mb-4'
+                                            secondLines={14}
+                                        />
+                                    ) : (
+                                        <SettingsSecondBlock
+                                            children={
+                                                <div className="w-4/5">
+                                                    <Card>
+                                                        {isMessageLoading ? <div className='flex justify-center items-center h-72'>
+                                                            <Spinner accessibilityLabel="Small spinner example" size="large" />
+                                                        </div> : <div className="flex-col" >
+                                                            <textarea
+                                                                className="w-full h-7 border-none outline-none text-base"
+                                                                value={settings?.followUpMessage?.header}
+                                                                onChange={(e) => {
+                                                                    setSettings((prev) => ({
+                                                                        ...prev,
+                                                                        followUpMessage: {
+                                                                            ...prev.followUpMessage,
+                                                                            header: e.target.value
+                                                                        }
+                                                                    }))
+                                                                }
+                                                                }
+                                                                placeholder={t("settings.messageBoxHeadingPlaceholder")}
+                                                                disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
+                                                            />
+                                                            <textarea
+                                                                className="w-full h-40 text-base border-none outline-none"
+                                                                value={settings?.followUpMessage?.content}
+                                                                onChange={(e) => {
+                                                                    setSettings((prev) => ({
+                                                                        ...prev,
+                                                                        followUpMessage: {
+                                                                            ...prev.followUpMessage,
+                                                                            content: e.target.value
+                                                                        }
+                                                                    }))
                                                                 }}
-                                                                variant="primary"
-                                                                disabled={messageToCompare?.header === settings?.followUpMessage?.header && messageToCompare?.content === settings?.followUpMessage?.content}
-                                                                loading={isSaveButtonLoading}
-                                                            >{t("settings.messageBoxSaveButton")}</Button>
-                                                        </div>
-                                                    </div>}
-                                                </Card>
-                                            </div>
-                                        }
-                                        title={t("settings.messageBoxTitle")}
-                                        description={t("settings.messageBoxDescription")}
-                                        availableOn={"Pro"}
-                                    />
-                                )}
-                                {isSettingsLoading ? (
-                                    <SkeletonLoading />
-                                ) : (
-                                    <SettingsSecondBlock
-                                        children={
-                                            <div className="w-1/3">
-                                                <Select
-                                                    options={followUpMessageDuration}
-                                                    label=""
-                                                    onChange={(v) => {
-                                                        setSettings({ ...settings, durationToSendFollowUpMessage: v })
-                                                        handleSaveSettings({ ...settings, durationToSendFollowUpMessage: v })
-                                                    }}
-                                                    value={settings.durationToSendFollowUpMessage}
-                                                />
-                                            </div>
-                                        }
-                                        title={""}
-                                        description={t("settings.messageBoxDurationDescription")}
-                                    />
-                                )}
+                                                                placeholder={t("settings.messageBoxContentPlaceholder")}
+                                                                disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
+                                                            />
+                                                            <div className='flex justify-end pr-3 pt-4'>
+                                                                <Button
+                                                                    onClick={async () => {
+                                                                        setSaveButtonLoading(true)
+                                                                        await handleSaveSettings(settings)
+                                                                        setSaveButtonLoading(false)
+                                                                    }}
+                                                                    variant="primary"
+                                                                    disabled={messageToCompare?.header === settings?.followUpMessage?.header && messageToCompare?.content === settings?.followUpMessage?.content}
+                                                                    loading={isSaveButtonLoading}
+                                                                >{t("settings.messageBoxSaveButton")}</Button>
+                                                            </div>
+                                                        </div>}
+                                                    </Card>
+                                                </div>
+                                            }
+                                            title={t("settings.messageBoxTitle")}
+                                            description={t("settings.messageBoxDescription")}
+                                            availableOn={"Pro"}
+                                        />
+                                    )}
+                                    {isSettingsLoading ? (
+                                        <SkeletonLoading />
+                                    ) : (
+                                        <SettingsSecondBlock
+                                            children={
+                                                <div className="w-1/3">
+                                                    <Select
+                                                        options={followUpMessageDuration}
+                                                        label=""
+                                                        onChange={(v) => {
+                                                            setSettings({ ...settings, durationToSendFollowUpMessage: v })
+                                                            handleSaveSettings({ ...settings, durationToSendFollowUpMessage: v })
+                                                        }}
+                                                        value={settings.durationToSendFollowUpMessage}
+                                                    />
+                                                </div>
+                                            }
+                                            title={""}
+                                            description={t("settings.messageBoxDurationDescription")}
+                                        />
+                                    )}
 
-                            </Card>
-                        </BlockStack>
+                                </Card>
+                            </BlockStack>
+                        </div>
                     </div>
+
                     <div className='mb-20'></div>
                     <div className='settings_secion-2'>
                         <div className='start_main_container_sub_heading' style={{ marginBottom: "2px" }}>
@@ -572,7 +580,7 @@ const Settings = () => {
                                         <div className="start_plan_trial"><Badge size="small" tone="info">{t("settings.freeTrileText")}</Badge> </div>
                                         <div className="start_plan_button_section">
                                             {loadingPage ?
-                                                <SkeletonDisplayText size="large" maxWidth={`${30}ch`} />
+                                                <SkeletonDisplayText size="large" maxWidth={`${40}ch`} />
                                                 :
                                                 <Button loading={loadingPage} disabled={planName === 'Starter'} size='large' onClick={() => handlePlanSelect('Starter')} variant='primary' fullWidth>
                                                     {planName == 'Starter' ? t("settings.planSelectedText") : t("settings.planNotSelectedText")}
@@ -600,7 +608,7 @@ const Settings = () => {
                                         <div className="start_plan_trial"><Badge tone="info">{t("settings.freeTrileText")}</Badge> </div>
                                         <div className="start_plan_button_section">
                                             {loadingPage ?
-                                                <SkeletonDisplayText size="large" maxWidth={`${30}ch`} />
+                                                <SkeletonDisplayText size="large" maxWidth={`${40}ch`} />
                                                 :
                                                 <Button loading={loadingPage} disabled={planName === 'Pro'} size='large' onClick={() => handlePlanSelect('Pro')} variant='primary' fullWidth>
                                                     {planName == 'Pro' ? t("settings.planSelectedText") : t("settings.planNotSelectedText")}
@@ -634,7 +642,7 @@ const Settings = () => {
                                         <div className="start_plan_button_section">
 
                                             {loadingPage ?
-                                                <SkeletonDisplayText size="large" maxWidth={`${30}ch`} />
+                                                <SkeletonDisplayText size="large" maxWidth={`${40}ch`} />
                                                 :
                                                 <Button disabled={planName === 'Advance'} size='large' onClick={() => handlePlanSelect('Advance')} variant='primary' fullWidth>
                                                     {planName == 'Advance' ? t("settings.planSelectedText") : t("settings.planNotSelectedText")}

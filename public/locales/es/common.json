@@ -1,10 +1,10 @@
 {
   "global": {
     "planNames": {
-      "Free": "Gratuito",
-      "Starter": "Starter",
+      "Free": "Gratis",
+      "Starter": "Inicio",
       "Pro": "Pro",
-      "Advance": "Avançado"
+      "Advance": "Avanzado"
     },
     "monthsShort": [
       "Ene",
@@ -72,7 +72,6 @@
   "welcome": {
     "title": "Bienvenido",
     "subTitle": "Consulta tus ingresos, escribe mensajes y conéctate para enviarlos.",
-    "connectedText": "Ahora deberías poder enviar y recibir mensajes de WhatsApp sin problemas.",
     "connectSectionTitle": "Haz clic en el botón para comprobar tu conexión.",
     "connectedTitle": "¡Tu dispositivo está conectado!",
     "notConnectedTitle": "Conectémonos",

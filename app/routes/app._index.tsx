@@ -210,6 +210,11 @@ export default function Index() {
       label: 'Português',
       value: 'pt',
       prefix: <Icon source={LanguageFilledIcon} />,
+    },
+    {
+      label: 'Français',
+      value: 'fr',
+      prefix: <Icon source={LanguageFilledIcon} />,
     }
   ];
 
@@ -217,7 +222,7 @@ export default function Index() {
   return (
     <div className="body">
       <div className='start_page'>
-        <div className='start_main_container' style={{ padding: "4rem 12rem 10rem 6rem" }}>
+        <div className='start_main_container'>
           <div className='flex flex-row justify-between'>
             <div className='start_main_container_heading pb-8'>
               <Text variant="heading3xl" as="h3">
@@ -237,7 +242,7 @@ export default function Index() {
             <StartPageCartSummary getCards={getCards} />
           </div>
 
-          <div className="start_price_container">
+          <div className="start_price_container contact-block">
             <div className="start_price_container_heading">
               <Text variant="headingLg" as="h5">
                 {t("home.contactSectionTitle")}

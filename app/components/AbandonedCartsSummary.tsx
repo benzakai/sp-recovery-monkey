@@ -76,8 +76,8 @@ export default function AbandonedCartsSummary({ getPageData, forPageType }: any)
 
     return (
         <div className='bg-white rounded-xl shadow-sm border border-solid border-[#B5B5B5]'>
-            <div className='flex flex-row gap-4 justify-center items-start pt-6 pb-8 font-inter welcome_wrapper'>
-                {
+            <div className='abandoned-block flex flex-row gap-4 items-start pt-6 pb-8 font-inter welcome_wrapper'>
+            {
                     getCards.map((card) => {
                         if (!card?.id) return null;
                         return (

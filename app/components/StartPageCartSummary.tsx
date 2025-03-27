@@ -4,9 +4,9 @@ import { StartPageCartSummaryProps } from "~/routes/app._index";
 export default function StartPageCartSummary({ getCards }: StartPageCartSummaryProps) {
 
     return (
-        <div className='bg-white rounded-xl shadow-sm border border-solid border-[#B5B5B5]'>
-            <div className='flex flex-row gap-4 justify-around items-start pt-6 pb-8 font-inter'>
-            {
+        <div className='icon-block bg-white rounded-xl shadow-sm border border-solid border-[#B5B5B5]'>
+            <div className='flex flex-row justify-around items-start pt-6 pb-8 font-inter'>
+                {
                     getCards?.map((card) => {
                         return (
                             <div key={card.id} className='flex flex-col justify-center items-center text-center w-1/4'>
