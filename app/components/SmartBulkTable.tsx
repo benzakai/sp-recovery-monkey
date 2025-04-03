@@ -40,8 +40,8 @@ export default function SmartBulkTable({
     const sortOptions: IndexFiltersProps['sortOptions'] = [
         { label: t("smartBulk.sortOption1"), value: 'lastUpdate asc', directionLabel: t("smartBulk.sortOptionDirection1A") },
         { label: t("smartBulk.sortOption1"), value: 'lastUpdate desc', directionLabel: t("smartBulk.sortOptionDirection1B") },
-        { label: t("smartBulk.sortOption2"), value: 'subscription asc', directionLabel: t("smartBulk.sortOptionDirection1A") },
-        { label: t("smartBulk.sortOption2"), value: 'subscription desc', directionLabel: t("smartBulk.sortOptionDirection1B") },
+        // { label: t("smartBulk.sortOption2"), value: 'subscription asc', directionLabel: t("smartBulk.sortOptionDirection1A") },
+        // { label: t("smartBulk.sortOption2"), value: 'subscription desc', directionLabel: t("smartBulk.sortOptionDirection1B") },
         { label: t("smartBulk.sortOption3"), value: 'revenue asc', directionLabel: t("smartBulk.sortOptionDirection2A") },
         { label: t("smartBulk.sortOption3"), value: 'revenue desc', directionLabel: t("smartBulk.sortOptionDirection2B") }
         // { label: 'Higher revenue', value: 'higherRevenue asc', directionLabel: 'Oldest to newest' },

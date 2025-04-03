@@ -51,10 +51,10 @@ export default function SmartBulk() {
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
             // console.log("selectedDateValues", selectedDateValues);
-            if (!selectedFilter[0].includes("subscription")) {
+            // if (!selectedFilter[0].includes("subscription")) {
                 // console.log("inside if ");
                 fetchPaginatedData();
-            }
+            // }
         }, 700);
         return () => {
             clearTimeout(debounceTimer);
