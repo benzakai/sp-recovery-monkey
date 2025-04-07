@@ -91,7 +91,7 @@ export default function App() {
                   content: "it looks like you left some items in your cart! Just a heads-up, our stock is moving fast, so grab them while you can 🎯. If you need any assistance, feel free to reach out! [link to abandon cart recovery]"
                 },
                 preferredLanguages: ['English'],
-                durationToSendFollowUpMessage: "After 10 min",
+                durationToSendFollowUpMessage: 'After 24 hours',
                 selectedLanguage: "en",
                 isDurationToSendMessageActivated: true,
                 isSelectedLanguageActivated: false,

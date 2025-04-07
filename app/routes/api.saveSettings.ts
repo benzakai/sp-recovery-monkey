@@ -9,7 +9,7 @@ export async function action({ request }: ActionFunctionArgs) {
         // console.log("datass", data);
         await fireStoreCreateService("settings", session.shop, data, { merge: true });
         console.log("Data successfully saved in 'settings'");
-        return ({ message: `Data successfully saved in "settings"`, success: true });
+        return ({ message: `Data successfully saved in "settings"`, success: true, data });
     } catch (error) {
         return { error: error, success: false };
     }

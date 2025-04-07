@@ -187,7 +187,29 @@ const Settings = () => {
             if (Object.keys(responsedata.data).length) {
                 return responsedata.data;
             } else {
-                return null;
+                const responseSave: any = await fetch('/api/saveSettings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        durationToSendMessage: "After 10 min",
+                        notificationStatus: new Boolean(true).toString(),
+                        followUpMessage: {
+                            header: "Hi [Customer’s Name]",
+                            content: "it looks like you left some items in your cart! Just a heads-up, our stock is moving fast, so grab them while you can 🎯. If you need any assistance, feel free to reach out! [link to abandon cart recovery]"
+                        },
+                        preferredLanguages: ['English'],
+                        durationToSendFollowUpMessage: 'After 24 hours',
+                        selectedLanguage: "en",
+                        isDurationToSendMessageActivated: true,
+                        isSelectedLanguageActivated: false,
+                        isDurationToSendFollowUpMessageActivated: false
+                    }),
+                });
+                const responseSaveData = await responseSave.json();
+                // console.log("responseSaveData", responseSaveData);
+                return responseSaveData.data
             }
         } catch (error) {
             console.log("error on fetchSettings", error);
@@ -354,7 +376,6 @@ const Settings = () => {
             setLoading((p: any) => ({ ...p, activeButton: null }))
         }
     };
-
 
     return (
         <div className="body">
