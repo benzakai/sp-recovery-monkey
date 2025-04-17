@@ -7,6 +7,8 @@ import fireStoreDeleteService from "~/services/fireStoreDeleteService";
 import fireStoreCreateService from "~/services/fireStoreCreateService";
 import fireStoreFetchService from "~/services/fireStoreFetchService";
 import handleOrdersPaidWebhookService from "~/services/handleOrdersPaidWebhookService";
+import processCustomerUpdate from "~/services/webhooks/handlers/processCustomerUpdate";
+import processCustomerDelete from "~/services/webhooks/handlers/processCustomerDelete";
 
 const firestoreDatabase = new Firestore();
 const checkoutCollection = firestoreDatabase.collection('users');
@@ -38,20 +40,22 @@ function addDaysToFormattedDate(dateStr: any, daysToAdd: number) {
 
 const setSubscriptionData = async (data: any, storeId: string) => {
   try {
-    // if (data?.app_subscription?.status == 'ACTIVE') {
-    const result = addDaysToFormattedDate(data?.app_subscription?.updated_at, 30);
+    const updatedAt = data?.app_subscription?.updated_at;
+    const endDate = addDaysToFormattedDate(updatedAt, 30);
+    const existing = await fireStoreFetchService("subscriptions", storeId); // fetching existing procancelledDate here becuse on first (active status) webhook trigger before data update suddenly secong (canceled status) triggers.
+    const existingProCancelledDate = existing?.proCancelledDate ?? null;
 
     await fireStoreCreateService("subscriptions", storeId, {
       storeId,
       plan: data?.app_subscription?.name,
       status: data?.app_subscription?.status,
-      startDate: data?.app_subscription?.updated_at,
-      endDate: result
+      startDate: updatedAt,
+      endDate,
+      updatedAt,
+      ...(existingProCancelledDate ? { proCancelledDate: existingProCancelledDate } : {}),
     }, {});
-    // }
-
   } catch (error) {
-    console.log("error", error);
+    console.log("error on setSubscriptionData", error);
   }
 };
 
@@ -197,7 +201,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     case "APP_UNINSTALLED":
       const processAppUninstalled = async () => {
         try {
-          console.log("Triggered APP_UNINSTALLED for shop:", session?.shop);
+          // console.log("Triggered APP_UNINSTALLED for shop:", session?.shop);
+          const newDataToSave = {
+            appUninstalledDate: new Date().toISOString(),
+            email: payload.email,
+            country: payload.country,
+            address: payload.address1,
+            city: payload.city,
+            shop_owner: payload.shop_owner
+          }
+          await fireStoreCreateService("AppUninstalledDate", shop, newDataToSave, {});
           await deleteSubscriptionData(session?.shop as string);
           await deleteAppInstalledDate(session?.shop as string);
           await publishMessagePubSubService("uninstall", JSON.stringify(payload));
@@ -236,11 +249,28 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     case 'APP_SUBSCRIPTIONS_UPDATE':
       const processAppSubscriptionsUpdate = async () => {
         try {
-          console.log("APP_SUBSCRIPTIONS_UPDATE:", payload?.app_subscription);
-          const subscriptionDataFound = await fireStoreFetchService("subscriptions", shop);
+          const subscription = payload?.app_subscription;
+          const incomingPlan = subscription?.name;
+          const incomingStatus = subscription?.status;
+          const isProPlan = incomingPlan === "Pro";
+          const isCancelled = incomingStatus === "CANCELLED";
+          const shop = session?.shop as string;
+          // console.log("APP_SUBSCRIPTIONS_UPDATE:", subscription);
+          const subscriptionDataFound: any = await fireStoreFetchService("subscriptions", shop);
           // console.log("subscriptionDataFound", subscriptionDataFound);
-          if (!subscriptionDataFound || (subscriptionDataFound?.name !== "Free" && payload.app_subscription.status !== "CANCELLED")) {
-            await setSubscriptionData(payload, session?.shop as string);
+          const proCancelledDate = (isProPlan && isCancelled) 
+            ? subscription?.updated_at
+            : subscriptionDataFound?.proCancelledDate ?? null;
+
+          const documentRef = SubscriptionsCollection.doc(shop);
+
+          if (!subscriptionDataFound || (subscriptionDataFound?.name !== "Free" && incomingStatus !== "CANCELLED")) {
+            await setSubscriptionData(payload, shop);
+          }
+          else if (isProPlan && isCancelled) { 
+            await documentRef.update({ proCancelledDate, updatedAt: subscription?.updated_at });
+          } else {
+            // console.log("Ignored cancellation of non-Pro plan:", incomingPlan);
           }
         } catch (error) {
           console.log("error on processAppSubscriptionsUpdate", error);
@@ -270,6 +300,17 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       console.log("ORDERS_PAID:", payload?.checkout_id);
       handleOrdersPaidWebhookService(payload, shop);
       break;
+
+    case 'CUSTOMERS_UPDATE':
+      // console.log("CUSTOMERS_UPDATE: ", payload, "   shop ", shop);
+      processCustomerUpdate({ payload, shop })
+      break;
+
+    case 'CUSTOMERS_DELETE':
+      // console.log("CUSTOMERS_DELETE: ", payload, "   shop ", shop);
+      processCustomerDelete({ payload, shop })
+      break;
+
     case "CUSTOMERS_DATA_REQUEST":
     case "CUSTOMERS_REDACT":
     case "SHOP_REDACT":

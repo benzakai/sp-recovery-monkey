@@ -13,6 +13,7 @@ import { getShopDetails, setAppInstalledDate } from "./services/sendDataFromWebh
 import { getAppInstalledDate } from "./services/sendDataFromWebhooks";
 import { sendDataAppInstallTopicPubSub } from "./services/sendDataFromWebhooks";
 import * as dotenv from "dotenv";
+import fireStoreDeleteService from "./services/fireStoreDeleteService";
 dotenv.config();
 
 export const MONTHLY_PLAN = 'Monthly subscription';
@@ -30,6 +31,14 @@ const shopify = shopifyApp({
   sessionStorage: new PrismaSessionStorage(prisma),
   distribution: AppDistribution.AppStore,
   webhooks: {
+    CUSTOMERS_UPDATE: {
+      deliveryMethod: DeliveryMethod.Http,
+      callbackUrl: '/webhooks',
+    },
+    CUSTOMERS_DELETE: {
+      deliveryMethod: DeliveryMethod.Http,
+      callbackUrl: '/webhooks',
+    },
     CHECKOUTS_CREATE: {
       deliveryMethod: DeliveryMethod.Http,
       callbackUrl: '/webhooks',
@@ -83,6 +92,7 @@ const shopify = shopifyApp({
 
         await setAppInstalledDate(session, data);
         await sendDataAppInstallTopicPubSub(data);
+        await fireStoreDeleteService("AppUninstalledDate", session.shop);
       } else {
         console.log("App is already installed");
       }

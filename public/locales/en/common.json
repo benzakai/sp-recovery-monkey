@@ -32,7 +32,8 @@
       "successSubscriptionCreated": "Your subscription is successfully created!",
       "smartBulkNextWarning": "Upgrade to Pro or Higher Plan to access this feature",
       "smartBulkPreviousWarning": "Upgrade to Pro or Higher Plan to access this feature",
-      "settingsActivateButtonStatus": "The feature has been {{status}} successfully."
+      "settingsActivateButtonStatus": "The feature has been {{status}} successfully.",
+      "SyncProcessStartedMessage":"Sync process has started in the background. This may take a few minutes to a few hours, depending on the size of your customer data."
     },
     "icons": {
       "recoveredCarts": "Recovered Carts",
@@ -136,7 +137,11 @@
       "subscribed": "Subscribed",
       "unsubscribed": "Unsubscribed",
       "notSubscribed": "Not Subscribed"
-    }
+    },
+    "syncMoreCustomers":"Sync More Customers",
+    "syncMoreCustomersDesc":"To sync more customers to the app, select a date range and click the button below. This will import customer data from your store for the selected dates.",
+    "syncCustomers":"Sync Customers",
+    "syncConfirmationMessage":"Are you sure you want to sync more customers?"
   },
   "settings": {
     "title": "Settings",

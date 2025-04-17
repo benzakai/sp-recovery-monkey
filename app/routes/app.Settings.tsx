@@ -53,7 +53,7 @@ export const action = async ({ request }: any) => {
             const subscription = billingCheck.appSubscriptions[0];
             const cancelledSubscription = await billing.cancel({
                 subscriptionId: subscription.id,
-                isTest: false,
+                isTest: session.shop === "sprecoverymonkey.myshopify.com" ? true : false,
                 // prorate: true,
             });
             // console.log("cancelledSubscription", cancelledSubscription);
@@ -67,11 +67,11 @@ export const action = async ({ request }: any) => {
         } else {
             const okay = await billing.require({
                 plans: [planName],
-                isTest: false,
+                isTest: session.shop === "sprecoverymonkey.myshopify.com" ? true : false,
                 trialDays: 0,
                 onFailure: async () => billing.request({
                     plan: planName,
-                    isTest: false,
+                    isTest: session.shop === "sprecoverymonkey.myshopify.com" ? true : false,
                     trialDays: 0
                 }),
             });

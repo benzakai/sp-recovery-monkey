@@ -7,6 +7,7 @@ import ConfirmationModal from '~/components/ConfirmationModal';
 import { isProPlanOrHigher } from '~/utils/plans';
 import { useOutletContext } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
+import PullMoreCustomer from '~/components/SmartBulk/PullMoreCustomer';
 
 export default function SmartBulk() {
     const { t } = useTranslation()
@@ -22,44 +23,58 @@ export default function SmartBulk() {
         };
     });
 
-    const [customMessage, setCustomMessage] = useState()
-    const [compareMessage, setCompareMessage] = useState()
-    const [otherTableData, setOtherTableData] = useState({
-        abandonedCartsSum: 0,
-        shopCurrency: null
-    })
+    const [customMessage, setCustomMessage] = useState<any>()
+    const [compareMessage, setCompareMessage] = useState<any>()
     const [isSaveButtonLoading, setSaveButtonLoading] = useState(false)
     const [currentPage, setCurrentPage] = useState(1);
-    const [copyOfCurrentPage, setCopyOfCurrentPage] = useState(1)
     const [customers, setCustomers] = useState<any>([]);
     const [persistCustomers, setPersistCustomers] = useState<any>([]);
-    const [selectedFilter, setSelectedFilter] = useState<string[]>(["revenue asc"]);
+    const [selectedFilter, setSelectedFilter] = useState<string[]>(["updatedAt desc"]);
     const [queryValue, setQueryValue] = useState('');
-    const [totalCustomers, setTotalCustomers] = useState(0);
     const [isTableLoading, setTableLoading] = useState(false)
     const [isMessageLoading, setMessageLoading] = useState(true)
     const [pageInfo, setPageInfo] = useState({
         hasNextPage: false,
         hasPreviousPage: false,
-        endCursor: null,
-        startCursor: null
+        nextCursor: '',
+        prevCursor: '',
+        nextNameCursor: '',
+        prevNameCursor: ''
     });
-    const [PageSize, setPageSize] = useState('10')
+    const [PageSize, setPageSize] = useState('5')
     const { selectedPlanName, permissions }: any = useOutletContext()
+    const [paginationDirection, setPaginationDirection] = useState('')
+    const [isProUser, setIsProUser] = useState(false);
 
+    useEffect(() => {
+        const proStatus = isProPlanOrHigher(selectedPlanName) || isProPlanOrHigher(permissions?.manualPlan);
+        // console.log("proStatus", proStatus);
+        setIsProUser(proStatus);
+    }, [selectedPlanName, permissions]);
 
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
-            // console.log("selectedDateValues", selectedDateValues);
-            // if (!selectedFilter[0].includes("subscription")) {
-                // console.log("inside if ");
+            if (isProUser) {
                 fetchPaginatedData();
-            // }
+            }
         }, 700);
-        return () => {
-            clearTimeout(debounceTimer);
-        };
-    }, [currentPage, selectedDateValues, queryValue, selectedFilter, PageSize]);
+        return () => clearTimeout(debounceTimer);
+    }, [currentPage, isProUser]);
+
+    useEffect(() => {
+
+        setPaginationDirection('');
+        setPageInfo({
+            hasNextPage: false,
+            hasPreviousPage: false,
+            nextCursor: '',
+            prevCursor: '',
+            nextNameCursor: '',
+            prevNameCursor: ''
+        });
+        setCurrentPage(prev => prev + 1);
+    }, [PageSize, selectedDateValues, queryValue]);
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -82,32 +97,32 @@ export default function SmartBulk() {
 
     const fetchPaginatedData = async () => {
         // console.log("Fetching page:", page, "with cursor:", cursor);
+        // console.log("queryValue", queryValue);
         try {
             if (!isTableLoading) {
                 setTableLoading(true);
             }
-            const endCursorToFetch = currentPage > copyOfCurrentPage ? pageInfo.endCursor : null
-            const startCursorToFetch = currentPage < copyOfCurrentPage ? pageInfo.startCursor : null
-            setCopyOfCurrentPage(currentPage)
-            const response = await fetch('/api/customersWithPhoneNumbers', {
+            const response = await fetch('/api/getStoresCustomers', {
                 method: "POST",
                 body: JSON.stringify({
-                    initialRender: ((!pageInfo.hasNextPage && !pageInfo.hasPreviousPage) || currentPage === copyOfCurrentPage) ? true : false,
-                    endCursor: endCursorToFetch,
-                    startCursor: startCursorToFetch,
-                    PageSize: Number(PageSize),
-                    selectedDateValues,
-                    queryValue,
-                    selectedFilter: selectedFilter[0],
-                    clientSideDate: new Date()
+                    filterField: selectedDateValues.since ? "createdAt" : null,
+                    filterValue: selectedDateValues,
+                    search: queryValue,
+                    limit: PageSize,
+                    startAfter: pageInfo.nextCursor,
+                    prevCursor: pageInfo.prevCursor,
+                    nextNameCursor: pageInfo.nextNameCursor,
+                    prevNameCursor: pageInfo.prevNameCursor,
+                    paginationDirection: paginationDirection,
                 }),
             });
+
 
             if (response.ok) {
                 const data = await response.json();
 
                 if (data?.customers) {
-                    // console.log("Fetched data of customersWithPhoneNumbers:", data.customers);
+                    // console.log("Fetched data :", data);
                     setCustomers(data.customers)
                     const filteredCustomers = data?.customers?.filter((d: any) =>
                         !persistCustomers.some((pd: any) => pd.id === d.id)
@@ -118,16 +133,13 @@ export default function SmartBulk() {
                         ...pre,
                         ...filteredCustomers
                     ]))
-                    setTotalCustomers(data.totalCount || 0);
-                    setOtherTableData({
-                        abandonedCartsSum: data.abandonedCartsSum,
-                        shopCurrency: data.shopCurrency
-                    })
                     setPageInfo({
                         hasNextPage: data.pageInfo.hasNextPage,
                         hasPreviousPage: data.pageInfo.hasPreviousPage,
-                        endCursor: data.pageInfo.endCursor,
-                        startCursor: data.pageInfo.startCursor
+                        nextCursor: data.pageInfo.nextCursor,
+                        prevCursor: data.pageInfo.prevCursor,
+                        nextNameCursor: data.pageInfo.nextNameCursor,
+                        prevNameCursor: data.pageInfo.prevNameCursor
                     })
                 }
                 setTableLoading(false);
@@ -139,14 +151,14 @@ export default function SmartBulk() {
     };
 
     const handleSendMessageInitial = () => {
-        const modal = document.getElementById('confirmation_modal') as HTMLElement | null;
+        const modal = document.getElementById('confirmation_modal_bulkMessage') as HTMLElement | null;
         if (modal) {
             (modal as any).show();
         }
     }
 
     const hideModal = () => {
-        const modal = document.getElementById('confirmation_modal') as HTMLElement | null;
+        const modal = document.getElementById('confirmation_modal_bulkMessage') as HTMLElement | null;
         if (modal) {
             (modal as any).hide();
         }
@@ -157,19 +169,10 @@ export default function SmartBulk() {
         const topicNames = ["bulk_sending"]
         hideModal();
         const checkouts = selectedTableData.map((data: any) => {
-            if (data && data.id) {
-                let foundPhoneNumber;
-                const addressPhone = data.addresses.find((d: any) => d.phone)?.phone
-                if (data?.phone) {
-                    foundPhoneNumber = data.phone;
-                } else if (addressPhone) {
-                    foundPhoneNumber = addressPhone
-                } else if (data?.defaultAddress?.phone) {
-                    foundPhoneNumber = data.defaultAddress.phone
-                }
+            if (data && data?.id) {
                 return {
-                    name: (data.firstName || data.lastName) ? (data.firstName ? `${data.firstName} ` : "") + (data.lastName || "") : "N/A",
-                    phoneNumber: foundPhoneNumber ? foundPhoneNumber : "N/A",
+                    name: data?.name,
+                    phoneNumber: data?.phone,
                 };
             }
         });
@@ -219,6 +222,7 @@ export default function SmartBulk() {
     }
 
     const options = [
+        { label: "5/page", value: '5' },
         { label: t("smartBulk.15perPageLabel"), value: '15' },
         { label: t("smartBulk.50perPageLabel"), value: '50' },
         { label: t("smartBulk.100perPageLabel"), value: '100' },
@@ -264,7 +268,7 @@ export default function SmartBulk() {
                                         className="w-full h-7 border-none outline-none text-base"
                                         value={customMessage?.header}
                                         onChange={(e) => {
-                                            setCustomMessage((prev) => ({
+                                            setCustomMessage((prev: any) => ({
                                                 ...prev,
                                                 header: e.target.value
                                             }))
@@ -277,7 +281,7 @@ export default function SmartBulk() {
                                         className="w-full h-56 text-base border-none outline-none"
                                         value={customMessage?.content}
                                         onChange={(e) => {
-                                            setCustomMessage((prev) => ({
+                                            setCustomMessage((prev: any) => ({
                                                 ...prev,
                                                 content: e.target.value
                                             }))
@@ -297,6 +301,14 @@ export default function SmartBulk() {
                             </Card>
                         </div>
                     </div> : null}
+
+                    <div className='mb-16 mt-5'>
+                        <PullMoreCustomer
+                            isProPlanOrHigher={isProPlanOrHigher(selectedPlanName) || isProPlanOrHigher(permissions?.manualPlan)}
+                            t={t}
+                        />
+                    </div>
+
                     <div className='flex justify-between'>
                         <div className='mb-6'>
                             <div className='flex flex-row gap-2'>
@@ -348,7 +360,7 @@ export default function SmartBulk() {
                         <SmartBulkTable
                             setSelectedTableData={setSelectedTableData}
                             sortSelected={selectedFilter}
-                            setSortSelected={setSelectedFilter}
+                            setSelectedFilter={setSelectedFilter}
                             customers={customers}
                             persistCustomers={persistCustomers}
                             currentPage={currentPage}
@@ -358,6 +370,7 @@ export default function SmartBulk() {
                             isTableLoading={isTableLoading}
                             setQueryValue={setQueryValue}
                             queryValue={queryValue}
+                            setPaginationDirection={setPaginationDirection}
                         />
                         {/* } */}
                     </Card>
@@ -369,6 +382,7 @@ export default function SmartBulk() {
                     secondaryButtonText={t("smartBulk.cancelButton")}
                     content={t("smartBulk.sendConfirmationDescription")}
                     title={t("smartBulk.sendMessageButton")}
+                    id="confirmation_modal_bulkMessage"
                 />
             </Page>
         </div>

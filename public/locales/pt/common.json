@@ -32,7 +32,8 @@
       "successSubscriptionCreated": "Sua assinatura foi criada com sucesso!",
       "smartBulkNextWarning": "Faça upgrade para o plano Pro ou superior para acessar este recurso",
       "smartBulkPreviousWarning": "Faça upgrade para o plano Pro ou superior para acessar este recurso",
-      "settingsActivateButtonStatus": "A funcionalidade foi {{status}} com sucesso."
+      "settingsActivateButtonStatus": "A funcionalidade foi {{status}} com sucesso.",
+      "SyncProcessStartedMessage": "O processo de sincronização foi iniciado em segundo plano. Isso pode levar de alguns minutos a várias horas, dependendo do tamanho dos dados dos seus clientes."
     },
     "icons": {
       "recoveredCarts": "Carritos recuperados",
@@ -136,7 +137,11 @@
       "subscribed": "Inscrito",
       "unsubscribed": "Desinscrito",
       "notSubscribed": "Não inscrito"
-    }
+    },
+    "syncMoreCustomers": "Sincronizar mais clientes",
+    "syncMoreCustomersDesc": "Para sincronizar mais clientes com o aplicativo, selecione um intervalo de datas e clique no botão abaixo. Isso importará os dados dos clientes da sua loja para as datas selecionadas.",
+    "syncCustomers": "Sincronizar clientes",
+    "syncConfirmationMessage": "Você tem certeza de que deseja sincronizar mais clientes?"
   },
   "settings": {
     "title": "Configuração",

@@ -4,10 +4,11 @@ export default function ConfirmationModal({
     primaryButtonText,
     secondaryButtonText,
     content,
-    title
+    title,
+    id
 }: any) {
     return (
-        <ui-modal id="confirmation_modal">
+        <ui-modal id={id}>
             <p className='pt-6 pl-4 text-base pb-8'>{content}</p>
             <ui-title-bar title={title}>
                 <button variant="primary" onClick={handlePrimaryClick}>{primaryButtonText}</button>

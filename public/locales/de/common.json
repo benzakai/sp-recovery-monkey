@@ -32,7 +32,8 @@
             "successSubscriptionCreated": "Dein Abonnement wurde erfolgreich erstellt!",
             "smartBulkNextWarning": "Upgrade auf Pro oder einen höheren Plan, um auf diese Funktion zuzugreifen",
             "smartBulkPreviousWarning": "Upgrade auf Pro oder einen höheren Plan, um auf diese Funktion zuzugreifen",
-            "settingsActivateButtonStatus": "Die Funktion wurde {{status}} erfolgreich."
+            "settingsActivateButtonStatus": "Die Funktion wurde {{status}} erfolgreich.",
+            "SyncProcessStartedMessage": "Der Synchronisierungsvorgang wurde im Hintergrund gestartet. Dies kann je nach Umfang Ihrer Kundendaten einige Minuten bis mehrere Stunden dauern."
         },
         "icons": {
             "recoveredCarts": "Warenkörbe wiederhergestellt",
@@ -136,7 +137,11 @@
             "subscribed": "Abonniert",
             "unsubscribed": "Abgemeldet",
             "notSubscribed": "Nicht abonniert"
-        }
+        },
+        "syncMoreCustomers": "Weitere Kunden synchronisieren",
+        "syncMoreCustomersDesc": "Um weitere Kunden mit der App zu synchronisieren, wählen Sie einen Datumsbereich aus und klicken Sie auf die Schaltfläche unten. Dadurch werden Kundendaten aus Ihrem Shop für die ausgewählten Daten importiert.",
+        "syncCustomers": "Kunden synchronisieren",
+        "syncConfirmationMessage": "Sind Sie sicher, dass Sie weitere Kunden synchronisieren möchten?"
     },
     "settings": {
         "title": "Einstellungen",

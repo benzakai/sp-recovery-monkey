@@ -24,26 +24,26 @@ const emptyStateMarkup = (
 export default function SmartBulkTable({
     setSelectedTableData,
     sortSelected,
-    setSortSelected,
+    setSelectedFilter,
     customers,
     disabled,
     persistCustomers,
-    currentPage,
     setCurrentPage,
     pageInfo,
     isTableLoading,
     queryValue,
-    setQueryValue
+    setQueryValue,
+    setPaginationDirection,
 }: any) {
     const { t } = useTranslation()
     const [selected, setSelected] = useState(0);
     const sortOptions: IndexFiltersProps['sortOptions'] = [
-        { label: t("smartBulk.sortOption1"), value: 'lastUpdate asc', directionLabel: t("smartBulk.sortOptionDirection1A") },
-        { label: t("smartBulk.sortOption1"), value: 'lastUpdate desc', directionLabel: t("smartBulk.sortOptionDirection1B") },
-        // { label: t("smartBulk.sortOption2"), value: 'subscription asc', directionLabel: t("smartBulk.sortOptionDirection1A") },
-        // { label: t("smartBulk.sortOption2"), value: 'subscription desc', directionLabel: t("smartBulk.sortOptionDirection1B") },
-        { label: t("smartBulk.sortOption3"), value: 'revenue asc', directionLabel: t("smartBulk.sortOptionDirection2A") },
-        { label: t("smartBulk.sortOption3"), value: 'revenue desc', directionLabel: t("smartBulk.sortOptionDirection2B") }
+        { label: t("smartBulk.sortOption1"), value: 'updatedAt asc', directionLabel: t("smartBulk.sortOptionDirection1B") },
+        { label: t("smartBulk.sortOption1"), value: 'updatedAt desc', directionLabel: t("smartBulk.sortOptionDirection1A") },
+        { label: t("smartBulk.sortOption2"), value: 'emailMarketingConsentUpdatedAt asc', directionLabel: t("smartBulk.sortOptionDirection1B") },
+        { label: t("smartBulk.sortOption2"), value: 'emailMarketingConsentUpdatedAt desc', directionLabel: t("smartBulk.sortOptionDirection1A") },
+        { label: t("smartBulk.sortOption3"), value: 'amountSpent asc', directionLabel: t("smartBulk.sortOptionDirection2B") },
+        { label: t("smartBulk.sortOption3"), value: 'amountSpent desc', directionLabel: t("smartBulk.sortOptionDirection2A") }
         // { label: 'Higher revenue', value: 'higherRevenue asc', directionLabel: 'Oldest to newest' },
         // { label: 'Higher revenue', value: 'higherRevenue desc', directionLabel: 'Newest to oldest' },
         // { label: 'Lowest revenue', value: 'lowestRevenue asc', directionLabel: 'Oldest to newest' },
@@ -64,13 +64,15 @@ export default function SmartBulkTable({
 
     const handleNext = () => {
         if (pageInfo.hasNextPage) {
-            setCurrentPage(currentPage + 1);
+            setCurrentPage((prev: any) => prev + 1);
+            setPaginationDirection('next');
         }
     };
 
     const handlePrevious = () => {
         if (pageInfo.hasPreviousPage) {
-            setCurrentPage(currentPage - 1);
+            setCurrentPage((prev: any) => prev - 1);
+            setPaginationDirection('prev');
         }
     };
 
@@ -99,22 +101,16 @@ export default function SmartBulkTable({
 
     const rowMarkup = customers.length ? customers.map(
         (
-            { id, createdAt, firstName, lastName, phone, email, emailMarketingConsent, addresses, defaultAddress }: any,
+            { id, createdAt, name, phone, email, emailMarketingConsentState, idNumber }: any,
             index: any,
         ) => {
-            let foundPhoneNumber;
-            const addressPhone = addresses.find((d: any) => d?.phone)?.phone
-            if (phone) {
-                foundPhoneNumber = phone;
-            } else if (addressPhone) {
-                foundPhoneNumber = addressPhone
-            } else if (defaultAddress?.phone) {
-                foundPhoneNumber = defaultAddress.phone
-            }
             // console.log("foundPhoneNumber", foundPhoneNumber)
             // emailMarketingConsent = {
             //     ["marketingState"]: "SUBSCRIBED"
             // }
+            const date = new Date(createdAt?._seconds * 1000);
+            const formattedDate = date?.toISOString()?.split('T')?.[0];
+
             return (
                 <Fragment key={id}>
                     {/* {index === 0 && (
@@ -144,24 +140,23 @@ export default function SmartBulkTable({
                     >
                         <IndexTable.Cell>
                             <Text variant="bodyMd" fontWeight="bold" as="span">
-                                {createdAt?.split("T")[0] || 'N/A'}
+                                {/* {new Date(createdAt.seconds * 1000).toLocaleDateString("en-US") || 'N/A'} */}
+                                {formattedDate}
                             </Text>
                         </IndexTable.Cell>
                         <IndexTable.Cell>
-                            {firstName || lastName
-                                ? `${firstName || ''} ${lastName || ''}`.trim()
-                                : email || 'N/A'}
+                            {name ? name : (email || 'N/A')}
                         </IndexTable.Cell>
                         <IndexTable.Cell>
-                            {foundPhoneNumber}
+                            {phone}
                         </IndexTable.Cell>
                         <IndexTable.Cell>
                             <Badge
-                                tone={emailMarketingConsent?.marketingState === "SUBSCRIBED" ? "success" : emailMarketingConsent?.marketingState === "UNSUBSCRIBED" ? "attention" : 'enabled'}
+                                tone={emailMarketingConsentState === "SUBSCRIBED" ? "success" : emailMarketingConsentState === "UNSUBSCRIBED" ? "attention" : 'enabled'}
                             >
-                                {((emailMarketingConsent?.marketingState === "SUBSCRIBED" || emailMarketingConsent?.marketingState === "UNSUBSCRIBED") && emailMarketingConsent?.marketingState)
+                                {((emailMarketingConsentState === "SUBSCRIBED" || emailMarketingConsentState === "UNSUBSCRIBED") && emailMarketingConsentState)
                                     ?
-                                    (emailMarketingConsent?.marketingState === "UNSUBSCRIBED" ? t("smartBulk.emailSubscription.unsubscribed") : t("smartBulk.emailSubscription.subscribed"))
+                                    (emailMarketingConsentState === "UNSUBSCRIBED" ? t("smartBulk.emailSubscription.unsubscribed") : t("smartBulk.emailSubscription.subscribed"))
                                     : t("smartBulk.emailSubscription.notSubscribed")}
                             </Badge>
                         </IndexTable.Cell>
@@ -174,14 +169,16 @@ export default function SmartBulkTable({
     return (
         <>
             <IndexFilters
-                sortOptions={sortOptions}
+                // sortOptions={sortOptions}
                 disabled={disabled}
                 sortSelected={sortSelected}
                 queryPlaceholder={t("smartBulk.searchCustomers")}
                 onQueryChange={handleFiltersQueryChange}
                 queryValue={queryValue}
                 onQueryClear={() => setQueryValue('')}
-                onSort={setSortSelected}
+                // onSort={(e) => {
+                //     setSelectedFilter(e)
+                // }}
                 // primaryAction={primaryAction}
                 cancelAction={{
                     onAction: onHandleCancel,
