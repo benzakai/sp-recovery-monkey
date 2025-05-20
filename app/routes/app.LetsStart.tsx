@@ -159,7 +159,7 @@ const LetsStart = () => {
         <div className="body">
             <div className='start_page'>
                 <div className="letstart">
-                    <Page fullWidth>
+                    {/* <Page fullWidth> */}
                         <div className='lets_start_main_container'>
                             <div className='start_main_container_heading pb-8'>
                                 <Text variant="heading3xl" as="h3" >
@@ -258,7 +258,7 @@ const LetsStart = () => {
                                 </div>
                             </div>
                         </div>
-                    </Page>
+                    {/* </Page> */}
                 </div>
             </div>
         </div>

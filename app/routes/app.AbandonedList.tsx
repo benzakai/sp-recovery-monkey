@@ -132,7 +132,7 @@ export default function NewAbandonedList() {
 
     return (
         <div className="body">
-            <div className='start_page'>
+            <div className='start_page padding_zero'>
                 <Page fullWidth>
                     <div className='start_main_container'>
                         <div className='abandoned_list_main_container_heading'>

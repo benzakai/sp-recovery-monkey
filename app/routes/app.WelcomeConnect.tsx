@@ -343,7 +343,7 @@ const WelcomeConnect = () => {
 
     return (
         <>
-             <div className="flex justify-center bg-[#f1f1f1]">
+            <div className="flex justify-start bg-[#f1f1f1]">
                 <div className='start_page start_page_wrapper'>
 
                     <div className="lets_start_main_container">

@@ -85,7 +85,7 @@
 .start_plan_content_value {
     font-weight: 600;
     font-size: 20px;
-    font-family: 'Inter';
+    font-family: "PT Serif", serif;
     margin-top: 10px;
     margin-bottom: 12px;
 }
@@ -94,7 +94,7 @@
     color: #42474C;
     font-weight: 500;
     font-size: 20px;
-    font-family: "Fira Sans";
+    font-family: "PT Serif", serif;
     margin-bottom: 22px;
 }
 
@@ -103,7 +103,7 @@
 
     font-size: 14px;
     font-weight: 400;
-    font-family: "Fira Sans";
+    font-family: "PT Serif", serif;
 }
 
 .start_price_container {
@@ -140,14 +140,14 @@
 .start_plan_ammount {
     color: black;
     font-size: 20px;
-    font-family: 'Inter';
+    font-family: "PT Serif", serif;
     font-weight: 600;
 }
 
 .start_plan_ammount_suffix {
     color: black;
     font-size: 14px;
-    font-family: 'Inter';
+    font-family: "PT Serif", serif;
     font-weight: 400;
 }
 
@@ -203,13 +203,13 @@
 
 .start_plan_list_item {
     padding-bottom: 10px;
-    font-size: 14.5px;
+    font-size: 14px;
     line-height: normal;
 }
 
 .star_plan_limit_dialogue {
     color: black;
-    font-family: 'Inter';
+    font-family: "PT Serif", serif;
     /* font-weight: 400; */
     font-size: 14px;
     /* height: 1px; */
@@ -237,7 +237,7 @@
     /* border-radius: 5px; */
     font-size: 16px;
     font-weight: 600;
-    font-family: 'Inter';
+    font-family: 'sans-serif';
     /* margin-left: 10px; */
     /* width: 165px; */
     /* height: 31px; */
@@ -939,3 +939,9 @@
         box-shadow: var(--p-shadow-200);
     }
 }
+
+
+/* this is written by me */
+.start_page.padding_zero .Polaris-Page__Content {
+    padding-top: 0;
+}   

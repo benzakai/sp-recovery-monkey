@@ -230,10 +230,10 @@ export default function SmartBulk() {
     ];
 
     return (
-        <div className='start_page smart-bulk'>
+        <div className='start_page smart-bulk padding_zero'>
 
             <Page fullWidth>
-                <div className='mt-10 mb-16 bulk-box'>
+                <div className='mb-16 bulk-box'>
                     {true ? <div
                         className=""
                     // onClick={() => handleSelectCard(card.id)}
