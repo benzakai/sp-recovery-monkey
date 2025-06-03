@@ -69,39 +69,39 @@ export default function App() {
         setAnySubscription(false);
       } else {
         setAnySubscription(true);
-        try {
-          const settingsResponse = await fetch('/api/firestore?collectionName=settings', {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-          const settingsResponseData = await settingsResponse.json();
-          if (Object.keys(settingsResponseData.data).length === 0) {
-            await fetch('/api/saveSettings', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                durationToSendMessage: "After 10 min",
-                notificationStatus: true,
-                followUpMessage: {
-                  header: "Hi [Customer’s Name]",
-                  content: "it looks like you left some items in your cart! Just a heads-up, our stock is moving fast, so grab them while you can 🎯. If you need any assistance, feel free to reach out! [link to abandon cart recovery]"
-                },
-                preferredLanguages: ['English'],
-                durationToSendFollowUpMessage: 'After 24 hours',
-                selectedLanguage: "en",
-                isDurationToSendMessageActivated: true,
-                isSelectedLanguageActivated: false,
-                isDurationToSendFollowUpMessageActivated: false
-              }),
-            });
-          }
-        } catch (error) {
-          console.error("Error fetching or saving settings", error);
-        }
+        // try {
+        //   const settingsResponse = await fetch('/api/firestore?collectionName=settings', {
+        //     method: 'GET',
+        //     headers: {
+        //       'Content-Type': 'application/json',
+        //     },
+        //   });
+        //   const settingsResponseData = await settingsResponse.json();
+        //   if (Object.keys(settingsResponseData.data).length === 0) {
+        //     await fetch('/api/saveSettings', {
+        //       method: 'POST',
+        //       headers: {
+        //         'Content-Type': 'application/json',
+        //       },
+        //       body: JSON.stringify({
+        //         durationToSendMessage: "After 10 min",
+        //         notificationStatus: true,
+        //         followUpMessage: {
+        //           header: "Hi [Customer’s Name]",
+        //           content: "it looks like you left some items in your cart! Just a heads-up, our stock is moving fast, so grab them while you can 🎯. If you need any assistance, feel free to reach out! [link to abandon cart recovery]"
+        //         },
+        //         preferredLanguages: ['English'],
+        //         durationToSendFollowUpMessage: 'After 24 hours',
+        //         selectedLanguage: "en",
+        //         isDurationToSendMessageActivated: true,
+        //         isSelectedLanguageActivated: false,
+        //         isDurationToSendFollowUpMessageActivated: false
+        //       }),
+        //     });
+        //   }
+        // } catch (error) {
+        //   console.error("Error fetching or saving settings", error);
+        // }
       }
       const { manualPlan }: any = await fetchPermissions();
       setPermissions((prev: any) => ({ ...prev, manualPlan }))
