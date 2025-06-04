@@ -122,6 +122,7 @@ export default function App() {
             <Link to="/app/AbandonedList">{t("abandonedList.title")}</Link>
             <Link to="/app/SmartBulk">{t("smartBulk.title")}</Link>
             <Link to="/app/Settings">{t("settings.title")}</Link>
+            <Link to="/app/AIChatbot">AI Chatbot</Link>
           </>
         )}
       </NavMenu>

@@ -1,19 +1,29 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "66e7df7cac5412f3a99a62879dfe3e04"
-name = "CartKeeper"
-handle = "sp-recovery-monkey"
 application_url = "https://app.cartkeeper.co/"
 embedded = true
+name = "CartKeeper"
+handle = "sp-recovery-monkey"
 
-[build]
-automatically_update_urls_on_dev = true
-dev_store_url = "quickstart-f589edcd.myshopify.com"
-include_config_on_deploy = true
+[webhooks]
+api_version = "2024-07"
+
+  [[webhooks.subscriptions]]
+  uri = "/api/webhook/customers/data_request"
+  compliance_topics = [ "customers/data_request" ]
+
+  [[webhooks.subscriptions]]
+  uri = "/api/webhook/customers/redact"
+  compliance_topics = [ "customers/redact" ]
+
+  [[webhooks.subscriptions]]
+  uri = "/api/webhook/shop/redact"
+  compliance_topics = [ "shop/redact" ]
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_checkouts,write_orders,write_products"
+scopes = "read_checkouts,read_customers,write_orders,write_products,read_content"
 
 [auth]
 redirect_urls = [
@@ -22,8 +32,8 @@ redirect_urls = [
   "https://app.cartkeeper.co/api/auth/callback"
 ]
 
-[webhooks]
-api_version = "2024-07"
-
 [pos]
 embedded = false
+
+[build]
+include_config_on_deploy = true
