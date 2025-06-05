@@ -5,10 +5,42 @@ import { useOutletContext } from 'react-router';
 import { isProPlanOrHigher } from '~/utils/plans';
 import { useTranslation } from 'react-i18next';
 import ChatbotSettingsSection from '~/components/AIChatbotSettings/ChatbotSettingsSection';
+import { authenticate } from '~/shopify.server';
+import { useLoaderData } from '@remix-run/react';
 
+export const loader = async ({ request }: any) => {
+    try {
+        const { session } = await authenticate.admin(request);
+        const url = `https://${session.shop}/admin/api/2025-04/themes.json`;
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                "X-Shopify-Access-Token": session.accessToken,
+                "Content-Type": "application/json",
+            },
+        });
+        if (!response.ok) {
+            throw new Error(`Failed to fetch themes: ${response.statusText}`);
+        }
+        const data = await response.json();
+        const mainTheme = data.themes.find((theme: any) => theme.role === "main");
+        const themeEditorId = mainTheme?.id || null;
+        const EXTENSTION_ID = process.env.SHOPIFY_CHAT_WIDGET_ID
+        // console.log("themeEditorId", themeEditorId);
+        return {
+            shopName: session.shop.replace(/\.myshopify\.com$/, ''),
+            themeEditorId,
+            EXTENSTION_ID
+        };
+    } catch (error) {
+        console.error("Error in AIChatbot loader:", error);
+        throw new Response("Internal Server Error", { status: 500 });
+    }
+};
 
 const AIChatbot = () => {
     const { t } = useTranslation()
+    const { shopName, themeEditorId, EXTENSTION_ID }: any = useLoaderData();
     const [isSettingsLoading, setSettingsLoading] = useState(true);
     const [aiSettings, setAISettings] = useState({
         isWhatsappAssistantTurnedOn: true,
@@ -80,7 +112,7 @@ const AIChatbot = () => {
 
     const getFireData = async () => {
         const settingsData = await fetchAISettings()
-        console.log("settingsData", settingsData);
+        // console.log("settingsData", settingsData);
         if (settingsData) {
             setAISettings(prevSettings => ({
                 ...prevSettings,
@@ -130,7 +162,7 @@ const AIChatbot = () => {
                 // trainingTopics,
                 syncRequest
             };
-            console.log('settingsData of AI Chatbot.................>', settingsData)
+            // console.log('settingsData of AI Chatbot.................>', settingsData)
             const response = await fetch('/api/saveAIChatbotSettings', {
                 method: 'POST',
                 headers: {
@@ -179,6 +211,18 @@ const AIChatbot = () => {
         }
     };
 
+    const handleChatExtensionActivateButton = async () => {
+        if (!aiSettings.isWhatsappAssistantTurnedOn) {
+            shopify.toast.show("Please turn on the WhatsApp Assistant before activating the chat extension.");
+            return;
+        }
+        // console.log("shopName", shopName);
+        // console.log("themeEditorId", themeEditorId);
+        const EXTENSTION_FILE_NAME = "AI_chat_widget";
+        const url = `https://admin.shopify.com/store/${shopName}/themes/${themeEditorId}/editor?context=apps&template=index&activateAppId=${EXTENSTION_ID}/${EXTENSTION_FILE_NAME}`;
+        window.open(url, '_blank');
+    };
+
     return (
         <div className='start_page smart-bulk padding_zero'>
             <Page fullWidth>
@@ -186,7 +230,7 @@ const AIChatbot = () => {
                     <div className="mb-8">
                         <div className='flex flex-row gap-3'>
                             <Text variant="heading3xl" as="h3">
-                                AI Personal Assistant 
+                                AI Personal Assistant
                             </Text>
                             <div className='pt-3.5'>
                                 <Badge tone='info' >Pro</Badge>
@@ -194,12 +238,13 @@ const AIChatbot = () => {
                         </div>
                         <div className='start_main_container_sub_heading'>
                             <Text variant="headingXl" as="h3">
-                                Customize your AI chatbot assistant 
+                                Customize your AI chatbot assistant
                             </Text>
                         </div>
                         <div className='mb-14'></div>
                         <ChatbotSettingsSection
                             t={t}
+                            handleChatExtensionActivateButton={handleChatExtensionActivateButton}
                             isSettingsLoading={isSettingsLoading}
                             aiSettings={aiSettings}
                             setAISettings={setAISettings}

@@ -18,6 +18,7 @@ export default function ChatbotSettingsSection({
     isProPlanOrHigher,
     selectedPlanName,
     permissions,
+    handleChatExtensionActivateButton
 }: any) {
     const [topicSearchValue, setTopicSearchValue] = useState('');
 
@@ -54,6 +55,24 @@ export default function ChatbotSettingsSection({
                                 handleActivateButton={handleActivateButton}
                                 buttonType={"whatsappAssistantTurnedOnButton"}
                                 isActivated={aiSettings.isWhatsappAssistantTurnedOn}
+                            />
+                        )}
+                    </Card>
+                    <Card roundedAbove="sm">
+                        {isSettingsLoading ? (
+                            <SkeletonLoading />
+                        ) : (
+                            <SettingsSecondBlock
+                                children={
+                                    <></>
+                                }
+                                availableOn={"Pro"}
+                                title={"Enable AI chat widget on your store"}
+                                description={"Click to activate the AI chat widget on your store. This allows customers to chat with AI assistant directly from your website."}
+                                handleActivateButton={handleChatExtensionActivateButton}
+                                buttonType={"chatExtensionActivateButton"}
+                                activateButtonTitle={"Activate AI chat widget"}
+                                isActivateButtonDisabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan))}
                             />
                         )}
                     </Card>
