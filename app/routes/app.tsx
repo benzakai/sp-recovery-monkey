@@ -126,6 +126,9 @@ export default function App() {
           </>
         )}
       </NavMenu>
+      <a href="https://wa.me/972555081948?text=Hi%0AI%20have%20a%20quick%20question%20about%20the%20app" target="_blank" className="whatsapp-link">
+        <img src="/images/whatsapp.png" alt="WhatsApp" className="whatsapp-icon" />
+      </a>
       <Outlet context={{ anySubscription, setAnySubscription, selectedPlanName, setSelectedPlanName, permissions }} />
     </AppProvider>
   );

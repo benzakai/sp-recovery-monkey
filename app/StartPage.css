@@ -330,7 +330,8 @@
 .letstart .Polaris-Page.Polaris-Page--fullWidth {
     max-width: 100% !important;
 }
-.lets_start_main_container{
+
+.lets_start_main_container {
     max-width: 100%;
 }
 
@@ -941,7 +942,19 @@
 }
 
 
-/* this is written by me */
 .start_page.padding_zero .Polaris-Page__Content {
     padding-top: 0;
-}   
+}
+
+.whatsapp-link {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 9999;
+}
+
+.whatsapp-icon {
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+}

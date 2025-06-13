@@ -26,7 +26,7 @@ function cleanAndFormatData(str: any) {
 
 
 async function tagOrder(session: any, orderID: any) {
-    console.log("orderID on tagOder", orderID)
+    // console.log("orderID on tagOder", orderID)
     try {
         if (session?.shop) {
             const url = `https://${session.shop}/admin/api/2025-01/graphql.json`;
@@ -194,7 +194,7 @@ export default async function orderTaggingService() {
                 // console.log("Session not found on orderTaggingService function for this store '",doc.id,"' so not moving forward with this store data.");
             }
         }
-        console.log("orderTaggingService function STOPPED!")
+        console.log("================ orderTaggingService function STOPPED! ==================")
         return { success: true };
     } catch (error) {
         console.log("ERROR on orderTaggingService", error);
