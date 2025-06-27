@@ -304,7 +304,8 @@ const fetchOrders = async (shopName: string, token: string) => {
     );
 
     const responseData = await response.json();
-    return responseData?.orders;
+    // console.log("responseData====================================================================================>", responseData)
+    return Array.isArray(responseData?.orders) ? responseData.orders : [];
   } catch (error) {
     console.log("Error fetching orders from Shopify:", error);
     return [];
@@ -437,7 +438,7 @@ export const getSubscriptionsData = async (session: any) => {
 
 const setsubscriptionAbandonedCarts = async (data: any) => {
   const collection = firestoreDatabase.collection('subscriptionAbandonedCarts');
-  await collection.add(data);
+  await collection.add(replaceUndefined(data)); // if 'SHOP DOMAIN' undefined firestore was throuwing error so now replacing undefined with "N/A" using replaceUndefined.
 }
 
 export const checkMatching = async (session: any) => {
@@ -596,10 +597,9 @@ async function handleAddAbandonedCheckouts(checkoutId: string, storeId: string, 
     await fireStoreCreateService("AbandonedCheckoutsData", checkoutId, {
       storeId,
       checkoutId,
-      payload,
+      payload: replaceUndefined(payload), // if 'SHOP DOMAIN' undefined firestore was throuwing error so now replacing undefined with "N/A".
       createdAt: new Date()
     }, {});
-
   } catch (error) {
     console.log("handleAddAbandonedCheckouts ERROR", error);
   }
@@ -681,5 +681,20 @@ export async function getShopDetails(admin: any) {
   } catch (error) {
     console.log("ERROR ", error);
     return { success: false };
+  }
+}
+
+
+function replaceUndefined(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.map(replaceUndefined);
+  } else if (obj !== null && typeof obj === 'object') {
+    const result: any = {};
+    for (const [key, value] of Object.entries(obj)) {
+      result[key] = value === undefined ? "N/A" : replaceUndefined(value);
+    }
+    return result;
+  } else {
+    return obj;
   }
 }
