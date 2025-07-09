@@ -34,7 +34,7 @@ function App() {
 
 
   useEffect(() => {
-    console.log('Initializing chat session... 16-5:55');
+    console.log('last update on... 27-6-2:23');
     const shopId = Shopify?.shop;
     const customerId = ShopifyAnalytics.meta.page.customerId;
 
@@ -54,6 +54,92 @@ function App() {
       return;
     }
   }, []);
+
+  useEffect(() => {
+    async function handleMessage(event) {
+      // console.log("event", event)
+      // if (event.origin !== 'https://connect.cartkeeper.co') {
+      //   return;
+      // }
+      if (typeof event.data !== 'object' || !event.data.type) {
+        return;
+      }
+
+      const { type, payload } = event.data;
+      const productId = payload?.id;
+
+      switch (type) {
+        case 'PRODUCT':
+          if (productId) {
+            await redirectToProductPage(productId)
+
+          }
+          break;
+
+        case 'ADD_TO_CART':
+          if (productId) {
+            await addPrductToCart(productId)
+          }
+          break;
+        default:
+          break;
+      }
+    }
+
+    window.addEventListener('message', handleMessage);
+
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
+
+  const redirectToProductPage = async (productId) => {
+    if (!productId) return console.log("product id not found on redirectToProductPage")
+    try {
+      const response = await fetch(`/apps/external-live/api/extGetProductDetails`, {
+        method: "POST",
+        body: JSON.stringify({ productId })
+      })
+      if (!response.ok) {
+        throw new Error("error on response of product fetch", response.statusText)
+      }
+      const data = await response.json()
+      console.log("data =================>", data)
+      const productHandle = data?.productData?.product?.handle
+      console.log("productHandle", productHandle)
+      if (productHandle) {
+        window.location.href = `https://${location.host}/products/${productHandle}`;
+      }
+    } catch (error) {
+      console.log("error occured on redirectToProductPage", error)
+    }
+  }
+
+  const addPrductToCart = async (pId) => {
+    if (!pId) return console.log("product id not found on add to cart")
+    try {
+      const response = await fetch(window.Shopify.routes.root + 'cart/add.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          id: pId,
+          quantity: 1
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error("error while adding product to cart", response.statusText)
+      }
+      const data = await response.json()
+      console.log('product added to cart:', data);
+      window.location.reload()
+    } catch (error) {
+      console.error('error adding to cart:', error);
+    }
+  }
+
 
   // useEffect(() => {
   //   console.log('Chat ID initialized:', `https://connect.cartkeeper.co/public-chat/${Shopify.shop}/${chatId}`);
