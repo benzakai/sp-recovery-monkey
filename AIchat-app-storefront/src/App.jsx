@@ -1,12 +1,34 @@
 import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [chatId, setChatId] = useState(null);
+  const [showBubble, setShowBubble] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!isOpen && imageLoaded) setShowBubble(true);
+    }, 20000);
+
+    return () => clearTimeout(timer);
+  }, [isOpen, imageLoaded]);
+
+
+  useEffect(() => {
+    if (isOpen) {
+      setShowBubble(false);
+    }
+  }, [isOpen]);
+
+  // useEffect(() => { // for hiding a bubble in few seconds
+  //   if (showBubble) {
+  //     const hideTimer = setTimeout(() => setShowBubble(false), 20000);
+  //     return () => clearTimeout(hideTimer);
+  //   }
+  // }, [showBubble]);
 
   const toggleIframe = () => {
     setIsOpen((prev) => !prev);
@@ -34,7 +56,7 @@ function App() {
 
 
   useEffect(() => {
-    console.log('last update on... 27-6-2:23');
+    console.log('last update on... 08-07-25 3:00');
     const shopId = Shopify?.shop;
     const customerId = ShopifyAnalytics.meta.page.customerId;
 
@@ -134,7 +156,7 @@ function App() {
       }
       const data = await response.json()
       console.log('product added to cart:', data);
-      window.location.reload()
+      window.location.href = `https://${location.host}/cart`
     } catch (error) {
       console.error('error adding to cart:', error);
     }
@@ -167,6 +189,11 @@ function App() {
           />
         )}
       </button>
+      {showBubble && (
+        <div className="chat-bubble">
+          <span>You can ask me anything!</span>
+        </div>
+      )}
 
       {isOpen && chatId && (
         <div className="iframe-container">
