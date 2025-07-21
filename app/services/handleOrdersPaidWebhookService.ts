@@ -10,7 +10,7 @@ export default async function handleOrdersPaidWebhookService(payload: any, shop:
             await publishMessagePubSubService("sales", JSON.stringify(payload));
         }
 
-        const getCustomerOrders = await getAllCheckoutsOfCustomer(payload.customer.admin_graphql_api_id);
+        const getCustomerOrders: any = await getAllCheckoutsOfCustomer(payload.customer.admin_graphql_api_id);
         if (getCustomerOrders?.success == true) {
             if (getCustomerOrders.data.length > 0) {
                 await publishMessagePubSubService("sales", JSON.stringify({
@@ -29,22 +29,26 @@ export default async function handleOrdersPaidWebhookService(payload: any, shop:
 }
 
 async function getAllCheckoutsOfCustomer(customerId: string) {
-    const checkoutsData: any = [];
     const today = new Date();
     const twoDaysAgo = new Date(today.getTime() - (1000 * 60 * 60 * 48));
 
     try {
+        if (!customerId) {
+            // console.log("No customerId provided on getAllCheckoutsOfCustomer function");
+            return { success: false, data: [] };
+        }
+
         const firestoreDatabase = new Firestore();
         const getCollection = firestoreDatabase.collection("AbandonedCheckoutsData");
-        let getdocs = await getCollection.where("createdAt", ">=", twoDaysAgo).get();
 
-        getdocs.forEach((doc) => {
-            const docData = doc.data();
-            checkoutsData.push(docData);
-        });
+        const snapshot = await getCollection
+            .where("customerId", "==", customerId)
+            .where("createdAt", ">=", twoDaysAgo)
+            .get();
 
-        const data = checkoutsData.filter((item: any) => item?.payload?.UpdateData?.customer?.admin_graphql_api_id == customerId);
+        // console.log("getAllCheckoutsOfCustomer snapshot.size:", snapshot.size);
 
+        const data = snapshot.docs.map((doc) => doc.data());
         return { success: true, data };
     } catch (error) {
         console.log("ERROR", error);

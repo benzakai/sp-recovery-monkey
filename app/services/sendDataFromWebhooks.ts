@@ -594,9 +594,12 @@ async function storeSubscriptionActive(storeId: string) {
 
 async function handleAddAbandonedCheckouts(checkoutId: string, storeId: string, payload: any) {
   try {
+    const customerId = payload?.UpdateData?.customer?.admin_graphql_api_id ?? null;
+    // console.log("handleAddAbandonedCheckouts called with checkoutId:", checkoutId, "storeId:", storeId, "customerId:", customerId);
     await fireStoreCreateService("AbandonedCheckoutsData", checkoutId, {
       storeId,
       checkoutId,
+      customerId,
       payload: replaceUndefined(payload), // if 'SHOP DOMAIN' undefined firestore was throuwing error so now replacing undefined with "N/A".
       createdAt: new Date()
     }, {});
