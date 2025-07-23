@@ -2,7 +2,7 @@ import { Badge, Button, Card, Page, Text, SkeletonDisplayText } from '@shopify/p
 import React, { useEffect, useState } from 'react';
 import '../StartPage.css';
 import { redirect, useActionData, useNavigate, useOutletContext, useSubmit } from '@remix-run/react';
-import { authenticate, MONTHLY_PLAN } from "../shopify.server";
+import { authenticate } from "../shopify.server";
 import StartPageCartSummary from '~/components/StartPageCartSummary';
 import fireStoreFetchService from '~/services/fireStoreFetchService';
 import fireStoreCreateService from '~/services/fireStoreCreateService';
@@ -11,11 +11,12 @@ import MissedRevenueSVG from '~/components/SVGs/MissedRevenueSVG';
 import RecoveredRevenueSVG from '~/components/SVGs/RecoveredRevenueSVG';
 import ACRRateSVG from '~/components/SVGs/ACRRateSVG';
 import { useTranslation } from 'react-i18next';
+import PlanSection from '~/components/Settings/PlanSection';
 
 export const action = async ({ request }: any) => {
     const { session } = await authenticate.admin(request)
     const formData = await request.formData();
-    const planName = formData.get("planName") || MONTHLY_PLAN;
+    const planName = formData.get("planName");
     // console.log("planName", planName);
     if (planName === "Free") {
         await fireStoreCreateService("subscriptions", session.shop, {
@@ -36,7 +37,7 @@ export const action = async ({ request }: any) => {
             }),
         });
     }
-    return { success: true };
+    return { success: true, planName };
 };
 
 const LetsStart = () => {
@@ -52,7 +53,7 @@ const LetsStart = () => {
         success: null
     });
     const [planName, setPlanName] = useState('not set');
-    const [isLoadingPlanButton, setLoadingPlanButton] = useState(false)
+    const [isLoadingPlanButton, setLoadingPlanButton] = useState(null)
     const submit = useSubmit();
     const actionData = useActionData()
     const navigate = useNavigate()
@@ -134,10 +135,12 @@ const LetsStart = () => {
 
     useEffect(() => {
         if (actionData?.success) {
-            if (planName === "Free") {
+            if (actionData?.planName === "Free") {
                 setAnySubscription(true)
+                setPlanName(planName);
                 setSelectedPlanName("Free")
-                navigate('/app/WelcomeConnect')
+                shopify.toast.show(t("global.toastMessage.successSubscriptionCreated"));
+                navigate('/app')
             }
         }
     }, [actionData])
@@ -148,8 +151,7 @@ const LetsStart = () => {
 
 
     const handlePlanSelect = (planName: any) => {
-        if (planName === "Free") setLoadingPlanButton(true)
-        setPlanName(planName);
+        setLoadingPlanButton(planName)
         const formData = new FormData();
         formData.append("planName", planName);
         submit(formData, { method: "post" });
@@ -160,104 +162,27 @@ const LetsStart = () => {
             <div className='start_page'>
                 <div className="letstart">
                     {/* <Page fullWidth> */}
-                        <div className='lets_start_main_container'>
-                            <div className='start_main_container_heading pb-8'>
-                                <Text variant="heading3xl" as="h3" >
-                                    {t("letsStart.title")}
-                                </Text>
-                            </div>
-
-                            <div>
-                                <p className='font-bold text-2xl pb-6'>{t("letsStart.subTitle")}</p>
-                                <StartPageCartSummary getCards={getCards} />
-                            </div>
-
-                            <div className="start_price_container">
-                                <div className="start_price_container_heading">
-                                    <Text variant="headingLg" as="h5">
-                                        {t("home.priceSectionTitle")}
-                                    </Text>
-                                </div>
-                                <div className="start_price_container_cards lets-card">
-                                    <Card>
-                                        <div className="start_price_choose_plan">
-                                            <div className='start_plan_name'>{t("settings.planName1")}</div>
-                                            <div className="start_plan_ammount_section" style={{ marginBottom: "75px" }}>
-                                                <div className="start_plan_ammount">{t("settings.planPrice1")}</div>
-                                            </div>
-
-                                            <div className="start_plan_button_section"><Button size='large' loading={isLoadingPlanButton} onClick={() => handlePlanSelect('Free')} variant='primary' fullWidth>{t("settings.planNotSelectedText")}</Button></div>
-                                            <div className="star_plan_limit_dialogue">
-                                                <ul className='start_plan_list'>
-                                                    <li className='start_plan_list_item'>- {t("settings.freeBenefit1")}</li>
-                                                    <li className='start_plan_list_item'>- {t("settings.freeBenefit2")}</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </Card>
-                                    <Card>
-                                        <div className="start_price_choose_plan">
-                                            <div className='start_plan_name'>{t("settings.planName2")}</div>
-                                            <div className="start_plan_ammount_section">
-                                                <div className="start_plan_ammount">19$</div>
-                                                <div className="start_plan_ammount_suffix">{t("settings.planPrice2")}</div>
-                                            </div>
-                                            <div className="start_plan_trial"><Badge size="small" tone="info">{t("settings.freeTrileText")}</Badge> </div>
-                                            <div className="start_plan_button_section"><Button size='large' onClick={() => handlePlanSelect('Starter')} variant='primary' fullWidth>{t("settings.planNotSelectedText")}</Button></div>
-                                            <div className="star_plan_limit_dialogue">
-                                                <ul className='start_plan_list'>
-                                                    <li className='start_plan_list_item'>- {t("settings.starterBenefit1")}</li>
-                                                    <li className='start_plan_list_item'>- {t("settings.starterBenefit2")}</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </Card>
-                                    <Card>
-                                        <div className="start_price_choose_plan">
-                                            <div className='start_plan_name'>{t("settings.planName3")}</div>
-                                            <div className="start_plan_ammount_section">
-                                                <div className="start_plan_ammount">49$</div>
-                                                <div className="start_plan_ammount_suffix">{t("settings.planPrice3")}</div>
-                                            </div>
-                                            <div className="start_plan_trial"><Badge tone="info">{t("settings.freeTrileText")}</Badge> </div>
-                                            <div className="start_plan_button_section"><Button size='large' onClick={() => handlePlanSelect('Pro')} variant='primary' fullWidth>{t("settings.planNotSelectedText")}</Button></div>
-                                            <div className="star_plan_limit_dialogue">
-                                                <ul className='start_plan_list'>
-                                                    <li className='start_plan_list_item'>- {t("settings.proBenefit1")}</li>
-                                                    <li className='start_plan_list_item'>- {t("settings.proBenefit2")}</li>
-                                                    <li className='start_plan_list_item'>- {t("settings.proBenefit3")}</li>
-                                                    <li className='start_plan_list_item'>- {t("settings.proBenefit4")}</li>
-                                                    <li className='start_plan_list_item'>- {t("settings.proBenefit5")}</li>
-                                                </ul>
-
-                                            </div>
-                                        </div>
-                                        <div className='popular_badge'>
-                                            {t("settings.popularBadgeText")}
-                                        </div>
-                                    </Card>
-                                    <Card>
-                                        <div className="start_price_choose_plan">
-                                            <div className='start_plan_name'>{t("settings.planName4")}</div>
-                                            <div className="start_plan_ammount_section">
-                                                <div className="start_plan_ammount">99$</div>
-                                                <div className="start_plan_ammount_suffix">{t("settings.planPrice4")}</div>
-                                            </div>
-                                            <div className="start_plan_trial"><Badge tone="info">{t("settings.freeTrileText")}</Badge> </div>
-                                            <div className="start_plan_button_section"><Button size='large' onClick={() => handlePlanSelect('Advance')} variant='primary' fullWidth>{t("settings.planNotSelectedText")}</Button></div>
-                                            <div className="star_plan_limit_dialogue">
-                                                <ul className='start_plan_list'>
-                                                    <li className='start_plan_list_item'>- {t("settings.advancedBenefit1")}</li>
-                                                    <li className='start_plan_list_item'>- {t("settings.advancedBenefit2")}</li>
-                                                    <li className='start_plan_list_item'>- {t("settings.advancedBenefit3")}</li>
-                                                    <li className='start_plan_list_item'>- {t("settings.advancedBenefit4")}</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </Card>
-                                </div>
-                            </div>
+                    <div className='lets_start_main_container'>
+                        <div className='start_main_container_heading pb-8'>
+                            <Text variant="heading3xl" as="h3" >
+                                {t("letsStart.title")}
+                            </Text>
                         </div>
+
+                        <div>
+                            <p className='font-bold text-2xl pb-6'>{t("letsStart.subTitle")}</p>
+                            <StartPageCartSummary getCards={getCards} />
+                        </div>
+                        <div className='mb-20'></div>
+                        <PlanSection
+                            t={t}
+                            loadingPage={false}
+                            loadingButton={isLoadingPlanButton}
+                            planName={planName}
+                            handlePlanSelect={handlePlanSelect}
+                            pageType={"letsStart"}
+                        />
+                    </div>
                     {/* </Page> */}
                 </div>
             </div>

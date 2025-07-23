@@ -85,7 +85,7 @@
 .start_plan_content_value {
     font-weight: 600;
     font-size: 20px;
-    font-family: "PT Serif", serif;
+    /* font-family: "PT Serif", serif; */
     margin-top: 10px;
     margin-bottom: 12px;
 }
@@ -94,7 +94,7 @@
     color: #42474C;
     font-weight: 500;
     font-size: 20px;
-    font-family: "PT Serif", serif;
+    /* font-family: "PT Serif", serif; */
     margin-bottom: 22px;
 }
 
@@ -103,7 +103,7 @@
 
     font-size: 14px;
     font-weight: 400;
-    font-family: "PT Serif", serif;
+    /* font-family: "PT Serif", serif; */
 }
 
 .start_price_container {
@@ -133,21 +133,20 @@
 .start_plan_ammount_section {
     color: black;
     display: flex;
-    margin-bottom: 10px;
     gap: 4px;
 }
 
 .start_plan_ammount {
     color: black;
-    font-size: 20px;
-    font-family: "PT Serif", serif;
+    font-size: 22px;
+    /* font-family: "PT Serif", serif; */
     font-weight: 600;
 }
 
 .start_plan_ammount_suffix {
     color: black;
-    font-size: 14px;
-    font-family: "PT Serif", serif;
+    font-size: 16px;
+    /* font-family: "PT Serif", serif; */
     font-weight: 400;
 }
 
@@ -209,7 +208,7 @@
 
 .star_plan_limit_dialogue {
     color: black;
-    font-family: "PT Serif", serif;
+    /* font-family: "PT Serif", serif; */
     /* font-weight: 400; */
     font-size: 14px;
     /* height: 1px; */
@@ -324,7 +323,6 @@
 .upgrade_page_container_heading {
     color: black;
     font-size: 14px;
-    margin: 1.9rem 0rem 0.7rem 0rem;
 }
 
 .letstart .Polaris-Page.Polaris-Page--fullWidth {
@@ -372,11 +370,11 @@
     }
 
     .start_plan_ammount {
-        font-size: 15px;
+        font-size: 17px;
     }
 
     .start_plan_ammount_suffix {
-        font-size: 11px;
+        font-size: 13px;
     }
 }
 
@@ -415,7 +413,7 @@
     }
 
     .start_plan_ammount {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     .start_plan_button {

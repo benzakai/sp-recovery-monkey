@@ -16,10 +16,12 @@ import * as dotenv from "dotenv";
 import fireStoreDeleteService from "./services/fireStoreDeleteService";
 dotenv.config();
 
-export const MONTHLY_PLAN = 'Monthly subscription';
 export const STARTER_PLAN = 'Starter';
 export const PRO_PLAN = 'Pro';
 export const ADVANCE_PLAN = 'Advance';
+export const STARTER_PLAN_YEARLY = 'Starter Yearly';
+export const PRO_PLAN_YEARLY = 'Pro Yearly';
+export const ADVANCE_PLAN_YEARLY = 'Advance Yearly';
 
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
@@ -90,8 +92,8 @@ const shopify = shopifyApp({
           data["shopCreatedAt"] = shopDetails?.createdAt;
         }
 
-        await setAppInstalledDate(session, data);
-        await sendDataAppInstallTopicPubSub(data);
+        // await setAppInstalledDate(session, data);
+        // await sendDataAppInstallTopicPubSub(data);
         await fireStoreDeleteService("AppUninstalledDate", session.shop);
       } else {
         console.log("App is already installed");
@@ -120,6 +122,27 @@ const shopify = shopifyApp({
       currencyCode: 'USD',
       interval: BillingInterval.Every30Days,
     },
+    [STARTER_PLAN_YEARLY]: {
+      amount: 171,
+      trialDays: 7,
+      isTest: false,
+      currencyCode: 'USD',
+      interval: BillingInterval.Annual,
+    },
+    [PRO_PLAN_YEARLY]: {
+      amount: 441,
+      trialDays: 7,
+      isTest: false,
+      currencyCode: 'USD',
+      interval: BillingInterval.Annual,
+    },
+    [ADVANCE_PLAN_YEARLY]: {
+      amount: 891,
+      trialDays: 7,
+      isTest: false,
+      currencyCode: 'USD',
+      interval: BillingInterval.Annual,
+    }
   },
   restResources,
   future: {

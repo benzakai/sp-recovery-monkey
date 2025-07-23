@@ -2,7 +2,7 @@ import { Badge, Button, Card, Page, Text } from '@shopify/polaris';
 import React, { useEffect, useState } from 'react';
 import '../StartPage.css';
 import { useSubmit } from '@remix-run/react';
-import { authenticate, MONTHLY_PLAN } from "../shopify.server";
+import { authenticate } from "../shopify.server";
 import { ActionFunctionArgs } from 'react-router';
 import { BillingInterval } from '@shopify/shopify-app-remix/server';
 import cartLogo from './images/cart.png';
@@ -14,7 +14,7 @@ import tickmarkLogo from './images/TickMark.png';
 
 export const action = async ({ request }) => {
     const formData = await request.formData();
-    const planName = formData.get("planName") || MONTHLY_PLAN;
+    const planName = formData.get("planName");
 
     const { billing } = await authenticate.admin(request);
 

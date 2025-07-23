@@ -78,22 +78,23 @@ export default function SmartBulk() {
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await fetch('/api/getSmartBulkMessage')
-            if (response.ok) {
-                const { messageData } = await response.json()
-                // console.log("messageData", messageData);
-                setCustomMessage(messageData)
-                setCompareMessage(messageData)
+            try {
+                const response = await fetch('/api/getSmartBulkMessage')
+                if (response.ok) {
+                    const { messageData } = await response.json()
+                    // console.log("messageData", messageData);
+                    setCustomMessage(messageData)
+                    setCompareMessage(messageData)
+                }
+            } catch (error) {
+                console.log("error occured while fetching smartBulkMessage", error)
+            } finally {
+                setMessageLoading(false)
             }
         }
         fetchData()
     }, [])
 
-    useEffect(() => {
-        if (customMessage?.header) {
-            setMessageLoading(false)
-        }
-    }, [customMessage])
 
     const fetchPaginatedData = async () => {
         // console.log("Fetching page:", page, "with cursor:", cursor);

@@ -2,7 +2,7 @@ import { Icon, Select, Text } from '@shopify/polaris';
 import { useEffect, useState } from 'react';
 import '../StartPage.css';
 import { useLoaderData, useSubmit } from '@remix-run/react';
-import { authenticate, MONTHLY_PLAN, STARTER_PLAN, PRO_PLAN, ADVANCE_PLAN } from "../shopify.server";
+import { authenticate, STARTER_PLAN, PRO_PLAN, ADVANCE_PLAN, ADVANCE_PLAN_YEARLY, PRO_PLAN_YEARLY, STARTER_PLAN_YEARLY } from "../shopify.server";
 import { useActionData, useOutletContext } from 'react-router';
 import fireStoreCreateService from '~/services/fireStoreCreateService';
 import { isProPlanOrHigher } from '~/utils/plans';
@@ -20,7 +20,7 @@ export const action = async ({ request }: any) => {
     const { billing, session } = await authenticate.admin(request);
     const actionType = formData.get("actionType");
     const selectedAppLanugage = formData.get("selectedAppLanugage");
-    const planName = formData.get("planName") || MONTHLY_PLAN;
+    const planName = formData.get("planName");
     let savedLanguage;
     if (actionType === "languageChange") {
         const existingLanguage = await db.appLanguages.findUnique({
@@ -47,11 +47,11 @@ export const action = async ({ request }: any) => {
         }
     } else if (actionType === "planChange") {
         if (planName === "Free") {
-            const billingCheck = await billing.require({
-                plans: [MONTHLY_PLAN, STARTER_PLAN, PRO_PLAN, ADVANCE_PLAN],
-                onFailure: async () => billing.request({ plan: MONTHLY_PLAN }),
+            const { hasActivePayment, appSubscriptions } = await billing.check({
+                plans: [STARTER_PLAN, PRO_PLAN, ADVANCE_PLAN, STARTER_PLAN_YEARLY, PRO_PLAN_YEARLY, ADVANCE_PLAN_YEARLY],
+                isTest: session.shop === "sprecoverymonkey.myshopify.com" ? true : false,
             });
-            const subscription = billingCheck.appSubscriptions[0];
+            const subscription = appSubscriptions?.[0];
             const cancelledSubscription = await billing.cancel({
                 subscriptionId: subscription.id,
                 isTest: session.shop === "sprecoverymonkey.myshopify.com" ? true : false,
@@ -97,7 +97,7 @@ const languages = ['English', 'Español', 'العربية', 'Português', 'Deuts
 const Settings = () => {
     const { i18n, t } = useTranslation()
     const [planName, setPlanName] = useState('not set');
-    // const [isLoadingPlanButton, setLoadingPlanButton] = useState(false)
+    const [isLoadingPlanButton, setLoadingPlanButton] = useState(null)
     const submit = useSubmit();
     const [loadingPage, setLoadingPage] = useState(true)
     const loaderData: any = useLoaderData()
@@ -137,7 +137,7 @@ const Settings = () => {
     useEffect(() => {
         if (actionData?.success) {
             if (actionData?.planName === "Free") {
-                // setLoadingPlanButton(false)
+                setLoadingPlanButton(null)
                 setPlanName(actionData?.planName)
             } else if (actionData?.savedAppLangnuage) {
                 i18n.changeLanguage(actionData?.savedAppLangnuage)
@@ -154,7 +154,7 @@ const Settings = () => {
     }, [loaderData])
 
     const handlePlanSelect = (planName: any) => {
-        // if (planName === "Free") setLoadingPlanButton(true)
+        setLoadingPlanButton(planName)
         const formData = new FormData();
         formData.append("planName", planName);
         formData.append("actionType", "planChange");
@@ -416,8 +416,10 @@ const Settings = () => {
                     <PlanSection
                         t={t}
                         loadingPage={loadingPage}
+                        loadingButton={isLoadingPlanButton}
                         planName={planName}
                         handlePlanSelect={handlePlanSelect}
+                        pageType={"settings"}
                     />
                 </div>
             </div>

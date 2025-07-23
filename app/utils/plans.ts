@@ -2,7 +2,7 @@
 export const isProPlanOrHigher = (planName: any) => {
     // console.log("planName from isProPlanOrHigher", planName);
     if (planName) {
-        if (planName === "Pro" || planName === "Advance") return true
+        if (planName !== "Free" && planName !== "Starter") return true
         else return false
     } else return false
 }

@@ -1,135 +1,193 @@
-import { Badge, Button, Card, SkeletonBodyText, SkeletonDisplayText, Text } from '@shopify/polaris'
+import { Badge, Button, SkeletonBodyText, SkeletonDisplayText, Text } from '@shopify/polaris';
+import ToggleSwitch from '../SubscriptionPlan/ToggleSwitch';
+import { useEffect, useState } from 'react';
 
-export default function PlanSection({ t, loadingPage, planName, handlePlanSelect }: any) {
+export default function PlanSection({ t, loadingPage, loadingButton, planName, handlePlanSelect, pageType }: any) {
+    const [planIntervalType, setPlanIntervalType] = useState("Monthly");
+
+    useEffect(() => {
+        if (planName.includes("Yearly")) {
+            setPlanIntervalType("Yearly");
+        }
+    }, [planName]);
+
+    const isSelected = (type: string) =>
+        (planIntervalType === "Monthly" && planName === type) ||
+        (planIntervalType === "Yearly" && planName === `${type} Yearly`);
+
+    const getPrice = (monthly: string, yearly: string) =>
+        planIntervalType === "Monthly" ? monthly : yearly;
+
+    const getBillingText = (monthlyYearly: string, yearlyBilling: string) =>
+        planIntervalType === "Monthly" ? monthlyYearly : yearlyBilling;
+
+    const plans = [
+        {
+            key: "Free",
+            name: t("settings.planName1"),
+            monthly: t("global.planNames.Free"),
+            price: t("settings.planPrice1"),
+            benefits: [t("settings.freeBenefit1"), t("settings.freeBenefit2")],
+            disabled: planName === "Free",
+        },
+        {
+            key: "Starter",
+            name: t("settings.planName2"),
+            monthly: "19$",
+            yearly: "14.25$",
+            original: "19.99$",
+            priceLabel: t("settings.planPrice2"),
+            benefits: [t("settings.starterBenefit1"), t("settings.starterBenefit2")],
+        },
+        {
+            key: "Pro",
+            name: t("settings.planName3"),
+            monthly: "49$",
+            yearly: "36.75$",
+            original: "49.99$",
+            priceLabel: t("settings.planPrice3"),
+            benefits: [
+                t("settings.proBenefit1"),
+                t("settings.proBenefit2"),
+                t("settings.proBenefit3"),
+                t("settings.proBenefit4"),
+                t("settings.proBenefit5"),
+            ],
+            badge: t("settings.popularBadgeText"),
+        },
+        {
+            key: "Advance",
+            name: t("settings.planName4"),
+            monthly: "99$",
+            yearly: "74.25$",
+            original: "99.99$",
+            priceLabel: t("settings.planPrice4"),
+            benefits: [
+                t("settings.advancedBenefit1"),
+                t("settings.advancedBenefit2"),
+                t("settings.advancedBenefit3"),
+            ],
+        },
+    ];
+
     return (
-        <div className='settings_secion-2'>
-            <div className='start_main_container_sub_heading' style={{ marginBottom: "2px" }}>
+        <div className="settings_secion-2">
+            {pageType === "settings" && <div className="start_main_container_sub_heading mb-1">
                 <Text variant="headingXl" as="h3">
                     {t("settings.planSectionTitle")}
                 </Text>
-            </div>
+            </div>}
+
             <div className="start_price_container">
-                <div className="upgrade_page_container_heading">
-                    {loadingPage ? <div className='w-56'><SkeletonBodyText lines={2} /> </div> :
-                        <div className='upgrade_page_container_heading_text'>{t("settings.planSectionDescription", { planName: t(`global.planNames.${planName}`) })}</div>}
+                <div className="flex flex-col md:flex-row justify-between mb-4 gap-4">
+                    {loadingPage ? (
+                        <div className="w-56">
+                            <SkeletonBodyText lines={2} />
+                        </div>
+                    ) : (
+                        <div className="my-auto">
+                            {pageType === "settings" ? t("settings.planSectionDescription", {
+                                planName: planName,
+                            }) : <Text variant="headingXl" as="h3">
+                                {t("home.priceSectionTitle")}
+                            </Text>}
+                        </div>
+                    )}
+                    <div>
+                        <ToggleSwitch active={planIntervalType} setActive={setPlanIntervalType} />
+                    </div>
                 </div>
-                <div className="start_price_container_cards">
-                    <Card>
-                        <div className="start_price_choose_plan">
-                            <div className='start_plan_name'>{t("settings.planName1")}</div>
-                            <div className="start_plan_ammount_section" style={{ marginBottom: "145px" }}>
-                                <div className="start_plan_ammount">{t("settings.planPrice1")}</div>
+
+                <div className="flex flex-wrap justify-between gap-4">
+                    {plans.map((plan) => (
+                        <div
+                            key={plan.key}
+                            className="relative border rounded-lg shadow bg-white flex flex-col justify-between basis-full sm:basis-[48%] lg:basis-[23.5%] overflow-hidden"
+                        >
+                            <div className='p-5'>
+                                {plan.badge && (
+                                    <div
+                                        className="absolute top-9 -right-28 w-80 rotate-45 bg-neutral-300 text-black text-base font-bold text-center py-2 z-10"
+                                    >
+                                        {plan.badge}
+                                    </div>
+                                )}
+
+                                <div>
+                                    <div className="start_plan_name">{plan.name}</div>
+
+                                    {plan.original && (
+                                        <p
+                                            className={`line-through text-sm ${planIntervalType === "Monthly" ? "text-transparent" : "text-gray-600"}`}
+                                        >
+                                            {plan.original}
+                                        </p>
+                                    )}
+
+
+                                    <div className="my-2 flex flex-row">
+                                        <div className="start_plan_ammount">{plan.key === "Free" ? plan.monthly : getPrice(plan.monthly!, plan.yearly!)}</div>
+                                        {plan.priceLabel && <div className="start_plan_ammount_suffix">{plan.priceLabel}</div>}
+                                    </div>
+
+                                    {plan.priceLabel && (
+                                        <p className="text-sm text-green-700">
+                                            {getBillingText(
+                                                t("settings.OrSaveAmountPerYear", { amount: Number(plan.yearly!.replace("$", "")) * 12, percent: 25 }),
+                                                t("settings.BilledAnnually", { amount: Number(plan.yearly!.replace("$", "")) * 12 }),
+                                            )}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className={(pageType !== "settings" && plan.key === "Free") ? 'mt-16 pt-2' : 'mt-4'}>
+                                    {((pageType === "settings" && plan.key === "Free") ? false : true) && (
+                                        <div className="start_plan_button_section">
+                                            {loadingPage ? (
+                                                <SkeletonDisplayText size="large" maxWidth="40ch" />
+                                            ) : (
+                                                <Button
+                                                    fullWidth
+                                                    size="large"
+                                                    loading={loadingButton === ((planIntervalType === "Monthly" || plan.key === "Free") ? plan.key : `${plan.key} Yearly`)}
+                                                    disabled={isSelected(plan.key)}
+                                                    onClick={() =>
+                                                        handlePlanSelect(
+                                                            (planIntervalType === "Monthly" || plan.key === "Free") ? plan.key : `${plan.key} Yearly`
+                                                        )
+                                                    }
+                                                    variant="primary"
+                                                >
+                                                    {isSelected(plan.key)
+                                                        ? t("settings.planSelectedText")
+                                                        : t("settings.planNotSelectedText")}
+                                                </Button>
+                                            )}
+                                        </div>
+                                    )}
+
+
+                                    <ul className={`start_plan_list space-y-2 ${(pageType === "settings" && plan.key === "Free") ? "mt-36" : "mt-4"}`}>
+                                        {plan.benefits.map((benefit: string, idx: number) => (
+                                            <li className="start_plan_list_item" key={idx}>
+                                                {benefit}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
                             </div>
 
-                            <div className="start_plan_button_section" >
-                                {/* {loadingPage ?
-                                                <SkeletonDisplayText size="large" maxWidth={`${30}ch`} />
-                                                :
-                                                <Button size='large' disabled={planName === "Free"} loading={isLoadingPlanButton} onClick={() => handlePlanSelect('Free')} variant='primary' fullWidth>
-                                                    {planName == 'Free' ? 'selected' : 'select'}
-                                                </Button>} */}
-                            </div>
-                            <div className="star_plan_limit_dialogue">
-                                <ul className='start_plan_list'>
-                                    <li className='start_plan_list_item'>- {t("settings.freeBenefit1")}</li>
-                                    <li className='start_plan_list_item'>- {t("settings.freeBenefit2")}</li>
-                                </ul>
-                            </div>
+                            {(plan.key !== "Free") && (
+                                <div className="border-t border-gray-100 bg-gray-100 px-4 py-3 mt-4">
+                                    <p className="text-sm text-gray-600">
+                                        {t("settings.freeTrileText")}
+                                    </p>
+                                </div>
+                            )}
                         </div>
-                    </Card>
-                    <Card>
-                        <div className="start_price_choose_plan">
-                            <div className='start_plan_name'>{t("settings.planName2")}</div>
-                            <div className="start_plan_ammount_section">
-                                <div className="start_plan_ammount">19$</div>
-                                <div className="start_plan_ammount_suffix">{t("settings.planPrice2")}</div>
-                            </div>
-                            <div className="start_plan_trial"><Badge size="small" tone="info">{t("settings.freeTrileText")}</Badge> </div>
-                            <div className="start_plan_button_section">
-                                {loadingPage ?
-                                    <SkeletonDisplayText size="large" maxWidth={`${40}ch`} />
-                                    :
-                                    <Button loading={loadingPage} disabled={planName === 'Starter'} size='large' onClick={() => handlePlanSelect('Starter')} variant='primary' fullWidth>
-                                        {planName == 'Starter' ? t("settings.planSelectedText") : t("settings.planNotSelectedText")}
-
-                                    </Button>}
-
-                            </div>
-                            <div className="star_plan_limit_dialogue">
-                                <ul className='start_plan_list'>
-                                    <li className='start_plan_list_item'>- {t("settings.starterBenefit1")}</li>
-                                    <li className='start_plan_list_item'>- {t("settings.starterBenefit2")}</li>
-                                </ul>
-                                {/* <div>Up to 10 abandoned carts per month</div> */}
-
-                            </div>
-                        </div>
-                    </Card>
-                    <Card>
-                        <div className="start_price_choose_plan">
-                            <div className='start_plan_name'>{t("settings.planName3")}</div>
-                            <div className="start_plan_ammount_section">
-                                <div className="start_plan_ammount">49$</div>
-                                <div className="start_plan_ammount_suffix">{t("settings.planPrice3")}</div>
-                            </div>
-                            <div className="start_plan_trial"><Badge tone="info">{t("settings.freeTrileText")}</Badge> </div>
-                            <div className="start_plan_button_section">
-                                {loadingPage ?
-                                    <SkeletonDisplayText size="large" maxWidth={`${40}ch`} />
-                                    :
-                                    <Button loading={loadingPage} disabled={planName === 'Pro'} size='large' onClick={() => handlePlanSelect('Pro')} variant='primary' fullWidth>
-                                        {planName == 'Pro' ? t("settings.planSelectedText") : t("settings.planNotSelectedText")}
-                                    </Button>}
-
-                            </div>
-                            <div className="star_plan_limit_dialogue">
-                                <ul className='start_plan_list'>
-                                    <li className='start_plan_list_item'>- {t("settings.proBenefit1")}</li>
-                                    <li className='start_plan_list_item'>- {t("settings.proBenefit2")}</li>
-                                    <li className='start_plan_list_item'>- {t("settings.proBenefit3")}</li>
-                                    <li className='start_plan_list_item'>- {t("settings.proBenefit4")}</li>
-                                    <li className='start_plan_list_item'>- {t("settings.proBenefit5")}</li>
-                                </ul>
-                                {/* <div>Up to 49 sales recovery carts per month</div> */}
-
-                            </div>
-                        </div>
-                        <div className='popular_badge'>
-                            {t("settings.popularBadgeText")}
-                        </div>
-                    </Card>
-                    <Card>
-                        <div className="start_price_choose_plan">
-                            <div className='start_plan_name'>{t("settings.planName4")}</div>
-                            <div className="start_plan_ammount_section">
-                                <div className="start_plan_ammount">99$</div>
-                                <div className="start_plan_ammount_suffix">{t("settings.planPrice4")}</div>
-                            </div>
-                            <div className="start_plan_trial"><Badge tone="info">{t("settings.freeTrileText")}</Badge> </div>
-                            <div className="start_plan_button_section">
-
-                                {loadingPage ?
-                                    <SkeletonDisplayText size="large" maxWidth={`${40}ch`} />
-                                    :
-                                    <Button disabled={planName === 'Advance'} size='large' onClick={() => handlePlanSelect('Advance')} variant='primary' fullWidth>
-                                        {planName == 'Advance' ? t("settings.planSelectedText") : t("settings.planNotSelectedText")}
-                                    </Button>}
-                            </div>
-                            <div className="star_plan_limit_dialogue">
-                                <ul className='start_plan_list'>
-                                    <li className='start_plan_list_item'>- {t("settings.advancedBenefit1")}</li>
-                                    <li className='start_plan_list_item'>- {t("settings.advancedBenefit2")}</li>
-                                    <li className='start_plan_list_item'>- {t("settings.advancedBenefit3")}</li>
-                                    <li className='start_plan_list_item'>- {t("settings.advancedBenefit4")}</li>
-                                </ul>
-                                {/* <div>Up to 100 abandoned carts per month</div> */}
-
-                            </div>
-                        </div>
-
-                    </Card>
+                    ))}
                 </div>
             </div>
         </div>
-    )
+    );
 }

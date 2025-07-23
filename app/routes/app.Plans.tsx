@@ -2,15 +2,13 @@ import { Card, Page } from '@shopify/polaris';
 import React, { useEffect, useState } from 'react';
 import '../Plans.css';
 import { useSubmit } from '@remix-run/react';
-import { authenticate, MONTHLY_PLAN } from "../shopify.server";
-import { ActionFunctionArgs } from 'react-router';
-import { BillingInterval } from '@shopify/shopify-app-remix/server';
+import { authenticate } from "../shopify.server";
 
 
 export const action = async ({ request }) => {
     const formData = await request.formData();
     const price = parseFloat(formData.get("price"));
-    const planName = formData.get("planName") || MONTHLY_PLAN;
+    const planName = formData.get("planName");
     const { billing } = await authenticate.admin(request);
 
     const okay = await billing.require({

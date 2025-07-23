@@ -33,7 +33,7 @@
       "smartBulkNextWarning": "Upgrade to Pro or Higher Plan to access this feature",
       "smartBulkPreviousWarning": "Upgrade to Pro or Higher Plan to access this feature",
       "settingsActivateButtonStatus": "The feature has been {{status}} successfully.",
-      "SyncProcessStartedMessage":"Sync process has started in the background. This may take a few minutes to a few hours, depending on the size of your customer data."
+      "SyncProcessStartedMessage": "Sync process has started in the background. This may take a few minutes to a few hours, depending on the size of your customer data."
     },
     "icons": {
       "recoveredCarts": "Recovered Carts",
@@ -138,10 +138,10 @@
       "unsubscribed": "Unsubscribed",
       "notSubscribed": "Not Subscribed"
     },
-    "syncMoreCustomers":"Sync More Customers",
-    "syncMoreCustomersDesc":"To sync more customers to the app, select a date range and click the button below. This will import customer data from your store for the selected dates.",
-    "syncCustomers":"Sync Customers",
-    "syncConfirmationMessage":"Are you sure you want to sync more customers?"
+    "syncMoreCustomers": "Sync More Customers",
+    "syncMoreCustomersDesc": "To sync more customers to the app, select a date range and click the button below. This will import customer data from your store for the selected dates.",
+    "syncCustomers": "Sync Customers",
+    "syncConfirmationMessage": "Are you sure you want to sync more customers?"
   },
   "settings": {
     "title": "Settings",
@@ -186,18 +186,19 @@
     "proBenefit1": "Up to 49 sales recovery carts per month",
     "proBenefit2": "Potential to generate up to $10,000 in additional revenue per month!",
     "proBenefit3": "Bulk WhatsApp campaign messaging",
-    "proBenefit4": "Messaging for multilingual websites",
+    "proBenefit4": "Multilingual websites messaging",
     "proBenefit5": "Follow-up messaging",
     "planName4": "Advanced",
     "planPrice4": "/  Month",
-    "advancedBenefit1": "Pro+ Features",
-    "advancedBenefit2": "Up to 100 sales recovery carts per month",
-    "advancedBenefit3": "Potential to generate up to $100,000 in additional monthly revenue",
-    "advancedBenefit4": "Enjoy unlimited free messaging",
+    "advancedBenefit1": "Pro Features +",
+    "advancedBenefit2": "Potential to generate up to $100,000 more revenue per month",
+    "advancedBenefit3": "Enjoy unlimited free messaging",
     "popularBadgeText": "Most Popular",
     "activated": "activated",
     "activate": "Activate",
     "deactivated": "deactivated",
-    "deactivate": "Deactivate"
+    "deactivate": "Deactivate",
+    "OrSaveAmountPerYear": "or ${{amount}}/year and save {{percent}}%",
+    "BilledAnnually": "billed at ${{amount}} once per year"
   }
 }
