@@ -1,7 +1,22 @@
-.root {
+.bottom-right {
   position: fixed;
   bottom: 20px;
   right: 20px;
+  z-index: 9999;
+}
+
+.bottom-center {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+}
+
+.bottom-left {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
   z-index: 9999;
 }
 
@@ -112,9 +127,6 @@
 }
 
 .chat-bubble {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
   background-color: #f8faff;
   color: #333;
   border-radius: 12px;
@@ -124,7 +136,8 @@
   max-width: 220px;
   z-index: 10000;
   animation: fadeInUp 0.4s ease;
-  transition: transform 0.2s ease;
+  position: fixed;
+  bottom: 80px;
 }
 
 .chat-bubble:hover {

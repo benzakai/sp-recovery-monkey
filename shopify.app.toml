@@ -6,6 +6,9 @@ embedded = true
 name = "CartKeeper"
 handle = "sp-recovery-monkey"
 
+[build]
+include_config_on_deploy = true
+
 [webhooks]
 api_version = "2024-07"
 
@@ -39,6 +42,3 @@ prefix = "apps"
 
 [pos]
 embedded = false
-
-[build]
-include_config_on_deploy = true

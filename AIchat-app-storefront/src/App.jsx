@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { iconsClasses, iconsUrl, getBubblePosition } from './utils/constants';
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
@@ -7,6 +8,8 @@ function App() {
   const [imageError, setImageError] = useState(false);
   const [chatId, setChatId] = useState(null);
   const [showBubble, setShowBubble] = useState(false);
+  const [aiSettings, setAISettings] = useState(null)
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -54,6 +57,22 @@ function App() {
     }
   }
 
+  async function getAiChatbotSettings() {
+    try {
+      const response = await fetch('/apps/external-live/api/extGetAIChatbotSettings');
+      if (!response.ok) {
+        throw new Error('Failed to fetch AI chatbot settings');
+      }
+      const data = await response.json();
+      // console.log('AI Chatbot Settings:', data);
+      setAISettings(data?.settings);
+    } catch (error) {
+      console.error('Error fetching AI chatbot settings:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
 
   useEffect(() => {
     console.log('last update on... 08-07-25 3:00');
@@ -71,6 +90,7 @@ function App() {
     try {
       const userID = getChatSessionId(shopId, customerId)
       setChatId(userID);
+      getAiChatbotSettings();
     } catch (error) {
       console.error('Error initializing chat session:', error);
       return;
@@ -162,49 +182,48 @@ function App() {
     }
   }
 
-
-  // useEffect(() => {
-  //   console.log('Chat ID initialized:', `https://connect.cartkeeper.co/public-chat/${Shopify.shop}/${chatId}`);
-  // }, [chatId]);
-
   return (
-    <div className="root">
-      <button
-        className="message-icon"
-        style={{
-          ...(isOpen || (imageLoaded && !imageError) ? {} : { display: 'none' }),
-        }}
-        onClick={toggleIframe}
-        aria-label="Toggle chat"
-      >
-        {isOpen ? (
-          <span className="close-icon">×</span>
-        ) : (
-          <img
-            src="https://app.cartkeeper.co/images/chatIcon.svg"
-            alt="Chat Icon"
-            className="chat-img"
-            onLoad={() => setImageLoaded(true)}
-            onError={() => setImageError(true)}
-          />
-        )}
-      </button>
-      {showBubble && (
-        <div className="chat-bubble">
-          <span>You can ask me anything!</span>
-        </div>
-      )}
+    (isLoading ? <></> :
+      <div className={iconsClasses[aiSettings?.iconPosition] || 'bottom-right'}>
+        <button
+          className="message-icon"
+          style={{
+            ...(isOpen || (imageLoaded && !imageError) ? {} : { display: 'none' }),
+          }}
+          onClick={toggleIframe}
+          aria-label="Toggle chat"
+        >
+          {isOpen ? (
+            <span className="close-icon">×</span>
+          ) : (
+            <img
+              src={iconsUrl[aiSettings?.iconStyle] || "https://app.cartkeeper.co/images/chatWidget/icons/extension/chatIconStyle1.png"}
+              alt="Chat Icon"
+              className="chat-img"
+              onLoad={() => setImageLoaded(true)}
+              onError={() => setImageError(true)}
+            />
+          )}
+        </button>
 
-      {isOpen && chatId && (
-        <div className="iframe-container">
-          <iframe
-            className="iframe-ele"
-            src={`https://connect.cartkeeper.co/public-chat/${Shopify.shop}/${chatId}`}
-            title="AI Chat"
-          ></iframe>
-        </div>
-      )}
-    </div>
+        {showBubble && (
+          <div className="chat-bubble" style={getBubblePosition(aiSettings?.iconPosition || 'position2')}>
+            <span>You can ask me anything!</span>
+          </div>
+        )}
+
+        {
+          isOpen && chatId && (
+            <div className="iframe-container">
+              <iframe
+                className="iframe-ele"
+                src={`https://connect.cartkeeper.co/public-chat/${Shopify.shop}/${chatId}`}
+                title="AI Chat"
+              ></iframe>
+            </div>
+          )
+        }
+      </div >)
   );
 }
 

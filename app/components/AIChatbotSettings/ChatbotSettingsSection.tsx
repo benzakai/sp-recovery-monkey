@@ -4,6 +4,7 @@ import SettingsSecondBlock from '../Settings/SettingsSecondBlock'
 import MultiselectTagCombobox from '../MultiselectTagCombobox'
 import { useState } from 'react';
 import AlienSVG from '../SVGs/AlienSVG';
+import ChatIconSettings from './ChatIconSettings';
 
 export default function ChatbotSettingsSection({
     t,
@@ -119,6 +120,25 @@ export default function ChatbotSettingsSection({
                                 handleActivateButton={handleActivateButton}
                                 buttonType={"useEmojisTurnedOnButton"}
                                 isActivated={aiSettings.isUseEmojisTurnedOn}
+                            />
+                        )}
+                    </Card>
+
+                    <Card roundedAbove="sm">
+                        {isSettingsLoading ? (
+                            <SkeletonLoading />
+                        ) : (
+                            <SettingsSecondBlock
+                                children={
+                                    <ChatIconSettings
+                                        setAISettings={setAISettings}
+                                        aiSettings={aiSettings}
+                                        handleSaveSettings={handleSaveSettings}
+                                        disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
+                                    />
+                                }
+                                title={"Style Preferences"}
+                                description={""}
                             />
                         )}
                     </Card>

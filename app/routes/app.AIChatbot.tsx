@@ -46,6 +46,8 @@ const AIChatbot = () => {
         isWhatsappAssistantTurnedOn: true,
         toneOfVoice: "Friendly – Warm, casual, and easygoing",
         isUseEmojisTurnedOn: true,
+        iconStyle: 'style1',
+        iconPosition: 'position2',
         // trainingTopics: [
         //     'Products – Details, availability, and variations'
         // ],
@@ -151,6 +153,8 @@ const AIChatbot = () => {
         isWhatsappAssistantTurnedOn,
         toneOfVoice,
         isUseEmojisTurnedOn,
+        iconStyle,
+        iconPosition,
         // trainingTopics,
         syncRequest = null
     }: any) => {
@@ -159,6 +163,8 @@ const AIChatbot = () => {
                 isWhatsappAssistantTurnedOn,
                 toneOfVoice,
                 isUseEmojisTurnedOn,
+                iconStyle,
+                iconPosition,
                 // trainingTopics,
                 syncRequest
             };
@@ -183,6 +189,8 @@ const AIChatbot = () => {
             }
         } catch (error) {
             console.log("error occured on handleSaveSettings of AI Chatbot", error)
+        } finally {
+            fetchAISettings();
         }
     }
 
