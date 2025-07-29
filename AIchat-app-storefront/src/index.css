@@ -2,7 +2,7 @@
   position: fixed;
   bottom: 20px;
   right: 20px;
-  z-index: 9999;
+  z-index: 99999999;
 }
 
 .bottom-center {
@@ -10,17 +10,19 @@
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 9999;
+  z-index: 99999999;
 }
 
 .bottom-left {
   position: fixed;
   bottom: 20px;
   left: 20px;
-  z-index: 9999;
+  z-index: 99999999;
 }
 
 .message-icon {
+  all: unset;
+  all: initial;
   background-color: #3ebbc5;
   color: white;
   border: none;
@@ -50,6 +52,9 @@
 }
 
 .chat-img {
+  all: unset;
+  all: initial;
+  cursor: pointer;
   width: 60px;
   height: 60px;
 }
@@ -93,12 +98,16 @@
   }
 
   .message-icon {
+    all: unset;
+    all: initial;
     width: 42px;
     height: 42px;
     font-size: 20px;
   }
 
   .chat-img {
+    all: unset;
+    all: initial;
     width: 60px;
     height: 60px;
   }
@@ -116,11 +125,15 @@
   }
 
   .message-icon {
+    all: unset;
+    all: initial;
     width: 40px;
     height: 40px;
   }
 
   .chat-img {
+    all: unset;
+    all: initial;
     width: 58px;
     height: 58px;
   }

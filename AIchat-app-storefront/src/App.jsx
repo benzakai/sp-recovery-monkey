@@ -75,7 +75,7 @@ function App() {
 
 
   useEffect(() => {
-    console.log('last update on... 08-07-25 3:00');
+    console.log('last update on... 24-07-25 6:56');
     const shopId = Shopify?.shop;
     const customerId = ShopifyAnalytics.meta.page.customerId;
 

@@ -92,8 +92,8 @@ const shopify = shopifyApp({
           data["shopCreatedAt"] = shopDetails?.createdAt;
         }
 
-        // await setAppInstalledDate(session, data);
-        // await sendDataAppInstallTopicPubSub(data);
+        await setAppInstalledDate(session, data);
+        await sendDataAppInstallTopicPubSub(data);
         await fireStoreDeleteService("AppUninstalledDate", session.shop);
       } else {
         console.log("App is already installed");
