@@ -27,9 +27,9 @@ export const action = async ({ request }: { request: Request }) => {
     const isoPast = thirtyHoursAgo.toISOString();
 
     const timeFilter = `created_at:>='${isoPast}' AND created_at:<='${isoNow}'`;
-    const filterValueBase = checkout_token
-      ? `checkout_token:${checkout_token}`
-      : `customer_id:${customerId}`;
+    const filterValueBase = customerId
+      ? `customer_id:${customerId}`
+      : `checkout_token:${checkout_token}`;
 
     const query = `
       query getOrders($after: String, $filter: String!) {

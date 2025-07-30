@@ -1,4 +1,6 @@
 .bottom-right {
+  all: unset;
+  all: initial;
   position: fixed;
   bottom: 20px;
   right: 20px;
@@ -6,6 +8,8 @@
 }
 
 .bottom-center {
+  all: unset;
+  all: initial;
   position: fixed;
   bottom: 20px;
   left: 50%;
@@ -14,6 +18,8 @@
 }
 
 .bottom-left {
+  all: unset;
+  all: initial;
   position: fixed;
   bottom: 20px;
   left: 20px;
@@ -67,9 +73,12 @@
 }
 
 .iframe-container {
+  all: initial;
+  display: block;
   margin-top: 10px;
   animation: fadeInUp 0.3s ease-out;
 }
+
 
 @keyframes fadeInUp {
   from {
@@ -84,6 +93,8 @@
 }
 
 .iframe-ele {
+  all: unset;
+  all: initial;
   height: 466px;
   width: 420px;
   border: none;
@@ -93,8 +104,13 @@
 
 @media (max-width: 768px) {
   .iframe-ele {
+    all: unset;
+    all: initial;
     width: 90vw;
     height: 80vh;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #00000026;
   }
 
   .message-icon {
@@ -103,6 +119,16 @@
     width: 42px;
     height: 42px;
     font-size: 20px;
+    background-color: #3ebbc5;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
   }
 
   .chat-img {
@@ -120,8 +146,13 @@
   }
 
   .iframe-ele {
+    all: unset;
+    all: initial;
     width: 95vw;
     height: 75vh;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #00000026;
   }
 
   .message-icon {
@@ -129,6 +160,17 @@
     all: initial;
     width: 40px;
     height: 40px;
+    font-size: 20px;
+    background-color: #3ebbc5;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
   }
 
   .chat-img {
