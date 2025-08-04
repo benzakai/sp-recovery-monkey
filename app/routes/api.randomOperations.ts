@@ -162,7 +162,7 @@ const currencySymbols: any = {
 import { Firestore, Timestamp } from "@google-cloud/firestore";
 // import fs from 'fs';
 // import path from 'path';
-// const firestoreDatabase = new Firestore();
+const firestoreDatabase = new Firestore();
 
 // export async function loader({ request }) {
 //     const firestoreDatabase = new Firestore();
@@ -699,6 +699,49 @@ import { Firestore, Timestamp } from "@google-cloud/firestore";
 //     });
 //   }
 // };
+
+export const action = async ({ request }: any) => {
+  try {
+    const body = await request.json();
+    const shop = body?.shop;
+
+    if (!shop) {
+      return new Response("Missing 'shop' in request body", {
+        status: 400,
+        headers: { "Content-Type": "text/plain" },
+      });
+    }
+
+    const checkoutCollection = firestoreDatabase.collection("checkout");
+    const doc = await checkoutCollection.doc(shop).get();
+    const data = doc.data();
+
+    let abandonedListCustomer: any[] = [];
+
+    if (data) {
+      abandonedListCustomer = Object.entries(data).map(([_, value]) => {
+        try {
+          return JSON.parse(value as string);
+        } catch (e) {
+          console.warn("Invalid JSON in Firestore entry:", value);
+          return null;
+        }
+      }).filter(Boolean); 
+    }
+
+    return new Response(JSON.stringify({ abandonedListCustomer }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" }
+    });
+
+  } catch (error) {
+    console.error("Error in random operations loader:", error);
+    return new Response("Internal Server Error", {
+      status: 500,
+      headers: { "Content-Type": "text/plain" },
+    });
+  }
+};
 
 
 
