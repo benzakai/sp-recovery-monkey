@@ -9,6 +9,7 @@ import fireStoreFetchService from "~/services/fireStoreFetchService";
 import handleOrdersPaidWebhookService from "~/services/handleOrdersPaidWebhookService";
 import processCustomerUpdate from "~/services/webhooks/handlers/processCustomerUpdate";
 import processCustomerDelete from "~/services/webhooks/handlers/processCustomerDelete";
+import { fetchCustomerDataService } from "~/services/webhooks/handlers/fetchCustomerDataService";
 
 const firestoreDatabase = new Firestore();
 const checkoutCollection = firestoreDatabase.collection('users');
@@ -105,14 +106,43 @@ const setCheckoutData = async (data: any, storeId: string) => {
 
 const setUpdatesData = async (data: any, shopName: string) => {
   try {
-
+    let checkoutData = data;
+    // console.log("setUpdatesData data", data);
+    // console.log("data.customer.id", data?.customer?.id, "data.email", data?.customer?.email || data.email, "shopName:", shopName);
+    if (!data?.customer?.id) { // If customer ID is not present, fetching customer id from email
+      // console.log("setUpdatesData process started....", data?.id, "shopName:", shopName);
+      if (data?.customer?.email || data.email) {
+        const dataGot = await fetchCustomerDataService({ shop: shopName, email: data?.customer?.email || data.email });
+        // console.log("dataGot", dataGot)
+        if (dataGot.success && dataGot?.customer?.id) {
+          checkoutData = {
+            ...data, customer: {
+              ...data.customer,
+              id: Number(dataGot.customer.id.split('/').pop()),
+              admin_graphql_api_id: dataGot.customer.id,
+              email: dataGot.customer.defaultEmailAddress?.emailAddress ?? null,
+              first_name: dataGot.customer.firstName ?? null,
+              last_name: dataGot.customer.lastName ?? null,
+              created_at: dataGot.customer.createdAt ?? null,
+              updated_at: dataGot.customer.updatedAt ?? null,
+              phone: dataGot.customer.defaultPhoneNumber?.phoneNumber ?? null
+            }
+          };
+        } else {
+          // console.log("Error fetching customer data:", dataGot.error);
+        }
+      } else {
+        // console.log("No customer email found in data, skipping customer data fetch.");
+      }
+    }
+    // console.log("checkoutData==========>", checkoutData)
     await fireStoreCreateService("checkoutUpdateData", String(data?.id), {
       STORE_ID: shopName,
-      UpdateData: data
+      UpdateData: checkoutData
     }, {});
     // console.log("......setUpdatesData process finish.......");
   } catch (error) {
-    console.log("error", error);
+    console.log("error on setUpdatesData", error);
   }
 };
 
@@ -258,7 +288,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
           // console.log("APP_SUBSCRIPTIONS_UPDATE:", subscription);
           const subscriptionDataFound: any = await fireStoreFetchService("subscriptions", shop);
           // console.log("subscriptionDataFound", subscriptionDataFound);
-          const proCancelledDate = (isProPlan && isCancelled) 
+          const proCancelledDate = (isProPlan && isCancelled)
             ? subscription?.updated_at
             : subscriptionDataFound?.proCancelledDate ?? null;
 
@@ -267,7 +297,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
           if (!subscriptionDataFound || (subscriptionDataFound?.name !== "Free" && incomingStatus !== "CANCELLED")) {
             await setSubscriptionData(payload, shop);
           }
-          else if (isProPlan && isCancelled) { 
+          else if (isProPlan && isCancelled) {
             await documentRef.update({ proCancelledDate, updatedAt: subscription?.updated_at });
           } else {
             // console.log("Ignored cancellation of non-Pro plan:", incomingPlan);
