@@ -25,7 +25,7 @@ function cleanAndFormatData(str: any) {
 }
 
 
-async function tagOrder(session: any, orderID: any) {
+async function tagOrder(session: any, orderID: any, previousTags: any) {
     // console.log("orderID on tagOder", orderID)
     try {
         if (session?.shop) {
@@ -63,7 +63,7 @@ async function tagOrder(session: any, orderID: any) {
                 variables: {
                     "input": {
                         "id": orderID,
-                        "tags": "💰 Profit by Cartkeeper"
+                        "tags": [...previousTags, "💰 Profit by Cartkeeper"]
                     }
                 }
             });
@@ -84,7 +84,7 @@ async function tagOrder(session: any, orderID: any) {
     }
 }
 
-async function getOrderID(session: any, orderNumber: any) {
+async function getOrderData(session: any, orderNumber: any) {
     // console.log("orderNumber from getOrderID", orderNumber);
     // console.log("session.shop", session.shop)
     // console.log("session.accessToken", session.accessToken)
@@ -103,7 +103,8 @@ async function getOrderID(session: any, orderNumber: any) {
                     query {
                         orders(first: 10, query:"name:${orderNumber}") {
                             nodes{
-                            id
+                                id
+                                tags
                             }
                         }
                     }`
@@ -117,12 +118,12 @@ async function getOrderID(session: any, orderNumber: any) {
 
             const data = await response.json();
             // console.log("data of orderID", data);
-            const orderID = data?.data?.orders?.nodes?.[0]?.id;
+            const orderData = data?.data?.orders?.nodes?.[0];
             // console.log("orderID found on getOrderID", orderID, "for this shop", session?.shop);
             // console.log('sdffddddddd', data?.extensions.cost.throttleStatus)
 
-            if (orderID) {
-                return orderID;
+            if (orderData) {
+                return orderData;
             } else {
                 return null;
             }
@@ -170,9 +171,12 @@ export default async function orderTaggingService() {
                         if (orderNumber) {
                             // console.log("saleId", saleId)
                             // console.log("continuing the process because session found!", session)
-                            const orderID = await getOrderID(session, orderNumber)
+                            const gotOrder = await getOrderData(session, orderNumber)
+                            const orderID = gotOrder?.id;
+                            const previousTags = gotOrder?.tags ? gotOrder?.tags : [];
+                            // console.log("previousTags", previousTags)
                             if (orderID) {
-                                const data = await tagOrder(session, orderID)
+                                const data = await tagOrder(session, orderID, previousTags)
                                 if (data?.data?.orderUpdate?.userErrors?.length === 0) {
                                     console.log(`successfully added tag to this ${orderID} order of this ${doc.id} shop, saleId: ${saleId},  count:`, count)
                                     await doc.ref.update({
