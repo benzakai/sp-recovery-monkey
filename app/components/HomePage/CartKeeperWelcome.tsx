@@ -5,25 +5,25 @@ import {
     BlockStack,
 } from "@shopify/polaris";
 import { useState, useEffect } from "react";
-import "./CartKeeperWelcome.css"; 
+import "./CartKeeperWelcome.css";
 import { useNavigate } from "@remix-run/react";
 
 export default function CartKeeperWelcome() {
     const slides = [
         {
             id: 1,
-            img: "/images/homePage/CartRecovery.svg",
+            img: "/images/homePage/CartRecovery.webp",
             caption: "Boost sales by recovering carts through WhatsApp"
         },
         {
             id: 2,
-            img: "/images/homePage/AIPersonalAssistant.svg",
+            img: "/images/homePage/AIPersonalAssistant.webp",
             caption: "Turn browsing into buying with your AI shopping assistant"
         },
         {
             id: 3,
-            img: "/images/homePage/RealRevenue.svg",
-            caption: "Boost conversions with personalized recommendations"
+            img: "/images/homePage/RealRevenue.webp",
+            caption: "Turn abandoned carts into real revenue, our app proves every message counts"
         }
     ];
 
@@ -68,7 +68,7 @@ export default function CartKeeperWelcome() {
                     </Text>
                 </div>
 
-                <div className="carousel-container">
+                <div className={`carousel-container ${imagesLoaded ? 'loaded' : 'not_loaded'}`}>
                     <button onClick={prevSlide} className="carousel-btn left-btn">
                         <img src="/images/homePage/leftNav.png" alt="Previous" />
                     </button>
@@ -108,7 +108,7 @@ export default function CartKeeperWelcome() {
                 </div>
             </div>
 
-            <div className="cartkeeper-right">
+            <div className="cartkeeper-right cartkeeper-right_new">
                 <Card padding="600">
                     <div className="card-content">
                         <BlockStack inlineAlign="center" gap="400">
@@ -124,7 +124,7 @@ export default function CartKeeperWelcome() {
                                     AI WhatsApp Cart Recovery
                                 </Text>
                             </BlockStack>
-                            <Button variant="primary" onClick={()=>navigate("/app/LetsStart")} size="large" fullWidth>
+                            <Button variant="primary" onClick={() => navigate("/app/LetsStart")} size="large" fullWidth>
                                 Get Started
                             </Button>
                         </BlockStack>

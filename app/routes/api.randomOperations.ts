@@ -700,45 +700,127 @@ const firestoreDatabase = new Firestore();
 //   }
 // };
 
+// export const action = async ({ request }: any) => {
+//   try {
+//     const body = await request.json();
+//     const shop = body?.shop;
+
+//     if (!shop) {
+//       return new Response("Missing 'shop' in request body", {
+//         status: 400,
+//         headers: { "Content-Type": "text/plain" },
+//       });
+//     }
+
+//     const checkoutCollection = firestoreDatabase.collection("checkout");
+//     const doc = await checkoutCollection.doc(shop).get();
+//     const data = doc.data();
+
+//     let abandonedListCustomer: any[] = [];
+
+//     if (data) {
+//       abandonedListCustomer = Object.entries(data).map(([_, value]) => {
+//         try {
+//           return JSON.parse(value as string);
+//         } catch (e) {
+//           console.warn("Invalid JSON in Firestore entry:", value);
+//           return null;
+//         }
+//       }).filter(Boolean); 
+//     }
+
+//     return new Response(JSON.stringify({ abandonedListCustomer }), {
+//       status: 200,
+//       headers: { "Content-Type": "application/json" }
+//     });
+
+//   } catch (error) {
+//     console.error("Error in random operations loader:", error);
+//     return new Response("Internal Server Error", {
+//       status: 500,
+//       headers: { "Content-Type": "text/plain" },
+//     });
+//   }
+// };
+
+import prisma from "~/db.server";
+
 export const action = async ({ request }: any) => {
   try {
     const body = await request.json();
     const shop = body?.shop;
 
     if (!shop) {
-      return new Response("Missing 'shop' in request body", {
+      return new Response(JSON.stringify({ error: "Missing 'shop' in request body" }), {
         status: 400,
-        headers: { "Content-Type": "text/plain" },
+        headers: { "Content-Type": "application/json" },
       });
     }
 
-    const checkoutCollection = firestoreDatabase.collection("checkout");
-    const doc = await checkoutCollection.doc(shop).get();
-    const data = doc.data();
-
-    let abandonedListCustomer: any[] = [];
-
-    if (data) {
-      abandonedListCustomer = Object.entries(data).map(([_, value]) => {
-        try {
-          return JSON.parse(value as string);
-        } catch (e) {
-          console.warn("Invalid JSON in Firestore entry:", value);
-          return null;
-        }
-      }).filter(Boolean); 
-    }
-
-    return new Response(JSON.stringify({ abandonedListCustomer }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" }
+    const shopData = await prisma.session.findFirst({
+      where: { shop },
     });
 
+    if (!shopData?.accessToken) {
+      return new Response(JSON.stringify({ error: "Shop not found or missing access token" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const query = `#graphql
+      query GetRecurringApplicationCharges {
+        currentAppInstallation {
+          activeSubscriptions {
+            id
+            createdAt
+            currentPeriodEnd
+            name
+            test
+            trialDays
+            status
+            lineItems {
+              id
+              plan {
+                pricingDetails {
+                  __typename
+                }
+              }
+            }
+          }
+        }
+      }
+    `;
+
+    const response = await fetch(`https://${shop}/admin/api/2025-07/graphql.json`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Shopify-Access-Token": shopData.accessToken,
+      },
+      body: JSON.stringify({ query }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Shopify API error:", errorText);
+      return new Response(JSON.stringify({ error: "Failed to fetch Shopify data", details: errorText }), {
+        status: response.status,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const data = await response.json();
+
+    return new Response(JSON.stringify({ data, shopData }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
-    console.error("Error in random operations loader:", error);
-    return new Response("Internal Server Error", {
+    console.error("Error in subscriptions action:", error);
+    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
       status: 500,
-      headers: { "Content-Type": "text/plain" },
+      headers: { "Content-Type": "application/json" },
     });
   }
 };

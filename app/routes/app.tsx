@@ -8,38 +8,65 @@ import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 import { authenticate } from "../shopify.server";
 import React from "react";
 import { useTranslation } from "react-i18next";
+import fireStoreFetchService from "~/services/fireStoreFetchService";
 
 React.useLayoutEffect = React.useEffect;
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { session, billing } = await authenticate.admin(request);
-  return json({ apiKey: process.env.SHOPIFY_API_KEY || "" });
+  const { admin, session, billing } = await authenticate.admin(request);
+  const response = await admin.graphql(
+    `#graphql
+              query GetRecurringApplicationCharges {
+                currentAppInstallation {
+                  activeSubscriptions {
+                    id
+                    createdAt
+                    currentPeriodEnd
+                    name
+                    test
+                    trialDays
+                    status
+                    lineItems {
+                      id
+                      plan {
+                        pricingDetails {
+                          __typename
+                        }
+                      }
+                    }
+                  }
+                }
+              }`,
+  );
+
+  const data = await response.json();
+  // console.log(`data.data.currentAppInstallation.activeSubscriptions============>`, data.data.currentAppInstallation);
+  // to check if user is on free plan
+  const doc = await fireStoreFetchService("subscriptions", session.shop);
+  // console.log("doc", doc);
+  if (data.data.currentAppInstallation.activeSubscriptions.length > 0) {
+    return json({
+      apiKey: process.env.SHOPIFY_API_KEY || "",
+      planName: data.data.currentAppInstallation.activeSubscriptions?.[0]?.name,
+      subscribed: data.data.currentAppInstallation.activeSubscriptions?.[0]?.status === "ACTIVE"
+    });
+  } else {
+    return json({
+      apiKey: process.env.SHOPIFY_API_KEY || "",
+      planName: (doc?.plan === "Free" && doc?.status === "ACTIVE") ? "Free" : null,
+      subscribed: false
+    });
+  }
 };
 
 export default function App() {
-  const { apiKey } = useLoaderData<typeof loader>();
+  const { apiKey, planName, subscribed } = useLoaderData<typeof loader>();
   const [anySubscription, setAnySubscription] = React.useState<any>("loading");
   const [selectedPlanName, setSelectedPlanName] = React.useState<any>(null);
   const [permissions, setPermissions] = React.useState<any>({})
   const { t } = useTranslation()
-
-  async function fetchAppSubscription(): Promise<any> {
-    try {
-      const response = await fetch("/api/active/subscription/get");
-      if (response.ok && response.status === 200) {
-        const responseJson = await response.json();
-        // console.log("responseJson fetchAppSubscription", responseJson);
-        // console.log(`responseJson?.activeSubscriptions?.[0]?.status === "ACTIVE";`,responseJson?.activeSubscriptions?.[0]?.status === "ACTIVE");
-        return { subscribed: responseJson?.activeSubscriptions?.[0]?.status === "ACTIVE", planName: responseJson.selectedPlanName };
-        // return false
-      }
-    } catch (error) {
-      console.log("ERROR on fetchAppSubscription", error);
-    }
-    return false;
-  }
 
   async function fetchPermissions(): Promise<any> {
     try {
@@ -64,7 +91,6 @@ export default function App() {
 
   React.useEffect(() => {
     const checkSubscription = async () => {
-      const { subscribed, planName }: any = await fetchAppSubscription();
       if (!subscribed && planName !== "Free") {
         setAnySubscription(false);
       } else {
@@ -108,7 +134,7 @@ export default function App() {
       setSelectedPlanName(planName)
     };
     checkSubscription();
-  }, []);
+  }, [planName, subscribed]);
 
   return (
     <AppProvider isEmbeddedApp apiKey={apiKey}>
