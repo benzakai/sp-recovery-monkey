@@ -3,13 +3,13 @@ import prisma from "~/db.server";
 export const action = async ({ request }: { request: Request }) => {
   try {
     const body = await request.json();
-    const { customerId, shop, checkout_token } = body;
+    const { customerId, shop, checkout_token, cart_token } = body;
 
     if (!shop) {
       return new Response("Missing 'shop' parameter", { status: 400 });
     }
-    if (!customerId && !checkout_token) {
-      return new Response("Missing 'customerId' or 'checkout_token' parameter", { status: 400 });
+    if (!customerId && !checkout_token && !cart_token) {
+      return new Response("Missing 'customerId', 'checkout_token', or 'cart_token' parameter", { status: 400 });
     }
 
     const shopData = await prisma.session.findFirst({ where: { shop } });
@@ -27,9 +27,14 @@ export const action = async ({ request }: { request: Request }) => {
     const isoPast = thirtyHoursAgo.toISOString();
 
     const timeFilter = `created_at:>='${isoPast}' AND created_at:<='${isoNow}'`;
-    const filterValueBase = customerId
-      ? `customer_id:${customerId}`
-      : `checkout_token:${checkout_token}`;
+    let filterValueBase: string;
+    if (customerId) {
+      filterValueBase = `customer_id:${customerId}`;
+    } else if (checkout_token) {
+      filterValueBase = `checkout_token:${checkout_token}`;
+    } else {
+      filterValueBase = `cart_token:${cart_token}`;
+    }
 
     const query = `
       query getOrders($after: String, $filter: String!) {
