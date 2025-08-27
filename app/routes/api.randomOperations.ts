@@ -743,12 +743,100 @@ const firestoreDatabase = new Firestore();
 //   }
 // };
 
+
+// export const action = async ({ request }: any) => {
+//   try {
+//     const body = await request.json();
+//     const shop = body?.shop;
+
+//     if (!shop) {
+//       return new Response(JSON.stringify({ error: "Missing 'shop' in request body" }), {
+//         status: 400,
+//         headers: { "Content-Type": "application/json" },
+//       });
+//     }
+
+//     const shopData = await prisma.session.findFirst({
+//       where: { shop },
+//     });
+
+//     if (!shopData?.accessToken) {
+//       return new Response(JSON.stringify({ error: "Shop not found or missing access token" }), {
+//         status: 404,
+//         headers: { "Content-Type": "application/json" },
+//       });
+//     }
+
+//     const query = `#graphql
+//       query GetRecurringApplicationCharges {
+//         currentAppInstallation {
+//           activeSubscriptions {
+//             id
+//             createdAt
+//             currentPeriodEnd
+//             name
+//             test
+//             trialDays
+//             status
+//             lineItems {
+//               id
+//               plan {
+//                 pricingDetails {
+//                   __typename
+//                 }
+//               }
+//             }
+//           }
+//         }
+//       }
+//     `;
+
+//     const response = await fetch(`https://${shop}/admin/api/2025-07/graphql.json`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         "X-Shopify-Access-Token": shopData.accessToken,
+//       },
+//       body: JSON.stringify({ query }),
+//     });
+
+//     if (!response.ok) {
+//       const errorText = await response.text();
+//       console.error("Shopify API error:", errorText);
+//       return new Response(JSON.stringify({ error: "Failed to fetch Shopify data", details: errorText }), {
+//         status: response.status,
+//         headers: { "Content-Type": "application/json" },
+//       });
+//     }
+
+//     const data = await response.json();
+
+//     return new Response(JSON.stringify({ data, shopData }), {
+//       status: 200,
+//       headers: { "Content-Type": "application/json" },
+//     });
+//   } catch (error) {
+//     console.error("Error in subscriptions action:", error);
+//     return new Response(JSON.stringify({ error: "Internal Server Error" }), {
+//       status: 500,
+//       headers: { "Content-Type": "application/json" },
+//     });
+//   }
+// };
+
 import prisma from "~/db.server";
 
 export const action = async ({ request }: any) => {
   try {
     const body = await request.json();
     const shop = body?.shop;
+    const productId = body.productId
+
+    if (!productId) {
+      return new Response(JSON.stringify({ message: 'error occurred on disconnectInstance' }), {
+        status: 404,
+      });
+    }
 
     if (!shop) {
       return new Response(JSON.stringify({ error: "Missing 'shop' in request body" }), {
@@ -768,29 +856,16 @@ export const action = async ({ request }: any) => {
       });
     }
 
-    const query = `#graphql
-      query GetRecurringApplicationCharges {
-        currentAppInstallation {
-          activeSubscriptions {
-            id
-            createdAt
-            currentPeriodEnd
-            name
-            test
-            trialDays
-            status
-            lineItems {
-              id
-              plan {
-                pricingDetails {
-                  __typename
-                }
-              }
-            }
-          }
-        }
-      }
-    `;
+    const query =
+                `#graphql
+                  query GetProduct($id: ID!) {
+                      product(id: $id) {
+                          id
+                          title
+                          handle
+                      }
+                  }
+                `;
 
     const response = await fetch(`https://${shop}/admin/api/2025-07/graphql.json`, {
       method: "POST",
@@ -798,13 +873,18 @@ export const action = async ({ request }: any) => {
         "Content-Type": "application/json",
         "X-Shopify-Access-Token": shopData.accessToken,
       },
-      body: JSON.stringify({ query }),
+      body: JSON.stringify({
+        query,
+        variables: {
+          "id": `gid://shopify/Product/${Number(productId)}`
+        }
+      }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Shopify API error:", errorText);
-      return new Response(JSON.stringify({ error: "Failed to fetch Shopify data", details: errorText }), {
+      console.error("shopify handle get API error:", errorText);
+      return new Response(JSON.stringify({ error: "failed to fetch Shopify handle data", details: errorText }), {
         status: response.status,
         headers: { "Content-Type": "application/json" },
       });
@@ -824,7 +904,5 @@ export const action = async ({ request }: any) => {
     });
   }
 };
-
-
 
 

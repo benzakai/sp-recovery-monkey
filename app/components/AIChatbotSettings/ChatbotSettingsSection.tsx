@@ -5,6 +5,7 @@ import MultiselectTagCombobox from '../MultiselectTagCombobox'
 import { useState } from 'react';
 import AlienSVG from '../SVGs/AlienSVG';
 import ChatIconSettings from './ChatIconSettings';
+import { isAdvancePlanOrHigher } from '~/utils/plans';
 
 export default function ChatbotSettingsSection({
     t,
@@ -39,26 +40,6 @@ export default function ChatbotSettingsSection({
                     </Text>
                 </div>
                 <BlockStack gap="400">
-                    <Card roundedAbove="sm">
-                        {isSettingsLoading ? (
-                            <SkeletonLoading />
-                        ) : (
-                            <SettingsSecondBlock
-                                children={
-                                    <></>
-                                }
-                                availableOn={"Pro"}
-                                title={"Turn on your WhatsApp assistant"}
-                                description={"Let the AI handle chats for you on WhatsApp — from answering common questions to keeping the conversation flowing."}
-                                activateButtonTitle={aiSettings.isWhatsappAssistantTurnedOn ? "Turn off" : "Turn on"}
-                                isActivateButtonLoading={loading.activeButton === "whatsappAssistantTurnedOnButton"}
-                                isActivateButtonDisabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan) || loading.activeButton)}
-                                handleActivateButton={handleActivateButton}
-                                buttonType={"whatsappAssistantTurnedOnButton"}
-                                isActivated={aiSettings.isWhatsappAssistantTurnedOn}
-                            />
-                        )}
-                    </Card>
                     <Card roundedAbove="sm">
                         {isSettingsLoading ? (
                             <SkeletonLoading />
@@ -220,7 +201,26 @@ export default function ChatbotSettingsSection({
                                 </div>
                             </Card>
                         </div>
-
+                        <Card roundedAbove="sm">
+                            {isSettingsLoading ? (
+                                <SkeletonLoading />
+                            ) : (
+                                <SettingsSecondBlock
+                                    children={
+                                        <></>
+                                    }
+                                    availableOn={"Advanced"}
+                                    title={"Turn on your WhatsApp assistant"}
+                                    description={"Let the AI handle chats for you on WhatsApp — from answering common questions to keeping the conversation flowing."}
+                                    activateButtonTitle={aiSettings.isWhatsappAssistantTurnedOn ? "Turn off" : "Turn on"}
+                                    isActivateButtonLoading={loading.activeButton === "whatsappAssistantTurnedOnButton"}
+                                    isActivateButtonDisabled={(!isAdvancePlanOrHigher(selectedPlanName) && !isAdvancePlanOrHigher(permissions?.manualPlan) || loading.activeButton)}
+                                    handleActivateButton={handleActivateButton}
+                                    buttonType={"whatsappAssistantTurnedOnButton"}
+                                    isActivated={aiSettings.isWhatsappAssistantTurnedOn}
+                                />
+                            )}
+                        </Card>
                     </BlockStack>
                 </div>
             </div>
