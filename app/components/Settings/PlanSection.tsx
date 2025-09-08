@@ -66,6 +66,8 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
                 t("settings.advancedBenefit1"),
                 t("settings.advancedBenefit2"),
                 t("settings.advancedBenefit3"),
+                t("settings.advancedBenefit4"),
+                t("settings.advancedBenefit5")
             ],
         },
     ];
