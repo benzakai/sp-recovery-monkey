@@ -7,7 +7,9 @@ export const iconsClasses = {
 export const iconsUrl = {
   'style1': 'https://app.cartkeeper.co/images/chatWidget/icons/extension/chatIconStyle1.png',
   'style2': 'https://app.cartkeeper.co/images/chatWidget/icons/extension/chatIconStyle2.png',
-  'style3': 'https://app.cartkeeper.co/images/chatWidget/icons/extension/chatIconStyle3.png'
+  'style3': 'https://app.cartkeeper.co/images/chatWidget/icons/extension/chatIconStyle3.png',
+  'style4': 'https://app.cartkeeper.co/images/chatWidget/icons/extension/chatIconStyle4.png',
+  'style5': 'https://app.cartkeeper.co/images/chatWidget/icons/extension/chatIconStyle5.png',
 };
 
 export const getBubblePosition = (position) => {

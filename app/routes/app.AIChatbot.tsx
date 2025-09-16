@@ -115,6 +115,8 @@ const AIChatbot = () => {
                         isWhatsappAssistantTurnedOn: true,
                         toneOfVoice: "Friendly – Warm, casual, and easygoing",
                         isUseEmojisTurnedOn: true,
+                        iconStyle: 'style1',
+                        iconPosition: 'position2',
                         // trainingTopics: [
                         //     'Products – Details, availability, and variations'
                         // ],

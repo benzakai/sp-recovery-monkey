@@ -77,6 +77,14 @@ const ChatIconSettings = ({ setAISettings, aiSettings, disabled = false }: any) 
       id: 'style3',
       src: 'https://app.cartkeeper.co/images/chatWidget/icons/admin/chatIconStyle3.png',
     },
+    {
+      id: 'style4',
+      src: 'https://app.cartkeeper.co/images/chatWidget/icons/admin/chatIconStyle4.png',
+    },
+    {
+      id: 'style5',
+      src: 'https://app.cartkeeper.co/images/chatWidget/icons/admin/chatIconStyle5.png',
+    },
   ];
 
   const iconPositions = [
