@@ -5,7 +5,6 @@ const renderOption = (
   items: any,
   aiSettings: any,
   setAISettings: any,
-  handleSaveSettings: any,
   groupName: any,
   disabled: boolean
 ) =>
@@ -43,7 +42,6 @@ const renderOption = (
 
             const newSettings = { ...aiSettings, ...updatedSettings };
             setAISettings(newSettings);
-            handleSaveSettings(newSettings);
           }}
           className="peer hidden"
           id={id}
@@ -64,7 +62,7 @@ const renderOption = (
 
 
 
-const ChatIconSettings = ({ setAISettings, aiSettings, handleSaveSettings, disabled = false }: any) => {
+const ChatIconSettings = ({ setAISettings, aiSettings, disabled = false }: any) => {
 
   const iconStyles = [
     {
@@ -102,14 +100,14 @@ const ChatIconSettings = ({ setAISettings, aiSettings, handleSaveSettings, disab
         Chat Icon Style
       </Text>
       <div className="flex gap-14 items-center mb-6 mt-2 ml-5">
-        {renderOption(iconStyles, aiSettings, setAISettings, handleSaveSettings, 'chat-icon-style', disabled)}
+        {renderOption(iconStyles, aiSettings, setAISettings, 'chat-icon-style', disabled)}
       </div>
 
       <Text as="p" variant="bodyLg" fontWeight="medium">
         Chat Icon Position
       </Text>
       <div className="flex gap-14 items-center mt-2 ml-5">
-        {renderOption(iconPositions, aiSettings, setAISettings, handleSaveSettings, 'chat-icon-position', disabled)}
+        {renderOption(iconPositions, aiSettings, setAISettings, 'chat-icon-position', disabled)}
       </div>
     </>
   );

@@ -75,9 +75,12 @@ function App() {
 
 
   useEffect(() => {
-    console.log('last update on... 24-07-25 6:56');
+    console.log('last update on... 12:09');
     const shopId = Shopify?.shop;
-    const customerId = ShopifyAnalytics.meta.page.customerId;
+    const customerId =
+      typeof ShopifyAnalytics !== "undefined"
+        ? ShopifyAnalytics.meta?.page?.customerId
+        : undefined;
 
     if (!shopId) {
       console.error('Shop ID is not available.');

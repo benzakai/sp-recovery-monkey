@@ -73,6 +73,7 @@
     },
     "welcome": {
         "title": "Willkommen",
+        "dashboard": "Dashboard",
         "subTitle": "Überprüfe deine Einnahmen, schreibe Nachrichten und verbinde dich, um sie zu senden.",
         "connectSectionTitle": "Klicke auf den Button, um deine Verbindung zu überprüfen.",
         "connectedTitle": "your device is connected!",

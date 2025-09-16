@@ -73,6 +73,7 @@
   },
   "welcome": {
     "title": "Bem-vindo",
+    "dashboard": "Painel de controle",
     "subTitle": "Consulte seus ganhos, escreva mensagens e conecte-se para enviá-las.",
     "connectSectionTitle": "Clique no botão para verificar sua conexão.",
     "connectedTitle": "Seu dispositivo está conectado!",

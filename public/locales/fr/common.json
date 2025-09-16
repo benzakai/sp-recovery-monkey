@@ -73,6 +73,7 @@
   },
   "welcome": {
     "title": "Bienvenue",
+    "dashboard": "Tableau de bord",
     "subTitle": "Consultez vos revenus, écrivez des messages et connectez-vous pour les envoyer.",
     "connectSectionTitle": "Cliquez sur le bouton pour vérifier la connexion.",
     "connectedTitle": "Votre appareil est connecté !",

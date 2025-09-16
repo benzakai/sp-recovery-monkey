@@ -12,13 +12,12 @@ export default function ChatbotSettingsSection({
     isSettingsLoading,
     aiSettings,
     setAISettings,
-    handleSaveSettings,
     handleSyncing,
     loading,
-    topics,
-    handleActivateButton,
+    setActivateButtonActionType,
     isProPlanOrHigher,
     selectedPlanName,
+    activateButtons,
     permissions,
     handleChatExtensionActivateButton
 }: any) {
@@ -70,7 +69,6 @@ export default function ChatbotSettingsSection({
                                             label=""
                                             onChange={(v) => {
                                                 setAISettings({ ...aiSettings, toneOfVoice: v })
-                                                handleSaveSettings({ ...aiSettings, toneOfVoice: v })
                                             }}
                                             value={aiSettings.toneOfVoice}
                                             disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
@@ -98,7 +96,11 @@ export default function ChatbotSettingsSection({
                                 activateButtonTitle={aiSettings.isUseEmojisTurnedOn ? "Turn off" : "Turn on"}
                                 isActivateButtonLoading={loading.activeButton === "useEmojisTurnedOnButton"}
                                 isActivateButtonDisabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan) || loading.activeButton)}
-                                handleActivateButton={handleActivateButton}
+                                handleActivateButton={(data: any) => {
+                                    const settingKey = activateButtons[data];
+                                    setAISettings((p: any) => ({ ...p, [settingKey]: !aiSettings[settingKey] }))
+                                    setActivateButtonActionType(data)
+                                }}
                                 buttonType={"useEmojisTurnedOnButton"}
                                 isActivated={aiSettings.isUseEmojisTurnedOn}
                             />
@@ -114,7 +116,6 @@ export default function ChatbotSettingsSection({
                                     <ChatIconSettings
                                         setAISettings={setAISettings}
                                         aiSettings={aiSettings}
-                                        handleSaveSettings={handleSaveSettings}
                                         disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
                                     />
                                 }
@@ -215,7 +216,11 @@ export default function ChatbotSettingsSection({
                                     activateButtonTitle={aiSettings.isWhatsappAssistantTurnedOn ? "Turn off" : "Turn on"}
                                     isActivateButtonLoading={loading.activeButton === "whatsappAssistantTurnedOnButton"}
                                     isActivateButtonDisabled={(!isAdvancePlanOrHigher(selectedPlanName) && !isAdvancePlanOrHigher(permissions?.manualPlan) || loading.activeButton)}
-                                    handleActivateButton={handleActivateButton}
+                                    handleActivateButton={(data: any) => {
+                                        const settingKey = activateButtons[data];
+                                        setAISettings((p: any) => ({ ...p, [settingKey]: !aiSettings[settingKey] }))
+                                        setActivateButtonActionType(data)
+                                    }}
                                     buttonType={"whatsappAssistantTurnedOnButton"}
                                     isActivated={aiSettings.isWhatsappAssistantTurnedOn}
                                 />

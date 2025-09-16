@@ -9,6 +9,7 @@ import TwoSVG from '~/components/SVGs/TwoSVG';
 import ThreeSVG from '~/components/SVGs/ThreeSVG';
 import AlienSVG from '~/components/SVGs/AlienSVG';
 import { useTranslation } from 'react-i18next';
+import SaveBarComponent from '~/components/SaveBarComponent';
 
 const WelcomeConnect = () => {
     const { t } = useTranslation()
@@ -33,10 +34,19 @@ const WelcomeConnect = () => {
     const topics = ['message'];
     const [customMessage, setCustomMessage] = useState()
     const [compareMessage, setCompareMessage] = useState()
-    const [isSaveButtonLoading, setSaveButtonLoading] = useState(false)
+    const [isSaveButtonLoading, setSaveButtonLoading] = useState<any>(null)
     const [isMessageLoading, setMessageLoading] = useState(true)
     const [isDisBtnLoading, setDisBtnLoading] = useState(false)
     const [isPending, startTransition] = useTransition();
+
+    useEffect(() => {
+        const isClean = compareMessage?.header === customMessage?.header && compareMessage?.content === customMessage?.content
+        if (isClean) {
+            shopify.saveBar.hide('welcome-connect-save-bar');
+        } else {
+            shopify.saveBar.show('welcome-connect-save-bar');
+        }
+    }, [customMessage, compareMessage]);
 
     const fetchPhoneNumber = async ({ url, id, token }: any) => {
         const response = await fetch('/api/fetchPhoneNumber', {
@@ -305,8 +315,8 @@ const WelcomeConnect = () => {
 
     const handleSaveMessage = async () => {
         try {
-            setSaveButtonLoading(true)
-            // console.log("message from handleSaveMessage", customMessage);
+            setSaveButtonLoading("doLoad")
+            console.log("message from handleSaveMessage", customMessage);
             const response = await fetch('/api/saveMainCustomMessage', {
                 method: 'POST',
                 body: JSON.stringify(customMessage)
@@ -327,7 +337,7 @@ const WelcomeConnect = () => {
             console.log("error occured on handleSaveMessage", error);
 
         } finally {
-            setSaveButtonLoading(false)
+            setSaveButtonLoading(null)
         }
     }
 
@@ -339,6 +349,9 @@ const WelcomeConnect = () => {
         }
     }
 
+    const handleDiscardChanges = () => {
+        setCustomMessage(compareMessage)
+    }
 
 
     return (
@@ -350,7 +363,7 @@ const WelcomeConnect = () => {
                         <div>
                             <div className='pb-8'>
                                 <Text variant="heading3xl" as="h3">
-                                    {t("welcome.title")}
+                                    {t("welcome.dashboard")}
                                 </Text>
                             </div>
                         </div>
@@ -484,7 +497,7 @@ const WelcomeConnect = () => {
                                             placeholder={t("settings.messageBoxHeadingPlaceholder")}
                                         />
                                         <textarea
-                                            className="w-full h-72 text-base border-none outline-none"
+                                            className="w-full h-80 text-base border-none outline-none"
                                             value={customMessage.content}
                                             onChange={(e) => {
                                                 setCustomMessage((prev) => ({
@@ -494,14 +507,6 @@ const WelcomeConnect = () => {
                                             }}
                                             placeholder={t("settings.messageBoxContentPlaceholder")}
                                         />
-                                        <div className='flex justify-end pr-3 pt-4'>
-                                            <Button
-                                                onClick={handleSaveMessage}
-                                                variant="primary"
-                                                disabled={compareMessage?.header === customMessage?.header && compareMessage.content === customMessage.content}
-                                                loading={isSaveButtonLoading}
-                                            >{t("settings.messageBoxSaveButton")}</Button>
-                                        </div>
                                     </div>}
                                 </Card>
                                 {/* <div className='mt-4'>
@@ -514,6 +519,15 @@ const WelcomeConnect = () => {
                     </div>
                 </div >
             </div >
+            <SaveBarComponent
+                onSave={handleSaveMessage}
+                isLoading={isSaveButtonLoading}
+                onDiscard={handleDiscardChanges}
+                saveText={t("settings.messageBoxSaveButton")}
+                discardText="Discard"
+                variant="primary"
+                id="welcome-connect-save-bar"
+            />
         </>
     );
 

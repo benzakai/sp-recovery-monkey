@@ -144,7 +144,7 @@ export default function App() {
           <Link to="/app/LetsStart">{t("letsStart.title")}</Link>
         ) : (
           <>
-            <Link to="/app/WelcomeConnect">{t("welcome.title")}</Link>
+            <Link to="/app/WelcomeConnect">{t("welcome.dashboard")}</Link>
             <Link to="/app/AbandonedList">{t("abandonedList.title")}</Link>
             <Link to="/app/SmartBulk">{t("smartBulk.title")}</Link>
             <Link to="/app/Settings">{t("settings.title")}</Link>

@@ -73,6 +73,7 @@
   },
   "welcome": {
     "title": "Welcome",
+    "dashboard": "Dashboard",
     "subTitle": "View your revenue, write message, and connect to send messages.",
     "connectSectionTitle": "Click the button to check your connection.",
     "connectedTitle": "your device is connected!",

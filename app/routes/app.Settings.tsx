@@ -13,6 +13,7 @@ import db from '../db.server';
 import { useTranslation } from 'react-i18next';
 import PlanSection from '~/components/Settings/PlanSection';
 import SettingsSection from '~/components/Settings/SettingsSection';
+import SaveBarComponent from '~/components/SaveBarComponent';
 
 
 export const action = async ({ request }: any) => {
@@ -94,6 +95,17 @@ export const loader = async ({ request }: any) => {
 
 const languages = ['English', 'Español', 'العربية', 'Português', 'Deutsch', 'Français', 'Italiano']
 
+function areSettingsEqual(a: any, b: any) {
+    if (a.durationToSendMessage !== b.durationToSendMessage) return false;
+    if (a.durationToSendFollowUpMessage !== b.durationToSendFollowUpMessage) return false;
+    if (JSON.stringify(a.preferredLanguages) !== JSON.stringify(b.preferredLanguages)) return false;
+    if (
+        a.followUpMessage?.header !== b.followUpMessage?.header ||
+        a.followUpMessage?.content !== b.followUpMessage?.content
+    ) return false;
+    return true;
+}
+
 const Settings = () => {
     const { i18n, t } = useTranslation()
     const [planName, setPlanName] = useState('not set');
@@ -103,7 +115,8 @@ const Settings = () => {
     const loaderData: any = useLoaderData()
     const actionData: any = useActionData()
     const [isSettingsLoading, setSettingsLoading] = useState(true);
-    const [settings, setSettings] = useState({
+    const [isSaveButtonLoading, setSaveButtonLoading] = useState<any>(null)
+    const [settings, setSettings] = useState<any>({
         durationToSendMessage: "After 24 hours",
         notificationStatus: new Boolean(true).toString(),
         preferredLanguages: ['English'],
@@ -118,6 +131,7 @@ const Settings = () => {
         isDurationToSendFollowUpMessageActivated: false
         // judgeme: "no"
     });
+    const [compareSettings, setCompareSettings] = useState(settings);
     const [loading, setLoading]: any = useState({
         saveButton: false,
         saveMessageButton: false,
@@ -126,13 +140,20 @@ const Settings = () => {
     })
     const [languageSearchValue, setLanguageSearchValue] = useState('');
     const [isMessageLoading, setMessageLoading] = useState(true)
-    const [messageToCompare, setMessageToCompare] = useState("")
     const { selectedPlanName, permissions }: any = useOutletContext()
     const activateButtons: { [key: string]: keyof typeof settings } = {
         followUpMessageActivateButton: 'isDurationToSendFollowUpMessageActivated',
         durationToSendMessageActivateButton: 'isDurationToSendMessageActivated',
         languageSelectActivateButton: 'isSelectedLanguageActivated',
     };
+
+    useEffect(() => {
+        if (!areSettingsEqual(settings, compareSettings)) {
+            shopify.saveBar.show('settings-save-bar');
+        } else {
+            shopify.saveBar.hide('settings-save-bar');
+        }
+    }, [settings, compareSettings]);
 
     useEffect(() => {
         if (actionData?.success) {
@@ -150,6 +171,7 @@ const Settings = () => {
     useEffect(() => {
         if (loaderData) {
             setSettings((p: any) => ({ ...p, selectedLanguage: loaderData.userSelectedLanguage }))
+            setCompareSettings((p: any) => ({ ...p, selectedLanguage: loaderData.userSelectedLanguage }))
         }
     }, [loaderData])
 
@@ -223,14 +245,12 @@ const Settings = () => {
         }
     };
 
-
-
     const getFireData = async () => {
         const subscriptionData = await getSubscriptionData();
         const settingsData = await fetchSettings()
-        console.log("settingsData", settingsData);
+        // console.log("settingsData", settingsData);
         if (settingsData) {
-            setSettings(prevSettings => ({
+            setSettings((prevSettings: any) => ({
                 ...prevSettings,
                 ...settingsData,
                 selectedLanguage: prevSettings?.selectedLanguage,
@@ -239,7 +259,15 @@ const Settings = () => {
                     ...settingsData?.followUpMessage,
                 }
             }));
-            setMessageToCompare(settingsData?.followUpMessage)
+            setCompareSettings((prevSettings: any) => ({
+                ...prevSettings,
+                ...settingsData,
+                selectedLanguage: prevSettings?.selectedLanguage,
+                followUpMessage: {
+                    ...prevSettings.followUpMessage,
+                    ...settingsData?.followUpMessage,
+                }
+            }));
         }
         if (Object.keys(subscriptionData).length === 0) {
             setPlanName('NO_PLAN');
@@ -286,6 +314,7 @@ const Settings = () => {
         // judgeme 
     }: any) => {
         try {
+            setSaveButtonLoading("doLoad")
             const settingsData = {
                 durationToSendMessage,
                 notificationStatus: new Boolean(notificationStatus).toString(),
@@ -309,8 +338,8 @@ const Settings = () => {
 
             const responsedata = await response.json();
             if (responsedata.success) {
-                setMessageToCompare(settingsData.followUpMessage)
                 sendPubSubData(settingsData)
+                setCompareSettings(settings)
                 shopify.toast.show(t("global.toastMessage.successSettingsSaved"))
                 return { success: true }
             } else {
@@ -318,6 +347,8 @@ const Settings = () => {
             }
         } catch (error) {
             console.log("error occured on handleSaveSettings", error)
+        } finally {
+            setSaveButtonLoading(null)
         }
     }
 
@@ -351,6 +382,7 @@ const Settings = () => {
 
     const handleLanguageChange = (value: any) => {
         setSettings((p: any) => ({ ...p, selectedLanguage: value }))
+        setCompareSettings((p: any) => ({ ...p, selectedLanguage: value }))
         const formData = new FormData()
         formData.append("selectedAppLanugage", value);
         formData.append("actionType", "languageChange");
@@ -360,6 +392,7 @@ const Settings = () => {
     const handleActivateButton = async (buttonType: string) => {
         const settingKey = activateButtons[buttonType];
         setSettings((p: any) => ({ ...p, [settingKey]: !settings[settingKey] }))
+        setCompareSettings((p: any) => ({ ...p, [settingKey]: !settings[settingKey] }))
         if (settingKey) {
             setLoading((p: any) => ({ ...p, activeButton: buttonType }))
             const { success }: any = await handleSaveSettings({ ...settings, [settingKey]: !settings[settingKey] });
@@ -370,6 +403,11 @@ const Settings = () => {
             setLoading((p: any) => ({ ...p, activeButton: null }))
         }
     };
+
+    const handleDiscardChanges = () => {
+        setSettings(compareSettings)
+        shopify.saveBar.hide('settings-save-bar');
+    }
 
     return (
         <div className="body">
@@ -399,7 +437,6 @@ const Settings = () => {
                         isSettingsLoading={isSettingsLoading}
                         settings={settings}
                         setSettings={setSettings}
-                        handleSaveSettings={handleSaveSettings}
                         loading={loading}
                         handleActivateButton={handleActivateButton}
                         languages={languages}
@@ -409,8 +446,6 @@ const Settings = () => {
                         selectedPlanName={selectedPlanName}
                         permissions={permissions}
                         isMessageLoading={isMessageLoading}
-                        setLoading={setLoading}
-                        messageToCompare={messageToCompare}
                     />
                     <div className='mb-20'></div>
                     <PlanSection
@@ -422,6 +457,15 @@ const Settings = () => {
                         pageType={"settings"}
                     />
                 </div>
+                <SaveBarComponent
+                    onSave={() => handleSaveSettings({ ...settings })}
+                    isLoading={isSaveButtonLoading}
+                    onDiscard={handleDiscardChanges}
+                    saveText={t("settings.messageBoxSaveButton")}
+                    discardText="Discard"
+                    variant="primary"
+                    id="settings-save-bar"
+                />
             </div>
         </div>
     );

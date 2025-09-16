@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import ChatbotSettingsSection from '~/components/AIChatbotSettings/ChatbotSettingsSection';
 import { authenticate } from '~/shopify.server';
 import { useLoaderData } from '@remix-run/react';
+import SaveBarComponent from '~/components/SaveBarComponent';
 
 export const loader = async ({ request }: any) => {
     try {
@@ -53,6 +54,8 @@ const AIChatbot = () => {
         // ],
         syncRequest: null
     });
+    const [aiCompareSettings, setAICompareSettings] = useState(aiSettings);
+    const [isSaveButtonLoading, setSaveButtonLoading] = useState<any>(null)
     const [loading, setLoading]: any = useState({
         activeButton: null,
         syncing: false,
@@ -62,6 +65,7 @@ const AIChatbot = () => {
         whatsappAssistantTurnedOnButton: 'isWhatsappAssistantTurnedOn',
         useEmojisTurnedOnButton: 'isUseEmojisTurnedOn',
     };
+    const [activateButtonActionType, setActivateButtonActionType] = useState<string | null>(null);
     const topics = [
         'All training topics',
         'Products – Details, availability, and variations',
@@ -73,6 +77,20 @@ const AIChatbot = () => {
         'Store Hours & Locations – Opening times and branches',
         'FAQs – Common questions specific to your business'
     ]
+
+    useEffect(() => {
+        const hasChanges =
+            aiSettings.toneOfVoice !== aiCompareSettings.toneOfVoice ||
+            aiSettings.iconStyle !== aiCompareSettings.iconStyle ||
+            aiSettings.iconPosition !== aiCompareSettings.iconPosition ||
+            aiSettings.isWhatsappAssistantTurnedOn !== aiCompareSettings.isWhatsappAssistantTurnedOn ||
+            aiSettings.isUseEmojisTurnedOn !== aiCompareSettings.isUseEmojisTurnedOn;
+        if (hasChanges) {
+            shopify.saveBar.show('ai-settings-save-bar');
+        } else {
+            shopify.saveBar.hide('ai-settings-save-bar');
+        }
+    }, [aiSettings, aiCompareSettings]);
 
     const fetchAISettings = async () => {
         try {
@@ -120,6 +138,10 @@ const AIChatbot = () => {
                 ...prevSettings,
                 ...settingsData,
             }));
+            setAICompareSettings(prevSettings => ({
+                ...prevSettings,
+                ...settingsData,
+            }));
         }
     }
 
@@ -159,6 +181,7 @@ const AIChatbot = () => {
         syncRequest = null
     }: any) => {
         try {
+            setSaveButtonLoading("doLoad")
             const settingsData = {
                 isWhatsappAssistantTurnedOn,
                 toneOfVoice,
@@ -179,6 +202,7 @@ const AIChatbot = () => {
 
             const responsedata = await response.json();
             if (responsedata.success) {
+                setAICompareSettings(aiSettings)
                 const topicNames = ["AIChatbotSettings"]
                 sendPubSubData(settingsData, topicNames)
                 shopify.toast.show("AI Chatbot Settings saved successfully")
@@ -191,6 +215,7 @@ const AIChatbot = () => {
             console.log("error occured on handleSaveSettings of AI Chatbot", error)
         } finally {
             fetchAISettings();
+            setSaveButtonLoading(null);
         }
     }
 
@@ -206,18 +231,16 @@ const AIChatbot = () => {
         shopify.toast.show("Syncing has been started successfully")
     }
 
-    const handleActivateButton = async (buttonType: string) => {
-        const settingKey = activateButtons[buttonType];
-        setAISettings((p: any) => ({ ...p, [settingKey]: !aiSettings[settingKey] }))
-        if (settingKey) {
-            setLoading((p: any) => ({ ...p, activeButton: buttonType }))
-            const { success }: any = await handleSaveSettings({ ...aiSettings, [settingKey]: !aiSettings[settingKey] });
-            if (success) {
-                getFireData()
-            }
-            setLoading((p: any) => ({ ...p, activeButton: null }))
-        }
-    };
+    // const handleActivateButton = async (buttonType: string) => {
+    //     const settingKey = activateButtons[buttonType];
+    //     if (settingKey) {
+    //         const { success }: any = await handleSaveSettings({ ...aiSettings, [settingKey]: !aiSettings[settingKey] });
+    //         if (success) {
+    //             getFireData()
+    //         }
+    //         setAICompareSettings((p: any) => ({ ...p, [settingKey]: !aiSettings[settingKey] }))
+    //     }
+    // };
 
     const handleChatExtensionActivateButton = async () => {
         if (!aiSettings.isWhatsappAssistantTurnedOn) {
@@ -230,6 +253,10 @@ const AIChatbot = () => {
         const url = `https://admin.shopify.com/store/${shopName}/themes/${themeEditorId}/editor?context=apps&template=index&activateAppId=${EXTENSTION_ID}/${EXTENSTION_FILE_NAME}`;
         window.open(url, '_blank');
     };
+
+    const handleDiscardChanges = () => {
+        setAISettings(aiCompareSettings);
+    }
 
     return (
         <div className='start_page smart-bulk padding_zero'>
@@ -256,11 +283,10 @@ const AIChatbot = () => {
                             isSettingsLoading={isSettingsLoading}
                             aiSettings={aiSettings}
                             setAISettings={setAISettings}
-                            handleSaveSettings={handleSaveSettings}
+                            activateButtons={activateButtons}
                             handleSyncing={handleSyncing}
                             loading={loading}
-                            topics={topics}
-                            handleActivateButton={handleActivateButton}
+                            setActivateButtonActionType={setActivateButtonActionType}
                             isProPlanOrHigher={isProPlanOrHigher}
                             selectedPlanName={selectedPlanName}
                             permissions={permissions}
@@ -268,7 +294,15 @@ const AIChatbot = () => {
                     </div>
                 </div>
             </Page>
-
+            <SaveBarComponent
+                onSave={() => handleSaveSettings({ ...aiSettings })}
+                isLoading={isSaveButtonLoading}
+                onDiscard={handleDiscardChanges}
+                saveText={t("settings.messageBoxSaveButton")}
+                discardText="Discard"
+                variant="primary"
+                id="ai-settings-save-bar"
+            />
         </div>
     );
 };

@@ -8,6 +8,7 @@ import { isProPlanOrHigher } from '~/utils/plans';
 import { useOutletContext } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import PullMoreCustomer from '~/components/SmartBulk/PullMoreCustomer';
+import SaveBarComponent from '~/components/SaveBarComponent';
 
 export default function SmartBulk() {
     const { t } = useTranslation()
@@ -25,7 +26,7 @@ export default function SmartBulk() {
 
     const [customMessage, setCustomMessage] = useState<any>()
     const [compareMessage, setCompareMessage] = useState<any>()
-    const [isSaveButtonLoading, setSaveButtonLoading] = useState(false)
+    const [isSaveButtonLoading, setSaveButtonLoading] = useState<any>(null)
     const [currentPage, setCurrentPage] = useState(1);
     const [customers, setCustomers] = useState<any>([]);
     const [persistCustomers, setPersistCustomers] = useState<any>([]);
@@ -45,6 +46,15 @@ export default function SmartBulk() {
     const { selectedPlanName, permissions }: any = useOutletContext()
     const [paginationDirection, setPaginationDirection] = useState('')
     const [isProUser, setIsProUser] = useState(false);
+
+    useEffect(() => {
+        const isClean = compareMessage?.header === customMessage?.header && compareMessage?.content === customMessage?.content
+        if (isClean) {
+            shopify.saveBar.hide('smart-bulk-save-bar');
+        } else {
+            shopify.saveBar.show('smart-bulk-save-bar');
+        }
+    }, [customMessage, compareMessage]);
 
     useEffect(() => {
         const proStatus = isProPlanOrHigher(selectedPlanName) || isProPlanOrHigher(permissions?.manualPlan);
@@ -204,7 +214,7 @@ export default function SmartBulk() {
 
     const handleSaveMessage = async () => {
         try {
-            setSaveButtonLoading(true)
+            setSaveButtonLoading("doLoad")
             // console.log("message from handleSaveMessage", customMessage);
             const response = await fetch('/api/saveSmartBulkMessage', {
                 method: 'POST',
@@ -218,7 +228,7 @@ export default function SmartBulk() {
             console.log("error occured on handleSaveMessage", error);
 
         } finally {
-            setSaveButtonLoading(false)
+            setSaveButtonLoading(null)
         }
     }
 
@@ -229,6 +239,10 @@ export default function SmartBulk() {
         { label: t("smartBulk.100perPageLabel"), value: '100' },
         { label: t("smartBulk.200perPageLabel"), value: '250' }
     ];
+
+    const handleDiscardChanges = () => {
+        setCustomMessage(compareMessage)
+    }
 
     return (
         <div className='start_page smart-bulk padding_zero'>
@@ -279,7 +293,7 @@ export default function SmartBulk() {
                                         disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
                                     />
                                     <textarea
-                                        className="w-full h-56 text-base border-none outline-none"
+                                        className="w-full h-60 text-base border-none outline-none"
                                         value={customMessage?.content}
                                         onChange={(e) => {
                                             setCustomMessage((prev: any) => ({
@@ -290,14 +304,14 @@ export default function SmartBulk() {
                                         placeholder={t("settings.messageBoxContentPlaceholder")}
                                         disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
                                     />
-                                    <div className='flex justify-end pr-3 pt-4'>
+                                    {/* <div className='flex justify-end pr-3 pt-4'>
                                         <Button
                                             onClick={handleSaveMessage}
                                             variant="primary"
                                             disabled={compareMessage?.header === customMessage?.header && compareMessage?.content === customMessage?.content}
                                             loading={isSaveButtonLoading}
                                         >{t("settings.messageBoxSaveButton")}</Button>
-                                    </div>
+                                    </div> */}
                                 </div>}
                             </Card>
                         </div>
@@ -384,6 +398,15 @@ export default function SmartBulk() {
                     content={t("smartBulk.sendConfirmationDescription")}
                     title={t("smartBulk.sendMessageButton")}
                     id="confirmation_modal_bulkMessage"
+                />
+                <SaveBarComponent
+                    onSave={handleSaveMessage}
+                    isLoading={isSaveButtonLoading}
+                    onDiscard={handleDiscardChanges}
+                    saveText={t("settings.messageBoxSaveButton")}
+                    discardText="Discard"
+                    variant="primary"
+                    id="smart-bulk-save-bar"
                 />
             </Page>
         </div>

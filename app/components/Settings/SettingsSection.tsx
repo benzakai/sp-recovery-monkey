@@ -9,7 +9,6 @@ export default function SettingsSection({
     isSettingsLoading,
     settings,
     setSettings,
-    handleSaveSettings,
     loading,
     handleActivateButton,
     languages,
@@ -18,9 +17,7 @@ export default function SettingsSection({
     isProPlanOrHigher,
     selectedPlanName,
     permissions,
-    isMessageLoading,
-    setLoading,
-    messageToCompare
+    isMessageLoading
 }: any) {
     const options = [
         { label: t("settings.durationLable10Min"), value: 'After 10 min' },
@@ -54,7 +51,6 @@ export default function SettingsSection({
                                             label=""
                                             onChange={(v) => {
                                                 setSettings({ ...settings, durationToSendMessage: v })
-                                                handleSaveSettings({ ...settings, durationToSendMessage: v })
                                             }}
                                             value={settings.durationToSendMessage}
                                         />
@@ -87,7 +83,6 @@ export default function SettingsSection({
                                             setSelectedTags={(v: any) => {
                                                 if (v?.length === 0) return shopify.toast.show(t("global.toastMessage.multiLanguageFieldWarning"))
                                                 setSettings({ ...settings, preferredLanguages: v })
-                                                handleSaveSettings({ ...settings, preferredLanguages: v })
                                             }}
                                             value={languageSearchValue}
                                             setValue={setLanguageSearchValue}
@@ -152,7 +147,7 @@ export default function SettingsSection({
                                                     placeholder={t("settings.messageBoxContentPlaceholder")}
                                                     disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
                                                 />
-                                                <div className='flex justify-end pr-3 pt-4'>
+                                                {/* <div className='flex justify-end pr-3 pt-4'>
                                                     <Button
                                                         onClick={async () => {
                                                             setLoading((p: any) => ({ ...p, saveMessageButton: true }))
@@ -163,7 +158,7 @@ export default function SettingsSection({
                                                         disabled={messageToCompare?.header === settings?.followUpMessage?.header && messageToCompare?.content === settings?.followUpMessage?.content}
                                                         loading={loading.saveMessageButton}
                                                     >{t("settings.messageBoxSaveButton")}</Button>
-                                                </div>
+                                                </div> */}
                                             </div>}
                                         </Card>
                                     </div>
@@ -190,7 +185,6 @@ export default function SettingsSection({
                                             label=""
                                             onChange={(v) => {
                                                 setSettings({ ...settings, durationToSendFollowUpMessage: v })
-                                                handleSaveSettings({ ...settings, durationToSendFollowUpMessage: v })
                                             }}
                                             value={settings.durationToSendFollowUpMessage}
                                         />
