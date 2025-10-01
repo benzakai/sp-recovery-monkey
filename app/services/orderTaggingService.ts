@@ -1,5 +1,6 @@
 import { FieldValue, Firestore } from "@google-cloud/firestore";
 import prisma from "~/db.server";
+import fireStoreCreateService from "./fireStoreCreateService";
 
 const firestoreDatabase = new Firestore();
 
@@ -19,10 +20,22 @@ function cleanAndFormatData(str: any) {
         // console.log("data", data)
         return data
     } catch (error) {
-        console.error("Invalid JSON string:", error, "sale:", str);
+        // console.error("Invalid JSON string:", error, "sale:", str);
         return null;
     }
 }
+
+async function saveFailedSale(docId: string, saleId: string, saleData: any, reason: string) {
+    const failedSale = {
+        [saleId]: JSON.stringify({
+            ...(saleData ? saleData : { noDataReason: "The order data format is invalid." }),
+            failureReason: reason,
+        }),
+    };
+
+    await fireStoreCreateService("SalesTaggingFailedOrders", docId, failedSale, { merge: true });
+}
+
 
 
 async function tagOrder(session: any, orderID: any, previousTags: any) {
@@ -153,7 +166,7 @@ export default async function orderTaggingService() {
             if (session) {
                 // console.log("sales data..........", sales)
                 for (const saleId in sales) {
-                    // console.log("sales[saleId]", sales[saleId])
+
 
                     let sale;
                     try {
@@ -183,18 +196,39 @@ export default async function orderTaggingService() {
                                         [`${saleId}`]: FieldValue.delete()
                                     });
                                 } else {
+                                    await saveFailedSale(doc.id, saleId, sale, "Problem during tag adding API");
                                     console.log(`error occured on tagOrder for this store: ${doc.id} - data?.data?.orderUpdate?.userErrors:`, data?.data?.orderUpdate?.userErrors)
                                 }
+                            } else {
+                                await saveFailedSale(doc.id, saleId, sale, "Order not found on the store matching the Order Number");
                             }
                             await delay(200);
                         }
-
                     } else {
+                        await saveFailedSale(doc.id, saleId, sale, "No valid Order Number found or data format is invalid");
                         console.log(`No valid Order Number for Sale ID: ${saleId} shop: ${doc.id}, sale: ${sale}`);
                     }
 
                 }
             } else {
+                const batch = firestoreDatabase.batch();
+                const failedCollection = firestoreDatabase.collection("SalesTaggingFailedOrders").doc(doc.id);
+                for (const saleId in sales) {
+                    const sale = cleanAndFormatData(sales[saleId]);
+                    batch.set(
+                        failedCollection,
+                        {
+                            [saleId]: JSON.stringify({
+                                ...(sale ? sale : { noDataReason: "The order data format is invalid." }),
+                                failureReason: "No session found — store may have uninstalled the app",
+                            }),
+                        },
+                        { merge: true }
+                    );
+                }
+                await batch.commit();
+                // console.log(`All failed sales batch written for store ${doc.id}`);
+                continue;
                 // console.log("Session not found on orderTaggingService function for this store '",doc.id,"' so not moving forward with this store data.");
             }
         }
