@@ -10,7 +10,7 @@
 .start_page_wrapper {
     width: 100%;
     max-width: 100rem;
-    padding: 4rem 5rem 16rem 5rem;
+    padding: 4rem 5rem 4rem 5rem;
 }
 
 .cust-detail {
@@ -38,11 +38,10 @@
 
 .messge_box_welcome {
     width: 60%;
-    padding: 4rem 0rem 120px 0px;
 }
 
 .message_text_Welcome {
-    margin-bottom: 2.3rem;
+    margin-bottom: 2rem;
 }
 
 .start_main_container_heading {
@@ -268,8 +267,6 @@
 }
 
 .connection_alien_logo_section {
-    padding: 7px 7px 0 7px;
-    height: 215px;
     /* background-color: rgb(95, 219, 108); */
     display: flex;
     flex-direction: row;

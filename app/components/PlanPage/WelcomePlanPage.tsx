@@ -9,24 +9,17 @@ import { Button, Card, Icon, Select, Text } from '@shopify/polaris';
 import StartPageCartSummary from '../StartPageCartSummary';
 import ChatSVG from '../SVGs/ChatSVG';
 import MailSVG from '../SVGs/MailSVG';
-import PlanSection from '../Settings/PlanSection';
-
 
 export default function WelcomePlanPage({
     loaderData,
     actionData,
-    handlePlanSelect,
     handleLanguageChange,
     selectedLanguage,
     setSelectedLanguage,
-    isLoadingPlanButton,
     anySubscription,
-    setAnySubscription,
-    setSelectedPlanName
 }: any) {
     const { t, i18n } = useTranslation()
     const navigate = useNavigate();
-    const [planName, setPlanName] = useState('not set');
     const anySubscriptionRef = useRef(anySubscription);
 
     useEffect(() => {
@@ -37,17 +30,12 @@ export default function WelcomePlanPage({
 
     useEffect(() => {
         if (actionData?.success) {
-            if (actionData?.planName === "Free") {
-                setSelectedPlanName("Free")
-                setPlanName(planName);
-                setAnySubscription(true);
-                shopify.toast.show(t("global.toastMessage.successSubscriptionCreated"));
-            } else if (actionData?.savedAppLangnuage) {
+           if (actionData?.savedAppLangnuage) {
                 i18n.changeLanguage(actionData?.savedAppLangnuage)
                 shopify.toast.show(t("global.toastMessage.languageChangeSuccess"))
             }
         }
-    }, [actionData, planName, setAnySubscription]);
+    }, [actionData]);
 
     useEffect(() => {
         anySubscriptionRef.current = anySubscription;
@@ -197,24 +185,6 @@ export default function WelcomePlanPage({
                             </div>
                         </Card>
                     </div>
-                    <div className='mb-20'></div>
-                    {anySubscription === "loading" ? (
-                        // <div className="flex justify-center items-center h-full w-full mt-28">
-                        //   <Spinner accessibilityLabel="Spinner example" size="large" />
-                        // </div>
-                        <></>
-                    ) : (
-                        !anySubscription && (
-                            <PlanSection
-                                t={t}
-                                loadingPage={false}
-                                loadingButton={isLoadingPlanButton}
-                                planName={planName}
-                                handlePlanSelect={handlePlanSelect}
-                                pageType={"welcome"}
-                            />
-                        )
-                    )}
                 </div>
             </div>
         </div>

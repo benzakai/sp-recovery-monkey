@@ -3,7 +3,7 @@ import ToggleSwitch from '../SubscriptionPlan/ToggleSwitch';
 import { useEffect, useState } from 'react';
 
 export default function PlanSection({ t, loadingPage, loadingButton, planName, handlePlanSelect, pageType }: any) {
-    const [planIntervalType, setPlanIntervalType] = useState("Monthly");
+    const [planIntervalType, setPlanIntervalType] = useState("Yearly");
 
     useEffect(() => {
         if (planName.includes("Yearly")) {
@@ -18,8 +18,7 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
     const getPrice = (monthly: string, yearly: string) =>
         planIntervalType === "Monthly" ? monthly : yearly;
 
-    const getBillingText = (monthlyYearly: string, yearlyBilling: string) =>
-        planIntervalType === "Monthly" ? monthlyYearly : yearlyBilling;
+
 
     const plans = [
         {
@@ -34,9 +33,10 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
             key: "Starter",
             name: t("settings.planName2"),
             monthly: "19$",
-            yearly: "14.25$",
-            original: "19.99$",
-            priceLabel: t("settings.planPrice2"),
+            yearly: "17.1$",
+            original: "19$",
+            priceLabel: "Month",
+            percentageSave: "10",
             benefits: [t("settings.starterBenefit1"), t("settings.starterBenefit2")],
         },
         {
@@ -44,14 +44,14 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
             name: t("settings.planName3"),
             monthly: "49$",
             yearly: "36.75$",
-            original: "49.99$",
-            priceLabel: t("settings.planPrice3"),
+            original: "49$",
+            priceLabel: "Month",
+            percentageSave: "25",
             benefits: [
                 t("settings.proBenefit1"),
                 t("settings.proBenefit2"),
                 t("settings.proBenefit3"),
                 t("settings.proBenefit4"),
-                t("settings.proBenefit5"),
             ],
             badge: t("settings.popularBadgeText"),
         },
@@ -59,9 +59,10 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
             key: "Advance",
             name: t("settings.planName4"),
             monthly: "99$",
-            yearly: "74.25$",
-            original: "99.99$",
-            priceLabel: t("settings.planPrice4"),
+            yearly: "59.4$",
+            original: "99$",
+            priceLabel: "Month",
+            percentageSave: "40",
             benefits: [
                 t("settings.advancedBenefit1"),
                 t("settings.advancedBenefit2"),
@@ -109,7 +110,7 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
                             <div className='p-5'>
                                 {plan.badge && (
                                     <div
-                                        className="absolute top-9 -right-28 w-80 rotate-45 bg-neutral-300 text-black text-base font-bold text-center py-2 z-10"
+                                        className="absolute top-9 -right-28 w-80 rotate-45 bg-blue-100 text-black text-base font-bold text-center py-2 z-10"
                                     >
                                         {plan.badge}
                                     </div>
@@ -118,31 +119,35 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
                                 <div>
                                     <div className="start_plan_name">{plan.name}</div>
 
-                                    {plan.original && (
-                                        <p
-                                            className={`line-through text-sm ${planIntervalType === "Monthly" ? "text-transparent" : "text-gray-600"}`}
-                                        >
-                                            {plan.original}
-                                        </p>
-                                    )}
-
-
-                                    <div className="my-2 flex flex-row">
-                                        <div className="start_plan_ammount">{plan.key === "Free" ? plan.monthly : getPrice(plan.monthly!, plan.yearly!)}</div>
-                                        {plan.priceLabel && <div className="start_plan_ammount_suffix">{plan.priceLabel}</div>}
+                                    <div className="my-2 flex flex-row items-baseline">
+                                        <div className="start_plan_ammount">
+                                            {plan.key === "Free" ? plan.monthly : getPrice(plan.monthly!, plan.yearly!)}
+                                        </div>
+                                        {plan.priceLabel && (
+                                            <div className="text-sm">
+                                                <span className="mx-1">/</span>
+                                                <span
+                                                    className={`mr-1 line-through ${planIntervalType === "Monthly" ? "hidden" : ""
+                                                        }`}
+                                                >
+                                                    {plan.original}{"  "}
+                                                </span>
+                                                {plan.priceLabel}
+                                            </div>
+                                        )}
                                     </div>
 
                                     {plan.priceLabel && (
-                                        <p className="text-sm text-green-700">
-                                            {getBillingText(
-                                                t("settings.OrSaveAmountPerYear", { amount: Number(plan.yearly!.replace("$", "")) * 12, percent: 25 }),
-                                                t("settings.BilledAnnually", { amount: Number(plan.yearly!.replace("$", "")) * 12 }),
-                                            )}
+                                        <p className={`text-sm text-green-700 ${planIntervalType === "Monthly" ? "invisible" : 'visible'}`}>
+                                            {`$${Math.round(
+                                                Number(plan.yearly!.replace("$", "")) * 12 * 100
+                                            ) / 100}/year and save ${plan.percentageSave}%`}
+
                                         </p>
                                     )}
                                 </div>
 
-                                <div className={(pageType !== "settings" && plan.key === "Free") ? 'mt-16 pt-2' : 'mt-4'}>
+                                <div className={(pageType !== "settings" && plan.key === "Free") ? 'mt-16 pt-3' : 'mt-11'}>
                                     {((pageType === "settings" && plan.key === "Free") ? false : true) && (
                                         <div className="start_plan_button_section">
                                             {loadingPage ? (

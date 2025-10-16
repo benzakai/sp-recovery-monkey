@@ -1,10 +1,9 @@
-import { Firestore } from "@google-cloud/firestore";
+import { firestore } from "~/utils/firestore.server";
 
 export default async function fireStoreFetchService(collectionName: string, documentName: string) {
-    const firestoreDatabase = new Firestore();
-    try {
 
-        const getCollection = firestoreDatabase.collection(collectionName);
+    try {
+        const getCollection = firestore.collection(collectionName);
         const doc = await getCollection.doc(documentName).get();
         const getDoc: any = doc.data();
 

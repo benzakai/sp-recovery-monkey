@@ -1,6 +1,5 @@
 import { ActionFunctionArgs, json } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
-import { getAppInstalledDate, getSubscriptionsData } from "~/services/sendDataFromWebhooks";
 import axios from "axios";
 import fireStoreFetchService from "~/services/fireStoreFetchService";
 
@@ -22,7 +21,7 @@ import fireStoreFetchService from "~/services/fireStoreFetchService";
 //   return formattedDate;
 // }
 
-const before1Year = () => {
+const past12Months = () => {
   const endDate = new Date().toISOString();
   const today = new Date();
   today.setMonth(today.getMonth() - 12);
@@ -219,7 +218,7 @@ export async function action({ request }: ActionFunctionArgs) {
   // const today = new Date();
   // const daysBefore30 = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
   // const last30Days = formatDateInCustomFormat(daysBefore30);
-  const { startDate, endDate } = before1Year()
+  const { startDate, endDate } = past12Months()
   let allCheckouts = [];
   let hasNextPage = null;
   let endCursor = null;

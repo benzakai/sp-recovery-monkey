@@ -6,9 +6,10 @@ import { AppProvider } from "@shopify/shopify-app-remix/react";
 import { NavMenu } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
 import { authenticate } from "../shopify.server";
-import React from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import fireStoreFetchService from "~/services/fireStoreFetchService";
+// import { trackLCP } from "~/utils/lcpTracker";
 
 React.useLayoutEffect = React.useEffect;
 
@@ -16,49 +17,56 @@ export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { admin, session, billing } = await authenticate.admin(request);
-  const response = await admin.graphql(
-    `#graphql
-              query GetRecurringApplicationCharges {
-                currentAppInstallation {
-                  activeSubscriptions {
-                    id
-                    createdAt
-                    currentPeriodEnd
-                    name
-                    test
-                    trialDays
-                    status
-                    lineItems {
-                      id
-                      plan {
-                        pricingDetails {
-                          __typename
-                        }
-                      }
-                    }
-                  }
-                }
-              }`,
-  );
+  // const response = await admin.graphql(
+  //   `#graphql
+  //             query GetRecurringApplicationCharges {
+  //               currentAppInstallation {
+  //                 activeSubscriptions {
+  //                   id
+  //                   createdAt
+  //                   currentPeriodEnd
+  //                   name
+  //                   test
+  //                   trialDays
+  //                   status
+  //                   lineItems {
+  //                     id
+  //                     plan {
+  //                       pricingDetails {
+  //                         __typename
+  //                       }
+  //                     }
+  //                   }
+  //                 }
+  //               }
+  //             }`,
+  // );
 
-  const data = await response.json();
-  // console.log(`data.data.currentAppInstallation.activeSubscriptions============>`, data.data.currentAppInstallation);
-  // to check if user is on free plan
+  // const data = await response.json();
+  // // console.log(`data.data.currentAppInstallation.activeSubscriptions============>`, data.data.currentAppInstallation);
+  // // to check if user is on free plan
+  // const doc = await fireStoreFetchService("subscriptions", session.shop);
+  // // console.log("doc", doc);
+  // if (data.data.currentAppInstallation.activeSubscriptions.length > 0) {
+  //   return json({
+  //     apiKey: process.env.SHOPIFY_API_KEY || "",
+  //     planName: data.data.currentAppInstallation.activeSubscriptions?.[0]?.name,
+  //     subscribed: data.data.currentAppInstallation.activeSubscriptions?.[0]?.status === "ACTIVE"
+  //   });
+  // } else {
+  //   return json({
+  //     apiKey: process.env.SHOPIFY_API_KEY || "",
+  //     planName: (doc?.plan === "Free" && doc?.status === "ACTIVE") ? "Free" : null,
+  //     subscribed: false
+  //   });
+  // }
   const doc = await fireStoreFetchService("subscriptions", session.shop);
   // console.log("doc", doc);
-  if (data.data.currentAppInstallation.activeSubscriptions.length > 0) {
-    return json({
-      apiKey: process.env.SHOPIFY_API_KEY || "",
-      planName: data.data.currentAppInstallation.activeSubscriptions?.[0]?.name,
-      subscribed: data.data.currentAppInstallation.activeSubscriptions?.[0]?.status === "ACTIVE"
-    });
-  } else {
-    return json({
-      apiKey: process.env.SHOPIFY_API_KEY || "",
-      planName: (doc?.plan === "Free" && doc?.status === "ACTIVE") ? "Free" : null,
-      subscribed: false
-    });
-  }
+  return json({
+    apiKey: process.env.SHOPIFY_API_KEY || "",
+    planName: doc?.plan,
+    subscribed: doc?.status === "ACTIVE"
+  });
 };
 
 export default function App() {
@@ -135,6 +143,11 @@ export default function App() {
     };
     checkSubscription();
   }, [planName, subscribed]);
+
+
+  // useEffect(() => {
+  //     trackLCP('app.tsx');
+  //   }, []);
 
   return (
     <AppProvider isEmbeddedApp apiKey={apiKey}>

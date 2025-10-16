@@ -2,20 +2,18 @@ import { useActionData, useSubmit, useLoaderData, useOutletContext } from '@remi
 import '../StartPage.css';
 import { useEffect, useState } from 'react';
 import { authenticate } from '~/shopify.server';
-import fireStoreCreateService from '~/services/fireStoreCreateService';
 import db from '../db.server';
 import WelcomePlanPage from '~/components/PlanPage/WelcomePlanPage';
 import { Spinner } from '@shopify/polaris';
 import CartKeeperWelcome from '~/components/HomePage/CartKeeperWelcome';
+// import { trackLCP } from '~/utils/lcpTracker';
 
 export const action = async ({ request }: any) => {
-  const { session, billing } = await authenticate.admin(request)
+  const { session } = await authenticate.admin(request)
   const formData = await request.formData();
-  const actionType = formData.get("actionType");
-  const selectedAppLanugage = formData.get("selectedAppLanugage");
-  const planName = formData.get("planName");
-  let savedLanguage;
-  if (actionType === "languageChange") {
+  try {
+    const selectedAppLanugage = formData.get("selectedAppLanugage");
+    let savedLanguage;
     const existingLanguage = await db.appLanguages.findUnique({
       where: {
         shop: session.shop,
@@ -39,27 +37,11 @@ export const action = async ({ request }: any) => {
         },
       });
     }
-  } else if (actionType === "planSelect") {
-    if (planName === "Free") {
-      await fireStoreCreateService("subscriptions", session.shop, {
-        storeId: session.shop,
-        plan: "Free",
-        status: "ACTIVE",
-        startDate: new Date().toISOString(),
-        endDate: ""
-      }, {});
-    } else {
-      await billing.require({
-        plans: [planName],
-        isTest: false,
-        onFailure: async () => billing.request({
-          plan: planName,
-          isTest: false
-        }),
-      });
-    }
+    return { success: true, savedAppLangnuage: savedLanguage?.language };
+  } catch (error) {
+    console.log("error occured on app._index action", error)
+    return {}
   }
-  return { success: true, savedAppLangnuage: savedLanguage?.language, planName };
 };
 
 export const loader = async ({ request }: any) => {
@@ -74,19 +56,10 @@ export const loader = async ({ request }: any) => {
 
 export default function Index() {
   const loaderData: any = useLoaderData()
-  const [isLoadingPlanButton, setLoadingPlanButton] = useState(null);
   const submit = useSubmit();
   const actionData: any = useActionData();
   const [selectedLanguage, setSelectedLanguage] = useState('en');
-  const { anySubscription, setAnySubscription, setSelectedPlanName }: any = useOutletContext();
-
-  const handlePlanSelect = (planName: any) => {
-    setLoadingPlanButton(planName)
-    const formData = new FormData();
-    formData.append("planName", planName);
-    formData.append("actionType", "planSelect");
-    submit(formData, { method: "post" });
-  };
+  const { anySubscription }: any = useOutletContext();
 
   const handleLanguageChange = (value: any) => {
     setSelectedLanguage(value);
@@ -96,9 +69,9 @@ export default function Index() {
     submit(formData, { method: "post" });
   }
 
-  useEffect(() => {
-    console.log("anySubscription", anySubscription)
-  }, [anySubscription])
+  // useEffect(() => {
+  //   trackLCP('MainPage');
+  // }, []);
 
 
   return (
@@ -112,14 +85,10 @@ export default function Index() {
           <WelcomePlanPage
             loaderData={loaderData}
             actionData={actionData}
-            handlePlanSelect={handlePlanSelect}
             handleLanguageChange={handleLanguageChange}
             selectedLanguage={selectedLanguage}
             setSelectedLanguage={setSelectedLanguage}
-            isLoadingPlanButton={isLoadingPlanButton}
             anySubscription={anySubscription}
-            setAnySubscription={setAnySubscription}
-            setSelectedPlanName={setSelectedPlanName}
           />
           :
           <CartKeeperWelcome />

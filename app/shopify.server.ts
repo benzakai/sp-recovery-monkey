@@ -123,7 +123,7 @@ const shopify = shopifyApp({
       interval: BillingInterval.Every30Days,
     },
     [STARTER_PLAN_YEARLY]: {
-      amount: 171,
+      amount: 205.2,
       trialDays: 7,
       isTest: false,
       currencyCode: 'USD',
@@ -137,7 +137,7 @@ const shopify = shopifyApp({
       interval: BillingInterval.Annual,
     },
     [ADVANCE_PLAN_YEARLY]: {
-      amount: 891,
+      amount: 712.8,
       trialDays: 7,
       isTest: false,
       currencyCode: 'USD',

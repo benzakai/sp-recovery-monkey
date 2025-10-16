@@ -1,15 +1,13 @@
-import { Card, Page, Button, Spinner, Text, BlockStack, Link } from '@shopify/polaris';
-import React, { useEffect, useState, useTransition } from 'react';
+import { Card, Button, Spinner, Text, Link } from '@shopify/polaris';
+import React, { useEffect, useState } from 'react';
 import '../StartPage.css';
-// import AlienLogo from './images/Alien.png'
-import AbandonedCartsSummary from '~/components/AbandonedCartsSummary';
-// import StartPageCartSummary from '~/components/StartPageCartSummary';
-import OneSVG from '~/components/SVGs/OneSVG';
-import TwoSVG from '~/components/SVGs/TwoSVG';
-import ThreeSVG from '~/components/SVGs/ThreeSVG';
 import AlienSVG from '~/components/SVGs/AlienSVG';
 import { useTranslation } from 'react-i18next';
 import SaveBarComponent from '~/components/SaveBarComponent';
+import ConnectionStepSection from '~/components/WelcomPage/ConnectionStepSection';
+import WhatWeDoSection from '~/components/WelcomPage/WhatWeDoSection';
+import DashboardOverview from '~/components/WelcomPage/DashboardOverview';
+// import { trackLCP } from '~/utils/lcpTracker';
 
 const WelcomeConnect = () => {
     const { t } = useTranslation()
@@ -37,7 +35,7 @@ const WelcomeConnect = () => {
     const [isSaveButtonLoading, setSaveButtonLoading] = useState<any>(null)
     const [isMessageLoading, setMessageLoading] = useState(true)
     const [isDisBtnLoading, setDisBtnLoading] = useState(false)
-    const [isPending, startTransition] = useTransition();
+    const [isLoading, setLoading] = useState(true)
 
     useEffect(() => {
         const isClean = compareMessage?.header === customMessage?.header && compareMessage?.content === customMessage?.content
@@ -47,6 +45,91 @@ const WelcomeConnect = () => {
             shopify.saveBar.show('welcome-connect-save-bar');
         }
     }, [customMessage, compareMessage]);
+
+    useEffect(() => {
+        fetchSettings()
+        fetchDataAndFetchQR();
+        handleFetchAbandonedCheckouts();
+        getMessageData();
+    }, []);
+
+    // useEffect(() => {
+    //     trackLCP('Welcomeconnect page');
+    //   }, []);
+
+    useEffect(() => {
+        if (customMessage?.header) {
+            setMessageLoading(false)
+        }
+    }, [customMessage])
+
+    useEffect(() => {
+        let intervalId: any;
+        console.log("stateInstance on interval ", stateInstance, instance)
+        if (stateInstance !== 'authorized' && instance?.apiUrl && instance?.idInstance && instance?.apiTokenInstance) {
+            intervalId = setInterval(async () => {
+                await fetchQR({ url: instance?.apiUrl, id: instance?.idInstance, token: instance?.apiTokenInstance });
+            }, 3000);
+        }
+        // console.log("stateInstance==========>", stateInstance);
+        if (stateInstance) {
+            // handleFetchAbandonedCheckouts(stateInstance === 'authorized' ? true : false);
+        }
+        return () => {
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
+        };
+    }, [stateInstance, instance]);
+
+    const fetchSettings = async () => {
+        try {
+            const response = await fetch('/api/firestore?collectionName=settings', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            const responsedata = await response.json();
+            // console.log("responsedata", responsedata);
+
+            if (Object.keys(responsedata.data).length) {
+                const greenApiInstanceStatus = responsedata?.data?.greenApiInstanceStatus || "";
+                setStateInstance(greenApiInstanceStatus)
+            }
+        } catch (error) {
+            console.log("error on fetchSettings", error);
+        } finally {
+            setLoading(false)
+        }
+    };
+
+    const updateGreenApiInstanceStatus = async (status: string) => {
+        setStateInstance(status);
+        try {
+            const response = await fetch("/api/manageInstanceStatus", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ newGreenApiInstanceStatus: status }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                console.error(
+                    "Failed to update greenApiInstanceStatus",
+                    response.status,
+                    errorData
+                );
+            } else {
+                console.log("greenApiInstanceStatus updated successfully");
+            }
+        } catch (error) {
+            console.error("Error occurred on updateGreenApiInstanceStatus:", error);
+        }
+    };
+
 
     const fetchPhoneNumber = async ({ url, id, token }: any) => {
         const response = await fetch('/api/fetchPhoneNumber', {
@@ -148,8 +231,9 @@ const WelcomeConnect = () => {
 
                 if (data.qrData?.type === 'qrCode') {
                     setQRCode(`data:image/png;base64,${data.qrData.message}`);
+                    updateGreenApiInstanceStatus('notAuthorized');
                 } else if (data.qrData?.type === 'alreadyLogged') {
-                    setStateInstance('authorized');
+                    updateGreenApiInstanceStatus('authorized');
                     savePubSubAndDBData({ url, id, token })
                 }
             }
@@ -221,7 +305,8 @@ const WelcomeConnect = () => {
                 const data = await response.json()
                 // console.log("data", data);
                 // await handleFetchAbandonedCheckouts(false)
-                setStateInstance("notAuthorized")
+                // savePubSubAndDBData({ url, id, token, argTopics: ["disconnecting"] })
+                updateGreenApiInstanceStatus("notAuthorized")
             }
         } catch (error) {
             console.log("error occured on disconnectInstance", error);
@@ -250,10 +335,10 @@ const WelcomeConnect = () => {
             const stateInstanceData = await getInstanceState({ url: instanceData.apiUrl, id: instanceData.idInstance, token: instanceData.apiTokenInstance });
             // console.log("stateInstanceData?.responseData?.stateInstance", stateInstanceData?.responseData?.stateInstance);
             if (stateInstanceData?.responseData?.stateInstance == 'authorized') {
-                setStateInstance('authorized');
+                // updateGreenApiInstanceStatus('authorized');
                 // await getMessageData()
             } else if (stateInstanceData?.responseData?.stateInstance == 'notAuthorized') {
-                setStateInstance('notAuthorized');
+                // updateGreenApiInstanceStatus('notAuthorized');
                 deleteConnectPageData();
             }
             // const isInstanceAuthorized = stateInstanceData?.responseData?.stateInstance === 'authorized'
@@ -267,51 +352,20 @@ const WelcomeConnect = () => {
         }
     }
 
-    useEffect(() => {
-        const fetchDataAndFetchQR = async () => {
-            try {
-                const { url, id, token }: any = await getFireData();
-                if (url && id && token) {
-                    await fetchQR({ url, id, token });
-                } else {
-                    console.error('Missing URL, ID, or Token');
-                }
-            } catch (error) {
-                console.log("error occured on fetchDataAndFetchQR", error);
-            } finally {
-                setInstanceDataLoading(false)
+    const fetchDataAndFetchQR = async () => {
+        try {
+            const { url, id, token }: any = await getFireData();
+            if (url && id && token) {
+                await fetchQR({ url, id, token });
+            } else {
+                console.error('Missing URL, ID, or Token');
             }
-        };
-        handleFetchAbandonedCheckouts();
-        getMessageData();
-        startTransition(() => {
-            fetchDataAndFetchQR();
-        })
-    }, []);
-
-    useEffect(() => {
-        if (customMessage?.header) {
-            setMessageLoading(false)
+        } catch (error) {
+            console.log("error occured on fetchDataAndFetchQR", error);
+        } finally {
+            setInstanceDataLoading(false)
         }
-    }, [customMessage])
-
-    useEffect(() => {
-        let intervalId: any;
-        if (stateInstance !== 'authorized' && instance?.apiUrl && instance?.idInstance && instance?.apiTokenInstance) {
-            intervalId = setInterval(async () => {
-                await fetchQR({ url: instance?.apiUrl, id: instance?.idInstance, token: instance?.apiTokenInstance });
-            }, 3000);
-        }
-        // console.log("stateInstance==========>", stateInstance);
-        if (stateInstance) {
-            // handleFetchAbandonedCheckouts(stateInstance === 'authorized' ? true : false);
-        }
-        return () => {
-            if (intervalId) {
-                clearInterval(intervalId);
-            }
-        };
-    }, [stateInstance]);
+    };
 
     const handleSaveMessage = async () => {
         try {
@@ -353,172 +407,174 @@ const WelcomeConnect = () => {
         setCustomMessage(compareMessage)
     }
 
-
     return (
         <>
-            <div className="flex justify-start bg-[#f1f1f1]">
-                <div className='start_page start_page_wrapper'>
+            {isLoading ? <div className="flex justify-center items-center h-full w-full">
+                <Spinner accessibilityLabel="Spinner example" size="large" />
+            </div> : <div className="flex justify-center bg-[#f1f1f1]">
+                <div className='start_page start_page_wrapper sm:!max-w-[90%]  px-4 md:px-0'>
 
                     <div className="lets_start_main_container">
                         <div>
-                            <div className='pb-8'>
+                            <div className='pb-2 text-center md:text-left'>
                                 <Text variant="heading3xl" as="h3">
-                                    {t("welcome.dashboard")}
+                                    {stateInstance === "authorized" ? "Dashboard" : "Let's recover some carts"}
                                 </Text>
                             </div>
                         </div>
 
-                        <div>
-                            <p className='font-bold text-2xl pb-6'>{t("welcome.subTitle")}</p>
-                            <AbandonedCartsSummary getPageData={getPageData} forPageType="WelcomeConnect" />
+                        <div className='mb-6'>
+                            <p className='text-base pb-10 text-center md:text-left'>{
+                                stateInstance === "authorized" ?
+                                    "View your revenue, write message, and connect to send messages"
+                                    :
+                                    "Just 3 easy steps to get started - then let the app do the magic"}
+                            </p>
+                            {stateInstance === "authorized" ?
+                                <DashboardOverview getPageData={getPageData} forPageType="WelcomeConnect" /> :
+                                <ConnectionStepSection />
+                            }
                         </div>
-                        <div className='flex gap-20 gap-y-8 start_price_new_wrapper'>
-                            <div className="start_price_container w-2/5">
-                                <div className="start_price_container_heading" style={{ ...(isShowConnectionStatus ? { paddingBottom: '1.5rem' } : {}) }}>
-                                    <Text variant="headingLg" as="h5">
-                                        {!isShowConnectionStatus ? t("welcome.connectSectionTitle") : stateInstance === 'authorized' ?
-                                            t("welcome.connectedTitle") :
-                                            t("welcome.notConnectedTitle")
-                                        }
-                                    </Text>
-                                </div>
-                                <div className="start_price_container_cards">
-                                    <Card>
-                                        <div className="start_price_content" style={{ height: '26rem' }}>
-                                            {isShowConnectionStatus ? <>
-                                                {stateInstance === 'authorized' ? (
-                                                    <>
-                                                        <div className='connection_alien_logo_section'>
-                                                            <AlienSVG />
-                                                        </div>
-                                                        <div className='p-5'>
-                                                            <Text variant="bodyLg" as="p">
-                                                                {t("welcome.connectedMessage")}
-                                                            </Text>
-                                                        </div>
-                                                        <div className='mt-16 flex justify-end'>
-                                                            <Button onClick={() => disconnectInstance(instance?.apiUrl, instance?.idInstance, instance?.apiTokenInstance, false)} disabled={isDisBtnLoading} loading={isDisBtnLoading} variant='primary'>
-                                                                {t("welcome.disconnectButtonText")}
-                                                            </Button>
-                                                        </div>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <div className='connection_alien_logo_section'>
-                                                            <div className="connection_qr_code">
-                                                                {qrCode ? (
-                                                                    <img className='qr_image_connection' src={qrCode} alt="QR Code" />
-                                                                ) : (
-                                                                    <Spinner accessibilityLabel="Small spinner example" size="small" />
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                        <div className='connection_card_dialogue_section font-semibold '>
-                                                            <Text variant="headingMd" as="p">
-                                                                {t("welcome.qrScanText")}
-                                                            </Text>
-                                                        </div>
-                                                        <div className='mb-9'>
-                                                            <BlockStack>
-                                                                <div className='flex flex-row gap-2 mb-2 mt-4'>
-                                                                    <OneSVG />
-                                                                    <Text variant="bodyMd" as="p">{t("welcome.qrScanStep1")}</Text>
+                        <Card >
+                            <div className='flex flex-col lg:flex-row gap-8 lg:gap-10 '>
+                                <div className="w-full lg:w-3/12">
+                                    <div className="p-4 md:p-6 " >
+                                        <div className='text-center md:text-left'>
+                                            <Text variant="headingLg" as="h5">
+                                                Get CartKeeper QR code
+                                            </Text>
+                                        </div>
+                                        {isShowConnectionStatus ? <>
+                                            {stateInstance === "authorized" ? (
+                                                <>
+                                                    <div className='flex justify-center mt-6'>
+                                                        <AlienSVG />
+                                                    </div>
+                                                    <div className='p-4 md:p-5 text-center md:text-left'>
+                                                        <p className="text-center  text-sm md:text-base">
+                                                            You can now easily send and receive WhatsApp messages!
+                                                        </p>
+                                                    </div>
+                                                    <div className='mt-6 flex justify-center'>
+                                                        <Button
+                                                            onClick={() => disconnectInstance(instance?.apiUrl, instance?.idInstance, instance?.apiTokenInstance, false)}
+                                                            disabled={isDisBtnLoading}
+                                                            loading={isDisBtnLoading}
+                                                            variant='primary'
+                                                            size='large'
+                                                        >
+                                                            {t("welcome.disconnectButtonText")}
+                                                        </Button>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div className="flex justify-center">
+                                                        <div className="w-[200px]">
+                                                            {qrCode ? (
+                                                                <img
+                                                                    className="max-w-full h-auto mt-6 mx-auto"
+                                                                    src={qrCode}
+                                                                    alt="QR Code"
+                                                                />
+                                                            ) : (
+                                                                <div className="max-w-full flex justify-center align-middle mt-32 mb-16 mx-auto">
+                                                                    <Spinner
+                                                                        accessibilityLabel="Small spinner example"
+                                                                        size="small"
+                                                                    />
                                                                 </div>
-                                                                <div className='flex flex-row gap-2 mb-2'>
-                                                                    <TwoSVG />
-                                                                    <Text variant="bodyMd" as="p">{t("welcome.qrScanStep2")}</Text>
-                                                                </div>
-                                                                <div className='flex flex-row gap-2 mb-2'>
-                                                                    <ThreeSVG />
-                                                                    <Text variant="bodyMd" as="p">{t("welcome.qrScanStep3")}</Text>
-                                                                </div>
-                                                            </BlockStack>
-                                                        </div>
-                                                    </>
-                                                )}
-                                            </> :
-                                                <div >
-                                                    {/* <div className="blur-2xl">
-                                                            <>
-                                                                <div className='connection_alien_logo_section'>
-                                                                    <AlienSVG />
-                                                                </div>
-                                                                <div className='p-5'>
-                                                                    <Text variant="bodyLg" as="p">
-                                                                        You should easiely send and receive WhatsApp messages!
-                                                                    </Text>
-                                                                </div>
-                                                                <div className='mt-14 flex justify-end'>
-                                                                    <Button variant='primary'>
-                                                                        Disconnect
-                                                                    </Button>
-                                                                </div>
-                                                            </>
-
-                                                        </div> */}
-                                                    <div className=" absolute inset-0 flex items-center justify-center">
-                                                        <div className="mt-4">
-                                                            <Button variant="primary" size='large' onClick={handleShowConnectionClick}>
-                                                                {t("welcome.connectionStatusViewButton")}
-                                                            </Button>
+                                                            )}
                                                         </div>
                                                     </div>
+
+                                                    <div className="font-semibold mt-8">
+                                                        <p className="text-center  text-sm md:text-base">
+                                                            Scan the QR code in WhatsApp under Linked Devices settings
+                                                        </p>
+                                                    </div>
+                                                </>
+
+                                            )}
+                                        </> :
+                                            <>
+                                                <div className='flex justify-center mt-6'>
+                                                    <AlienSVG />
                                                 </div>
-
-                                            }
-                                        </div>
-                                    </Card>
+                                                <div className='p-4 md:p-5 text-center md:text-left'>
+                                                    <p className="text-center  text-sm md:text-base">
+                                                        You can check the connection status anytime
+                                                    </p>
+                                                </div>
+                                                <div className='mt-2 flex justify-center'>
+                                                    <Button
+                                                        variant="primary"
+                                                        size="large"
+                                                        onClick={handleShowConnectionClick}
+                                                    >
+                                                        {t("welcome.connectionStatusViewButton")}
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        }
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div
-                                className="messge_box_welcome"
-                            // onClick={() => handleSelectCard(card.id)}
-                            >
-                                <div className="message_text_Welcome">
-                                    <Text variant="headingLg" as="h5">
-                                        {t("welcome.messageBoxTitle")}
-                                    </Text>
-                                </div>
-                                <Card>
-                                    {isMessageLoading ? <div className='flex justify-center items-center' style={{ height: "26rem" }}>
-                                        <Spinner accessibilityLabel="Small spinner example" size="large" />
-                                    </div> : <div className="flex-col" style={{ height: '26rem' }}>
-                                        <textarea
-                                            className="w-full h-10 border-none outline-none text-base"
-                                            value={customMessage.header}
-                                            onChange={(e) => {
-                                                setCustomMessage((prev) => ({
-                                                    ...prev,
-                                                    header: e.target.value
-                                                }))
-                                            }
-                                            }
-                                            placeholder={t("settings.messageBoxHeadingPlaceholder")}
-                                        />
-                                        <textarea
-                                            className="w-full h-80 text-base border-none outline-none"
-                                            value={customMessage.content}
-                                            onChange={(e) => {
-                                                setCustomMessage((prev) => ({
-                                                    ...prev,
-                                                    content: e.target.value
-                                                }))
-                                            }}
-                                            placeholder={t("settings.messageBoxContentPlaceholder")}
-                                        />
-                                    </div>}
-                                </Card>
-                                {/* <div className='mt-4'>
-                                        <Text variant="bodyLg" as="p">
-                                            {t("welcome.messageBoxBeforeLinkText")} <Link url="https://help.shopify.com/manual" removeUnderline>{t("welcome.messageBoxAfterLinkText")}</Link>
+                                <div className="border-l hidden lg:block mx-4"></div>
+                                <div className="border-t lg:border-t-0 w-full my-4 lg:my-0 lg:hidden"></div>
+
+                                <div
+                                    className="p-4 md:p-6 w-full lg:w-3/5"
+                                >
+                                    <div className="message_text_Welcome text-center md:text-left">
+                                        <Text variant="headingLg" as="h5">
+                                            {t("welcome.messageBoxTitle")}
                                         </Text>
-                                    </div> */}
+                                    </div>
+                                    <Card >
+                                        {isMessageLoading ? <div className='flex justify-center items-center h-40 md:h-56' >
+                                            <Spinner accessibilityLabel="Small spinner example" size="large" />
+                                        </div>
+                                            :
+                                            <div className="flex-col" >
+                                                <textarea
+                                                    className="w-full h-10 border-none outline-none text-base resize-none"
+                                                    value={customMessage.header}
+                                                    onChange={(e) => {
+                                                        setCustomMessage((prev) => ({
+                                                            ...prev,
+                                                            header: e.target.value
+                                                        }))
+                                                    }}
+                                                    placeholder={t("settings.messageBoxHeadingPlaceholder")}
+                                                />
+                                                <textarea
+                                                    className="w-full h-32 md:h-44 text-base border-none outline-none resize-none"
+                                                    value={customMessage.content}
+                                                    onChange={(e) => {
+                                                        setCustomMessage((prev) => ({
+                                                            ...prev,
+                                                            content: e.target.value
+                                                        }))
+                                                    }}
+                                                    placeholder={t("settings.messageBoxContentPlaceholder")}
+                                                />
+                                            </div>}
+                                    </Card>
+                                    <div className='mt-2 text-center md:text-left p-4 md:p-0'>
+                                        <Text variant="bodyLg" as="p">
+                                            Use this article for winning conversion phrasing - <Link url="#" removeUnderline>link here</Link>
+                                        </Text>
+                                    </div>
+                                </div>
                             </div>
+                        </Card>
+                        <div>
+                            <WhatWeDoSection />
                         </div>
                     </div>
                 </div >
-            </div >
+            </div >}
             <SaveBarComponent
                 onSave={handleSaveMessage}
                 isLoading={isSaveButtonLoading}
@@ -533,8 +589,6 @@ const WelcomeConnect = () => {
 
     async function handleFetchAbandonedCheckouts() {
         try {
-            // const appSubscription = await fetchAppSubscription();
-            // console.log("started handleFetchAbandonedCheckouts on welcomeConnect")
             const responseCards = await fetch("/api/welcome-page/cards-data", {
                 method: "GET",
             })
@@ -565,56 +619,10 @@ const WelcomeConnect = () => {
                     success: true
                 }));
             }
-            // console.log("ended handleFetchAbandonedCheckouts on welcomeConnect")
-
-            //.....................................//...................................//
-
-            // const responseAbandoned = await fetch("/api/abandoned-checkouts/get", {
-            //     method: "POST",
-            //     headers: {
-            //         "Content-Type": "application/json"
-            //     },
-            //     body: JSON.stringify({
-            //         appSubscriptionCreated: appSubscription?.activeSubscriptions?.[0]?.createdAt,
-            //         pageName: isInstanceAuthorized ? "WelcomeConnect" : "letsStart"
-            //     })
-            // })
-            // if (!responseAbandoned.ok) {
-            //     console.error("failed to fetch abandoned checkouts", responseAbandoned.status);
-            //     return;
-            // }
-            // const responseAbandonedData = await responseAbandoned.json()
-            // if (responseAbandonedData?.success) {
-            //     const {
-            //         abandonedCarts,
-            //         abandonedCartsSum,
-            //         allCarts,
-            //         shopCurrency
-            //     } = responseAbandonedData;
-            //     setPageData((prev) => ({
-            //         ...prev,
-            //         abandonedCarts,
-            //         abandonedCartsSum,
-            //         allCarts,
-            //         shopCurrency: shopCurrency
-            //     }));
-            // }
         } catch (error) {
             console.error("handleFetchAbandonedCheckouts Error on welcomeConnect", error);
         }
     }
-
-    // async function fetchAppSubscription() {
-    //     try {
-    //         const response = await fetch("/api/active/subscription/get");
-    //         if (response.ok == true && response.status == 200) {
-    //             const responseJson = await response.json();
-    //             return responseJson;
-    //         }
-    //     } catch (error) {
-    //         console.log("fetchAppSubscription ERROR on welcomeConnect", error);
-    //     }
-    // }
 };
 
 export default WelcomeConnect;
