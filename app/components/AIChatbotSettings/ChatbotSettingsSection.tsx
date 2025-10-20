@@ -6,6 +6,7 @@ import { useState } from 'react';
 import AlienSVG from '../SVGs/AlienSVG';
 import ChatIconSettings from './ChatIconSettings';
 import { isAdvancePlanOrHigher } from '~/utils/plans';
+import { useNavigate } from '@remix-run/react';
 
 export default function ChatbotSettingsSection({
     t,
@@ -22,6 +23,11 @@ export default function ChatbotSettingsSection({
     handleChatExtensionActivateButton
 }: any) {
     const [topicSearchValue, setTopicSearchValue] = useState('');
+    const navigate = useNavigate()
+
+    const handleBannerClick = () => {
+        navigate("/app/Settings")
+    }
 
     const options = [
         { label: "Friendly – Warm, casual, and easygoing", value: 'Friendly – Warm, casual, and easygoing' },
@@ -32,99 +38,117 @@ export default function ChatbotSettingsSection({
 
     return (
         <div className='setting-block'>
-            <div className='settings_secion-1 w-4/5'>
+            <div className='settings_secion-1 ai_parent'>
                 <div className='start_main_container_sub_heading'>
                     <Text variant="headingXl" as="h3">
                         Chatbot Settings
                     </Text>
                 </div>
-                <BlockStack gap="400">
-                    <Card roundedAbove="sm">
-                        {isSettingsLoading ? (
-                            <SkeletonLoading />
-                        ) : (
-                            <SettingsSecondBlock
-                                children={
-                                    <></>
-                                }
-                                availableOn={"Pro"}
-                                title={"Enable AI chat widget on your store"}
-                                description={"Click to activate the AI chat widget on your store. This allows customers to chat with AI assistant directly from your website."}
-                                handleActivateButton={handleChatExtensionActivateButton}
-                                buttonType={"chatExtensionActivateButton"}
-                                activateButtonTitle={"Activate AI chat widget"}
-                                isActivateButtonDisabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan))}
-                            />
-                        )}
-                    </Card>
-                    <Card roundedAbove="sm">
-                        {isSettingsLoading ? (
-                            <SkeletonLoading />
-                        ) : (
-                            <SettingsSecondBlock
-                                children={
-                                    <div className="w-1/3 field">
-                                        <Select
-                                            options={options}
-                                            label=""
-                                            onChange={(v) => {
-                                                setAISettings({ ...aiSettings, toneOfVoice: v })
-                                            }}
-                                            value={aiSettings.toneOfVoice}
+                <div className='ai_top_section'>
+                    <BlockStack gap="400">
+                        <Card roundedAbove="sm">
+                            {isSettingsLoading ? (
+                                <div className='w-[53.4rem]'>
+                                    <SkeletonLoading />
+                                </div>
+                            ) : (
+                                <SettingsSecondBlock
+                                    children={
+                                        <></>
+                                    }
+                                    availableOn={"Pro"}
+                                    title={"Enable AI chat widget on your store"}
+                                    description={"Click to activate the AI chat widget on your store. This allows customers to chat with AI assistant directly from your website."}
+                                    handleActivateButton={handleChatExtensionActivateButton}
+                                    buttonType={"chatExtensionActivateButton"}
+                                    activateButtonTitle={"Activate AI chat widget"}
+                                    isActivateButtonDisabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan))}
+                                />
+                            )}
+                        </Card>
+                        <Card roundedAbove="sm">
+                            {isSettingsLoading ? (
+                                <div className='w-[53.4rem]'>
+                                    <SkeletonLoading />
+                                </div>
+                            ) : (
+                                <SettingsSecondBlock
+                                    children={
+                                        <div className="w-1/3 field">
+                                            <Select
+                                                options={options}
+                                                label=""
+                                                onChange={(v) => {
+                                                    setAISettings({ ...aiSettings, toneOfVoice: v })
+                                                }}
+                                                value={aiSettings.toneOfVoice}
+                                                disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
+                                                placeholder={"Select tone"}
+                                            />
+                                        </div>
+                                    }
+                                    title={"Tone of Voice"}
+                                    description={"Choose how your assistant sounds in chats — professional, friendly, or even a bit playful."}
+                                // activateButtonTitle={aiSettings.isDurationToSendMessageActivated ? t("settings.deactivate") : t("settings.activate")}
+                                />
+                            )}
+                        </Card>
+
+                        <Card roundedAbove="sm">
+                            {isSettingsLoading ? (
+                                <div className='w-[53.4rem]'>
+                                    <SkeletonLoading />
+                                </div>
+                            ) : (
+                                <SettingsSecondBlock
+                                    children={
+                                        <></>
+                                    }
+                                    title={"Use Emojis"}
+                                    description={"Turn on to add a touch of personality to your messages with emojis"}
+                                    activateButtonTitle={aiSettings.isUseEmojisTurnedOn ? "Turn off" : "Turn on"}
+                                    isActivateButtonLoading={loading.activeButton === "useEmojisTurnedOnButton"}
+                                    isActivateButtonDisabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan) || loading.activeButton)}
+                                    handleActivateButton={(data: any) => {
+                                        const settingKey = activateButtons[data];
+                                        setAISettings((p: any) => ({ ...p, [settingKey]: !aiSettings[settingKey] }))
+                                        setActivateButtonActionType(data)
+                                    }}
+                                    buttonType={"useEmojisTurnedOnButton"}
+                                    isActivated={aiSettings.isUseEmojisTurnedOn}
+                                />
+                            )}
+                        </Card>
+
+                        <Card roundedAbove="sm">
+                            {isSettingsLoading ? (
+                                <div className='w-[53.4rem]'>
+                                    <SkeletonLoading />
+                                </div>
+                            ) : (
+                                <SettingsSecondBlock
+                                    children={
+                                        <ChatIconSettings
+                                            setAISettings={setAISettings}
+                                            aiSettings={aiSettings}
                                             disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
-                                            placeholder={"Select tone"}
                                         />
-                                    </div>
-                                }
-                                title={"Tone of Voice"}
-                                description={"Choose how your assistant sounds in chats — professional, friendly, or even a bit playful."}
-                            // activateButtonTitle={aiSettings.isDurationToSendMessageActivated ? t("settings.deactivate") : t("settings.activate")}
-                            />
-                        )}
-                    </Card>
-
-                    <Card roundedAbove="sm">
-                        {isSettingsLoading ? (
-                            <SkeletonLoading />
-                        ) : (
-                            <SettingsSecondBlock
-                                children={
-                                    <></>
-                                }
-                                title={"Use Emojis"}
-                                description={"Turn on to add a touch of personality to your messages with emojis"}
-                                activateButtonTitle={aiSettings.isUseEmojisTurnedOn ? "Turn off" : "Turn on"}
-                                isActivateButtonLoading={loading.activeButton === "useEmojisTurnedOnButton"}
-                                isActivateButtonDisabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan) || loading.activeButton)}
-                                handleActivateButton={(data: any) => {
-                                    const settingKey = activateButtons[data];
-                                    setAISettings((p: any) => ({ ...p, [settingKey]: !aiSettings[settingKey] }))
-                                    setActivateButtonActionType(data)
-                                }}
-                                buttonType={"useEmojisTurnedOnButton"}
-                                isActivated={aiSettings.isUseEmojisTurnedOn}
-                            />
-                        )}
-                    </Card>
-
-                    <Card roundedAbove="sm">
-                        {isSettingsLoading ? (
-                            <SkeletonLoading />
-                        ) : (
-                            <SettingsSecondBlock
-                                children={
-                                    <ChatIconSettings
-                                        setAISettings={setAISettings}
-                                        aiSettings={aiSettings}
-                                        disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
-                                    />
-                                }
-                                title={"Style Preferences"}
-                                description={""}
-                            />
-                        )}
-                    </Card>
-                </BlockStack>
+                                    }
+                                    title={"Style Preferences"}
+                                    description={""}
+                                />
+                            )}
+                        </Card>
+                    </BlockStack>
+                    <div>
+                        <img
+                            onClick={handleBannerClick}
+                            className="bannerAISettings"
+                            src="/images/dealsBanner/verticle-banner.png"
+                            alt="Banner"
+                        />
+                    </div>
+                </div>
                 <div className='start_main_container_sub_heading mt-10'>
                     <div className='mb-5'>
                         <Text variant="headingXl" as="h3">

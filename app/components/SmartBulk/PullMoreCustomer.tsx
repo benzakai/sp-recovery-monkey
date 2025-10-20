@@ -56,11 +56,11 @@ export default function PullMoreCustomer({ isProPlanOrHigher, t }: any) {
     return (
         <div>
             <div className='mb-6'>
-                <div className='flex flex-row gap-2'>
+                <div className='flex flex-row gap-2 smartBulk_parent'>
                     <Text variant="headingLg" as="p">
                         {t("smartBulk.syncMoreCustomers")}
                     </Text>
-                    <div>
+                    <div className='smart_badge'>
                         <Badge tone='info' >{t("settings.planName3")}</Badge>
                     </div>
                 </div>

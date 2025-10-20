@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import '../StartPage.css';
 import { useLoaderData, useSubmit } from '@remix-run/react';
 import { authenticate, STARTER_PLAN, PRO_PLAN, ADVANCE_PLAN, ADVANCE_PLAN_YEARLY, PRO_PLAN_YEARLY, STARTER_PLAN_YEARLY } from "../shopify.server";
-import { useActionData, useOutletContext } from 'react-router';
+import { useActionData, useNavigate, useOutletContext } from 'react-router';
 import fireStoreCreateService from '~/services/fireStoreCreateService';
 import { isProPlanOrHigher } from '~/utils/plans';
 import {
@@ -146,6 +146,7 @@ const Settings = () => {
         durationToSendMessageActivateButton: 'isDurationToSendMessageActivated',
         languageSelectActivateButton: 'isSelectedLanguageActivated',
     };
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (!areSettingsEqual(settings, compareSettings)) {
@@ -409,6 +410,10 @@ const Settings = () => {
         shopify.saveBar.hide('settings-save-bar');
     }
 
+    const handleBannerClick = () => {
+        navigate("/app/Settings")
+    }
+
     return (
         <div className="body">
             <div className='start_page'>
@@ -431,23 +436,30 @@ const Settings = () => {
                             {t('settings.subtitle')}
                         </Text>
                     </div>
+                    <div className='flex flex-col md:flex-row items-start justify-between md:gap-6 mt-10 md:mt-14'>
+                        <SettingsSection
+                            t={t}
+                            isSettingsLoading={isSettingsLoading}
+                            settings={settings}
+                            setSettings={setSettings}
+                            loading={loading}
+                            handleActivateButton={handleActivateButton}
+                            languages={languages}
+                            setLanguageSearchValue={setLanguageSearchValue}
+                            languageSearchValue={languageSearchValue}
+                            isProPlanOrHigher={isProPlanOrHigher}
+                            selectedPlanName={selectedPlanName}
+                            permissions={permissions}
+                            isMessageLoading={isMessageLoading}
+                        />
+                        <img
+                            onClick={handleBannerClick}
+                            className="bannerSettings"
+                            src="/images/dealsBanner/verticle-banner.png"
+                            alt="Banner"
+                        />
+                    </div>
                     <div className='mb-14'></div>
-                    <SettingsSection
-                        t={t}
-                        isSettingsLoading={isSettingsLoading}
-                        settings={settings}
-                        setSettings={setSettings}
-                        loading={loading}
-                        handleActivateButton={handleActivateButton}
-                        languages={languages}
-                        setLanguageSearchValue={setLanguageSearchValue}
-                        languageSearchValue={languageSearchValue}
-                        isProPlanOrHigher={isProPlanOrHigher}
-                        selectedPlanName={selectedPlanName}
-                        permissions={permissions}
-                        isMessageLoading={isMessageLoading}
-                    />
-                    <div className='mb-20'></div>
                     <PlanSection
                         t={t}
                         loadingPage={loadingPage}

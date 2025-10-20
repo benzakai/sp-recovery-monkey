@@ -279,20 +279,22 @@ const AIChatbot = () => {
                             </Text>
                         </div>
                         <div className='mb-14'></div>
-                        <ChatbotSettingsSection
-                            t={t}
-                            handleChatExtensionActivateButton={handleChatExtensionActivateButton}
-                            isSettingsLoading={isSettingsLoading}
-                            aiSettings={aiSettings}
-                            setAISettings={setAISettings}
-                            activateButtons={activateButtons}
-                            handleSyncing={handleSyncing}
-                            loading={loading}
-                            setActivateButtonActionType={setActivateButtonActionType}
-                            isProPlanOrHigher={isProPlanOrHigher}
-                            selectedPlanName={selectedPlanName}
-                            permissions={permissions}
-                        />
+                        <div>
+                            <ChatbotSettingsSection
+                                t={t}
+                                handleChatExtensionActivateButton={handleChatExtensionActivateButton}
+                                isSettingsLoading={isSettingsLoading}
+                                aiSettings={aiSettings}
+                                setAISettings={setAISettings}
+                                activateButtons={activateButtons}
+                                handleSyncing={handleSyncing}
+                                loading={loading}
+                                setActivateButtonActionType={setActivateButtonActionType}
+                                isProPlanOrHigher={isProPlanOrHigher}
+                                selectedPlanName={selectedPlanName}
+                                permissions={permissions}
+                            />
+                        </div>
                     </div>
                 </div>
             </Page>

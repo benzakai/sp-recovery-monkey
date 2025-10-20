@@ -5,7 +5,7 @@ import { DateRangePicker } from '~/components/DateRangePicker'
 import SmartBulkTable from '~/components/SmartBulkTable'
 import ConfirmationModal from '~/components/ConfirmationModal';
 import { isProPlanOrHigher } from '~/utils/plans';
-import { useOutletContext } from '@remix-run/react';
+import { useNavigate, useOutletContext } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import PullMoreCustomer from '~/components/SmartBulk/PullMoreCustomer';
 import SaveBarComponent from '~/components/SaveBarComponent';
@@ -46,6 +46,7 @@ export default function SmartBulk() {
     const { selectedPlanName, permissions }: any = useOutletContext()
     const [paginationDirection, setPaginationDirection] = useState('')
     const [isProUser, setIsProUser] = useState(false);
+    const navigate = useNavigate()
 
     useEffect(() => {
         const isClean = compareMessage?.header === customMessage?.header && compareMessage?.content === customMessage?.content
@@ -244,67 +245,82 @@ export default function SmartBulk() {
         setCustomMessage(compareMessage)
     }
 
+    const handleBannerClick = () => {
+        navigate("/app/Settings")
+    }
+
     return (
         <div className='start_page smart-bulk padding_zero'>
 
             <Page fullWidth>
                 <div className='mb-16 bulk-box'>
-                    {true ? <div
-                        className=""
-                    // onClick={() => handleSelectCard(card.id)}
-                    >
-                        <div className="mb-8">
-                            <div className='flex flex-row gap-3'>
-                                <Text variant="heading3xl" as="h3">
-                                    {t("smartBulk.title")}
-                                </Text>
-                                <div className='pt-3.5'>
-                                    <Badge tone='info' >Pro</Badge>
+                    <div className='flex flex-col md:flex-row items-start justify-between md:gap-6'>
+                        <div className='icon-block'>
+
+                            <div
+                                className=""
+                            // onClick={() => handleSelectCard(card.id)}
+                            >
+                                <div className="mb-8">
+                                    <div className='flex flex-row gap-3 smartBulk_parent'>
+                                        <Text variant="heading3xl" as="h3">
+                                            {t("smartBulk.title")}
+                                        </Text>
+                                        <div className='pt-3.5 smart_badge'>
+                                            <Badge tone='info' >Pro</Badge>
+                                        </div>
+                                    </div>
+                                    <img
+                                        onClick={handleBannerClick}
+                                        className="long_banner_welcome_page pt-4"
+                                        src="/images/letsStartPage/topBanner.png"
+                                        alt="Banner"
+                                    />
+                                    <Text variant="headingXl" as="h4">
+                                        {t("smartBulk.subtitle")}
+                                    </Text>
+                                    <div className='mb-5'></div>
+                                    <Text variant="headingLg" fontWeight='regular' as="p">
+                                        {t("smartBulk.messageBoxTitle")}
+                                    </Text>
+                                    <div className='mb-3'></div>
+                                    <Text variant="bodyLg" as="p">
+                                        {t("smartBulk.messageBoxDescription")} <Link removeUnderline>{t("smartBulk.messageBoxLinkText")}</Link>
+                                    </Text>
                                 </div>
-                            </div>
-                            <Text variant="headingXl" as="h4">
-                                {t("smartBulk.subtitle")}
-                            </Text>
-                            <div className='mb-5'></div>
-                            <Text variant="headingLg" fontWeight='regular' as="p">
-                                {t("smartBulk.messageBoxTitle")}
-                            </Text>
-                            <div className='mb-3'></div>
-                            <Text variant="bodyLg" as="p">
-                                {t("smartBulk.messageBoxDescription")} <Link removeUnderline>{t("smartBulk.messageBoxLinkText")}</Link>
-                            </Text>
-                        </div>
-                        <div className="w-1/2 mb-20 cust-detail">
-                            <Card>
-                                {isMessageLoading ? <div className='spinn flex justify-center items-center h-72'>
-                                    <Spinner accessibilityLabel="Small spinner example" size="large" />
-                                </div> : <div className="flex-col" >
-                                    <textarea
-                                        className="w-full h-7 border-none outline-none text-base"
-                                        value={customMessage?.header}
-                                        onChange={(e) => {
-                                            setCustomMessage((prev: any) => ({
-                                                ...prev,
-                                                header: e.target.value
-                                            }))
-                                        }
-                                        }
-                                        placeholder={t("settings.messageBoxHeadingPlaceholder")}
-                                        disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
-                                    />
-                                    <textarea
-                                        className="w-full h-60 text-base border-none outline-none"
-                                        value={customMessage?.content}
-                                        onChange={(e) => {
-                                            setCustomMessage((prev: any) => ({
-                                                ...prev,
-                                                content: e.target.value
-                                            }))
-                                        }}
-                                        placeholder={t("settings.messageBoxContentPlaceholder")}
-                                        disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
-                                    />
-                                    {/* <div className='flex justify-end pr-3 pt-4'>
+
+
+                                <div className="w-[90%] md:w-[60%] mb-20 ">
+                                    <Card>
+                                        {isMessageLoading ? <div className='spinn flex justify-center items-center h-72'>
+                                            <Spinner accessibilityLabel="Small spinner example" size="large" />
+                                        </div> : <div className="flex-col" >
+                                            <textarea
+                                                className="w-full h-7 border-none outline-none text-base"
+                                                value={customMessage?.header}
+                                                onChange={(e) => {
+                                                    setCustomMessage((prev: any) => ({
+                                                        ...prev,
+                                                        header: e.target.value
+                                                    }))
+                                                }
+                                                }
+                                                placeholder={t("settings.messageBoxHeadingPlaceholder")}
+                                                disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
+                                            />
+                                            <textarea
+                                                className="w-full h-60 text-base border-none outline-none"
+                                                value={customMessage?.content}
+                                                onChange={(e) => {
+                                                    setCustomMessage((prev: any) => ({
+                                                        ...prev,
+                                                        content: e.target.value
+                                                    }))
+                                                }}
+                                                placeholder={t("settings.messageBoxContentPlaceholder")}
+                                                disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
+                                            />
+                                            {/* <div className='flex justify-end pr-3 pt-4'>
                                         <Button
                                             onClick={handleSaveMessage}
                                             variant="primary"
@@ -312,83 +328,91 @@ export default function SmartBulk() {
                                             loading={isSaveButtonLoading}
                                         >{t("settings.messageBoxSaveButton")}</Button>
                                     </div> */}
-                                </div>}
-                            </Card>
-                        </div>
-                    </div> : null}
-
-                    <div className='mb-16 mt-5'>
-                        <PullMoreCustomer
-                            isProPlanOrHigher={isProPlanOrHigher(selectedPlanName) || isProPlanOrHigher(permissions?.manualPlan)}
-                            t={t}
-                        />
-                    </div>
-
-                    <div className='flex justify-between'>
-                        <div className='mb-6'>
-                            <div className='flex flex-row gap-2'>
-                                <Text variant="headingLg" as="p">
-                                    {t("smartBulk.customersTableTitle")}
-                                </Text>
-                                <div>
-                                    <Badge tone='info' >Pro</Badge>
+                                        </div>}
+                                    </Card>
                                 </div>
                             </div>
-                            <div className='mb-2'></div>
-                            <Text variant="bodyLg" as="p">
-                                {t("smartBulk.customersTableDescription")}
-                            </Text>
-                        </div>
-                        <div className='flex justify-center items-center'>
-                            <div className='mr-3'>
-                                <Select
-                                    label={t("smartBulk.show")}
-                                    labelInline
-                                    options={options}
-                                    onChange={(v) => setPageSize(v)}
-                                    value={PageSize}
-                                    disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
+
+                            <div className='mb-16 mt-5'>
+                                <PullMoreCustomer
+                                    isProPlanOrHigher={isProPlanOrHigher(selectedPlanName) || isProPlanOrHigher(permissions?.manualPlan)}
+                                    t={t}
                                 />
                             </div>
-                            <div className='mr-3'>
-                                <DateRangePicker
-                                    disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
-                                    setSelectedDateValues={setSelectedDateValues} t={t} />
+
+                            <div className='flex justify-between'>
+                                <div className='mb-6'>
+                                    <div className='flex flex-row gap-2 smartBulk_parent'>
+                                        <Text variant="headingLg" as="p">
+                                            {t("smartBulk.customersTableTitle")}
+                                        </Text>
+                                        <div className='smart_badge'>
+                                            <Badge tone='info' >Pro</Badge>
+                                        </div>
+                                    </div>
+                                    <div className='mb-2'></div>
+                                    <Text variant="bodyLg" as="p">
+                                        {t("smartBulk.customersTableDescription")}
+                                    </Text>
+                                </div>
+                                <div className='flex justify-center items-center'>
+                                    <div className='mr-3'>
+                                        <Select
+                                            label={t("smartBulk.show")}
+                                            labelInline
+                                            options={options}
+                                            onChange={(v) => setPageSize(v)}
+                                            value={PageSize}
+                                            disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
+                                        />
+                                    </div>
+                                    <div className='mr-3'>
+                                        <DateRangePicker
+                                            disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
+                                            setSelectedDateValues={setSelectedDateValues} t={t} />
+                                    </div>
+                                    <Button
+                                        variant="primary"
+                                        disabled={(selectedTableData.length && customMessage?.content && customMessage?.header && (isProPlanOrHigher(selectedPlanName) || isProPlanOrHigher(permissions?.manualPlan))) ? false : true}
+                                        onClick={handleSendMessageInitial}
+                                    >
+                                        {t("smartBulk.sendMessageButton")}
+                                    </Button>
+                                </div>
                             </div>
-                            <Button
-                                variant="primary"
-                                disabled={(selectedTableData.length && customMessage?.content && customMessage?.header && (isProPlanOrHigher(selectedPlanName) || isProPlanOrHigher(permissions?.manualPlan))) ? false : true}
-                                onClick={handleSendMessageInitial}
+                            <Card
+                                padding={{ xs: '190', sm: '190' }}
                             >
-                                {t("smartBulk.sendMessageButton")}
-                            </Button>
-                        </div>
-                    </div>
-                    <Card
-                        padding={{ xs: '190', sm: '190' }}
-                    >
-                        {/* {isTableLoading ?
+                                {/* {isTableLoading ?
                         <Box paddingBlockStart="200">
                             <SkeletonBodyText lines={20} />
                         </Box>
                         : */}
-                        <SmartBulkTable
-                            setSelectedTableData={setSelectedTableData}
-                            sortSelected={selectedFilter}
-                            setSelectedFilter={setSelectedFilter}
-                            customers={customers}
-                            persistCustomers={persistCustomers}
-                            currentPage={currentPage}
-                            disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
-                            setCurrentPage={setCurrentPage}
-                            pageInfo={pageInfo}
-                            isTableLoading={isTableLoading}
-                            setQueryValue={setQueryValue}
-                            queryValue={queryValue}
-                            setPaginationDirection={setPaginationDirection}
+                                <SmartBulkTable
+                                    setSelectedTableData={setSelectedTableData}
+                                    sortSelected={selectedFilter}
+                                    setSelectedFilter={setSelectedFilter}
+                                    customers={customers}
+                                    persistCustomers={persistCustomers}
+                                    currentPage={currentPage}
+                                    disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
+                                    setCurrentPage={setCurrentPage}
+                                    pageInfo={pageInfo}
+                                    isTableLoading={isTableLoading}
+                                    setQueryValue={setQueryValue}
+                                    queryValue={queryValue}
+                                    setPaginationDirection={setPaginationDirection}
+                                />
+                                {/* } */}
+                            </Card>
+                        </div>
+                        <img
+                            onClick={handleBannerClick}
+                            className="bannerSmart lg:w-72 mb-8 md:mb-0 rounded-lg mt-6"
+                            src="/images/dealsBanner/verticle-banner.png"
+                            alt="Banner"
                         />
-                        {/* } */}
-                    </Card>
+                    </div>
                 </div>
                 <ConfirmationModal
                     handlePrimaryClick={handleSendMessageConfirmed}

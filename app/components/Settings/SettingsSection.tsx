@@ -32,7 +32,7 @@ export default function SettingsSection({
     ];
     return (
         <div className='setting-block'>
-            <div className='settings_secion-1 w-4/5'>
+            <div className='settings_secion-1'>
                 <div className='start_main_container_sub_heading'>
                     <Text variant="headingXl" as="h3">
                         {t('settings.general')}
@@ -105,13 +105,13 @@ export default function SettingsSection({
                     <Card roundedAbove="sm">
                         {isSettingsLoading ? (
                             <SkeletonLoading
-                                secondClass='w-4/5 mt-8 mb-4'
+                                secondClass='w-10/12 mt-8 mb-4'
                                 secondLines={14}
                             />
                         ) : (
                             <SettingsSecondBlock
                                 children={
-                                    <div className="w-4/5">
+                                    <div className="w-10/12">
                                         <Card>
                                             {isMessageLoading ? <div className='flex justify-center items-center h-72'>
                                                 <Spinner accessibilityLabel="Small spinner example" size="large" />

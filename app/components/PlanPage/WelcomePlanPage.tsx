@@ -30,7 +30,7 @@ export default function WelcomePlanPage({
 
     useEffect(() => {
         if (actionData?.success) {
-           if (actionData?.savedAppLangnuage) {
+            if (actionData?.savedAppLangnuage) {
                 i18n.changeLanguage(actionData?.savedAppLangnuage)
                 shopify.toast.show(t("global.toastMessage.languageChangeSuccess"))
             }
@@ -121,6 +121,11 @@ export default function WelcomePlanPage({
             prefix: <Icon source={LanguageFilledIcon} />,
         }
     ];
+
+    const handleBannerClick = () => {
+        navigate("/app/Settings")
+    }
+
     return (
         <div className="body">
             <div className='start_page'>
@@ -138,53 +143,93 @@ export default function WelcomePlanPage({
                             value={selectedLanguage}
                         />
                     </div>
+                    <img
+                        onClick={handleBannerClick}
+                        className="long_banner_welcome_page"
+                        src="/images/letsStartPage/topBanner.png"
+                        alt="Banner"
+                    />
+                    <div className="welcome_top_section">
+                        <div className="flex-[3] w-full">
+                            <p className="font-bold text-2xl pb-6">{t("home.subTitle")}</p>
+                            <StartPageCartSummary getCards={getCards} />
 
-                    <div>
-                        <p className='font-bold text-2xl pb-6'>{t("home.subTitle")}</p>
-                        <StartPageCartSummary getCards={getCards} />
-                    </div>
+                            <div className="contact_parent start_price_container contact-block mt-8">
+                                <div className="start_price_container_heading">
+                                    <Text variant="headingLg" as="h5">
+                                        {t("home.contactSectionTitle")}
+                                    </Text>
+                                </div>
+                                <Card>
+                                    <div className="  flex flex-col md:flex-row gap-6 p-6 w-full">
+                                        <div
+                                            className="p-6 shadow-lg rounded-2xl border border-gray-200 relative h-48 md:w-1/2"
+                                            style={{ backgroundColor: "#f8faff" }}
+                                        >
+                                            <div className="flex flex-row items-center">
+                                                <ChatSVG />
+                                                <h2 className="text-lg font-semibold text-gray-800">
+                                                    {t("home.whatsappChatTitle")}
+                                                </h2>
+                                            </div>
+                                            <div className="mb-4 mt-4">
+                                                <p className="text-gray-600 text-base">
+                                                    {t("home.whatsappChatDescription")}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <Button
+                                                    fullWidth
+                                                    size="large"
+                                                    variant="primary"
+                                                    onClick={handleRedirectToWhatsapp}
+                                                >
+                                                    {t("home.whatsappChatButtonText")}
+                                                </Button>
+                                            </div>
+                                        </div>
 
-                    <div className="start_price_container contact-block">
-                        <div className="start_price_container_heading">
-                            <Text variant="headingLg" as="h5">
-                                {t("home.contactSectionTitle")}
-                            </Text>
+                                        <div
+                                            className="p-6 shadow-lg rounded-2xl border border-gray-200 relative h-48 md:w-1/2"
+                                            style={{ backgroundColor: "#f8faff" }}
+                                        >
+                                            <div className="flex flex-row items-center">
+                                                <MailSVG />
+                                                <h2 className="text-lg font-semibold text-gray-800">
+                                                    {t("home.emailContactTitle")}
+                                                </h2>
+                                            </div>
+                                            <div className="mb-4 mt-4">
+                                                <p className="text-gray-600 text-base">
+                                                    {t("home.emailContactDescription")}
+                                                </p>
+                                            </div>
+                                            <div className={i18n.language === "en" ? "mt-10" : ""}>
+                                                <Button
+                                                    fullWidth
+                                                    size="large"
+                                                    variant="primary"
+                                                    onClick={handleRedirectToMail}
+                                                >
+                                                    {t("home.emailContactButtonText")}
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Card>
+                            </div>
                         </div>
 
-                        <Card>
-                            <div className="flex flex-row gap-6 p-6 w-full">
-                                <div className="p-6 shadow-lg rounded-2xl border border-gray-200 relative h-48 w-1/2" style={{ backgroundColor: "#f8faff" }}>
-                                    <div className='flex flex-row items-center'>
-                                        <ChatSVG />
-                                        <h2 className="text-lg font-semibold text-gray-800">{t("home.whatsappChatTitle")}</h2>
-                                    </div>
-                                    <div className='mb-4 mt-4'>
-                                        <p className="text-gray-600 text-base">{t("home.whatsappChatDescription")}</p>
-                                    </div>
-                                    <div>
-                                        <Button fullWidth size='large' variant='primary' onClick={handleRedirectToWhatsapp}>
-                                            {t("home.whatsappChatButtonText")}
-                                        </Button>
-                                    </div>
-                                </div>
+                        <img
+                            onClick={handleBannerClick}
+                            className="banner_welcome_page"
+                            src="/images/dealsBanner/verticle-banner.png"
+                            alt="Banner"
+                        />
 
-                                <div className="p-6 shadow-lg rounded-2xl border border-gray-200 relative h-48 w-1/2" style={{ backgroundColor: "#f8faff" }}>
-                                    <div className='flex flex-row items-center'>
-                                        <MailSVG />
-                                        <h2 className="text-lg font-semibold text-gray-800">{t("home.emailContactTitle")}</h2>
-                                    </div>
-                                    <div className='mb-4 mt-4'>
-                                        <p className="text-gray-600 text-base">{t("home.emailContactDescription")}</p>
-                                    </div>
-                                    <div className={i18n.language === "en" ? "mt-10" : ""}>
-                                        <Button fullWidth size='large' variant='primary' onClick={handleRedirectToMail}>
-                                            {t("home.emailContactButtonText")}
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
-                        </Card>
                     </div>
+
+
                 </div>
             </div>
         </div>

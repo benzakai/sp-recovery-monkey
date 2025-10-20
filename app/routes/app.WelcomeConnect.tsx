@@ -7,6 +7,7 @@ import SaveBarComponent from '~/components/SaveBarComponent';
 import ConnectionStepSection from '~/components/WelcomPage/ConnectionStepSection';
 import WhatWeDoSection from '~/components/WelcomPage/WhatWeDoSection';
 import DashboardOverview from '~/components/WelcomPage/DashboardOverview';
+import { useNavigate } from '@remix-run/react';
 // import { trackLCP } from '~/utils/lcpTracker';
 
 const WelcomeConnect = () => {
@@ -36,6 +37,7 @@ const WelcomeConnect = () => {
     const [isMessageLoading, setMessageLoading] = useState(true)
     const [isDisBtnLoading, setDisBtnLoading] = useState(false)
     const [isLoading, setLoading] = useState(true)
+    const navigate = useNavigate()
 
     useEffect(() => {
         const isClean = compareMessage?.header === customMessage?.header && compareMessage?.content === customMessage?.content
@@ -407,6 +409,10 @@ const WelcomeConnect = () => {
         setCustomMessage(compareMessage)
     }
 
+    const handleBannerClick = () => {
+        navigate("/app/Settings")
+    }
+
     return (
         <>
             {isLoading ? <div className="flex justify-center items-center h-full w-full">
@@ -415,6 +421,14 @@ const WelcomeConnect = () => {
                 <div className='start_page start_page_wrapper sm:!max-w-[90%]  px-4 md:px-0'>
 
                     <div className="lets_start_main_container">
+                        <div className="w-full flex justify-center mb-12">
+                            <img
+                                onClick={handleBannerClick}
+                                src="/images/letsStartPage/topBanner.png"
+                                alt="Top Banner"
+                                className=" w-full md:max-w-full object-cover md:object-fill min-h-[60px] md:h-auto sm:min-h-[20px] cursor-pointer"
+                            />
+                        </div>
                         <div>
                             <div className='pb-2 text-center md:text-left'>
                                 <Text variant="heading3xl" as="h3">

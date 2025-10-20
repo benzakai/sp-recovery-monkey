@@ -4,6 +4,7 @@ import '../AbandonedCarts.css'
 import { Page, DataTable, Text, Spinner, Card } from '@shopify/polaris';
 import AbandonedCartsSummary from '~/components/AbandonedCartsSummary';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from '@remix-run/react';
 
 
 function parseDate(dateString: any) {
@@ -33,6 +34,7 @@ export default function NewAbandonedList() {
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
+    const navigate = useNavigate();
 
     const handleNext = () => {
         if (currentPage < totalPages) {
@@ -130,59 +132,81 @@ export default function NewAbandonedList() {
         }
     }
 
+    const handleBannerClick = () => {
+        navigate("/app/Settings")
+    }
+
     return (
         <div className="body">
             <div className='start_page padding_zero'>
-                <Page fullWidth>
-                    <div className='start_main_container'>
-                        <div className='abandoned_list_main_container_heading'>
-                            <div className='start_main_container_sub_heading'>
-                                <Text variant="heading3xl" as="h3">
-                                    {t('abandonedList.title')}
-                                </Text>
-                            </div>
-                        </div>
-                        <div><AbandonedCartsSummary getPageData={getPageData} forPageType="AbandonedList" /></div>
-
-                        <div className='abandoned_list_container'>
-                            <div className="start_price_container_heading">
-                                <Text variant="headingLg" as="h5">
-                                    {t("abandonedList.latestCartRecovery")}
-                                </Text>
-                            </div>
-
-                            {loader ? (
-                                <div className="flex justify-center items-center h-full w-full mt-28">
-                                    <Spinner accessibilityLabel="Spinner example" size="large" />
-                                </div>
-                            ) : (
-                                <Card
-                                    padding={{ xs: '190', sm: '190' }}>
-                                    <DataTable
-                                        columnContentTypes={[
-                                            'text',
-                                            'text',
-                                            'text'
-                                        ]}
-                                        headings={[
-                                            t("abandonedList.tableColumnHeading1"),
-                                            t("abandonedList.tableColumnHeading2"),
-                                            t("abandonedList.tableColumnHeading3"),
-                                        ]}
-                                        rows={GetDataRow}
-                                        pagination={{
-                                            hasNext: currentPage < totalPages,
-                                            hasPrevious: currentPage > 1,
-                                            onNext: handleNext,
-                                            onPrevious: handlePrevious,
-                                            label: t("abandonedList.paginationText", { currentPage: `${(currentPage - 1) * itemsPerPage + 1}-${Math.min(currentPage * itemsPerPage, customerData?.length)}`, totalPages: customerData?.length }),
-                                        }}
-                                    />
-                                </Card>
-                            )}
+                <div className='start_main_container'>
+                    <div className='abandoned_list_main_container_heading'>
+                        <div className='start_main_container_sub_heading'>
+                            <Text variant="heading3xl" as="h3">
+                                {t('abandonedList.title')}
+                            </Text>
                         </div>
                     </div>
-                </Page>
+                    <img
+                        onClick={handleBannerClick}
+                        className="long_banner_welcome_page"
+                        src="/images/letsStartPage/topBanner.png"
+                        alt="Banner"
+                    />
+                    <div className='abandoned_list_top_section'>
+                        <div>
+                            <div><AbandonedCartsSummary getPageData={getPageData} forPageType="AbandonedList" /></div>
+
+                            <div className='abandoned_list_container'>
+                                <div className="start_price_container_heading">
+                                    <Text variant="headingLg" as="h5">
+                                        {t("abandonedList.latestCartRecovery")}
+                                    </Text>
+                                </div>
+
+                                {loader ? (
+                                    <div className="flex justify-center items-center h-full w-full mt-28">
+                                        <Spinner accessibilityLabel="Spinner example" size="large" />
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <Card
+                                            padding={{ xs: '190', sm: '190' }}>
+                                            <DataTable
+                                                columnContentTypes={[
+                                                    'text',
+                                                    'text',
+                                                    'text'
+                                                ]}
+                                                headings={[
+                                                    t("abandonedList.tableColumnHeading1"),
+                                                    t("abandonedList.tableColumnHeading2"),
+                                                    t("abandonedList.tableColumnHeading3"),
+                                                ]}
+                                                rows={GetDataRow}
+                                                pagination={{
+                                                    hasNext: currentPage < totalPages,
+                                                    hasPrevious: currentPage > 1,
+                                                    onNext: handleNext,
+                                                    onPrevious: handlePrevious,
+                                                    label: t("abandonedList.paginationText", { currentPage: `${(currentPage - 1) * itemsPerPage + 1}-${Math.min(currentPage * itemsPerPage, customerData?.length)}`, totalPages: customerData?.length }),
+                                                }}
+                                            />
+                                        </Card>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <div>
+                            <img
+                                onClick={handleBannerClick}
+                                className="banner_abandone_list"
+                                src="/images/dealsBanner/verticle-banner.png"
+                                alt="Banner"
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     )
