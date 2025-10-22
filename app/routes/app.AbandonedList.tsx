@@ -7,9 +7,18 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@remix-run/react';
 
 
-function parseDate(dateString: any) {
-    const [day, month, year, hour, minute, second] = dateString.split(/[\s/:]/).map(Number);
-    return new Date(year, month - 1, day, hour, minute, second);
+// function parseDate(dateString: any) {
+//     const [day, month, year, hour, minute, second] = dateString.split(/[\s/:]/).map(Number);
+//     return new Date(year, month - 1, day, hour, minute, second);
+// }
+
+function parseDate(dateStr: any) {
+    const [datePart, timePart] = dateStr.split(' ');
+    const [day, month, year] = datePart.split('/');
+
+    const fullYear = year.length === 2 ? `20${year}` : year;
+
+    return new Date(`${fullYear}-${month}-${day}T${timePart}`);
 }
 
 export default function NewAbandonedList() {
