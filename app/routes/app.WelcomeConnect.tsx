@@ -1,4 +1,4 @@
-import { Card, Button, Spinner, Text, Link } from '@shopify/polaris';
+import { Card, Button, Spinner, Text, Link, TextField, Icon, Tooltip } from '@shopify/polaris';
 import React, { useEffect, useState } from 'react';
 import '../StartPage.css';
 import AlienSVG from '~/components/SVGs/AlienSVG';
@@ -7,18 +7,31 @@ import SaveBarComponent from '~/components/SaveBarComponent';
 import ConnectionStepSection from '~/components/WelcomPage/ConnectionStepSection';
 import WhatWeDoSection from '~/components/WelcomPage/WhatWeDoSection';
 import DashboardOverview from '~/components/WelcomPage/DashboardOverview';
-import { useNavigate } from '@remix-run/react';
+import { useLoaderData, useNavigate } from '@remix-run/react';
+import WhatsappTest from '~/components/WelcomPage/WhatsappTest';
+import { authenticate } from '~/shopify.server';
 // import { trackLCP } from '~/utils/lcpTracker';
+
+export const loader = async ({ request }: any) => {
+    try {
+        const { admin, session } = await authenticate.admin(request)
+        return { shop: session.shop }
+    } catch (error) {
+        console.log("error occured on app.welcomeconnect page loader", error)
+        return {}
+    }
+}
 
 const WelcomeConnect = () => {
     const { t } = useTranslation()
-    const [instance, setInstance] = useState([]);
+    const { shop }: any = useLoaderData()
+    const [instance, setInstance] = useState<any>([]);
     const [qrCode, setQRCode] = useState('');
     const [stateInstance, setStateInstance] = useState('');
     // const [storeId, setStoreId] = useState('');
     const [pubsubData, setPubsubData] = useState({});
     // const [currentQRData, setCurrentQRData] = useState({});
-    const [getPageData, setPageData] = React.useState({
+    const [getPageData, setPageData] = React.useState<any>({
         abandonedCarts: [],
         abandonedCartsSum: 0,
         acrRate: null,
@@ -31,8 +44,8 @@ const WelcomeConnect = () => {
     const [isInstanceDataLoading, setInstanceDataLoading] = useState(true)
     const [isShowConnectionStatus, setShowConnectionStatus] = useState(false)
     const topics = ['message'];
-    const [customMessage, setCustomMessage] = useState()
-    const [compareMessage, setCompareMessage] = useState()
+    const [customMessage, setCustomMessage] = useState<any>()
+    const [compareMessage, setCompareMessage] = useState<any>()
     const [isSaveButtonLoading, setSaveButtonLoading] = useState<any>(null)
     const [isMessageLoading, setMessageLoading] = useState(true)
     const [isDisBtnLoading, setDisBtnLoading] = useState(false)
@@ -555,7 +568,7 @@ const WelcomeConnect = () => {
                                                     className="w-full h-10 border-none outline-none text-base resize-none"
                                                     value={customMessage.header}
                                                     onChange={(e) => {
-                                                        setCustomMessage((prev) => ({
+                                                        setCustomMessage((prev: any) => ({
                                                             ...prev,
                                                             header: e.target.value
                                                         }))
@@ -566,7 +579,7 @@ const WelcomeConnect = () => {
                                                     className="w-full h-32 md:h-44 text-base border-none outline-none resize-none"
                                                     value={customMessage.content}
                                                     onChange={(e) => {
-                                                        setCustomMessage((prev) => ({
+                                                        setCustomMessage((prev: any) => ({
                                                             ...prev,
                                                             content: e.target.value
                                                         }))
@@ -580,6 +593,7 @@ const WelcomeConnect = () => {
                                             Use this article for winning conversion phrasing - <Link url="#" removeUnderline>link here</Link>
                                         </Text>
                                     </div>
+                                    <WhatsappTest shop={shop} />
                                 </div>
                             </div>
                         </Card>
@@ -613,7 +627,7 @@ const WelcomeConnect = () => {
             const responseCardsData = await responseCards.json()
             if (responseCardsData?.success && responseCardsData?.dashboardData) {
                 const { acr, sales_count, sum_of_sales, currency, checkout_count, shopCurrency } = responseCardsData?.dashboardData;
-                setPageData((prev) => ({
+                setPageData((prev: any) => ({
                     ...prev,
                     acrRate: acr?.toFixed(1),
                     recoveredCarts: Math.trunc(sales_count),
@@ -623,7 +637,7 @@ const WelcomeConnect = () => {
                     success: true
                 }));
             } else {
-                setPageData((prev) => ({
+                setPageData((prev: any) => ({
                     ...prev,
                     acrRate: 0,
                     recoveredCarts: 0,
