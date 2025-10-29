@@ -17,56 +17,57 @@ export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { admin, session, billing } = await authenticate.admin(request);
-  // const response = await admin.graphql(
-  //   `#graphql
-  //             query GetRecurringApplicationCharges {
-  //               currentAppInstallation {
-  //                 activeSubscriptions {
-  //                   id
-  //                   createdAt
-  //                   currentPeriodEnd
-  //                   name
-  //                   test
-  //                   trialDays
-  //                   status
-  //                   lineItems {
-  //                     id
-  //                     plan {
-  //                       pricingDetails {
-  //                         __typename
-  //                       }
-  //                     }
-  //                   }
-  //                 }
-  //               }
-  //             }`,
-  // );
+  const response = await admin.graphql(
+    `#graphql
+              query GetRecurringApplicationCharges {
+                currentAppInstallation {
+                  activeSubscriptions {
+                    id
+                    createdAt
+                    currentPeriodEnd
+                    name
+                    test
+                    trialDays
+                    status
+                    lineItems {
+                      id
+                      plan {
+                        pricingDetails {
+                          __typename
+                        }
+                      }
+                    }
+                  }
+                }
+              }`,
+  );
 
-  // const data = await response.json();
-  // // console.log(`data.data.currentAppInstallation.activeSubscriptions============>`, data.data.currentAppInstallation);
-  // // to check if user is on free plan
-  // const doc = await fireStoreFetchService("subscriptions", session.shop);
-  // // console.log("doc", doc);
-  // if (data.data.currentAppInstallation.activeSubscriptions.length > 0) {
-  //   return json({
-  //     apiKey: process.env.SHOPIFY_API_KEY || "",
-  //     planName: data.data.currentAppInstallation.activeSubscriptions?.[0]?.name,
-  //     subscribed: data.data.currentAppInstallation.activeSubscriptions?.[0]?.status === "ACTIVE"
-  //   });
-  // } else {
-  //   return json({
-  //     apiKey: process.env.SHOPIFY_API_KEY || "",
-  //     planName: (doc?.plan === "Free" && doc?.status === "ACTIVE") ? "Free" : null,
-  //     subscribed: false
-  //   });
-  // }
+  const data = await response.json();
+  // console.log(`data.data.currentAppInstallation.activeSubscriptions============>`, data.data.currentAppInstallation);
+  console.log("last updated loader app.tsx on oct-28-2025");
+  // to check if user is on free plan
   const doc = await fireStoreFetchService("subscriptions", session.shop);
   // console.log("doc", doc);
-  return json({
-    apiKey: process.env.SHOPIFY_API_KEY || "",
-    planName: doc?.plan,
-    subscribed: doc?.status === "ACTIVE"
-  });
+  if (data.data.currentAppInstallation.activeSubscriptions.length > 0) {
+    return json({
+      apiKey: process.env.SHOPIFY_API_KEY || "",
+      planName: data.data.currentAppInstallation.activeSubscriptions?.[0]?.name,
+      subscribed: data.data.currentAppInstallation.activeSubscriptions?.[0]?.status === "ACTIVE"
+    });
+  } else {
+    return json({
+      apiKey: process.env.SHOPIFY_API_KEY || "",
+      planName: (doc?.plan === "Free" && doc?.status === "ACTIVE") ? "Free" : null,
+      subscribed: false
+    });
+  }
+  // const doc = await fireStoreFetchService("subscriptions", session.shop);
+  // // console.log("doc", doc);
+  // return json({
+  //   apiKey: process.env.SHOPIFY_API_KEY || "",
+  //   planName: doc?.plan,
+  //   subscribed: doc?.status === "ACTIVE"
+  // });
 };
 
 export default function App() {

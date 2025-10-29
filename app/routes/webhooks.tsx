@@ -174,6 +174,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (!admin && topic !== "SHOP_REDACT") {
     throw new Response();
   }
+  console.log(`[WEBHOOK]=====================> Topic: ${topic} | Shop: ${shop}`);
   switch (topic) {
     case "CHECKOUTS_CREATE":
       const processCheckoutsCreate = async () => {
