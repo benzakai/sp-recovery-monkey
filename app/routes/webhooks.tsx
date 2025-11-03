@@ -1,7 +1,7 @@
 import type { ActionFunctionArgs } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
-import { Firestore } from "@google-cloud/firestore";
+import { FieldValue, Firestore } from "@google-cloud/firestore";
 import publishMessagePubSubService from "~/services/publishMessagePubSubService";
 import fireStoreDeleteService from "~/services/fireStoreDeleteService";
 import fireStoreCreateService from "~/services/fireStoreCreateService";
@@ -207,17 +207,23 @@ export const action = async ({ request }: ActionFunctionArgs) => {
                 payload: payload,
                 storeId: session?.shop,
               };
-              const shopDocRef = firestoreDatabase.collection('TestCheckoutsWithoutPhoneNumber').doc(shop);
-              const shopDoc = await shopDocRef.get();
-              if (shopDoc.exists) {
-                await shopDocRef.update({
-                  [payload.id]: checkoutData,
-                });
-              } else {
-                await shopDocRef.set({
-                  [payload.id]: checkoutData,
-                }, { merge: true });
-              }
+
+              const parentShopRef = firestoreDatabase
+                .collection("CheckoutsWithoutPhoneNumberUpdated")
+                .doc(shop);
+
+              await parentShopRef.set(
+                {
+                  createdAt: FieldValue.serverTimestamp(),
+                },
+                { merge: true }
+              );
+
+              const shopDocRef = parentShopRef
+                .collection("checkouts")
+                .doc(payload.id.toString());
+
+              await shopDocRef.set(checkoutData, { merge: true });
             }
           }
         } catch (error) {

@@ -48,23 +48,25 @@ const firestoreDatabase = new Firestore();
 export default async function withoutPhoneCheckoutService() {
     console.log("withoutPhoneCheckout CRON STARTED!")
     try {
-        const CheckoutsWithoutPhoneNumberCollection = firestoreDatabase.collection('TestCheckoutsWithoutPhoneNumber');
-        const CheckoutsWithoutPhoneNumberDocuments = await CheckoutsWithoutPhoneNumberCollection.get();
-        console.log("CheckoutsWithoutPhoneNumberDocuments count", CheckoutsWithoutPhoneNumberDocuments.size);
-        // console.log("CheckoutsWithoutPhoneNumberDocuments.docs", CheckoutsWithoutPhoneNumberDocuments.docs.length);
+        const shopsCollection = firestoreDatabase.collection("CheckoutsWithoutPhoneNumberUpdated");
+        const shopsSnapshot = await shopsCollection.get();
 
         const delay = (ms: any) => new Promise(resolve => setTimeout(resolve, ms));
 
-        for (const doc of CheckoutsWithoutPhoneNumberDocuments.docs) {
-            const checkouts = doc.data();
-            const session = await getSession(doc.id);
+        for (const shopDoc of shopsSnapshot.docs) {
+            const shopId = shopDoc.id;
+            const checkoutsRef = shopDoc.ref.collection("checkouts");
+            const checkoutsSnapshot = await checkoutsRef.get();
+
+            console.log(`Shop ${shopId} has ${checkoutsSnapshot.size} checkouts->>>>>>>`);
+            const session = await getSession(shopId);
             // console.log("session", session);
 
-            for (const checkoutId in checkouts) {
-                const checkout = checkouts[checkoutId];
+            for (const checkoutDoc of checkoutsSnapshot.docs) {
+                const checkout = checkoutDoc.data();
                 // console.log("Without Phone Number Checkout Id", checkout?.checkoutId);
                 // console.log("Without Phone Number checkout?.storeId", checkout?.storeId);
-
+                // console.log("checkout?.payload?.id", checkout?.payload?.id);
                 if (checkout?.storeId) {
                     if (session) {
                         // console.log("checkout?.updatedAt", checkout?.updatedAt);
@@ -209,7 +211,7 @@ export default async function withoutPhoneCheckoutService() {
 
         return { success: true };
     } catch (error) {
-        console.log("ERROR", error);
+        console.log("ERROR occured on withoutPhoneCheckout", error);
         return { success: false };
     } finally {
         console.log("withoutPhoneCheckout CRON ENDED!")
@@ -254,11 +256,13 @@ async function deleteOlderThan4HoursDocs(date: any, checkoutId: string, shop: st
     const compareDates = documentsDate > todaysDate;
 
     if (compareDates == false) {
-        const shopDocRef = firestoreDatabase.collection('TestCheckoutsWithoutPhoneNumber').doc(shop);
-        const deleteResponse = await shopDocRef.update({
-            [checkoutId]: FieldValue.delete(),
-        });
-        // console.log("deleteOlderThan4HoursDocs deleteResponse", deleteResponse);
+        const checkoutRef = firestoreDatabase
+            .collection("CheckoutsWithoutPhoneNumberUpdated")
+            .doc(shop)
+            .collection("checkouts")
+            .doc(checkoutId.toString());
+
+        await checkoutRef.delete();
     }
 
     return { success: true };
@@ -299,7 +303,6 @@ async function sendDataToPubSub(checkout: any, session: any, phone: any) {
         const SHOP_DOMAIN = await getShopDomain(session.shop, session.accessToken);
         const Green_API_ID = await getGreenApiData("ConnectPagedata", STORE_ID);
         // console.log("session.shop on sendDataToPubSub", session.shop);
-        const shopDocRef = firestoreDatabase.collection('TestCheckoutsWithoutPhoneNumber').doc(session.shop);
 
         const newObj: any = { STORE_ID, UpdateData };
         newObj["UpdateData"]["phone"] = phone;
@@ -315,17 +318,25 @@ async function sendDataToPubSub(checkout: any, session: any, phone: any) {
         // console.log("recentOrders.some((order: any) => order.checkout_id);", recentOrders.some((order: any) => console.log("order.checkout_id", order.checkout_id)));
         // console.log("newObj from sendDataToPubSUb", newObj);
         if (orderExists) {
-            const deleteResponse = await shopDocRef.update({
-                [checkout?.payload?.id]: FieldValue.delete(),
-            });
+            const checkoutRef = firestoreDatabase
+                .collection("CheckoutsWithoutPhoneNumberUpdated")
+                .doc(session.shop)
+                .collection("checkouts")
+                .doc(checkout?.payload?.id.toString());
+
+            await checkoutRef.delete();
             // console.log("orderExists deleteResponse", deleteResponse);
             // console.log("ORDER ALREADY EXISTS FOR THIS CHECKOUT. NOT SENDING TO PUB/SUB");
         } else {
             // await publishMessagePubSubService("NewAbandonedCheckout", JSON.stringify(newObj));
             await publishMessagePubSubService("checkoutWithoutPhonenumber", JSON.stringify(newObj));
-            const deleteResponse = await shopDocRef.update({
-                [checkout?.payload?.id]: FieldValue.delete(),
-            });
+            const checkoutRef = firestoreDatabase
+                .collection("CheckoutsWithoutPhoneNumberUpdated")
+                .doc(session.shop)
+                .collection("checkouts")
+                .doc(checkout?.payload?.id.toString());
+
+            await checkoutRef.delete();
             // console.log("not orderExists deleteResponse", deleteResponse);
             // console.log(checkout?.payload?.id, "CUSTOMER PHONE NUMBER IS PRESENT SEND DATA TO PUBSUB")
         }
