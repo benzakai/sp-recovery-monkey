@@ -88,10 +88,10 @@ export default function AbandonedCartsSummary({ getPageData, forPageType }: any)
                                         <div className="bg-gray-300 rounded h-8 w-28"></div>
                                     </div>
                                 ) : (
-                                    <div className='font-bold text-2xl pt-4 pb-3'>{card.value}</div>
+                                    <div className='font-bold text-2xl pt-4 pb-3 abandoned_no'>{card.value}</div>
                                 )}
-                                <div className='font-semibold text-2xl pb-1'>{card.title}</div>
-                                <div className='text-base text-[#6B7177] w-[85%]'>{card.description}</div>
+                                <div className='font-semibold text-2xl pb-1 abandoned_icon'>{card.title}</div>
+                                <div className='text-[13px] text-[#6B7177] w-[85%]'>{card.description}</div>
                             </div>
                         );
                     })

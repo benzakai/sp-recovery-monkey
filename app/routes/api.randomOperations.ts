@@ -159,6 +159,7 @@ const currencySymbols: any = {
   ZMW: "ZK",
   ZWL: "$",
 }
+
 import { Firestore, Timestamp } from "@google-cloud/firestore";
 // import fs from 'fs';
 // import path from 'path';
@@ -824,85 +825,199 @@ const firestoreDatabase = new Firestore();
 //   }
 // };
 
-import prisma from "~/db.server";
+// import prisma from "~/db.server";
 
-export const action = async ({ request }: any) => {
+// export const action = async ({ request }: any) => {
+//   try {
+//     const body = await request.json();
+//     const shop = body?.shop;
+//     const productId = body.productId
+
+//     if (!productId) {
+//       return new Response(JSON.stringify({ message: 'error occurred on disconnectInstance' }), {
+//         status: 404,
+//       });
+//     }
+
+//     if (!shop) {
+//       return new Response(JSON.stringify({ error: "Missing 'shop' in request body" }), {
+//         status: 400,
+//         headers: { "Content-Type": "application/json" },
+//       });
+//     }
+
+//     const shopData = await prisma.session.findFirst({
+//       where: { shop },
+//     });
+
+//     if (!shopData?.accessToken) {
+//       return new Response(JSON.stringify({ error: "Shop not found or missing access token" }), {
+//         status: 404,
+//         headers: { "Content-Type": "application/json" },
+//       });
+//     }
+
+//     const query =
+//                 `#graphql
+//                   query GetProduct($id: ID!) {
+//                       product(id: $id) {
+//                           id
+//                           title
+//                           handle
+//                       }
+//                   }
+//                 `;
+
+//     const response = await fetch(`https://${shop}/admin/api/2025-07/graphql.json`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         "X-Shopify-Access-Token": shopData.accessToken,
+//       },
+//       body: JSON.stringify({
+//         query,
+//         variables: {
+//           "id": `gid://shopify/Product/${Number(productId)}`
+//         }
+//       }),
+//     });
+
+//     if (!response.ok) {
+//       const errorText = await response.text();
+//       console.error("shopify handle get API error:", errorText);
+//       return new Response(JSON.stringify({ error: "failed to fetch Shopify handle data", details: errorText }), {
+//         status: response.status,
+//         headers: { "Content-Type": "application/json" },
+//       });
+//     }
+
+//     const data = await response.json();
+
+//     return new Response(JSON.stringify({ data, shopData }), {
+//       status: 200,
+//       headers: { "Content-Type": "application/json" },
+//     });
+//   } catch (error) {
+//     console.error("Error in subscriptions action:", error);
+//     return new Response(JSON.stringify({ error: "Internal Server Error" }), {
+//       status: 500,
+//       headers: { "Content-Type": "application/json" },
+//     });
+//   }
+// };
+
+// export const loader = async ({ request }: any) => {
+//   try {
+//     const oldCollection = firestoreDatabase.collection("TestCheckoutsWithoutPhoneNumber");
+//     const newCollection = firestoreDatabase.collection("CheckoutsWithoutPhoneNumberUpdated");
+
+//     const oldDocs = await oldCollection.get();
+//     console.log("Found shops:", oldDocs.size);
+
+//     for (const shopDoc of oldDocs.docs) {
+//       const shopId = shopDoc.id;
+//       const shopData = shopDoc.data();
+
+//       console.log(`Processing shop: ${shopId}, checkouts: ${Object.keys(shopData).length}`);
+
+//       const newShopDocRef = newCollection.doc(shopId);
+
+//       const checkoutsSubcollection = newShopDocRef.collection("checkouts");
+
+//       for (const [checkoutId, checkoutData] of Object.entries(shopData)) {
+//         try {
+//           await checkoutsSubcollection.doc(checkoutId).set(checkoutData, { merge: true });
+//         } catch (err) {
+//           console.error(`Failed to write checkout ${checkoutId} for shop ${shopId}:`, err);
+//         }
+//       }
+
+//       console.log(`Migrated all checkouts for shop: ${shopId}`);
+//     }
+//     console.log("🎉 Migration completed for all shops!");
+//     return new Response(JSON.stringify({ message: "Migration completed successfully" }), {
+//       status: 200,
+//       headers: { "Content-Type": "application/json" },
+//     });
+//   } catch (error) {
+//     console.error("Error in migration loader:", error);
+//     return new Response("Internal Server Error", {
+//       status: 500,
+//       headers: { "Content-Type": "text/plain" },
+//     });
+//   }
+// };
+
+// export const loader = async ({ request }: any) => {
+//   console.log("withoutPhoneCheckout CRON STARTED!")
+//   try {
+//     // here
+
+//     const shopsCollection = firestoreDatabase.collection("CheckoutsWithoutPhoneNumberUpdated");
+//     const shopsSnapshot = await shopsCollection.get();
+//     console.log(`Total Shops having CheckoutsWithoutPhoneNumberUpdated: ${shopsSnapshot.size}`);
+//     const delay = (ms: any) => new Promise(resolve => setTimeout(resolve, ms));
+
+//     for (const shopDoc of shopsSnapshot.docs) {
+//       const shopId = shopDoc.id;
+//       const checkoutsRef = shopDoc.ref.collection("checkouts");
+//       const checkoutsSnapshot = await checkoutsRef.get();
+
+//       console.log(`Shop ${shopId} has ${checkoutsSnapshot.size} checkouts->>>>>>>`);
+//       // console.log("session", session);
+
+//       for (const checkoutDoc of checkoutsSnapshot.docs) {
+//         const checkout = checkoutDoc.data();
+//         console.log("Without Phone Number Checkout Id", checkout?.checkoutId);
+//         console.log("Without Phone Number checkout?.storeId", checkout?.storeId);
+
+//         await delay(200);
+//       }
+
+//     }
+
+//     return { success: true };
+//   } catch (error) {
+//     console.log("ERROR occured on withoutPhoneCheckout", error);
+//     return { success: false };
+//   } finally {
+//     console.log("withoutPhoneCheckout CRON ENDED!")
+//   }
+// }
+
+
+
+// read pubsub data
+import { PubSub } from "@google-cloud/pubsub";
+
+const pubsub = new PubSub();
+
+export function startInstallListener(subscriptionName: any) {
+  const subscription = pubsub.subscription(subscriptionName, {
+    flowControl: { maxMessages: 5 }
+  });
+
+  console.log(`🚀 Listening for messages on '${subscriptionName}' (NO ACK)...`);
+
+  subscription.on("message", (message) => {
+    console.log("📩 Received message");
+    console.log("ID:", message.id);
+    console.log("Data:", message.data.toString());
+  });
+
+  subscription.on("error", (err) => {
+    console.error("❌ Pub/Sub listener error:", err);
+  });
+}
+
+export const loader = async () => {
   try {
-    const body = await request.json();
-    const shop = body?.shop;
-    const productId = body.productId
-
-    if (!productId) {
-      return new Response(JSON.stringify({ message: 'error occurred on disconnectInstance' }), {
-        status: 404,
-      });
-    }
-
-    if (!shop) {
-      return new Response(JSON.stringify({ error: "Missing 'shop' in request body" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-
-    const shopData = await prisma.session.findFirst({
-      where: { shop },
-    });
-
-    if (!shopData?.accessToken) {
-      return new Response(JSON.stringify({ error: "Shop not found or missing access token" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-
-    const query =
-                `#graphql
-                  query GetProduct($id: ID!) {
-                      product(id: $id) {
-                          id
-                          title
-                          handle
-                      }
-                  }
-                `;
-
-    const response = await fetch(`https://${shop}/admin/api/2025-07/graphql.json`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Access-Token": shopData.accessToken,
-      },
-      body: JSON.stringify({
-        query,
-        variables: {
-          "id": `gid://shopify/Product/${Number(productId)}`
-        }
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("shopify handle get API error:", errorText);
-      return new Response(JSON.stringify({ error: "failed to fetch Shopify handle data", details: errorText }), {
-        status: response.status,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-
-    const data = await response.json();
-
-    return new Response(JSON.stringify({ data, shopData }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    startInstallListener("16840268639669323");
+    return { success: true };
   } catch (error) {
-    console.error("Error in subscriptions action:", error);
-    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    console.log("ERROR occured on pubsub loader:", error);
+    return { success: false };
+  } finally {
+    console.log("PubSub loader finished!");
   }
 };
-
-

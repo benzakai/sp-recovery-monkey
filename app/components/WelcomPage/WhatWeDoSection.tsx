@@ -17,7 +17,7 @@ export default function WhatWeDoSection() {
         },
         {
             id: 3,
-            img: "/images/homePage/RealRevenue.webp",   
+            img: "/images/homePage/RealRevenue.webp",
             caption: "Boost conversions with personalized recommendations"
         }
     ];
@@ -48,19 +48,18 @@ export default function WhatWeDoSection() {
     };
 
     return (
-        <div className='mt-10 mb-16 px-4 md:px-0'>
-            <div className='text-center md:text-left'>
-                <Text variant="headingLg" as="h5">
+        <div className='mt-6 px-4 md:px-0'>
+            <div className='mb-4 text-center md:text-left'>
+                <p className="text-[13px] font-semibold">
                     Here's What We Do
-                </Text>
+                </p>
             </div>
-            <div className='mb-2'></div>
             <div className='text-center md:text-left'>
-                <Text variant="bodyLg" as="p" fontWeight='bold'>
+                <p className="text-[13px]">
                     {slides[current].caption}
-                </Text>
+                </p>
             </div>
-            <div className={`mt-8 ${imagesLoaded ? 'loaded' : 'not_loaded'}`}>
+            <div className={`mt-4 ${imagesLoaded ? 'loaded' : 'not_loaded'}`}>
                 <div className="flex justify-center">
                     {imagesLoaded ? (
                         <img

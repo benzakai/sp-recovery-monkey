@@ -1,12 +1,11 @@
 import { Badge, Page, Text } from '@shopify/polaris';
 import { useEffect, useState } from 'react';
 import '../StartPage.css';
-import { useOutletContext } from 'react-router';
 import { isProPlanOrHigher } from '~/utils/plans';
 import { useTranslation } from 'react-i18next';
 import ChatbotSettingsSection from '~/components/AIChatbotSettings/ChatbotSettingsSection';
 import { authenticate } from '~/shopify.server';
-import { useLoaderData } from '@remix-run/react';
+import { useLoaderData, useNavigate, useOutletContext } from '@remix-run/react';
 import SaveBarComponent from '~/components/SaveBarComponent';
 
 export const loader = async ({ request }: any) => {
@@ -52,7 +51,8 @@ const AIChatbot = () => {
         // trainingTopics: [
         //     'Products – Details, availability, and variations'
         // ],
-        syncRequest: null
+        syncRequest: null,
+        lastSyncDate: ""
     });
     const [aiCompareSettings, setAICompareSettings] = useState(aiSettings);
     const [isSaveButtonLoading, setSaveButtonLoading] = useState<any>(null)
@@ -77,6 +77,7 @@ const AIChatbot = () => {
         'Store Hours & Locations – Opening times and branches',
         'FAQs – Common questions specific to your business'
     ]
+    const navigate = useNavigate();
 
     useEffect(() => {
         const hasChanges =
@@ -227,7 +228,7 @@ const AIChatbot = () => {
         const data = {
             startScyningClicked: true
         }
-        await handleSaveSettings({ ...aiSettings, syncRequest: "requested" });
+        await handleSaveSettings({ ...aiSettings, syncRequest: "requested", lastSyncDate: "" });
         await sendPubSubData(data, topicNames)
         setLoading((p: any) => ({ ...p, syncing: false }))
         shopify.toast.show("Syncing has been started successfully")
@@ -260,41 +261,43 @@ const AIChatbot = () => {
         setAISettings(aiCompareSettings);
     }
 
+    const handleBannerClick = () => {
+        navigate("/app/Settings")
+    }
+
     return (
-        <div className='start_page smart-bulk padding_zero'>
+        <div className='start_page ai_personal padding_zero'>
             <Page fullWidth>
-                <div className='mb-16 bulk-box'>
-                    <div className="mb-8">
-                        <div className='flex flex-row gap-3'>
-                            <Text variant="heading3xl" as="h3">
-                                AI Personal Assistant
-                            </Text>
-                            <div className='pt-3.5'>
-                                <Badge tone='info' >Pro</Badge>
-                            </div>
-                        </div>
-                        <div className='start_main_container_sub_heading'>
-                            <Text variant="headingXl" as="h3">
-                                Customize your AI chatbot assistant
-                            </Text>
-                        </div>
-                        <div className='mb-14'></div>
+                <div className='bulk-box top-parent-aichatbot'>
+                    <img
+                        onClick={handleBannerClick}
+                        className="cursor-pointer"
+                        src="/images/letsStartPage/topBanner.png"
+                        alt="Banner"
+                    />
+                    <div className='flex flex-row gap-3 items-center mt-6 mb-4'>
+                        <Text variant="headingLg" as="h5">
+                            AI Personal Assistant
+                        </Text>
                         <div>
-                            <ChatbotSettingsSection
-                                t={t}
-                                handleChatExtensionActivateButton={handleChatExtensionActivateButton}
-                                isSettingsLoading={isSettingsLoading}
-                                aiSettings={aiSettings}
-                                setAISettings={setAISettings}
-                                activateButtons={activateButtons}
-                                handleSyncing={handleSyncing}
-                                loading={loading}
-                                setActivateButtonActionType={setActivateButtonActionType}
-                                isProPlanOrHigher={isProPlanOrHigher}
-                                selectedPlanName={selectedPlanName}
-                                permissions={permissions}
-                            />
+                            <Badge tone='info' >Pro</Badge>
                         </div>
+                    </div>
+                    <div>
+                        <ChatbotSettingsSection
+                            t={t}
+                            handleChatExtensionActivateButton={handleChatExtensionActivateButton}
+                            isSettingsLoading={isSettingsLoading}
+                            aiSettings={aiSettings}
+                            setAISettings={setAISettings}
+                            activateButtons={activateButtons}
+                            handleSyncing={handleSyncing}
+                            loading={loading}
+                            setActivateButtonActionType={setActivateButtonActionType}
+                            isProPlanOrHigher={isProPlanOrHigher}
+                            selectedPlanName={selectedPlanName}
+                            permissions={permissions}
+                        />
                     </div>
                 </div>
             </Page>

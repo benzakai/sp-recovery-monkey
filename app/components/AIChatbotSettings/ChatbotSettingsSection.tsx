@@ -6,7 +6,6 @@ import { useState } from 'react';
 import AlienSVG from '../SVGs/AlienSVG';
 import ChatIconSettings from './ChatIconSettings';
 import { isAdvancePlanOrHigher } from '~/utils/plans';
-import { useNavigate } from '@remix-run/react';
 
 export default function ChatbotSettingsSection({
     t,
@@ -23,11 +22,7 @@ export default function ChatbotSettingsSection({
     handleChatExtensionActivateButton
 }: any) {
     const [topicSearchValue, setTopicSearchValue] = useState('');
-    const navigate = useNavigate()
 
-    const handleBannerClick = () => {
-        navigate("/app/Settings")
-    }
 
     const options = [
         { label: "Friendly – Warm, casual, and easygoing", value: 'Friendly – Warm, casual, and easygoing' },
@@ -38,13 +33,16 @@ export default function ChatbotSettingsSection({
 
     return (
         <div className='setting-block'>
-            <div className='settings_secion-1 ai_parent'>
-                <div className='start_main_container_sub_heading'>
-                    <Text variant="headingXl" as="h3">
+            <div className='settings_secion-1 ai_parent first-card'>
+                <div className='start_main_container_sub_heading left-content'>
+                    <p className="text-[13px] font-semibold mb-[6px]">
                         Chatbot Settings
-                    </Text>
+                    </p>
+                    <p className="text-[13px]">
+                        Customize your AI chatbot assistant
+                    </p>
                 </div>
-                <div className='ai_top_section'>
+                <div className='ai-card-wrapper'>
                     <BlockStack gap="400">
                         <Card roundedAbove="sm">
                             {isSettingsLoading ? (
@@ -65,8 +63,7 @@ export default function ChatbotSettingsSection({
                                     isActivateButtonDisabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan))}
                                 />
                             )}
-                        </Card>
-                        <Card roundedAbove="sm">
+                            <div className='divider-ai' />
                             {isSettingsLoading ? (
                                 <div className='w-[53.4rem]'>
                                     <SkeletonLoading />
@@ -92,9 +89,7 @@ export default function ChatbotSettingsSection({
                                 // activateButtonTitle={aiSettings.isDurationToSendMessageActivated ? t("settings.deactivate") : t("settings.activate")}
                                 />
                             )}
-                        </Card>
-
-                        <Card roundedAbove="sm">
+                            <div className='divider-ai' />
                             {isSettingsLoading ? (
                                 <div className='w-[53.4rem]'>
                                     <SkeletonLoading />
@@ -118,9 +113,7 @@ export default function ChatbotSettingsSection({
                                     isActivated={aiSettings.isUseEmojisTurnedOn}
                                 />
                             )}
-                        </Card>
-
-                        <Card roundedAbove="sm">
+                            <div className='divider-ai' />
                             {isSettingsLoading ? (
                                 <div className='w-[53.4rem]'>
                                     <SkeletonLoading />
@@ -140,24 +133,18 @@ export default function ChatbotSettingsSection({
                             )}
                         </Card>
                     </BlockStack>
-                    <div>
-                        <img
-                            onClick={handleBannerClick}
-                            className="bannerAISettings"
-                            src="/images/dealsBanner/verticle-banner.png"
-                            alt="Banner"
-                        />
-                    </div>
                 </div>
-                <div className='start_main_container_sub_heading mt-10'>
-                    <div className='mb-5'>
-                        <Text variant="headingXl" as="h3">
-                            AI Store Sync
-                        </Text>
-                        <Text as="p" variant="bodyLg">
-                            Connect your assistant to store data and start training
-                        </Text>
-                    </div>
+            </div>
+            <div className='settings_secion-1 ai_parent first-card second-card mt-4'>
+                <div className='start_main_container_sub_heading left-content'>
+                    <p className="text-[13px] font-semibold mb-[6px]">
+                        AI Store Sync
+                    </p>
+                    <p className="text-[13px]">
+                        Connect your assistant to store data and start training
+                    </p>
+                </div>
+                <div className='ai-card-wrapper'>
                     <BlockStack gap="400">
 
                         {/* <Card roundedAbove="sm">
@@ -194,41 +181,33 @@ export default function ChatbotSettingsSection({
                                 />
                             )}
                         </Card> */}
-                        <div className="w-full sm:w-4/6 md:w-3/6 lg:w-2/6">
-                            <Card>
-                                <div className="px-3 mt-2 mb-4">
-                                    <Text variant="bodyLg" fontWeight="bold" as="p">
-                                        Start Syncing
-                                    </Text>
-                                </div>
-                                <div className="px-3 mb-8">
-                                    <Text variant="bodyLg" as="p">
-                                        Connect your store data and let the AI start learning.
-                                    </Text>
-                                </div>
-                                <div className="text-center mb-8">
-                                    <Button
-                                        onClick={handleSyncing}
-                                        variant="primary"
-                                        size="large"
-                                        loading={loading.syncing}
-                                        disabled={
-                                            (!isProPlanOrHigher(selectedPlanName) &&
-                                                !isProPlanOrHigher(permissions?.manualPlan)) ||
-                                            loading.activeButton
-                                        }
-                                    >
-                                        Click here to start syncing
-                                    </Button>
-                                </div>
-                                <div className="flex justify-center mb-12">
-                                    <AlienSVG />
-                                </div>
-                            </Card>
-                        </div>
-                        <Card roundedAbove="sm">
+                        <Card>
                             {isSettingsLoading ? (
-                                <SkeletonLoading />
+                                <div className='w-[53.4rem]'>
+                                    <SkeletonLoading />
+                                </div>
+                            ) : <SettingsSecondBlock
+                                children={
+                                    <></>
+                                }
+                                title={"Start Syncing"}
+                                description={"Connect your store data and let the AI start learning."}
+                                handleActivateButton={(data: any) => {
+                                    handleSyncing()
+                                }}
+                                isActivated={false}
+                                isActivateButtonLoading={loading.syncing}
+                                buttonType="syncButton"
+                                activateButtonTitle={"Start syncing"}
+                                isActivateButtonDisabled={(!isProPlanOrHigher(selectedPlanName) &&
+                                    !isProPlanOrHigher(permissions?.manualPlan)) ||
+                                    loading.activeButton}
+                            />}
+                            <div className='divider-ai' />
+                            {isSettingsLoading ? (
+                                <div className='w-[53.4rem]'>
+                                    <SkeletonLoading />
+                                </div>
                             ) : (
                                 <SettingsSecondBlock
                                     children={

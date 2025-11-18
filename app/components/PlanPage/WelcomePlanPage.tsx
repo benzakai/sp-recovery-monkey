@@ -128,14 +128,12 @@ export default function WelcomePlanPage({
 
     return (
         <div className="body">
-            <div className='start_page'>
+            <div className='start_page welcome_page'>
                 <div className='start_main_container'>
-                    <div className='flex flex-row justify-between'>
-                        <div className='start_main_container_heading pb-8'>
-                            <Text variant="heading3xl" as="h3">
-                                {t("home.title")}
-                            </Text>
-                        </div>
+                    <div className='flex flex-row justify-between mb-6'>
+                        <Text variant="headingLg" as="h5">
+                            {t("home.title")}
+                        </Text>
                         <Select
                             label=""
                             options={languageOptions}
@@ -151,33 +149,34 @@ export default function WelcomePlanPage({
                     />
                     <div className="welcome_top_section">
                         <div className="flex-[3] w-full">
-                            <p className="font-bold text-2xl pb-6">{t("home.subTitle")}</p>
+                            <Text variant="headingLg" as="h5">{t("home.subTitle")}</Text>
+                            <div className='mb-4'></div>
                             <StartPageCartSummary getCards={getCards} />
 
-                            <div className="contact_parent start_price_container contact-block mt-8">
-                                <div className="start_price_container_heading">
+                            <div className="contact_parent start_price_container contact-block">
+                                <div className="mt-6 mb-4">
                                     <Text variant="headingLg" as="h5">
                                         {t("home.contactSectionTitle")}
                                     </Text>
                                 </div>
                                 <Card>
-                                    <div className="  flex flex-col md:flex-row gap-6 p-6 w-full">
+                                    <div className="flex flex-col md:flex-row gap-6 p-6 w-full">
                                         <div
                                             className="p-6 shadow-lg rounded-2xl border border-gray-200 relative h-48 md:w-1/2"
                                             style={{ backgroundColor: "#f8faff" }}
                                         >
                                             <div className="flex flex-row items-center">
                                                 <ChatSVG />
-                                                <h2 className="text-lg font-semibold text-gray-800">
+                                                <h2 className="text-[13px] font-semibold text-gray-800">
                                                     {t("home.whatsappChatTitle")}
                                                 </h2>
                                             </div>
                                             <div className="mb-4 mt-4">
-                                                <p className="text-gray-600 text-base">
+                                                <p className="text-gray-600 text-[13px]">
                                                     {t("home.whatsappChatDescription")}
                                                 </p>
                                             </div>
-                                            <div>
+                                            <div className={i18n.language === "en" ? "mt-10" : ""}>
                                                 <Button
                                                     fullWidth
                                                     size="large"
@@ -195,12 +194,12 @@ export default function WelcomePlanPage({
                                         >
                                             <div className="flex flex-row items-center">
                                                 <MailSVG />
-                                                <h2 className="text-lg font-semibold text-gray-800">
+                                                <h2 className="text-[13px] font-semibold text-gray-800">
                                                     {t("home.emailContactTitle")}
                                                 </h2>
                                             </div>
                                             <div className="mb-4 mt-4">
-                                                <p className="text-gray-600 text-base">
+                                                <p className="text-gray-600 text-[13px]">
                                                     {t("home.emailContactDescription")}
                                                 </p>
                                             </div>

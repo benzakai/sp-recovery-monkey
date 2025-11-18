@@ -75,25 +75,25 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
 
     return (
         <div className="settings_secion-2">
-            {pageType === "settings" && <div className="start_main_container_sub_heading mb-1">
-                <Text variant="headingXl" as="h3">
+            {pageType === "settings" && <div className="start_main_container_sub_heading setting_subheading">
+                <Text variant="headingLg" as="h5">
                     {t("settings.planSectionTitle")}
                 </Text>
             </div>}
 
-            <div className="start_price_container">
+            <div className="start_price_container setting_price">
                 <div className="flex flex-col md:flex-row justify-between mb-4 gap-4">
                     {loadingPage ? (
                         <div className="w-56">
                             <SkeletonBodyText lines={2} />
                         </div>
                     ) : (
-                        <div className="my-auto">
+                        <div className="my-auto ">
                             {pageType === "settings" ? t("settings.planSectionDescription", {
                                 planName: planName,
-                            }) : <Text variant="headingXl" as="h3">
+                            }) : <p className="text-[13px]">
                                 {t("home.priceSectionTitle")}
-                            </Text>}
+                            </p>}
                         </div>
                     )}
                     <div>
@@ -101,16 +101,16 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
                     </div>
                 </div>
 
-                <div className="flex flex-wrap justify-between gap-4">
+                <div className="flex justify-between plan-card">
                     {plans.map((plan) => (
                         <div
                             key={plan.key}
-                            className="relative border rounded-lg shadow bg-white flex flex-col justify-between basis-full sm:basis-[48%] lg:basis-[23.5%] overflow-hidden"
+                            className="relative border rounded-lg shadow bg-white flex flex-col justify-between basis-full sm:basis-[48%] lg:basis-[23.8%] overflow-hidden"
                         >
-                            <div className='p-5'>
+                            <div className='p-4'>
                                 {plan.badge && (
                                     <div
-                                        className="absolute top-9 -right-28 w-80 rotate-45 bg-blue-100 text-black text-base font-bold text-center py-2 z-10"
+                                        className="absolute top-[1.4rem] -right-[6.4rem] w-[17.3rem] rotate-45 bg-blue-100 text-black text-sm font-bold text-center py-2 z-10"
                                     >
                                         {plan.badge}
                                     </div>
@@ -124,7 +124,7 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
                                             {plan.key === "Free" ? plan.monthly : getPrice(plan.monthly!, plan.yearly!)}
                                         </div>
                                         {plan.priceLabel && (
-                                            <div className="text-sm">
+                                            <div className="text-[13px]">
                                                 <span className="mx-1">/</span>
                                                 <span
                                                     className={`mr-1 line-through ${planIntervalType === "Monthly" ? "hidden" : ""
@@ -147,7 +147,7 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
                                     )}
                                 </div>
 
-                                <div className={(pageType !== "settings" && plan.key === "Free") ? 'mt-16 pt-3' : 'mt-11'}>
+                                <div className={(pageType !== "settings" && plan.key === "Free") ? 'mt-16 pt-3' : 'mt-8'}>
                                     {((pageType === "settings" && plan.key === "Free") ? false : true) && (
                                         <div className="start_plan_button_section">
                                             {loadingPage ? (
@@ -185,8 +185,8 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
                             </div>
 
                             {(plan.key !== "Free") && (
-                                <div className="border-t border-gray-100 bg-gray-100 px-4 py-3 mt-4">
-                                    <p className="text-sm text-gray-600">
+                                <div className="border-t border-gray-100 bg-gray-100 px-4 py-3">
+                                    <p className="text-sm text-600 free-text">
                                         {t("settings.freeTrileText")}
                                     </p>
                                 </div>

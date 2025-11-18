@@ -1,0 +1,7 @@
+[[extensions]]
+uid = "f6880691-d03e-1d50-88dc-e65e824ff5f3c70e4139"
+type = "flow_action"
+name = "flow"
+handle = "flow-seting"
+description = "flow-testing"
+runtime_url = "https://pubsub://sp-recovery-monkey:AbandonedChekout"

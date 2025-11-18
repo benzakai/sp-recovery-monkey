@@ -209,11 +209,11 @@ function App() {
           )}
         </button>
 
-        {showBubble && (
+        {/* {showBubble && (
           <div className="chat-bubble" style={getBubblePosition(aiSettings?.iconPosition || 'position2')}>
             <span>You can ask me anything!</span>
           </div>
-        )}
+        )} */}
 
         {
           isOpen && chatId && (

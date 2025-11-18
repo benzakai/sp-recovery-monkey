@@ -1,9 +1,11 @@
 /* General styles (desktop/tablet) */
-
-
 .card {
-
     padding: 1% 0 5% 0;
+}
+.start_main_container.abandoned_main_wrap {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
 }
 
 .header {
@@ -141,14 +143,6 @@
     margin: 0 15px;
 }
 
-
-
-
-
-.abandoned_list_main_container_heading {
-    margin-bottom: 4rem;
-}
-
 .checkIcon_listPage{
     width: 15px;
     height: 15px;
@@ -183,10 +177,6 @@
     width: 100%;
 }
 
-.abandoned_list_price{
-    /* width: 40%; */
-}
-
 .list_status_section {
     display: flex;
     justify-content: end;
@@ -199,7 +189,19 @@
 .abandoned_list_spinner{
     text-align: center;
 }
-/* Mobile specific styles */
+.start_main_container_sub_heading h5{
+    font-size: 20px;
+}
+.Polaris-DataTable * {
+    color: #000;
+}
+span.Polaris-Text--root.Polaris-Text--bodySm{
+    color: #898F93;
+}
+.text-wrap, p.text-\[13px\].text-wrap{
+    max-width: 75%;
+    padding-bottom: 5px;
+}
 @media (max-width: 768px) {
     .card {
         width: 90%; /* Take most of the screen width on mobile */
@@ -254,8 +256,6 @@
         text-align: center;
     }
 
-    
-
     .pagination-text {
         margin: 10px;
     }
@@ -265,6 +265,15 @@
     }
     .abandoned_list_container {
         width: 100%;
+    }
+    .abandoned_icon{
+        font-size: 16px;
+    }
+    .text-wrap{
+        max-width: 100%;
+    }
+    p.text-\[13px\].text-wrap{
+        max-width: 100%;
     }
 }
 

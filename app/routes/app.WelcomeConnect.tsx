@@ -430,11 +430,11 @@ const WelcomeConnect = () => {
         <>
             {isLoading ? <div className="flex justify-center items-center h-full w-full">
                 <Spinner accessibilityLabel="Spinner example" size="large" />
-            </div> : <div className="flex justify-center bg-[#f1f1f1]">
-                <div className='start_page start_page_wrapper sm:!max-w-[90%]  px-4 md:px-0'>
+            </div> : <div className="bg-[#f1f1f1]">
+                <div className='start_page start_page_wrapper sm:!max-w-[100%]  px-4 md:px-0'>
 
-                    <div className="lets_start_main_container">
-                        <div className="w-full flex justify-center mb-12">
+                    <div className="lets_start_main_container dashboard_page_wrap">
+                        <div className="w-full flex justify-center mb-6">
                             <img
                                 onClick={handleBannerClick}
                                 src="/images/letsStartPage/topBanner.png"
@@ -443,15 +443,15 @@ const WelcomeConnect = () => {
                             />
                         </div>
                         <div>
-                            <div className='pb-2 text-center md:text-left'>
-                                <Text variant="heading3xl" as="h3">
+                            <div className='text-center md:text-left'>
+                                <Text variant="headingLg" as="h5">
                                     {stateInstance === "authorized" ? "Dashboard" : "Let's recover some carts"}
                                 </Text>
                             </div>
                         </div>
 
-                        <div className='mb-6'>
-                            <p className='text-base pb-10 text-center md:text-left'>{
+                        <div className='mb-4'>
+                            <p className='text-[13px] md:text-left mt-[6px] mb-4'>{
                                 stateInstance === "authorized" ?
                                     "View your revenue, write message, and connect to send messages"
                                     :
@@ -467,9 +467,9 @@ const WelcomeConnect = () => {
                                 <div className="w-full lg:w-3/12">
                                     <div className="p-4 md:p-6 " >
                                         <div className='text-center md:text-left'>
-                                            <Text variant="headingLg" as="h5">
+                                            <p className="text-[13px] font-semibold">
                                                 Get CartKeeper QR code
-                                            </Text>
+                                            </p>
                                         </div>
                                         {isShowConnectionStatus ? <>
                                             {stateInstance === "authorized" ? (
@@ -478,7 +478,7 @@ const WelcomeConnect = () => {
                                                         <AlienSVG />
                                                     </div>
                                                     <div className='p-4 md:p-5 text-center md:text-left'>
-                                                        <p className="text-center  text-sm md:text-base">
+                                                        <p className="text-center text-[13px]">
                                                             You can now easily send and receive WhatsApp messages!
                                                         </p>
                                                     </div>
@@ -516,7 +516,7 @@ const WelcomeConnect = () => {
                                                     </div>
 
                                                     <div className="font-semibold mt-8">
-                                                        <p className="text-center  text-sm md:text-base">
+                                                        <p className="text-center text-[13px]">
                                                             Scan the QR code in WhatsApp under Linked Devices settings
                                                         </p>
                                                     </div>
@@ -529,7 +529,7 @@ const WelcomeConnect = () => {
                                                     <AlienSVG />
                                                 </div>
                                                 <div className='p-4 md:p-5 text-center md:text-left'>
-                                                    <p className="text-center  text-sm md:text-base">
+                                                    <p className="text-center text-[13px]">
                                                         You can check the connection status anytime
                                                     </p>
                                                 </div>
@@ -553,10 +553,10 @@ const WelcomeConnect = () => {
                                 <div
                                     className="p-4 md:p-6 w-full lg:w-3/5"
                                 >
-                                    <div className="message_text_Welcome text-center md:text-left">
-                                        <Text variant="headingLg" as="h5">
+                                    <div className=" text-center md:text-left mb-6">
+                                        <p className="text-[13px] font-semibold">
                                             {t("welcome.messageBoxTitle")}
-                                        </Text>
+                                        </p>
                                     </div>
                                     <Card >
                                         {isMessageLoading ? <div className='flex justify-center items-center h-40 md:h-56' >
@@ -588,10 +588,10 @@ const WelcomeConnect = () => {
                                                 />
                                             </div>}
                                     </Card>
-                                    <div className='mt-2 text-center md:text-left p-4 md:p-0'>
-                                        <Text variant="bodyLg" as="p">
+                                    <div className='mt-[6px] text-center md:text-left p-4 md:p-0'>
+                                        <p className="text-[13px]">
                                             Use this article for winning conversion phrasing - <Link url="#" removeUnderline>link here</Link>
-                                        </Text>
+                                        </p>
                                     </div>
                                     <WhatsappTest shop={shop} />
                                 </div>

@@ -177,11 +177,11 @@ export default function WhatsappTest({ shop }: any) {
 
 
     return (
-        <div className='mt-2 flex flex-col text-center md:text-left p-4 md:p-0'>
+        <div className='mt-2 flex flex-col text-center md:text-left'>
             <div className='flex flex-row mt-3 mb-2 gap-2 items-center'>
-                <Text variant="headingMd" as="p" fontWeight='bold'>
+                <p className="text-[13px] font-semibold">
                     Test WhatsApp message
-                </Text>
+                </p>
                 <Tooltip width='wide' content={
                     <div className="flex flex-col gap-1 items-center custom-tooltip-content text-xs">
                         <div>Send a test WhatsApp message to see how it looks.</div>

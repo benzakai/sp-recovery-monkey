@@ -32,12 +32,8 @@ export default function SettingsSection({
     ];
     return (
         <div className='setting-block'>
-            <div className='settings_secion-1'>
-                <div className='start_main_container_sub_heading'>
-                    <Text variant="headingXl" as="h3">
-                        {t('settings.general')}
-                    </Text>
-                </div>
+            <div className='settings_secion-1 setting_right_cart'>
+                
                 <BlockStack gap="400">
                     <Card roundedAbove="sm">
                         {isSettingsLoading ? (
@@ -70,6 +66,7 @@ export default function SettingsSection({
                     <Card roundedAbove="sm">
                         {isSettingsLoading ? (
                             <SkeletonLoading
+                            
                                 secondLines={4}
                             />
                         ) : (

@@ -55,7 +55,7 @@
   "home": {
     "title": "Welcome",
     "subTitle": "How to start with CartKeeper?",
-    "contactSectionTitle": "We're Here For You",
+    "contactSectionTitle": "We're here for you",
     "whatsappChatTitle": "Whatsapp Chat",
     "whatsappChatDescription": "Talk to us directly via WhatsApp chat to get help with your question.",
     "whatsappChatButtonText": "Message us on WhatsApp",
@@ -84,7 +84,7 @@
     "qrScanStep2": "Click ‘Setting’",
     "qrScanStep3": "Click ‘linked devices’",
     "connectionStatusViewButton": "Show connection status",
-    "messageBoxTitle": "write/edit the message that sent's to your customers",
+    "messageBoxTitle": "Write/edit the message that sent's to your customers",
     "messageBoxBeforeLinkText": "You can use the following article for crafting winning and conversion phrasing at the",
     "messageBoxAfterLinkText": "link here.",
     "connectedMessage": "You should easiely send and receive WhatsApp messages!"
@@ -126,7 +126,7 @@
     "tableColumnHeading1": "Date",
     "tableColumnHeading2": "Name",
     "tableColumnHeading3": "Phone",
-    "tableColumnHeading4": "Email subscription",
+    "tableColumnHeading4": "Subscription",
     "calendar": {
       "today": "Today",
       "yesterday": "Yesterday",

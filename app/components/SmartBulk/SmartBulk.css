@@ -1,0 +1,51 @@
+.smart-bulk-wrap {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.Polaris-Text--heading3xl, .Polaris-Text--heading2xl{
+    font-size: 20px;
+}
+.Smart_custom{
+    display: flex;
+    flex-direction: column;
+}
+.Smart_custom_button {
+    display: flex;
+    justify-content: flex-end;
+}
+.Smart_custom_subtext {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center; 
+}
+.inner-txt {
+    font-size: 12px;
+    color: #000;
+}
+.smartBulk_parent h5{
+    font-size: 20px;
+}
+@media (max-width: 1440px) {
+    .Smart_custom_subtext p{
+        width: 40%;
+    }
+}
+@media (max-width: 1000px){
+    .Smart_custom_subtext {
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    .Smart_custom_subtext p{
+        width: 100%;;
+    }
+}
+@media (max-width: 989px) {
+    .SmartBulk_wrap {
+        max-width: 100%;
+    }
+}

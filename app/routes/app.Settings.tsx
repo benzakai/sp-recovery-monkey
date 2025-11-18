@@ -1,9 +1,8 @@
 import { Icon, Select, Text } from '@shopify/polaris';
 import { useEffect, useState } from 'react';
 import '../StartPage.css';
-import { useLoaderData, useSubmit } from '@remix-run/react';
+import { useLoaderData, useSubmit, useActionData, useNavigate, useOutletContext } from '@remix-run/react';
 import { authenticate, STARTER_PLAN, PRO_PLAN, ADVANCE_PLAN, ADVANCE_PLAN_YEARLY, PRO_PLAN_YEARLY, STARTER_PLAN_YEARLY } from "../shopify.server";
-import { useActionData, useNavigate, useOutletContext } from 'react-router';
 import fireStoreCreateService from '~/services/fireStoreCreateService';
 import { isProPlanOrHigher } from '~/utils/plans';
 import {
@@ -417,10 +416,16 @@ const Settings = () => {
     return (
         <div className="body">
             <div className='start_page'>
-                <div className='start_main_container'>
-                    <div className='flex flex-row justify-between'>
-                        <div className='start_main_container_heading'>
-                            <Text variant="heading3xl" as="h3">
+                <div className='start_main_container setting-page-wrap'>
+                    <img
+                        onClick={handleBannerClick}
+                        className="long_banner_setting_page"
+                        src="/images/letsStartPage/topBanner.png"
+                        alt="Banner"
+                    />
+                    <div className='flex flex-row justify-between mt-6 mb-4'>
+                        <div className='settings-title'>
+                            <Text variant="headingLg" as="h5">
                                 {t('settings.title')}
                             </Text>
                         </div>
@@ -431,35 +436,35 @@ const Settings = () => {
                             value={settings.selectedLanguage}
                         />
                     </div>
-                    <div className='start_main_container_sub_heading'>
-                        <Text variant="headingXl" as="h3">
-                            {t('settings.subtitle')}
-                        </Text>
+                    <div className='setting_cart_wrap'>
+                        <div className='start_main_container_sub_heading setting-cart-left'>
+                            <p className="text-[13px] font-semibold mb-[6px]">
+                                {t('settings.general')}
+                            </p>
+                            <p className="text-[13px]">
+                                {t('settings.subtitle')}
+                            </p>
+                        </div>
+                        <div className='flex flex-col md:flex-row items-start justify-between md:gap-6 setting-cart-next'>
+                            <SettingsSection
+                                t={t}
+                                isSettingsLoading={isSettingsLoading}
+                                settings={settings}
+                                setSettings={setSettings}
+                                loading={loading}
+                                handleActivateButton={handleActivateButton}
+                                languages={languages}
+                                setLanguageSearchValue={setLanguageSearchValue}
+                                languageSearchValue={languageSearchValue}
+                                isProPlanOrHigher={isProPlanOrHigher}
+                                selectedPlanName={selectedPlanName}
+                                permissions={permissions}
+                                isMessageLoading={isMessageLoading}
+                            />
+
+                        </div>
                     </div>
-                    <div className='flex flex-col md:flex-row items-start justify-between md:gap-6 mt-10 md:mt-14'>
-                        <SettingsSection
-                            t={t}
-                            isSettingsLoading={isSettingsLoading}
-                            settings={settings}
-                            setSettings={setSettings}
-                            loading={loading}
-                            handleActivateButton={handleActivateButton}
-                            languages={languages}
-                            setLanguageSearchValue={setLanguageSearchValue}
-                            languageSearchValue={languageSearchValue}
-                            isProPlanOrHigher={isProPlanOrHigher}
-                            selectedPlanName={selectedPlanName}
-                            permissions={permissions}
-                            isMessageLoading={isMessageLoading}
-                        />
-                        <img
-                            onClick={handleBannerClick}
-                            className="bannerSettings"
-                            src="/images/dealsBanner/verticle-banner.png"
-                            alt="Banner"
-                        />
-                    </div>
-                    <div className='mb-14'></div>
+                    <div className='mb-8 sm:mb-10 md:mb-16'></div>
                     <PlanSection
                         t={t}
                         loadingPage={loadingPage}

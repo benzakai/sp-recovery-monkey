@@ -9,16 +9,12 @@
 .start_page,
 .start_page_wrapper {
     width: 100%;
-    max-width: 100rem;
+    max-width: 100%;
     padding: 4rem 5rem 4rem 5rem;
 }
 
 .cust-detail {
     width: 60%;
-}
-
-.smart-bulk .Polaris-Page--fullWidth {
-    max-width: 100% !important;
 }
 
 .icon-block,
@@ -40,22 +36,16 @@
     width: 100%;
 }
 
+.lets_start_main_container.dashboard_page_wrap {
+    max-width: 1000px;
+    width: 100%;
+    margin: 0 auto;
+}
+
 .messge_box_welcome {
     width: 60%;
 }
 
-.message_text_Welcome {
-    margin-bottom: 2rem;
-}
-
-.start_main_container_heading {
-    margin-bottom: 2px;
-}
-
-.start_main_container_sub_heading {
-
-    margin-bottom: 0.6rem;
-}
 
 .abandoned-block {
     justify-content: space-around !important;
@@ -63,21 +53,13 @@
 
 .start_pricing_plans {
     display: flex;
-    /* flex-wrap: wrap; */
     gap: 5rem;
-    /* padding: 39px 0px 24px 0px; */
     padding: 19px 0px 24px 0px;
 }
 
 .start_pricing_plans_card {
-    /* width: 9rem; */
-    /* border: 3.6px solid black; */
-    /* border-radius: 2.5rem; */
-    /* padding: 1rem; */
     text-align: center;
-    /* cursor: pointer; */
     transition: all 0.3s ease;
-    /* background-color: white; */
 }
 
 .start_plan_content_logo {
@@ -88,7 +70,6 @@
 .start_plan_content_value {
     font-weight: 600;
     font-size: 20px;
-    /* font-family: "PT Serif", serif; */
     margin-top: 10px;
     margin-bottom: 12px;
 }
@@ -97,25 +78,13 @@
     color: #42474C;
     font-weight: 500;
     font-size: 20px;
-    /* font-family: "PT Serif", serif; */
     margin-bottom: 22px;
 }
 
 .start_plan_content_sub_heading {
     color: #6B7177;
-
     font-size: 14px;
     font-weight: 400;
-    /* font-family: "PT Serif", serif; */
-}
-
-.start_price_container {
-    color: black;
-}
-
-.start_price_container_heading {
-    color: black;
-    margin: 4rem 0rem 1rem 0rem;
 }
 
 .start_price_container_cards {
@@ -141,15 +110,13 @@
 
 .start_plan_ammount {
     color: black;
-    font-size: 22px;
-    /* font-family: "PT Serif", serif; */
+    font-size: 20px;
     font-weight: 600;
 }
 
 .start_plan_ammount_suffix {
     color: black;
     font-size: 16px;
-    /* font-family: "PT Serif", serif; */
     font-weight: 400;
 }
 
@@ -158,13 +125,6 @@
 }
 
 .start_plan_trial {
-    /* color: black; */
-    /* background-color: skyblue; */
-    /* width: 85px; */
-    /* font-size: 11px; */
-    /* font-family: 'Inter'; */
-    /* border-radius: 27px; */
-    /* padding: 0px 0px 0px 6px; */
     margin-bottom: 44px;
 }
 
@@ -179,6 +139,7 @@
 .start_plan_name {
     margin-bottom: 13px;
     font-size: 14px;
+    color: #000;
 }
 
 .start_plan_button {
@@ -194,28 +155,16 @@
     background-color: rgb(108, 105, 105);
 }
 
-.start_plan_list {
-    /* padding: 19px; */
-    padding-left: 10px;
-    /* margin-left: -8px; */
-    /* line-height: 23px; */
-    /* padding-bottom: 53px; */
-    /* gap: 10px; */
-}
-
 .start_plan_list_item {
     padding-bottom: 10px;
-    font-size: 14px;
+    font-size: 12px;
     line-height: normal;
+    color: #000;
 }
 
 .star_plan_limit_dialogue {
     color: black;
-    /* font-family: "PT Serif", serif; */
-    /* font-weight: 400; */
     font-size: 14px;
-    /* height: 1px; */
-    /* row-gap: 0px; */
     margin-bottom: 12px;
     line-height: 16.94px;
 }
@@ -236,13 +185,9 @@
     background-color: #D9D9D9;
     color: #000;
     padding: 8px 2px;
-    /* border-radius: 5px; */
     font-size: 16px;
     font-weight: 600;
     font-family: 'sans-serif';
-    /* margin-left: 10px; */
-    /* width: 165px; */
-    /* height: 31px; */
     position: absolute;
     transform: rotate(36deg);
     overflow: overlay;
@@ -271,7 +216,6 @@
 }
 
 .connection_alien_logo_section {
-    /* background-color: rgb(95, 219, 108); */
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -295,7 +239,6 @@
 
 .connection_alien_logo {
     width: 100%;
-    /* border: 1px solid; */
 }
 
 .connection_card_dialogue_section {
@@ -344,21 +287,33 @@
     width: 100%;
 }
 
-.bannerAISettings, .banner_welcome_page {
+.bannerAISettings,
+.banner_welcome_page {
     cursor: pointer;
     width: 22rem;
 }
+
 img.banner_welcome_page {
-    margin-top: 3.3rem;
+    margin-top: 2.5rem;
     object-fit: contain;
     object-position: top;
     display: block;
 }
-.long_banner_welcome_page{
+
+.long_banner_welcome_page {
     display: none;
 }
+
 .ai_parent {
     width: 100%;
+}
+
+.first-card.second-card .left-content {
+    width: 14%;
+}
+
+.ai-card-wrapper {
+    width: 83%;
 }
 
 .ai_top_section {
@@ -367,34 +322,99 @@ img.banner_welcome_page {
     justify-content: space-between;
     gap: 2rem;
 }
-.welcome_top_section{
-     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    gap: 2rem;
-}
-.abandoned_list_top_section{
+
+.welcome_top_section {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     gap: 2rem;
 }
-.banner_abandone_list, .bannerSmart{
+
+.abandoned_list_top_section {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.banner_abandone_list,
+.bannerSmart {
     cursor: pointer;
     width: 22rem;
 }
-.smart_badge{
+
+.smart_badge {
     padding-left: 15px !important;
 }
-.flex.flex-row.smartBulk_parent{
+
+.flex.flex-row.smartBulk_parent {
     gap: 0 !important;
 }
-@media(max-width: 1380px){
-    .icon-block.welcomeSummary_parent{
+
+.top-parent-aichatbot {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.setting-page-wrap {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.long_banner_setting_page.pt-4 {
+    padding-bottom: 2rem;
+}
+.settings-title h5{
+font-size: 20px;
+}
+.text-green-700{
+    font-size: 12px;
+    color: #007B0B;
+}
+.free-text{
+    color: #000;
+    font-size: 12px;
+}
+p.text-\[13px\].m-2, .text-\[13px\]{
+    color: #000;
+}
+p.text-\[13px\].text-wrap{
+    max-width: 75%;
+}
+h5.Polaris-Text--root{
+    font-size: 20px;
+}
+.steps-txt{
+    font-size: 13px;
+    line-height: normal;
+}
+.bulk-cart-wrap{
+    padding: 10px 0;
+}
+.step-desc-wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+input::placeholder{
+    color: #000 !important;
+}
+@media(max-width: 1440px) {
+    .ai_parent.first-card {
+        width: 100%;
+    }
+}
+
+@media(max-width: 1380px) {
+    .icon-block.welcomeSummary_parent {
         width: 100%;
         max-width: 100%;
     }
 }
+
 @media (max-width: 1250px) {
     .img.bannerSettings {
         margin-top: 3rem;
@@ -403,29 +423,40 @@ img.banner_welcome_page {
     .settings_secion-1 {
         width: 100%;
     }
-    .contact_parent.start_price_container{
-    max-width: 100%;
-    }   
-    
+
+    .contact_parent.start_price_container {
+        max-width: 100%;
+    }
 }
-@media(max-width: 1100px ){
+
+@media(max-width: 1100px) {
     .welcome_top_section {
         flex-direction: column;
     }
-    .long_banner_welcome_page{
+
+    .long_banner_welcome_page {
         display: block;
         margin-bottom: 2rem;
     }
+
     img.banner_welcome_page {
         display: none;
     }
-    .abandoned_list_top_section{
+
+    .abandoned_list_top_section {
         flex-direction: column;
     }
-    .banner_abandone_list, .bannerSmart{
+
+    .banner_abandone_list,
+    .bannerSmart {
         display: none;
     }
+    .plan-card{
+        flex-wrap: wrap;
+        row-gap: 26px;
+    }
 }
+
 @media (max-width: 1024px) {
 
     .start_pricing_plans {
@@ -444,7 +475,8 @@ img.banner_welcome_page {
         width: 18rem;
     }
 
-    .bannerAISettings, .banner_welcome_page {
+    .bannerAISettings,
+    .banner_welcome_page {
         width: 18rem;
     }
 
@@ -481,24 +513,34 @@ img.banner_welcome_page {
     .start_plan_ammount_suffix {
         font-size: 13px;
     }
-    .long_banner_welcome_page{
+
+    .long_banner_welcome_page {
         display: none;
         margin-bottom: 2rem;
     }
+
     img.banner_welcome_page {
         display: block;
         margin: 0 auto;
     }
-    .banner_abandone_list{
+
+    .banner_abandone_list {
         display: block;
         margin: 0 auto;
     }
-     .bannerSmart{
+
+    .bannerSmart {
         display: block;
         width: 18rem;
         margin-left: auto;
         margin-right: auto;
-     }
+    }
+    p.text-\[13px\].text-wrap{
+        max-width: 85%;
+    }
+    h5.Polaris-Text--root{
+        font-size: 18px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -520,10 +562,6 @@ img.banner_welcome_page {
 
     .start_plan_content_sub_heading {
         font-size: 8px;
-    }
-
-    .start_price_container_heading {
-        font-size: 1rem;
     }
 
     .upgrade_page_container_heading {
@@ -549,6 +587,9 @@ img.banner_welcome_page {
 
     .start_plan_extra_dialogue {
         font-size: 9px;
+    }
+    .settings-title{
+        margin-bottom: 16px;
     }
 }
 
@@ -577,8 +618,13 @@ img.banner_welcome_page {
         width: 100% !important;
         padding: 0 !important;
     }
+
     .banner_abandone_list {
         width: 18rem;
+    }
+
+    .ai-card-wrapper {
+        width: 100%;
     }
 }
 
@@ -593,9 +639,11 @@ img.banner_welcome_page {
 .lets_start_main_container .Polaris-ShadowBevel {
     width: 100%;
 }
+
 .flex.flex-row.gap-3.smartBulk_parent {
     gap: 0;
 }
+
 @media (max-width: 1400px) {
     .start_price_container.w-2\/5 {
         width: 33%;
@@ -619,7 +667,6 @@ img.banner_welcome_page {
     }
 
     .ai_top_section {
-
         flex-direction: column;
         justify-content: space-between;
         gap: 2rem;
@@ -628,7 +675,8 @@ img.banner_welcome_page {
     .bannerAISettings {
         margin: 0 auto;
     }
-    .smart_badge{
+
+    .smart_badge {
         padding-left: 0;
     }
 }
@@ -639,6 +687,134 @@ img.banner_welcome_page {
     justify-content: space-between;
 }
 
+h3.Polaris-Text--root.Polaris-Text--heading3xl {
+    font-size: 20px;
+}
+
+.start_page.padding_zero .Polaris-Page__Content {
+    padding-top: 0;
+}
+
+.whatsapp-link {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 9999;
+}
+
+.whatsapp-icon {
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+}
+
+.first-card {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    justify-content: center;
+    padding-top: 20px;
+}
+
+.first-card  .left-content {
+    width: 14%;
+} 
+
+h3.Polaris-Text--root.Polaris-Text--headingXl {
+    font-size: 15px;
+    padding-bottom: 10px;
+}
+
+.setting_subtitle {
+    font-size: 15px;
+    font-weight: 600;
+    padding-bottom: 10px;
+    color: #000;
+}
+
+.Polaris-Text--bodyLg {
+    font-size: 15px;
+}
+
+.second-card {
+    display: flex;
+    width: 100%;
+    gap: 30px;
+    justify-content: center;
+}
+
+.mb-5.left-text {
+    width: 11%;
+}
+
+.divider-ai {
+    border-color: #EBEBEB !important;
+    border-bottom: 1px solid;
+    margin-bottom: 12px;
+    margin-top: 8px;
+}
+
+.setting_cart_wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: nowrap;
+    padding-top: 18px;
+}
+
+.setting-cart-left {
+    width: 14%;
+}
+
+.setting-cart-next {
+    width: 84%;
+}
+
+.setting_right_cart {
+    width: 100%;
+}
+
+.setting_subheading h3 {
+    font-size: 20px !important;
+    padding-bottom: 0 !important;
+    color: #000;
+}
+
+.setting_detail {
+    font-size: 13px;
+    margin: 0;
+}
+
+.outline-none {
+    font-size: 13px;
+    color: #000;
+}
+
+.welcome_subtitle,
+.Polaris-Text--heading3xl {
+    font-size: 20px;
+    color: #000;
+}
+
+.icon-title,
+.abandoned_list_container h5 {
+    font-size: 20px;
+}
+.Polaris-Box .p-4{
+    padding: 0;
+}
+.font-semibold{
+    color: #000;
+}
+h5.Polaris-Text--root.Polaris-Text--headingLg, .my-auto {
+    color: #000;
+}
+.abandoned_icon, .abandoned_no{
+    font-size: 18px;
+}
+.setting_price button{
+ font-size: 12px;
+}
 /* New CSS */
 @media (max-width: 1600px) {
     .letstart .icon-block {
@@ -663,12 +839,7 @@ img.banner_welcome_page {
     }
 
     .start_plan_list_item {
-        font-size: 13.5px;
         line-height: 20px;
-    }
-
-    .start_main_container .text-2xl {
-        font-size: 1.3rem;
     }
 
     .start_main_container .flex.flex-row.gap-4 {
@@ -689,6 +860,12 @@ img.banner_welcome_page {
     }
 }
 
+@media (max-width: 1300px) {
+    .setting-cart-left {
+        width: 18%;
+    }
+}
+
 @media(max-width: 1200px) {
 
     .start_page,
@@ -697,23 +874,10 @@ img.banner_welcome_page {
 
     }
 
-    .icon-block,
-    .contact-block,
-    .Polaris-Page.Polaris-Page--fullWidth {
-        max-width: 85%;
-    }
-
     .lets_start_main_container {
         max-width: 90%;
     }
 
-    h3.Polaris-Text--root.Polaris-Text--heading3xl {
-        font-size: 30px;
-    }
-
-    /* .start_main_container {
-        padding: 2rem !important;
-    } */
     .Polaris-Box .h-48 {
         height: 16rem;
     }
@@ -736,7 +900,7 @@ img.banner_welcome_page {
     }
 
     .icon-block .flex.flex-row {
-        gap: 0;
+        gap: 4px;
         flex-wrap: nowrap !important;
     }
 
@@ -780,6 +944,14 @@ img.banner_welcome_page {
 
     .Polaris-Page__Content .bulk-box .flex.items-center {
         width: 75%;
+    }
+
+    .left-content {
+        width: 27% !important;
+    }
+
+    .mb-5.left-text {
+        width: 27% !important;
     }
 }
 
@@ -828,6 +1000,10 @@ img.banner_welcome_page {
     .start_page_wrapper {
         padding: 4rem 5rem 12rem 5rem;
     }
+
+    .setting-cart-left {
+        width: 25%;
+    }
 }
 
 @media (max-width: 989px) {
@@ -842,7 +1018,6 @@ img.banner_welcome_page {
 
     .Polaris-Page__Content .bulk-box .flex.items-center {
         width: 100%;
-        padding-bottom: 1rem;
         justify-content: flex-start;
     }
 
@@ -863,6 +1038,40 @@ img.banner_welcome_page {
 
     .lets-card .Polaris-ShadowBevel {
         width: 23%;
+    }
+
+    .first-card,
+    .second-card {
+        flex-direction: column !important;
+    }
+
+    .left-content,
+    .mb-5.left-text {
+        width: 100% !important;
+    }
+
+    h3.Polaris-Text--root.Polaris-Text--heading3xl {
+        font-size: 20px;
+    }
+
+    .rounded-md {
+        object-fit: contain;
+    }
+
+    .top-parent-aichatbot {
+        width: 100%;
+    }
+
+    .setting_cart_wrap {
+        flex-wrap: wrap;
+    }
+
+    .setting-cart-left {
+        width: 100%;
+    }
+
+    .setting-cart-next {
+        width: 100%;
     }
 }
 
@@ -904,10 +1113,6 @@ img.banner_welcome_page {
 
     .icon-block .flex.flex-col {
         width: 100% !important;
-    }
-
-    .start_main_container .text-2xl {
-        font-size: 1.3rem;
     }
 
     .cursor-pointer svg {
@@ -996,7 +1201,7 @@ img.banner_welcome_page {
     }
 
     h3.Polaris-Text--root.Polaris-Text--heading3xl {
-        font-size: 26px;
+        font-size: 20px;
     }
 
     .lets_start_main_container .text-2xl {
@@ -1009,13 +1214,11 @@ img.banner_welcome_page {
     }
 
     h5.Polaris-Text--root.Polaris-Text--headingLg {
-        font-size: 1.0rem;
+        font-size: 18px;
     }
-
-    .abandoned_list_main_container_heading {
-        margin-bottom: 2rem !important;
+    .start_main_container_sub_heading h5, .abandoned_list_container h5 {
+        font-size: 18px;
     }
-
     .start_main_container .text-2xl {
         font-size: 1.0rem;
     }
@@ -1063,10 +1266,6 @@ img.banner_welcome_page {
         line-height: 1.5rem;
     }
 
-    .start_main_container_sub_heading {
-        margin-top: 1rem;
-    }
-
     p.Polaris-Text--root.Polaris-Text--bodyLg {
         padding-top: 12px;
     }
@@ -1079,6 +1278,12 @@ img.banner_welcome_page {
         width: 31px;
         height: 31px;
     }
+     .Polaris-ShadowBevel{
+        border-radius: 0.5rem;
+    }
+    .Polaris-ShadowBevel::before{
+        border-radius: 0.5rem;
+    }
 }
 
 @media (max-width: 30.6225em) {
@@ -1089,22 +1294,4 @@ img.banner_welcome_page {
         width: 100vw;
         box-shadow: var(--p-shadow-200);
     }
-}
-
-
-.start_page.padding_zero .Polaris-Page__Content {
-    padding-top: 0;
-}
-
-.whatsapp-link {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    z-index: 9999;
-}
-
-.whatsapp-icon {
-    width: 60px;
-    height: 60px;
-    cursor: pointer;
 }

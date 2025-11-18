@@ -79,7 +79,7 @@ const StartPage = () => {
             <div className='start_page'>
                 <Page fullWidth>
                     <div className='start_main_container'>
-                        <div className='start_main_container_heading'>
+                        <div className=''>
                             <Text variant="heading3xl" as="h3">
                                 Let’s Start!
                             </Text>

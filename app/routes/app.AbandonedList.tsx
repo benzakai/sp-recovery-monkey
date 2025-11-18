@@ -148,26 +148,28 @@ export default function NewAbandonedList() {
     return (
         <div className="body">
             <div className='start_page padding_zero'>
-                <div className='start_main_container'>
-                    <div className='abandoned_list_main_container_heading'>
+                <div className='start_main_container abandoned_main_wrap'>
+                    <img
+                        onClick={handleBannerClick}
+                        className="abandoned_banner_welcome_page"
+                        src="/images/letsStartPage/topBanner.png"
+                        alt="Banner"
+                    />
+                    
+                    <div className='mt-6 mb-4'>
                         <div className='start_main_container_sub_heading'>
-                            <Text variant="heading3xl" as="h3">
+                            <Text variant="headingLg" as="h5">
                                 {t('abandonedList.title')}
                             </Text>
                         </div>
                     </div>
-                    <img
-                        onClick={handleBannerClick}
-                        className="long_banner_welcome_page"
-                        src="/images/letsStartPage/topBanner.png"
-                        alt="Banner"
-                    />
+        
                     <div className='abandoned_list_top_section'>
                         <div>
                             <div><AbandonedCartsSummary getPageData={getPageData} forPageType="AbandonedList" /></div>
 
                             <div className='abandoned_list_container'>
-                                <div className="start_price_container_heading">
+                                <div className="mt-6 mb-4">
                                     <Text variant="headingLg" as="h5">
                                         {t("abandonedList.latestCartRecovery")}
                                     </Text>
@@ -206,14 +208,7 @@ export default function NewAbandonedList() {
                                 )}
                             </div>
                         </div>
-                        <div>
-                            <img
-                                onClick={handleBannerClick}
-                                className="banner_abandone_list"
-                                src="/images/dealsBanner/verticle-banner.png"
-                                alt="Banner"
-                            />
-                        </div>
+                    
                     </div>
                 </div>
             </div>

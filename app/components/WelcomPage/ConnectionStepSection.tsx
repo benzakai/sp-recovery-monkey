@@ -54,14 +54,14 @@ export default function ConnectionStepSection() {
         <>
             <div className="bg-white rounded-xl shadow-sm border border-solid p-4 md:p-6">
                 <div className="pb-2 text-center md:text-left">
-                    <Text variant="headingLg" as="h5">
+                    <p className="text-[13px] font-semibold">
                         Set up Cartkeeper
-                    </Text>
+                    </p>
                 </div>
                 <div className="text-center md:text-left">
-                    <Text variant="bodyLg" as="p">
+                    <p className="text-[13px]">
                         Just 3 easy steps to get started - then let the app do the magic
-                    </Text>
+                    </p>
                 </div>
 
                 <div className="abandoned-block flex flex-col lg:flex-row md:flex-row items-center lg:items-start pt-6 pb-8 font-inter welcome_wrapper">
@@ -73,19 +73,22 @@ export default function ConnectionStepSection() {
                             <div className="flex flex-col justify-center items-center text-center m-4 welcome_wrapper_content w-full lg:w-auto">
                                 <div className="mb-2">{card.icon}</div>
                                 <div className="flex flex-row items-center gap-2 mb-2">
-                                    <div className="w-6 h-6 md:w-8 md:h-8 lg:w-9 lg:h-9 flex items-center justify-center">
+                                    <div className="w-6 h-6 md:w-8 md:h-8 lg:w-8 lg:h-8 flex items-center justify-center">
                                         {React.cloneElement(card.stepIcon, {
                                             width: "100%",
                                             height: "100%",
                                         })}
                                     </div>
-                                    <div className="font-semibold text-base md:text-lg lg:text-xl pb-1">
-                                        {card.title}
+                                    <div className="step-desc-wrap">
+                                        <div className="font-semibold text-base md:text-lg lg:text-xl pb-1 steps-txt">
+                                            {card.title}
+                                        </div>
+                                            <div className="text-[13px] text-[#6B7177]">
+                                            {card.description}
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="text-sm md:text-base text-[#6B7177] w-full lg:w-[85%]">
-                                    {card.description}
-                                </div>
+                                
                             </div>
 
                             {card.nextStepIcon && index < getCards.length - 1 && (
@@ -98,12 +101,12 @@ export default function ConnectionStepSection() {
                 </div>
 
                 <div className="text-center md:text-left">
-                    <Text variant="bodyLg" as="p">
+                    <p className="text-[13px]">
                         Watch video tutorial for connecting CartKeeper to WhatsApp –{" "}
                         <Link removeUnderline onClick={handleOpenModal}>
                             watch here
                         </Link>
-                    </Text>
+                    </p>
                 </div>
                 <PopUp
                     id={"whatsapp_connect_tutorial_modal"}

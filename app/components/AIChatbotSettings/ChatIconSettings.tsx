@@ -104,17 +104,17 @@ const ChatIconSettings = ({ setAISettings, aiSettings, disabled = false }: any) 
 
   return (
     <>
-      <Text as="p" variant="bodyLg" fontWeight="medium">
+      <p className="text-[13px]">
         Chat Icon Style
-      </Text>
-      <div className="flex gap-14 items-center mb-6 mt-2 ml-5">
+      </p>
+      <div className="flex gap-6 items-center mb-6 mt-2 ml-5">
         {renderOption(iconStyles, aiSettings, setAISettings, 'chat-icon-style', disabled)}
       </div>
 
-      <Text as="p" variant="bodyLg" fontWeight="medium">
+      <p className="text-[13px]">
         Chat Icon Position
-      </Text>
-      <div className="flex gap-14 items-center mt-2 ml-5">
+      </p>
+      <div className="flex gap-6 items-center mt-2 ml-5">
         {renderOption(iconPositions, aiSettings, setAISettings, 'chat-icon-position', disabled)}
       </div>
     </>

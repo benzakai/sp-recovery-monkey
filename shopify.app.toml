@@ -1,16 +1,13 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "66e7df7cac5412f3a99a62879dfe3e04"
+name = "CartKeeper"
 application_url = "https://app.cartkeeper.co/"
 embedded = true
-name = "CartKeeper"
 handle = "sp-recovery-monkey"
 
-[build]
-include_config_on_deploy = true
-
 [webhooks]
-api_version = "2024-07"
+api_version = "2024-10"
 
   [[webhooks.subscriptions]]
   uri = "/api/webhook/customers/data_request"
@@ -36,7 +33,7 @@ redirect_urls = [
 ]
 
 [app_proxy]
-url = "https://app.cartkeeper.co/"
+url = "https://app.cartkeeper.co"
 subpath = "external-live"
 prefix = "apps"
 

@@ -16,11 +16,11 @@ export default function SettingsSecondBlock({
 }: any) {
     return (
         <div className='p-4'>
-            <BlockStack gap="300">
+            <BlockStack>
                 <InlineStack direction="row" align="space-between">
-                    {title && <Text as="p" variant="bodyLg" fontWeight="bold">
+                    {title && <p className="text-[13px] font-semibold">
                         {title} <span className='pl-2'>{availableOn && <Badge tone={toneType} >{availableOn}</Badge>}</span>
-                    </Text>}
+                    </p>}
                     {buttonType && <Button
                         disabled={isActivateButtonDisabled}
                         tone={isActivated ? 'critical' : 'success'}
@@ -28,9 +28,9 @@ export default function SettingsSecondBlock({
                         onClick={() => handleActivateButton(buttonType)}
                     >{activateButtonTitle}</Button>}
                 </InlineStack>
-                <Text as="p" variant="bodyLg">
+                <p className="text-[13px] text-wrap mb-2 mt-1">
                     {description}
-                </Text>
+                </p>
                 {children}
             </BlockStack>
         </div>
