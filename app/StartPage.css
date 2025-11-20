@@ -815,6 +815,11 @@ h5.Polaris-Text--root.Polaris-Text--headingLg, .my-auto {
 .setting_price button{
  font-size: 12px;
 }
+
+.phone-input-wrapper div:first-child {
+    width: 240px;
+}
+
 /* New CSS */
 @media (max-width: 1600px) {
     .letstart .icon-block {

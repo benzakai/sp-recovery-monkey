@@ -1,10 +1,11 @@
 import * as React from 'react';
 import "../StartPage.css";
 import '../AbandonedCarts.css'
-import { Page, DataTable, Text, Spinner, Card } from '@shopify/polaris';
+import { DataTable, Text, Spinner, Card, Select } from '@shopify/polaris';
 import AbandonedCartsSummary from '~/components/AbandonedCartsSummary';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@remix-run/react';
+import { DateRangePicker } from '~/components/DateRangePicker';
 
 
 // function parseDate(dateString: any) {
@@ -35,15 +36,44 @@ export default function NewAbandonedList() {
     });
     const [customerData, setCustomerData] = React.useState([]);
     const [currentPage, setCurrentPage] = React.useState(1);
-    const itemsPerPage = 5;
     const [loader, setLoader] = React.useState(true);
+    const [itemsPerPage, setItemsPerPage] = React.useState(5);
+    const [selectedDateValues, setSelectedDateValues] = React.useState(() => {
+        const today = new Date();
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(today.getDate() - 7);
 
-    const sortedData = customerData.sort((a, b) => parseDate(b.DateTime).getTime() - parseDate(a.DateTime).getTime());
+        return {
+            since: sevenDaysAgo.toISOString().split('T')[0],
+            until: today.toISOString().split('T')[0]
+        };
+    });
+    const filteredData = React.useMemo(() => {
+        if (!selectedDateValues?.since || !selectedDateValues?.until) return customerData;
+
+        const since = new Date(selectedDateValues.since);
+        const until = new Date(selectedDateValues.until);
+        until.setHours(23, 59, 59, 999);
+
+        return customerData.filter((item: any) => {
+            const itemDate = parseDate(item.DateTime);
+            return itemDate >= since && itemDate <= until;
+        });
+    }, [customerData, selectedDateValues]);
+
+    const sortedData = React.useMemo(() => {
+        return [...filteredData].sort((a, b) => parseDate(b.DateTime).getTime() - parseDate(a.DateTime).getTime());
+    }, [filteredData]);
+
     const totalPages = Math.ceil(sortedData.length / itemsPerPage);
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
     const navigate = useNavigate();
+
+    React.useEffect(() => {
+        setCurrentPage(1);
+    }, [selectedDateValues]);
 
     const handleNext = () => {
         if (currentPage < totalPages) {
@@ -141,6 +171,14 @@ export default function NewAbandonedList() {
         }
     }
 
+    const options = [
+        { label: "5/page", value: '5' },
+        { label: t("smartBulk.15perPageLabel"), value: '15' },
+        { label: t("smartBulk.50perPageLabel"), value: '50' },
+        { label: t("smartBulk.100perPageLabel"), value: '100' },
+        { label: t("smartBulk.200perPageLabel"), value: '250' }
+    ];
+
     const handleBannerClick = () => {
         navigate("/app/Settings")
     }
@@ -155,60 +193,86 @@ export default function NewAbandonedList() {
                         src="/images/letsStartPage/topBanner.png"
                         alt="Banner"
                     />
-                    
+
                     <div className='mt-6 mb-4'>
                         <div className='start_main_container_sub_heading'>
                             <Text variant="headingLg" as="h5">
                                 {t('abandonedList.title')}
                             </Text>
                         </div>
+                        <div className='md:flex md:justify-between'>
+                            <p className='text-[13px] md:text-left mt-[6px]'>
+                                {t("abandonedList.latestCartRecovery")}
+                            </p>
+                            <div className="flex justify-end items-end gap-4 flex-wrap mt-4 md:mt-0">
+                                <Select
+                                    label={t("smartBulk.show")}
+                                    labelInline
+                                    options={options}
+                                    onChange={(v: string) => {
+                                        setCurrentPage(1);
+                                        setItemsPerPage(Number(v))
+                                    }}
+                                    value={itemsPerPage.toString()}
+                                />
+                                <DateRangePicker
+                                    setSelectedDateValues={setSelectedDateValues} t={t} disabled={false}
+                                />
+                            </div>
+                        </div>
                     </div>
-        
-                    <div className='abandoned_list_top_section'>
+
+                    <div
+                    // className='abandoned_list_top_section'
+                    >
                         <div>
-                            <div><AbandonedCartsSummary getPageData={getPageData} forPageType="AbandonedList" /></div>
+                            {/* <div><AbandonedCartsSummary getPageData={getPageData} forPageType="AbandonedList" /></div> */}
 
                             <div className='abandoned_list_container'>
-                                <div className="mt-6 mb-4">
+                                {/* <div className="mt-6 mb-4">
                                     <Text variant="headingLg" as="h5">
                                         {t("abandonedList.latestCartRecovery")}
                                     </Text>
-                                </div>
+                                    <p className='text-[13px] md:text-left mt-[6px] mb-4'>
+                                        
+                                    </p>
+                                </div> */}
 
                                 {loader ? (
                                     <div className="flex justify-center items-center h-full w-full mt-28">
                                         <Spinner accessibilityLabel="Spinner example" size="large" />
                                     </div>
                                 ) : (
-                                    <div>
-                                        <Card
-                                            padding={{ xs: '190', sm: '190' }}>
-                                            <DataTable
-                                                columnContentTypes={[
-                                                    'text',
-                                                    'text',
-                                                    'text'
-                                                ]}
-                                                headings={[
-                                                    t("abandonedList.tableColumnHeading1"),
-                                                    t("abandonedList.tableColumnHeading2"),
-                                                    t("abandonedList.tableColumnHeading3"),
-                                                ]}
-                                                rows={GetDataRow}
-                                                pagination={{
-                                                    hasNext: currentPage < totalPages,
-                                                    hasPrevious: currentPage > 1,
-                                                    onNext: handleNext,
-                                                    onPrevious: handlePrevious,
-                                                    label: t("abandonedList.paginationText", { currentPage: `${(currentPage - 1) * itemsPerPage + 1}-${Math.min(currentPage * itemsPerPage, customerData?.length)}`, totalPages: customerData?.length }),
-                                                }}
-                                            />
-                                        </Card>
-                                    </div>
+
+                                    <Card padding={{ xs: '190', sm: '190' }}>
+                                        <DataTable
+                                            columnContentTypes={['text', 'text', 'text']}
+                                            headings={[
+                                                t("abandonedList.tableColumnHeading1"),
+                                                t("abandonedList.tableColumnHeading2"),
+                                                t("abandonedList.tableColumnHeading3"),
+                                            ]}
+                                            rows={GetDataRow}
+                                            pagination={{
+                                                hasNext: currentPage < totalPages,
+                                                hasPrevious: currentPage > 1,
+                                                onNext: handleNext,
+                                                onPrevious: handlePrevious,
+                                                label: t("abandonedList.paginationText", {
+                                                    currentPage: `${(currentPage - 1) * itemsPerPage + 1}-${Math.min(
+                                                        currentPage * itemsPerPage,
+                                                        filteredData?.length
+                                                    )}`,
+                                                    totalPages: filteredData?.length,
+                                                }),
+
+                                            }}
+                                        />
+                                    </Card>
                                 )}
                             </div>
                         </div>
-                    
+
                     </div>
                 </div>
             </div>

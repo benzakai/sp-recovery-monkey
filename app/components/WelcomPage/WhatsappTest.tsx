@@ -192,7 +192,7 @@ export default function WhatsappTest({ shop }: any) {
                     <Icon source={InfoIcon} />
                 </Tooltip>
             </div>
-            <div className='flex flex-row text-center gap-3'>
+            <div className='flex flex-row text-center gap-3 phone-input-wrapper'>
                 <TextField
                     type="text"
                     label=""

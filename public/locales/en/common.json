@@ -91,7 +91,7 @@
   },
   "abandonedList": {
     "title": "Abandoned carts",
-    "latestCartRecovery": "Latest Cart Recovery Messages",
+    "latestCartRecovery": "Latest cart recovery messages",
     "tableColumnHeading1": "Time and Date",
     "tableColumnHeading2": "Name",
     "tableColumnHeading3": "Checkout price",
