@@ -32,9 +32,9 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
         {
             key: "Starter",
             name: t("settings.planName2"),
-            monthly: "19$",
-            yearly: "17.1$",
-            original: "19$",
+            monthly: "$19",
+            yearly: "$17.1",
+            original: "$19",
             priceLabel: "Month",
             percentageSave: "10",
             benefits: [t("settings.starterBenefit1"), t("settings.starterBenefit2")],
@@ -42,9 +42,9 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
         {
             key: "Pro",
             name: t("settings.planName3"),
-            monthly: "49$",
-            yearly: "36.75$",
-            original: "49$",
+            monthly: "$49",
+            yearly: "$36.75",
+            original: "$49",
             priceLabel: "Month",
             percentageSave: "25",
             benefits: [
@@ -58,9 +58,9 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
         {
             key: "Advance",
             name: t("settings.planName4"),
-            monthly: "99$",
-            yearly: "59.4$",
-            original: "99$",
+            monthly: "$99",
+            yearly: "$59.4",
+            original: "$99",
             priceLabel: "Month",
             percentageSave: "40",
             benefits: [

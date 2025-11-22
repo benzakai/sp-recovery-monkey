@@ -9,6 +9,7 @@ import { Button, Card, Icon, Select, Text } from '@shopify/polaris';
 import StartPageCartSummary from '../StartPageCartSummary';
 import ChatSVG from '../SVGs/ChatSVG';
 import MailSVG from '../SVGs/MailSVG';
+import BlackFridaySaleBanner from '../global/BlackFridaySaleBanner';
 
 export default function WelcomePlanPage({
     loaderData,
@@ -122,10 +123,6 @@ export default function WelcomePlanPage({
         }
     ];
 
-    const handleBannerClick = () => {
-        navigate("/app/Settings")
-    }
-
     return (
         <div className="body">
             <div className='start_page welcome_page'>
@@ -141,12 +138,9 @@ export default function WelcomePlanPage({
                             value={selectedLanguage}
                         />
                     </div>
-                    <img
-                        onClick={handleBannerClick}
-                        className="long_banner_welcome_page"
-                        src="/images/letsStartPage/topBanner.png"
-                        alt="Banner"
-                    />
+                    <div className='welcomeSaleWrapperTop'>
+                        <BlackFridaySaleBanner btnClass="saleBannerButton" src={"/images/letsStartPage/topBanner.png"} className="long_banner_welcome_page" />
+                    </div>
                     <div className="welcome_top_section">
                         <div className="flex-[3] w-full">
                             <Text variant="headingLg" as="h5">{t("home.subTitle")}</Text>
@@ -218,13 +212,11 @@ export default function WelcomePlanPage({
                                 </Card>
                             </div>
                         </div>
-
-                        <img
-                            onClick={handleBannerClick}
-                            className="banner_welcome_page"
-                            src="/images/dealsBanner/verticle-banner.png"
-                            alt="Banner"
-                        />
+                        <div className='welcomeSaleWrapper'>
+                            <BlackFridaySaleBanner
+                                btnClass="welcomeSaleBannerButton"
+                                src={"/images/dealsBanner/verticle-banner.png"} className="banner_welcome_page" />
+                        </div>
 
                     </div>
 

@@ -1,175 +1,94 @@
 import * as React from 'react';
 import "../StartPage.css";
-import '../AbandonedCarts.css'
-import { DataTable, Text, Spinner, Card, Select } from '@shopify/polaris';
-import AbandonedCartsSummary from '~/components/AbandonedCartsSummary';
+import '../AbandonedCarts.css';
+import { Card, DataTable, Text, Select, Spinner } from '@shopify/polaris';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from '@remix-run/react';
 import { DateRangePicker } from '~/components/DateRangePicker';
-
-
-// function parseDate(dateString: any) {
-//     const [day, month, year, hour, minute, second] = dateString.split(/[\s/:]/).map(Number);
-//     return new Date(year, month - 1, day, hour, minute, second);
-// }
-
-function parseDate(dateStr: any) {
-    const [datePart, timePart] = dateStr.split(' ');
-    const [day, month, year] = datePart.split('/');
-
-    const fullYear = year.length === 2 ? `20${year}` : year;
-
-    return new Date(`${fullYear}-${month}-${day}T${timePart}`);
-}
+import BlackFridaySaleBanner from '~/components/global/BlackFridaySaleBanner';
 
 export default function NewAbandonedList() {
-    const { t } = useTranslation()
-    const [getPageData, setPageData] = React.useState({
-        abandonedCarts: [],
-        abandonedCartsSum: 0,
-        acrRate: null,
-        allCarts: [],
-        recoveredCarts: [],
-        recoveredCartsSum: 0,
-        shopCurrency: null,
-        success: null
-    });
-    const [customerData, setCustomerData] = React.useState([]);
+    const { t } = useTranslation();
+
+    const [checkouts, setCheckouts] = React.useState([]);
     const [currentPage, setCurrentPage] = React.useState(1);
+    const [itemsPerPage, setItemsPerPage] = React.useState('5');
     const [loader, setLoader] = React.useState(true);
-    const [itemsPerPage, setItemsPerPage] = React.useState(5);
+
     const [selectedDateValues, setSelectedDateValues] = React.useState(() => {
         const today = new Date();
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(today.getDate() - 7);
-
         return {
             since: sevenDaysAgo.toISOString().split('T')[0],
-            until: today.toISOString().split('T')[0]
+            until: today.toISOString().split('T')[0],
         };
     });
-    const filteredData = React.useMemo(() => {
-        if (!selectedDateValues?.since || !selectedDateValues?.until) return customerData;
 
-        const since = new Date(selectedDateValues.since);
-        const until = new Date(selectedDateValues.until);
-        until.setHours(23, 59, 59, 999);
+    const [pageInfo, setPageInfo] = React.useState({
+        hasNextPage: false,
+        hasPreviousPage: false,
+        nextCursor: '',
+        prevCursor: '',
+    });
 
-        return customerData.filter((item: any) => {
-            const itemDate = parseDate(item.DateTime);
-            return itemDate >= since && itemDate <= until;
-        });
-    }, [customerData, selectedDateValues]);
+    const fetchData = async (cursor: string | null = null, direction: 'next' | 'prev' = 'next') => {
+        try {
+            setLoader(true);
+            const response = await fetch('/api/abandonedListCustomer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    limit: Number(itemsPerPage),
+                    since: selectedDateValues.since,
+                    until: selectedDateValues.until,
+                    paginationDirection: direction,
+                    cursor: direction === 'next' ? cursor : null,
+                    prevCursor: direction === 'prev' ? cursor : null,
+                }),
+            });
+            const data = await response.json();
 
-    const sortedData = React.useMemo(() => {
-        return [...filteredData].sort((a, b) => parseDate(b.DateTime).getTime() - parseDate(a.DateTime).getTime());
-    }, [filteredData]);
-
-    const totalPages = Math.ceil(sortedData.length / itemsPerPage);
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = sortedData.slice(indexOfFirstItem, indexOfLastItem);
-    const navigate = useNavigate();
+            if (data.success && data.checkouts) {
+                setCheckouts(data.checkouts);
+                setPageInfo({
+                    hasNextPage: data.pageInfo?.hasNextPage ?? false,
+                    hasPreviousPage: data.pageInfo?.hasPreviousPage ?? false,
+                    nextCursor: data.pageInfo?.nextCursor ?? '',
+                    prevCursor: data.pageInfo?.prevCursor ?? '',
+                });
+            }
+        } catch (error) {
+            console.error('Error fetching abandoned carts:', error);
+        } finally {
+            setLoader(false);
+        }
+    };
 
     React.useEffect(() => {
         setCurrentPage(1);
-    }, [selectedDateValues]);
+        setPageInfo({ hasNextPage: false, hasPreviousPage: false, nextCursor: '', prevCursor: '' });
+        fetchData(null, 'next');
+    }, [itemsPerPage, selectedDateValues]);
 
     const handleNext = () => {
-        if (currentPage < totalPages) {
-            setCurrentPage(currentPage + 1);
+        if (pageInfo.hasNextPage) {
+            setCurrentPage((p) => p + 1);
+            fetchData(pageInfo.nextCursor, 'next');
         }
     };
 
     const handlePrevious = () => {
-        if (currentPage > 1) {
-            setCurrentPage(currentPage - 1);
+        if (pageInfo.hasPreviousPage) {
+            setCurrentPage((p) => Math.max(1, p - 1));
+            fetchData(pageInfo.prevCursor, 'prev');
         }
     };
 
-    React.useEffect(() => {
-        handleFetchAbandonedCheckouts();
-        handleFetchTableData();
-    }, []);
-
-
-    function formatDate(dateString: any) {
-        const dateParts = dateString.split(/[\s/:]/);
-        const day = parseInt(dateParts[0], 10);
-        const monthIndex = parseInt(dateParts[1], 10) - 1;
-        const year = dateParts[2];
-        const hour = dateParts[3];
-        const minute = dateParts[4];
-        const second = dateParts[5];
-        const month = t(`global.monthsShort.${monthIndex}`);
-        return `${month} ${day} ${hour}:${minute}:${second}`;
-    }
-
-    const GetDataRow: any = (currentItems ?? [])?.map((item: any) => [
-        <div>{formatDate(item.DateTime)}</div>,
-        <div>{item.Name}</div>,
-        <div className='abandoned_list_price'>{item?.["Total Price"] ? (item.Currency ?? "") : ""}{(item?.["Total Price"] ?? "N/A")}</div>,
+    const rows = checkouts.map((item) => [
+        <div>{item.dateTime ? new Date(item.dateTime).toLocaleString() : 'N/A'}</div>,
+        <div>{item.name || 'Unknown'}</div>,
+        <div>{item.currency}{item.totalPrice}</div>,
     ]);
-
-    async function handleFetchTableData() {
-        try {
-            const response = await fetch("/api/abandonedListCustomer", {
-                method: "POST",
-                body: JSON.stringify({}),
-            });
-
-            if (!response.ok) {
-                console.error("Failed to fetch abandonedListCustomer", response.status);
-                return;
-            }
-
-            const responseData = await response.json();
-            if (responseData?.success && responseData?.abandonedListCustomer.length) {
-                setCustomerData(responseData?.abandonedListCustomer);
-            }
-        } catch (error) {
-            console.error("Error fetching abandoned carts:", error);
-        } finally {
-            setLoader(false)
-        }
-    }
-
-    async function handleFetchAbandonedCheckouts() {
-        try {
-            const responseCards = await fetch("/api/welcome-page/cards-data", {
-                method: "GET",
-            });
-            if (!responseCards.ok) {
-                console.error("failed to fetch cards data", responseCards.status);
-                return;
-            }
-            const responseCardsData = await responseCards.json();
-            if (responseCardsData?.success && responseCardsData?.dashboardData) {
-                const { acr, sales_count, sum_of_sales, currency, checkout_count } = responseCardsData?.dashboardData;
-                setPageData((prev) => ({
-                    ...prev,
-                    acrRate: acr?.toFixed(1),
-                    recoveredCarts: Math.trunc(sales_count),
-                    recoveredCartsSum: Math.trunc(sum_of_sales),
-                    shopCurrency: currency,
-                    abandonedCarts: checkout_count,
-                    success: true
-                }));
-            } else {
-                setPageData((prev) => ({
-                    ...prev,
-                    acrRate: 0,
-                    recoveredCarts: 0,
-                    recoveredCartsSum: 0,
-                    shopCurrency: "",
-                    abandonedCarts: 0,
-                    success: true
-                }));
-            }
-        } catch (error) {
-            console.log("handleFetchAbandonedCheckouts Error on AbandonedList ", error);
-        }
-    }
 
     const options = [
         { label: "5/page", value: '5' },
@@ -179,19 +98,17 @@ export default function NewAbandonedList() {
         { label: t("smartBulk.200perPageLabel"), value: '250' }
     ];
 
-    const handleBannerClick = () => {
-        navigate("/app/Settings")
-    }
+
 
     return (
         <div className="body">
             <div className='start_page padding_zero'>
                 <div className='start_main_container abandoned_main_wrap'>
-                    <img
-                        onClick={handleBannerClick}
-                        className="abandoned_banner_welcome_page"
-                        src="/images/letsStartPage/topBanner.png"
-                        alt="Banner"
+
+                    <BlackFridaySaleBanner
+                        btnClass="saleBannerButton"
+                        src={"/images/letsStartPage/topBanner.png"}
+                        className='abandoned_banner_welcome_page cursor-pointer'
                     />
 
                     <div className='mt-6 mb-4'>
@@ -209,14 +126,13 @@ export default function NewAbandonedList() {
                                     label={t("smartBulk.show")}
                                     labelInline
                                     options={options}
-                                    onChange={(v: string) => {
-                                        setCurrentPage(1);
-                                        setItemsPerPage(Number(v))
-                                    }}
-                                    value={itemsPerPage.toString()}
+                                    onChange={(v) => setItemsPerPage(v)}
+                                    value={itemsPerPage}
                                 />
                                 <DateRangePicker
-                                    setSelectedDateValues={setSelectedDateValues} t={t} disabled={false}
+                                    setSelectedDateValues={setSelectedDateValues}
+                                    t={t}
+                                    disabled={false}
                                 />
                             </div>
                         </div>
@@ -237,11 +153,19 @@ export default function NewAbandonedList() {
                                         
                                     </p>
                                 </div> */}
-
                                 {loader ? (
-                                    <div className="flex justify-center items-center h-full w-full mt-28">
-                                        <Spinner accessibilityLabel="Spinner example" size="large" />
-                                    </div>
+                                    <Card padding={{ xs: '400', sm: '400' }}>
+                                        <div className="abandoned_list_loading_state">
+                                            <div className="loading_spinner_container skeleton-pulse">
+                                                <Spinner accessibilityLabel="Loading abandoned carts" size="large" />
+                                            </div>
+                                            <div className="loading_text_container">
+                                                <Text as="p" variant="bodyMd" alignment="center">
+                                                    Loading checkouts...
+                                                </Text>
+                                            </div>
+                                        </div>
+                                    </Card>
                                 ) : (
 
                                     <Card padding={{ xs: '190', sm: '190' }}>
@@ -250,22 +174,15 @@ export default function NewAbandonedList() {
                                             headings={[
                                                 t("abandonedList.tableColumnHeading1"),
                                                 t("abandonedList.tableColumnHeading2"),
-                                                t("abandonedList.tableColumnHeading3"),
+                                                t("abandonedList.tableColumnHeading3")
                                             ]}
-                                            rows={GetDataRow}
+                                            rows={rows}
                                             pagination={{
-                                                hasNext: currentPage < totalPages,
-                                                hasPrevious: currentPage > 1,
+                                                hasNext: pageInfo.hasNextPage,
+                                                hasPrevious: pageInfo.hasPreviousPage,
                                                 onNext: handleNext,
                                                 onPrevious: handlePrevious,
-                                                label: t("abandonedList.paginationText", {
-                                                    currentPage: `${(currentPage - 1) * itemsPerPage + 1}-${Math.min(
-                                                        currentPage * itemsPerPage,
-                                                        filteredData?.length
-                                                    )}`,
-                                                    totalPages: filteredData?.length,
-                                                }),
-
+                                                label: `Page ${currentPage}`,
                                             }}
                                         />
                                     </Card>

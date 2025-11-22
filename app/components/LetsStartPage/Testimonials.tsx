@@ -20,7 +20,7 @@ export default function Testimonials() {
         {
             id: 2,
             content: "“There is no way to fully describe how much I do recommend to anyone to use this app. Efficient, fast, targeting th...",
-            fullContent: "“There is no way to fully describe how much I do recommend to anyone to use this app. Efficient, fast, targeting the intention of buying. App allows you to have a custom message so you can add special code and info over the order. Messages are sent directly into WhatsApp chat without any kind of interaction beside than the scope of the app: generate a sell. The team is always supporting for help directly in WhatsApp (ofc!) which makes it fast and easy. I repeat one point which I think makes Cartkeeper special: it trigger the intention of buying, not the abandoned cart. Super recommended!”",
+            fullContent: "“There is no way to fully describe how much I do recommend to anyone to use this app. Efficient, fast, targeting the intention of buying. App allows you to have a custom message so you can add special code and info over the order. Messages are sent directly into WhatsApp chat without any kind of interaction besides than the scope of the app: generate a sell. The team is always supporting for help directly in WhatsApp (ofc!) which makes it fast and easy. I repeat one point which I think makes Cartkeeper special: it trigger the intention of buying, not the abandoned cart. Super recommended!”",
             company: "The Green Muse CBD",
             component: <GreenMuse />
         },
@@ -62,7 +62,7 @@ export default function Testimonials() {
         <div className="mt-20 flex justify-center">
             <div className="w-full md:px-6 relative">
                 <h2 className="text-center text-xl font-semibold mb-8">
-                    Discover Why Merchants Choose Cartkeeper
+                    Discover Why Merchants Choose CartKeeper
                 </h2>
 
                 <button onClick={prevSlide} className="ts-carousel-btn ts-section-left">

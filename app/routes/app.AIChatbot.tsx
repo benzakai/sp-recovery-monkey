@@ -5,8 +5,9 @@ import { isProPlanOrHigher } from '~/utils/plans';
 import { useTranslation } from 'react-i18next';
 import ChatbotSettingsSection from '~/components/AIChatbotSettings/ChatbotSettingsSection';
 import { authenticate } from '~/shopify.server';
-import { useLoaderData, useNavigate, useOutletContext } from '@remix-run/react';
+import { useLoaderData, useOutletContext } from '@remix-run/react';
 import SaveBarComponent from '~/components/SaveBarComponent';
+import BlackFridaySaleBanner from '~/components/global/BlackFridaySaleBanner';
 
 export const loader = async ({ request }: any) => {
     try {
@@ -77,7 +78,6 @@ const AIChatbot = () => {
         'Store Hours & Locations – Opening times and branches',
         'FAQs – Common questions specific to your business'
     ]
-    const navigate = useNavigate();
 
     useEffect(() => {
         const hasChanges =
@@ -261,19 +261,14 @@ const AIChatbot = () => {
         setAISettings(aiCompareSettings);
     }
 
-    const handleBannerClick = () => {
-        navigate("/app/Settings")
-    }
-
     return (
         <div className='start_page ai_personal padding_zero'>
             <Page fullWidth>
                 <div className='bulk-box top-parent-aichatbot'>
-                    <img
-                        onClick={handleBannerClick}
-                        className="cursor-pointer"
-                        src="/images/letsStartPage/topBanner.png"
-                        alt="Banner"
+                    <BlackFridaySaleBanner
+                        btnClass="saleBannerButton"
+                        className='cursor-pointer'
+                        src={"/images/letsStartPage/topBanner.png"}
                     />
                     <div className='flex flex-row gap-3 items-center mt-6 mb-4'>
                         <Text variant="headingLg" as="h5">

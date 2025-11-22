@@ -5,13 +5,14 @@ import { DateRangePicker } from '~/components/DateRangePicker'
 import SmartBulkTable from '~/components/SmartBulkTable'
 import ConfirmationModal from '~/components/ConfirmationModal';
 import { isProPlanOrHigher } from '~/utils/plans';
-import { useLoaderData, useNavigate, useOutletContext } from '@remix-run/react';
+import { useLoaderData, useOutletContext } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import PullMoreCustomer from '~/components/SmartBulk/PullMoreCustomer';
 import SaveBarComponent from '~/components/SaveBarComponent';
 import WhatsappTest from '~/components/WelcomPage/WhatsappTest';
 import { authenticate } from '~/shopify.server';
 import '../components/SmartBulk/SmartBulk.css'
+import BlackFridaySaleBanner from '~/components/global/BlackFridaySaleBanner';
 
 export const loader = async ({ request }: any) => {
     try {
@@ -61,7 +62,6 @@ export default function SmartBulk() {
     const { selectedPlanName, permissions }: any = useOutletContext()
     const [paginationDirection, setPaginationDirection] = useState('')
     const [isProUser, setIsProUser] = useState(false);
-    const navigate = useNavigate()
 
     useEffect(() => {
         const isClean = compareMessage?.header === customMessage?.header && compareMessage?.content === customMessage?.content
@@ -260,10 +260,6 @@ export default function SmartBulk() {
         setCustomMessage(compareMessage)
     }
 
-    const handleBannerClick = () => {
-        navigate("/app/Settings")
-    }
-
     return (
         <div className='start_page smart-bulk padding_zero'>
             <div className='smart-bulk-wrap'>
@@ -277,11 +273,10 @@ export default function SmartBulk() {
                                 >
                                     <div className="mb-4">
                                         <div className="banner_img">
-                                            <img
-                                                onClick={handleBannerClick}
-                                                className="long_banner_smart_page"
-                                                src="/images/letsStartPage/topBanner.png"
-                                                alt="Banner"
+                                            <BlackFridaySaleBanner
+                                                btnClass="saleBannerButton"
+                                                src={"/images/letsStartPage/topBanner.png"}
+                                                className='long_banner_smart_page'
                                             />
                                         </div>
 
@@ -359,10 +354,12 @@ export default function SmartBulk() {
                                 </div>
 
                                 <div className='mt-10 mb-10 md:mb-14 md:mt-14'>
-                                    <PullMoreCustomer
-                                        isProPlanOrHigher={isProPlanOrHigher(selectedPlanName) || isProPlanOrHigher(permissions?.manualPlan)}
-                                        t={t}
-                                    />
+                                    <Card padding='400'>
+                                        <PullMoreCustomer
+                                            isProPlanOrHigher={isProPlanOrHigher(selectedPlanName) || isProPlanOrHigher(permissions?.manualPlan)}
+                                            t={t}
+                                        />
+                                    </Card>
                                 </div>
 
                                 <div className='flex justify-between Smart_custom'>

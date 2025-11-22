@@ -1,7 +1,7 @@
 import { Icon, Select, Text } from '@shopify/polaris';
 import { useEffect, useState } from 'react';
 import '../StartPage.css';
-import { useLoaderData, useSubmit, useActionData, useNavigate, useOutletContext } from '@remix-run/react';
+import { useLoaderData, useSubmit, useActionData, useOutletContext } from '@remix-run/react';
 import { authenticate, STARTER_PLAN, PRO_PLAN, ADVANCE_PLAN, ADVANCE_PLAN_YEARLY, PRO_PLAN_YEARLY, STARTER_PLAN_YEARLY } from "../shopify.server";
 import fireStoreCreateService from '~/services/fireStoreCreateService';
 import { isProPlanOrHigher } from '~/utils/plans';
@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import PlanSection from '~/components/Settings/PlanSection';
 import SettingsSection from '~/components/Settings/SettingsSection';
 import SaveBarComponent from '~/components/SaveBarComponent';
+import BlackFridaySaleBanner from '~/components/global/BlackFridaySaleBanner';
 
 
 export const action = async ({ request }: any) => {
@@ -145,7 +146,6 @@ const Settings = () => {
         durationToSendMessageActivateButton: 'isDurationToSendMessageActivated',
         languageSelectActivateButton: 'isSelectedLanguageActivated',
     };
-    const navigate = useNavigate()
 
     useEffect(() => {
         if (!areSettingsEqual(settings, compareSettings)) {
@@ -222,7 +222,7 @@ const Settings = () => {
                         notificationStatus: new Boolean(true).toString(),
                         followUpMessage: {
                             header: "Hi [Customer’s Name]",
-                            content: "it looks like you left some items in your cart! Just a heads-up, our stock is moving fast, so grab them while you can 🎯. If you need any assistance, feel free to reach out! [link to abandon cart recovery]"
+                            content: "It looks like you left some items in your cart! Just a heads-up, our stock is moving fast, so grab them while you can 🎯. If you need any assistance, feel free to reach out! [link to abandon cart recovery]"
                         },
                         preferredLanguages: ['English'],
                         durationToSendFollowUpMessage: 'After 24 hours',
@@ -409,20 +409,11 @@ const Settings = () => {
         shopify.saveBar.hide('settings-save-bar');
     }
 
-    const handleBannerClick = () => {
-        navigate("/app/Settings")
-    }
-
     return (
         <div className="body">
             <div className='start_page'>
                 <div className='start_main_container setting-page-wrap'>
-                    <img
-                        onClick={handleBannerClick}
-                        className="long_banner_setting_page"
-                        src="/images/letsStartPage/topBanner.png"
-                        alt="Banner"
-                    />
+                    <BlackFridaySaleBanner btnClass="saleBannerButton" src={"/images/letsStartPage/topBanner.png"} className="long_banner_setting_page" />
                     <div className='flex flex-row justify-between mt-6 mb-4'>
                         <div className='settings-title'>
                             <Text variant="headingLg" as="h5">

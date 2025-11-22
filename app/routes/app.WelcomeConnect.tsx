@@ -7,9 +7,10 @@ import SaveBarComponent from '~/components/SaveBarComponent';
 import ConnectionStepSection from '~/components/WelcomPage/ConnectionStepSection';
 import WhatWeDoSection from '~/components/WelcomPage/WhatWeDoSection';
 import DashboardOverview from '~/components/WelcomPage/DashboardOverview';
-import { useLoaderData, useNavigate } from '@remix-run/react';
+import { useLoaderData } from '@remix-run/react';
 import WhatsappTest from '~/components/WelcomPage/WhatsappTest';
 import { authenticate } from '~/shopify.server';
+import BlackFridaySaleBanner from '~/components/global/BlackFridaySaleBanner';
 // import { trackLCP } from '~/utils/lcpTracker';
 
 export const loader = async ({ request }: any) => {
@@ -50,7 +51,6 @@ const WelcomeConnect = () => {
     const [isMessageLoading, setMessageLoading] = useState(true)
     const [isDisBtnLoading, setDisBtnLoading] = useState(false)
     const [isLoading, setLoading] = useState(true)
-    const navigate = useNavigate()
 
     useEffect(() => {
         const isClean = compareMessage?.header === customMessage?.header && compareMessage?.content === customMessage?.content
@@ -422,10 +422,6 @@ const WelcomeConnect = () => {
         setCustomMessage(compareMessage)
     }
 
-    const handleBannerClick = () => {
-        navigate("/app/Settings")
-    }
-
     return (
         <>
             {isLoading ? <div className="flex justify-center items-center h-full w-full">
@@ -435,12 +431,7 @@ const WelcomeConnect = () => {
 
                     <div className="lets_start_main_container dashboard_page_wrap">
                         <div className="w-full flex justify-center mb-6">
-                            <img
-                                onClick={handleBannerClick}
-                                src="/images/letsStartPage/topBanner.png"
-                                alt="Top Banner"
-                                className=" w-full md:max-w-full object-cover md:object-fill min-h-[60px] md:h-auto sm:min-h-[20px] cursor-pointer"
-                            />
+                            <BlackFridaySaleBanner btnClass="saleBannerButton" src={"/images/letsStartPage/topBanner.png"} className="cursor-pointer" />
                         </div>
                         <div>
                             <div className='text-center md:text-left'>
