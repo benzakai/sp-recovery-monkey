@@ -8,7 +8,7 @@ import ConnectionStepSection from '~/components/WelcomPage/ConnectionStepSection
 import WhatWeDoSection from '~/components/WelcomPage/WhatWeDoSection';
 import DashboardOverview from '~/components/WelcomPage/DashboardOverview';
 import { useLoaderData } from '@remix-run/react';
-import WhatsappTest from '~/components/WelcomPage/WhatsappTest';
+import WhatsappTest from '~/components/WelcomPage/WhatsappTest/WhatsappTest';
 import { authenticate } from '~/shopify.server';
 import BlackFridaySaleBanner from '~/components/global/BlackFridaySaleBanner';
 // import { trackLCP } from '~/utils/lcpTracker';

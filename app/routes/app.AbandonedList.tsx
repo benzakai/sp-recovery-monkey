@@ -5,6 +5,9 @@ import { Card, DataTable, Text, Select, Spinner } from '@shopify/polaris';
 import { useTranslation } from 'react-i18next';
 import { DateRangePicker } from '~/components/DateRangePicker';
 import BlackFridaySaleBanner from '~/components/global/BlackFridaySaleBanner';
+import Tooltip from '~/components/global/Tooltip/Tooltip';
+import '../components/AbandonedList/AbandonedList.css'
+import EmptyCart from '~/components/AbandonedList/SVGs/EmptyCart';
 
 export default function NewAbandonedList() {
     const { t } = useTranslation();
@@ -98,8 +101,6 @@ export default function NewAbandonedList() {
         { label: t("smartBulk.200perPageLabel"), value: '250' }
     ];
 
-
-
     return (
         <div className="body">
             <div className='start_page padding_zero'>
@@ -118,9 +119,16 @@ export default function NewAbandonedList() {
                             </Text>
                         </div>
                         <div className='md:flex md:justify-between'>
-                            <p className='text-[13px] md:text-left mt-[6px]'>
-                                {t("abandonedList.latestCartRecovery")}
-                            </p>
+                            <div className='flex flex-wrap gap-2 items-center'>
+                                <p className='text-[13px] md:text-left mt-[6px]'>
+                                    {t("abandonedList.latestCartRecovery")}
+                                </p>
+                                <Tooltip className="mt-[6px]">
+                                    <div>
+                                        The list displays carts that received an automated recovery message successfully sent to the customer via WhatsApp.
+                                    </div>
+                                </Tooltip>
+                            </div>
                             <div className="flex justify-end items-end gap-4 flex-wrap mt-4 md:mt-0">
                                 <Select
                                     label={t("smartBulk.show")}
@@ -166,8 +174,31 @@ export default function NewAbandonedList() {
                                             </div>
                                         </div>
                                     </Card>
+                                ) : checkouts.length === 0 ? (
+                                    <Card padding={{ xs: '400', sm: '400' }}>
+                                        <div className="abandoned_list_empty_state">
+                                            <div className="empty_state_content">
+                                                <EmptyCart
+                                                    width={"110"} height={"110"}
+                                                />
+                                                <Text variant="headingLg" as="h5" alignment='center'>
+                                                    Your list is currently empty
+                                                </Text>
+                                                <div className="empty_state_description">
+                                                    <Text as="p" variant="bodyMd" alignment="center">
+                                                        Abandoned carts will appear here once the
+                                                    </Text>
+                                                    <Text as="p" variant="bodyMd" alignment="center">
+                                                        automated recovery message is successfully
+                                                    </Text>
+                                                    <Text as="p" variant="bodyMd" alignment="center">
+                                                        sent to the customer via WhatsApp.
+                                                    </Text>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Card>
                                 ) : (
-
                                     <Card padding={{ xs: '190', sm: '190' }}>
                                         <DataTable
                                             columnContentTypes={['text', 'text', 'text']}
@@ -189,7 +220,6 @@ export default function NewAbandonedList() {
                                 )}
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>

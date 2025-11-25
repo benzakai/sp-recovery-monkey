@@ -9,7 +9,7 @@ import { useLoaderData, useOutletContext } from '@remix-run/react';
 import { useTranslation } from 'react-i18next';
 import PullMoreCustomer from '~/components/SmartBulk/PullMoreCustomer';
 import SaveBarComponent from '~/components/SaveBarComponent';
-import WhatsappTest from '~/components/WelcomPage/WhatsappTest';
+import WhatsappTest from '~/components/WelcomPage/WhatsappTest/WhatsappTest';
 import { authenticate } from '~/shopify.server';
 import '../components/SmartBulk/SmartBulk.css'
 import BlackFridaySaleBanner from '~/components/global/BlackFridaySaleBanner';
