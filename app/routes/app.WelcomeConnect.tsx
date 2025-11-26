@@ -11,6 +11,7 @@ import { useLoaderData } from '@remix-run/react';
 import WhatsappTest from '~/components/WelcomPage/WhatsappTest/WhatsappTest';
 import { authenticate } from '~/shopify.server';
 import BlackFridaySaleBanner from '~/components/global/BlackFridaySaleBanner';
+import { manageOnboarding } from '~/lib/onboarding/common';
 // import { trackLCP } from '~/utils/lcpTracker';
 
 export const loader = async ({ request }: any) => {
@@ -249,6 +250,7 @@ const WelcomeConnect = () => {
                     updateGreenApiInstanceStatus('notAuthorized');
                 } else if (data.qrData?.type === 'alreadyLogged') {
                     updateGreenApiInstanceStatus('authorized');
+                    manageOnboarding({ data: { step1: { connectWhatsapp: true } }, shop });
                     savePubSubAndDBData({ url, id, token })
                 }
             }
@@ -401,6 +403,7 @@ const WelcomeConnect = () => {
                 });
                 const data = await response.json();
                 setCompareMessage(customMessage)
+                manageOnboarding({ data: { step1: { editMessage: true } }, shop });
             }
         } catch (error) {
             console.log("error occured on handleSaveMessage", error);

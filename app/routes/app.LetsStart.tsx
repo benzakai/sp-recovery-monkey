@@ -5,7 +5,7 @@ import { authenticate } from "../shopify.server";
 import fireStoreCreateService from '~/services/fireStoreCreateService';
 import { useTranslation } from 'react-i18next';
 import PlanSection from '~/components/Settings/PlanSection';
-import Testimonials from '~/components/LetsStartPage/Testimonials';
+import Testimonials from '~/components/HomePage/Testimonials/Testimonials';
 import BlackFridaySaleBanner from '~/components/global/BlackFridaySaleBanner';
 
 export const action = async ({ request }: any) => {

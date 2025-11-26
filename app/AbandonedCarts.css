@@ -195,9 +195,9 @@
 .Polaris-DataTable * {
     color: #000;
 }
-span.Polaris-Text--root.Polaris-Text--bodySm{
+/* span.Polaris-Text--root.Polaris-Text--bodySm{
     color: #898F93;
-}
+} */
 .text-wrap, p.text-\[13px\].text-wrap{
     max-width: 75%;
     padding-bottom: 5px;

@@ -4,6 +4,7 @@ import {
 } from '@shopify/polaris-icons';
 import { useEffect, useState } from 'react';
 import Tooltip from '~/components/global/Tooltip/Tooltip';
+import { manageOnboarding } from '~/lib/onboarding/common';
 
 function isValidPhoneNumber(number: any) {
     const regex = /^\+\d{1,3}\d{6,14}$/;
@@ -115,7 +116,7 @@ export default function WhatsappTest({ shop }: any) {
                 setSendButtonDisabled(false);
                 return;
             }
-
+            manageOnboarding({ data: { step1: { sendTestMessage: true } }, shop });
             setTestCount((p) => p + 1);
             localStorage.setItem(`whatsappTest_${shop}`, JSON.stringify({ lastTestTime: Date.now() }));
             setNotification({ message: 'Test message sent! You’ll receive it on WhatsApp shortly.', type: 'success' });

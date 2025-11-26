@@ -19,7 +19,8 @@ export default function ChatbotSettingsSection({
     selectedPlanName,
     activateButtons,
     permissions,
-    handleChatExtensionActivateButton
+    handleChatExtensionActivateButton,
+    aiWidgetData
 }: any) {
     const [topicSearchValue, setTopicSearchValue] = useState('');
 
@@ -54,12 +55,14 @@ export default function ChatbotSettingsSection({
                                     children={
                                         <></>
                                     }
+                                    isActivateButtonLoading={aiWidgetData.loading}
                                     availableOn={"Pro"}
+                                    isActivated={aiWidgetData.enabled}
                                     title={"Enable AI chat widget on your store"}
                                     description={"Click to activate the AI chat widget on your store. This allows customers to chat with AI assistant directly from your website."}
                                     handleActivateButton={handleChatExtensionActivateButton}
                                     buttonType={"chatExtensionActivateButton"}
-                                    activateButtonTitle={"Activate AI chat widget"}
+                                    activateButtonTitle={aiWidgetData.enabled ? "Deactivate AI chat widget" : "Activate AI chat widget"}
                                     isActivateButtonDisabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan))}
                                 />
                             )}

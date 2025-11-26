@@ -147,7 +147,7 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
                                     )}
                                 </div>
 
-                                <div className={(pageType !== "settings" && plan.key === "Free") ? 'mt-16 pt-3' : 'mt-8'}>
+                                <div className={(pageType !== "settings" && plan.key === "Free") ? 'mt-14 ' : 'mt-6'}>
                                     {((pageType === "settings" && plan.key === "Free") ? false : true) && (
                                         <div className="start_plan_button_section">
                                             {loadingPage ? (

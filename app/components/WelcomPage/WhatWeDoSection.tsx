@@ -1,9 +1,12 @@
-import { Pagination, Text } from '@shopify/polaris'
+import { Pagination, Text, Button } from '@shopify/polaris'
+import { XIcon } from '@shopify/polaris-icons';
 import React, { useEffect, useState } from 'react'
 
 export default function WhatWeDoSection() {
     const [imagesLoaded, setImagesLoaded] = useState(false);
     const [current, setCurrent] = useState(0);
+    const [hidden, setHidden] = useState(false);
+
     const slides = [
         {
             id: 1,
@@ -21,6 +24,18 @@ export default function WhatWeDoSection() {
             caption: "Boost conversions with personalized recommendations"
         }
     ];
+
+    useEffect(() => {
+        const stored = localStorage.getItem("whatWeDoHidden");
+        if (stored === "true") {
+            setHidden(true);
+        }
+    }, []);
+
+    const handleHide = () => {
+        setHidden(true);
+        localStorage.setItem("whatWeDoHidden", "true");
+    };
 
     useEffect(() => {
         const loadImages = async () => {
@@ -47,6 +62,8 @@ export default function WhatWeDoSection() {
         setCurrent((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
     };
 
+    if (hidden) return null;
+
     return (
         <div className='mt-6 px-4 md:px-0'>
             <div className='mb-4 text-center md:text-left'>
@@ -59,14 +76,31 @@ export default function WhatWeDoSection() {
                     {slides[current].caption}
                 </p>
             </div>
+
             <div className={`mt-4 ${imagesLoaded ? 'loaded' : 'not_loaded'}`}>
                 <div className="flex justify-center">
                     {imagesLoaded ? (
-                        <img
-                            src={slides[current].img}
-                            alt="Feature"
-                            className=""
-                        />
+                        <div style={{ position: 'relative', display: 'inline-block' }}>
+                            <div style={{
+                                position: 'absolute',
+                                top: '-30px',
+                                right: '0px',
+                                zIndex: 10,
+                            }}>
+                                <Button
+                                    variant="plain"
+                                    onClick={handleHide}
+                                    icon={XIcon}
+                                    accessibilityLabel="Hide section"
+                                />
+                            </div>
+
+                            <img
+                                src={slides[current].img}
+                                alt="Feature"
+                                style={{ display: 'block', maxWidth: '100%' }}
+                            />
+                        </div>
                     ) : (
                         <div className="image-placeholder h-48 md:h-64 flex items-center justify-center w-full">
                             <Text as="p" variant="bodyMd">

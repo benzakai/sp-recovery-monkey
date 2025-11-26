@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import Euploria from "./SVGs/Euploria";
-import GreenMuse from "./SVGs/GreenMuse";
-import Kraftathlet from "./SVGs/Kraftathlet";
-import "./letsStartPage.css";
-import Klkl from './SVGs/Klkl';
+import Euploria from "../../LetsStartPage/SVGs/Euploria";
+import GreenMuse from "../../LetsStartPage/SVGs/GreenMuse";
+import Kraftathlet from "../../LetsStartPage/SVGs/Kraftathlet";
+import "./Testimonials.css";
+import Klkl from '../../LetsStartPage/SVGs/Klkl';
 
 export default function Testimonials() {
     const [current, setCurrent] = useState(0);
@@ -59,9 +59,9 @@ export default function Testimonials() {
     };
 
     return (
-        <div className="mt-20 flex justify-center">
+        <div className="mt-8 sm:mt-10 md:mt-16 flex justify-center">
             <div className="w-full md:px-6 relative">
-                <h2 className="text-center text-xl font-semibold mb-8">
+                <h2 className="text-center text-xl font-semibold mb-8 test-heading">
                     Discover Why Merchants Choose CartKeeper
                 </h2>
 

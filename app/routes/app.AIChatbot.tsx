@@ -8,6 +8,7 @@ import { authenticate } from '~/shopify.server';
 import { useLoaderData, useOutletContext } from '@remix-run/react';
 import SaveBarComponent from '~/components/SaveBarComponent';
 import BlackFridaySaleBanner from '~/components/global/BlackFridaySaleBanner';
+import { manageOnboarding } from '~/lib/onboarding/common';
 
 export const loader = async ({ request }: any) => {
     try {
@@ -31,7 +32,8 @@ export const loader = async ({ request }: any) => {
         return {
             shopName: session.shop.replace(/\.myshopify\.com$/, ''),
             themeEditorId,
-            EXTENSTION_ID
+            EXTENSTION_ID,
+            shop: session.shop
         };
     } catch (error) {
         console.error("Error in AIChatbot loader:", error);
@@ -41,7 +43,7 @@ export const loader = async ({ request }: any) => {
 
 const AIChatbot = () => {
     const { t } = useTranslation()
-    const { shopName, themeEditorId, EXTENSTION_ID }: any = useLoaderData();
+    const { shopName, themeEditorId, EXTENSTION_ID, shop }: any = useLoaderData();
     const [isSettingsLoading, setSettingsLoading] = useState(true);
     const [aiSettings, setAISettings] = useState({
         isWhatsappAssistantTurnedOn: true,
@@ -66,6 +68,10 @@ const AIChatbot = () => {
         whatsappAssistantTurnedOnButton: 'isWhatsappAssistantTurnedOn',
         useEmojisTurnedOnButton: 'isUseEmojisTurnedOn',
     };
+    const [aiWidgetData, setAIWidgetData] = useState({
+        loading: true,
+        enabled: false
+    });
     const [activateButtonActionType, setActivateButtonActionType] = useState<string | null>(null);
     const topics = [
         'All training topics',
@@ -130,8 +136,23 @@ const AIChatbot = () => {
             console.log("error on fetchSettings", error);
         } finally {
             setSettingsLoading(false)
+            checkEmbedDisabled()
         }
     };
+
+    const checkEmbedDisabled = async () => {
+        try {
+            const response = await fetch('/api/getEmbedStatus');
+            const res = await response.json();
+            const resEmbedEnabled = !res.embedDisabled
+            setAIWidgetData({
+                loading: false,
+                enabled: resEmbedEnabled
+            });
+        } catch (error) {
+            console.log("error occured on checkEmbedDisabled", error);
+        }
+    }
 
     const getFireData = async () => {
         const settingsData = await fetchAISettings()
@@ -205,10 +226,18 @@ const AIChatbot = () => {
 
             const responsedata = await response.json();
             if (responsedata.success) {
+                const toneJustChanged =
+                    toneOfVoice !== aiCompareSettings.toneOfVoice;
                 setAICompareSettings(aiSettings)
                 const topicNames = ["AIChatbotSettings"]
                 sendPubSubData(settingsData, topicNames)
                 shopify.toast.show("AI Chatbot Settings saved successfully")
+                if (toneJustChanged) {
+                    await manageOnboarding({
+                        data: { step2: { chooseTone: true } },
+                        shop,
+                    });
+                }
                 return { success: true }
             } else {
                 shopify.toast.show("AI Chatbot Settings failed to save")
@@ -230,6 +259,7 @@ const AIChatbot = () => {
         }
         await handleSaveSettings({ ...aiSettings, syncRequest: "requested", lastSyncDate: "" });
         await sendPubSubData(data, topicNames)
+        manageOnboarding({ data: { step2: { startSync: true } }, shop });
         setLoading((p: any) => ({ ...p, syncing: false }))
         shopify.toast.show("Syncing has been started successfully")
     }
@@ -292,6 +322,7 @@ const AIChatbot = () => {
                             isProPlanOrHigher={isProPlanOrHigher}
                             selectedPlanName={selectedPlanName}
                             permissions={permissions}
+                            aiWidgetData={aiWidgetData}
                         />
                     </div>
                 </div>

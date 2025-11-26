@@ -1,0 +1,95 @@
+.custom-step-icon {
+    width: 18px;
+    height: 18px;
+    border: 2px dashed #8c9196;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.progress_bar {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.progress_txt {
+    width: 20%;
+}
+
+.step-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 4px 16px;
+    /* width: 100%; */
+}
+
+.current-step-row {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.action-btn {
+    padding: 4px 16px;
+}
+
+.accordion-trigger {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid #e5e7eb;
+    background-color: #f7f7f7;
+}
+
+.accordion-trigger:hover {
+    background-color: var(--p-color-bg-surface-hover);
+}
+
+.cart-head,
+h2 {
+    color: #000;
+}
+
+.subhead,
+.acc_ttl {
+    color: #000;
+}
+
+button#nextURL,
+button#previousURL {
+    background-color: #fff;
+}
+
+.Polaris-ButtonGroup__Item {
+    padding-left: 2px;
+}
+
+.step-done-icon {
+    width: 18px;
+    height: 18px;
+    background: #303030;
+    border-radius: 50%;
+    color: white;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 989px) {
+    .progress_txt {
+        width: 29%;
+    }
+}
+
+@media (max-width: 767px) {
+    .progress_bar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .progress_txt {
+        width: 100%;
+        padding-bottom: 5px;
+    }
+}

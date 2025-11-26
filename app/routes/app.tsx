@@ -44,7 +44,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
   const data = await response.json();
   // console.log(`data.data.currentAppInstallation.activeSubscriptions============>`, data.data.currentAppInstallation);
-  console.log("last updated loader app.tsx on oct-28-2025");
   // to check if user is on free plan
   const doc = await fireStoreFetchService("subscriptions", session.shop);
   // console.log("doc", doc);
@@ -155,7 +154,9 @@ export default function App() {
       <NavMenu>
         <Link to="/app" rel="home">{t("home.title")}</Link>
         {(anySubscription === "loading") ? (<></>) : (!anySubscription) ? (
-          <Link to="/app/LetsStart">{t("letsStart.title")}</Link>
+          <>
+            {/* <Link to="/app/LetsStart">{t("letsStart.title")}</Link> */}
+          </>
         ) : (
           <>
             <Link to="/app/WelcomeConnect">{t("welcome.dashboard")}</Link>
