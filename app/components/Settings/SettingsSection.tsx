@@ -33,7 +33,7 @@ export default function SettingsSection({
     return (
         <div className='setting-block'>
             <div className='settings_secion-1 setting_right_cart'>
-                
+
                 <BlockStack gap="400">
                     <Card roundedAbove="sm">
                         {isSettingsLoading ? (
@@ -66,7 +66,7 @@ export default function SettingsSection({
                     <Card roundedAbove="sm">
                         {isSettingsLoading ? (
                             <SkeletonLoading
-                            
+
                                 secondLines={4}
                             />
                         ) : (
@@ -92,7 +92,7 @@ export default function SettingsSection({
                                 availableOn={"Pro"}
                                 activateButtonTitle={settings.isSelectedLanguageActivated ? t("settings.deactivate") : t("settings.activate")}
                                 isActivateButtonLoading={loading.activeButton === "languageSelectActivateButton"}
-                                isActivateButtonDisabled={loading.activeButton}
+                                isActivateButtonDisabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
                                 handleActivateButton={handleActivateButton}
                                 buttonType={"languageSelectActivateButton"}
                                 isActivated={settings.isSelectedLanguageActivated}
@@ -165,7 +165,7 @@ export default function SettingsSection({
                                 availableOn={"Pro"}
                                 activateButtonTitle={settings.isDurationToSendFollowUpMessageActivated ? t("settings.deactivate") : t("settings.activate")}
                                 isActivateButtonLoading={loading.activeButton === "followUpMessageActivateButton"}
-                                isActivateButtonDisabled={loading.activeButton}
+                                isActivateButtonDisabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
                                 handleActivateButton={handleActivateButton}
                                 buttonType={"followUpMessageActivateButton"}
                                 isActivated={settings.isDurationToSendFollowUpMessageActivated}
@@ -180,6 +180,7 @@ export default function SettingsSection({
                                         <Select
                                             options={followUpMessageDuration}
                                             label=""
+                                            disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
                                             onChange={(v) => {
                                                 setSettings({ ...settings, durationToSendFollowUpMessage: v })
                                             }}

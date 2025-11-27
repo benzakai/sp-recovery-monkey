@@ -250,25 +250,46 @@ const Settings = () => {
         const settingsData = await fetchSettings()
         // console.log("settingsData", settingsData);
         if (settingsData) {
-            setSettings((prevSettings: any) => ({
-                ...prevSettings,
-                ...settingsData,
-                selectedLanguage: prevSettings?.selectedLanguage,
-                followUpMessage: {
-                    ...prevSettings.followUpMessage,
-                    ...settingsData?.followUpMessage,
+            const mergedSettings = (prev: any) => {
+                const updated = {
+                    ...prev,
+                    ...settingsData,
+                    selectedLanguage: prev.selectedLanguage,
+                    followUpMessage: {
+                        ...prev.followUpMessage,
+                        ...settingsData?.followUpMessage,
+                    }
+                };
+
+                const isDowngraded =
+                    !isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)
+                if (isDowngraded) {
+                    updated.isSelectedLanguageActivated = false;
+                    updated.isDurationToSendFollowUpMessageActivated = false;
                 }
-            }));
-            setCompareSettings((prevSettings: any) => ({
-                ...prevSettings,
-                ...settingsData,
-                selectedLanguage: prevSettings?.selectedLanguage,
-                followUpMessage: {
-                    ...prevSettings.followUpMessage,
-                    ...settingsData?.followUpMessage,
-                }
-            }));
+
+                return updated;
+            };
+
+            setSettings((prev: any) => mergedSettings(prev));
+            setCompareSettings((prev: any) => mergedSettings(prev));
+
+            const mustDisable =
+                !isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)
+
+            if (
+                mustDisable &&
+                (settingsData?.isSelectedLanguageActivated ||
+                    settingsData?.isDurationToSendFollowUpMessageActivated)
+            ) {
+                handleSaveSettings({
+                    ...settingsData,
+                    isSelectedLanguageActivated: false,
+                    isDurationToSendFollowUpMessageActivated: false
+                });
+            }
         }
+
         if (Object.keys(subscriptionData).length === 0) {
             setPlanName('NO_PLAN');
         } else {
@@ -339,7 +360,7 @@ const Settings = () => {
             const responsedata = await response.json();
             if (responsedata.success) {
                 sendPubSubData(settingsData)
-                setCompareSettings(settings)
+                setCompareSettings({ ...settings, isDurationToSendMessageActivated, isDurationToSendFollowUpMessageActivated, isSelectedLanguageActivated })
                 shopify.toast.show(t("global.toastMessage.successSettingsSaved"))
                 return { success: true }
             } else {

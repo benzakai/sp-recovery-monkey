@@ -1,7 +1,7 @@
 .whatsapp-tooltip {
     position: absolute;
     z-index: 50;
-    min-width: 300px;
+    min-width: 350px;
     padding: 8px 12px;
     background: white;
     border: 1px solid rgba(0, 0, 0, 0.08);
@@ -16,7 +16,7 @@
 
     white-space: normal;
     font-size: 13px;
-    line-height: 1.4;
+    line-height: 1;
 }
 
 .whatsapp-tooltip-content {
