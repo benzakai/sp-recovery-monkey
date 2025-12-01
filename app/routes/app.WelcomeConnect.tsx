@@ -248,6 +248,7 @@ const WelcomeConnect = () => {
                 if (data.qrData?.type === 'qrCode') {
                     setQRCode(`data:image/png;base64,${data.qrData.message}`);
                     updateGreenApiInstanceStatus('notAuthorized');
+                    manageOnboarding({ data: { step1: { connectWhatsapp: false } }, shop });
                 } else if (data.qrData?.type === 'alreadyLogged') {
                     updateGreenApiInstanceStatus('authorized');
                     manageOnboarding({ data: { step1: { connectWhatsapp: true } }, shop });

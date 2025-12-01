@@ -10,6 +10,7 @@ import db from '../db.server';
 import WelcomePage from '~/components/HomePage/WelcomePage/WelcomePage';
 import Testimonials from '~/components/HomePage/Testimonials/Testimonials';
 import GettingStartedSection from '~/components/HomePage/GettingStartedSection/GettingStartedSection';
+import { manageOnboarding } from '~/lib/onboarding/common';
 
 
 export const action = async ({ request }: any) => {
@@ -107,6 +108,10 @@ export default function Index() {
       }
     }
   }, [actionData])
+
+  useEffect(() => {
+    manageOnboarding({ data: {} });
+  }, [])
 
   const handlePlanSelect = (planName: any) => {
     setLoadingPlanButton(planName)
