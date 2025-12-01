@@ -74,10 +74,10 @@ export default function WelcomePage({
                     <div className='flex flex-row justify-between mb-6'>
                         <div>
                             <Text variant="headingLg" as="h5">
-                                {"Hi, Welcome to CartKeeper"}
+                                {t("homePostPayment.title")}
                             </Text>
                             <p className="text-[13px]  mt-[6px]">
-                                {"Let’s recover some carts!"}
+                                {t("homePostPayment.subTitle")}
                             </p>
                         </div>
                         <Select
@@ -87,7 +87,8 @@ export default function WelcomePage({
                             value={selectedLanguage}
                         />
                     </div>
-                    <OnboardingSteps 
+                    <OnboardingSteps
+                        t={t}
                         shop={shop}
                     />
                     {/* <div className="w-full flex justify-center mb-6">
@@ -95,7 +96,7 @@ export default function WelcomePage({
                             </div> */}
 
                     <div>
-                        <WhatWeDoSection />
+                        <WhatWeDoSection t={t} />
                     </div>
                 </div>
             </div >

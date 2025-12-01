@@ -2,7 +2,7 @@ import { Pagination, Text, Button } from '@shopify/polaris'
 import { XIcon } from '@shopify/polaris-icons';
 import React, { useEffect, useState } from 'react'
 
-export default function WhatWeDoSection() {
+export default function WhatWeDoSection({ t }: any) {
     const [imagesLoaded, setImagesLoaded] = useState(false);
     const [current, setCurrent] = useState(0);
     const [hidden, setHidden] = useState(false);
@@ -11,17 +11,17 @@ export default function WhatWeDoSection() {
         {
             id: 1,
             img: "/images/homePage/CartRecovery.webp",
-            caption: "Boost sales by recovering carts through WhatsApp"
+            caption: (t("homePostPayment.whatWeDo.boostSales"))
         },
         {
             id: 2,
             img: "/images/homePage/AIPersonalAssistant.webp",
-            caption: "Turn browsing into buying with your AI shopping assistant"
+            caption: (t("homePostPayment.whatWeDo.turnIntoBuying"))
         },
         {
             id: 3,
             img: "/images/homePage/RealRevenue.webp",
-            caption: "Boost conversions with personalized recommendations"
+            caption: (t("homePostPayment.whatWeDo.boostConversions"))
         }
     ];
 
@@ -68,7 +68,7 @@ export default function WhatWeDoSection() {
         <div className='mt-6 px-4 md:px-0'>
             <div className='mb-4 text-center md:text-left'>
                 <p className="text-[13px] font-semibold">
-                    Here's What We Do
+                    {t("homePostPayment.whatWeDo.title")}
                 </p>
             </div>
             <div className='text-center md:text-left'>
@@ -104,7 +104,7 @@ export default function WhatWeDoSection() {
                     ) : (
                         <div className="image-placeholder h-48 md:h-64 flex items-center justify-center w-full">
                             <Text as="p" variant="bodyMd">
-                                Loading images...
+                                {t("homePostPayment.whatWeDo.loading")}
                             </Text>
                         </div>
                     )}

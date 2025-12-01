@@ -231,7 +231,7 @@ const AIChatbot = () => {
                 setAICompareSettings(aiSettings)
                 const topicNames = ["AIChatbotSettings"]
                 sendPubSubData(settingsData, topicNames)
-                shopify.toast.show("AI Chatbot Settings saved successfully")
+                shopify.toast.show(t("global.toastMessage.aiChatbotSettingsSaved"));
                 if (toneJustChanged) {
                     await manageOnboarding({
                         data: { step2: { chooseTone: true } },
@@ -240,7 +240,7 @@ const AIChatbot = () => {
                 }
                 return { success: true }
             } else {
-                shopify.toast.show("AI Chatbot Settings failed to save")
+                shopify.toast.show(t("global.toastMessage.aiChatbotSettingsFailed"))
                 return { success: false };
             }
         } catch (error) {
@@ -261,7 +261,7 @@ const AIChatbot = () => {
         await sendPubSubData(data, topicNames)
         manageOnboarding({ data: { step2: { startSync: true } }, shop });
         setLoading((p: any) => ({ ...p, syncing: false }))
-        shopify.toast.show("Syncing has been started successfully")
+        shopify.toast.show(t("global.toastMessage.aiChatbotSyncingStarted"))
     }
 
     // const handleActivateButton = async (buttonType: string) => {
@@ -277,7 +277,7 @@ const AIChatbot = () => {
 
     const handleChatExtensionActivateButton = async () => {
         if (!aiSettings.isWhatsappAssistantTurnedOn) {
-            shopify.toast.show("Please turn on the WhatsApp Assistant before activating the chat extension.");
+            shopify.toast.show(t("global.toastMessage.turnOnWhatsAppAssistant"));
             return;
         }
         // console.log("shopName", shopName);
@@ -302,10 +302,10 @@ const AIChatbot = () => {
                     />
                     <div className='flex flex-row gap-3 items-center mt-6 mb-4'>
                         <Text variant="headingLg" as="h5">
-                            AI Personal Assistant
+                            {t("aiSettings.title")}
                         </Text>
                         <div>
-                            <Badge tone='info' >Pro</Badge>
+                            <Badge tone='info' >{t("settings.planName3")}</Badge>
                         </div>
                     </div>
                     <div>
@@ -332,7 +332,7 @@ const AIChatbot = () => {
                 isLoading={isSaveButtonLoading}
                 onDiscard={handleDiscardChanges}
                 saveText={t("settings.messageBoxSaveButton")}
-                discardText="Discard"
+                discardText={t("settings.discard")}
                 variant="primary"
                 id="ai-settings-save-bar"
             />

@@ -5,29 +5,29 @@ import Kraftathlet from "../../LetsStartPage/SVGs/Kraftathlet";
 import "./Testimonials.css";
 import Klkl from '../../LetsStartPage/SVGs/Klkl';
 
-export default function Testimonials() {
+export default function Testimonials({ t }: any) {
     const [current, setCurrent] = useState(0);
     const [selectedTestimonial, setSelectedTestimonial] = useState<any>(null);
 
     const testimonials = [
         {
             id: 1,
-            content: "“Great app, basically plug and play and worked from day 1, devs are quick to respond to questions, highly recommend!”",
-            fullContent: "“Great app, basically plug and play and worked from day 1, devs are quick to respond to questions, highly recommend!”",
+            content: t("homePrePayment.testimonials.content1"),
+            fullContent: t("homePrePayment.testimonials.fullContent1"),
             company: "Euploria",
             component: <Euploria />
         },
         {
             id: 2,
-            content: "“There is no way to fully describe how much I do recommend to anyone to use this app. Efficient, fast, targeting th...",
-            fullContent: "“There is no way to fully describe how much I do recommend to anyone to use this app. Efficient, fast, targeting the intention of buying. App allows you to have a custom message so you can add special code and info over the order. Messages are sent directly into WhatsApp chat without any kind of interaction besides than the scope of the app: generate a sell. The team is always supporting for help directly in WhatsApp (ofc!) which makes it fast and easy. I repeat one point which I think makes Cartkeeper special: it trigger the intention of buying, not the abandoned cart. Super recommended!”",
+            content: t("homePrePayment.testimonials.content2"),
+            fullContent: t("homePrePayment.testimonials.fullContent2"),
             company: "The Green Muse CBD",
             component: <GreenMuse />
         },
         {
             id: 3,
-            content: "“I started using Cartkeeper, had a few issues and the support team ALWAYS responded extremely fast and sol...",
-            fullContent: "“I started using CartKeeper, had a few issues and the support team ALWAYS responded extremely fast and solved my queries fast and efficiently! If I would to choose between any other app out there I would choose CartKeeper. Amazing team and amazing value this app brings. Weiter so!”",
+            content: t("homePrePayment.testimonials.content3"),
+            fullContent: t("homePrePayment.testimonials.fullContent3"),
             company: "Kraftathlet",
             component: <Kraftathlet />
         },
@@ -62,7 +62,7 @@ export default function Testimonials() {
         <div className="mt-8 sm:mt-10 md:mt-16 flex justify-center">
             <div className="w-full md:px-6 relative">
                 <h2 className="text-center text-xl font-semibold mb-8 test-heading">
-                    Discover Why Merchants Choose CartKeeper
+                    {t("homePrePayment.testimonials.title")}
                 </h2>
 
                 <button onClick={prevSlide} className="ts-carousel-btn ts-section-left">

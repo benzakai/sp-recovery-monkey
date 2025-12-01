@@ -8,32 +8,32 @@ import Calendar from './SVG/Calendar'
 import Youtube from './SVG/Youtube'
 import Chat from './SVG/Chat'
 
-export default function GettingStartedSection() {
+export default function GettingStartedSection({ t }: any) {
 
     const startCartkeeperValues = [
         {
             id: "dashboard",
             icon: <Dashboard />,
-            title: "Dashboard",
-            description: "Track your recovered carts and revenue"
+            title: t("homePrePayment.gettingStarted.dashboard"),
+            description: t("homePrePayment.gettingStarted.dashboardDescription")
         },
         {
             id: "customerList",
             icon: <CustomerList />,
-            title: "Customer List",
-            description: "View your CartKeeper purchases"
+            title: t("homePrePayment.gettingStarted.customerList"),
+            description: t("homePrePayment.gettingStarted.customerListDescription")
         },
         {
             id: "bulkCampaign",
             icon: <BulkCampaign />,
-            title: "Bulk Campaign",
-            description: "Message all your store customers"
+            title: t("homePrePayment.gettingStarted.bulkCampaign"),
+            description: t("homePrePayment.gettingStarted.bulkCampaignDescription")
         },
         {
             id: "aiChatbot",
             icon: <AIChatbot />,
-            title: "AI Chatbot",
-            description: "Engage customers and boost sales"
+            title: t("homePrePayment.gettingStarted.aiChatbot"),
+            description: t("homePrePayment.gettingStarted.aiChatbotDescription")
         }
     ]
 
@@ -41,26 +41,26 @@ export default function GettingStartedSection() {
         {
             id: "chat",
             icon: <Chat />,
-            title: "WhatsApp Chat",
-            description: "Talk to us directly via WhatsApp chat to get help with your question.",
-            linkText: "Message us on WhatsApp",
+            title: t("homePrePayment.gettingStarted.whatsappChat"),
+            description: t("homePrePayment.gettingStarted.whatsappChatDescription"),
+            linkText: t("homePrePayment.gettingStarted.whatsappLinkText"),
             link: "https://api.whatsapp.com/send/?phone=972555081948&text=Hi%0AI+have+a+quick+question+about+the+app&type=phone_number&app_absent=0"
         },
         {
 
             id: "calendar",
             icon: <Calendar />,
-            title: "Book a Demo",
-            description: "Book a free demo with our support team for setup assistance.",
-            linkText: "Book a demo",
+            title: t("homePrePayment.gettingStarted.bookADemo"),
+            description: t("homePrePayment.gettingStarted.bookADemoDescription"),
+            linkText: t("homePrePayment.gettingStarted.bookADemoLinkText"),
             link: "https://calendly.com/menachem-cartkeeper/30min?_kx=DhrmYr-6_f_hMfCG6iSw83YN_fWNYGyEpn5MNzkfmZg.WSxRdN"
         },
         {
             id: "youtube",
             icon: <Youtube />,
-            title: "Video Tutorial",
-            description: "Watch video tutorial for connecting CartKeeper to WhatsApp.",
-            linkText: "Watch tutorial",
+            title: t("homePrePayment.gettingStarted.videoTutorial"),
+            description: t("homePrePayment.gettingStarted.videoTutorialDescription"),
+            linkText: t("homePrePayment.gettingStarted.videoTutorialLinkText"),
             link: "https://www.youtube.com/shorts/f3Z_M0B8Nqo"
         },
     ]
@@ -70,12 +70,12 @@ export default function GettingStartedSection() {
     return (
         <div className='mt-8 sm:mt-10 md:mt-16'>
             <Text variant="headingLg" as="h5">
-                {"Let's recover some carts"}
+                {t("homePrePayment.gettingStarted.title")}
             </Text>
             <div className='mb-4'></div>
             <Card padding='400'>
                 <p className="text-[13px] font-semibold">
-                    {"How to start with CartKeeper?"}
+                    {t("homePrePayment.gettingStarted.subTitle")}
                 </p>
                 <div className='flex flex-row gap-3 mt-4 w-full cartKeeper'>
                     {
@@ -104,7 +104,7 @@ export default function GettingStartedSection() {
 
             <Card padding='400'>
                 <p className="text-[13px] font-semibold">
-                    {"We're Here For You"}
+                    {t("homePrePayment.gettingStarted.weAreHereForYou")}
                 </p>
 
                 <div className='flex flex-row  gap-6 mt-4 w-full social-card'>

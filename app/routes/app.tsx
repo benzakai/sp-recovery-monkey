@@ -159,11 +159,11 @@ export default function App() {
           </>
         ) : (
           <>
-            <Link to="/app/WelcomeConnect">{t("welcome.dashboard")}</Link>
+            <Link to="/app/WelcomeConnect">{t("dashboard.title")}</Link>
             <Link to="/app/AbandonedList">{t("abandonedList.title")}</Link>
             <Link to="/app/SmartBulk">{t("smartBulk.title")}</Link>
             <Link to="/app/Settings">{t("settings.title")}</Link>
-            <Link to="/app/AIChatbot">AI Personal Assistant</Link>
+            <Link to="/app/AIChatbot">{t("aiSettings.title")}</Link>
           </>
         )}
       </NavMenu>

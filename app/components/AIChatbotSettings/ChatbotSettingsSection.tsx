@@ -37,10 +37,10 @@ export default function ChatbotSettingsSection({
             <div className='settings_secion-1 ai_parent first-card'>
                 <div className='start_main_container_sub_heading left-content'>
                     <p className="text-[13px] font-semibold mb-[6px]">
-                        Chatbot Settings
+                        {t("aiSettings.chatbotSettings")}
                     </p>
                     <p className="text-[13px]">
-                        Customize your AI chatbot assistant
+                        {t("aiSettings.chatbotSettingsDescription")}
                     </p>
                 </div>
                 <div className='ai-card-wrapper'>
@@ -56,13 +56,13 @@ export default function ChatbotSettingsSection({
                                         <></>
                                     }
                                     isActivateButtonLoading={aiWidgetData.loading}
-                                    availableOn={"Pro"}
+                                    availableOn={t("settings.planName3")}
                                     isActivated={aiWidgetData.enabled}
-                                    title={"Enable AI chat widget on your store"}
-                                    description={"Click to activate the AI chat widget on your store. This allows customers to chat with AI assistant directly from your website."}
+                                    title={t("aiSettings.enableChatWidget")}
+                                    description={t("aiSettings.enableChatWidgetDescription")}
                                     handleActivateButton={handleChatExtensionActivateButton}
                                     buttonType={"chatExtensionActivateButton"}
-                                    activateButtonTitle={aiWidgetData.enabled ? "Deactivate AI chat widget" : "Activate AI chat widget"}
+                                    activateButtonTitle={aiWidgetData.enabled ? t("aiSettings.disableChatWidget") : t("aiSettings.activateChatWidget")}
                                     isActivateButtonDisabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan))}
                                 />
                             )}
@@ -83,12 +83,12 @@ export default function ChatbotSettingsSection({
                                                 }}
                                                 value={aiSettings.toneOfVoice}
                                                 disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
-                                                placeholder={"Select tone"}
+                                                placeholder={t("aiSettings.selectTone")}
                                             />
                                         </div>
                                     }
-                                    title={"Tone of Voice"}
-                                    description={"Choose how your assistant sounds in chats — professional, friendly, or even a bit playful."}
+                                    title={t("aiSettings.tone")}
+                                    description={t("aiSettings.toneDescription")}
                                 // activateButtonTitle={aiSettings.isDurationToSendMessageActivated ? t("settings.deactivate") : t("settings.activate")}
                                 />
                             )}
@@ -102,9 +102,9 @@ export default function ChatbotSettingsSection({
                                     children={
                                         <></>
                                     }
-                                    title={"Use Emojis"}
-                                    description={"Turn on to add a touch of personality to your messages with emojis"}
-                                    activateButtonTitle={aiSettings.isUseEmojisTurnedOn ? "Turn off" : "Turn on"}
+                                    title={t("aiSettings.useEmojis")}
+                                    description={t("aiSettings.useEmojisDescription")}
+                                    activateButtonTitle={aiSettings.isUseEmojisTurnedOn ? t("aiSettings.turnOff") : t("aiSettings.turnOn")}
                                     isActivateButtonLoading={loading.activeButton === "useEmojisTurnedOnButton"}
                                     isActivateButtonDisabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan) || loading.activeButton)}
                                     handleActivateButton={(data: any) => {
@@ -128,9 +128,10 @@ export default function ChatbotSettingsSection({
                                             setAISettings={setAISettings}
                                             aiSettings={aiSettings}
                                             disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
+                                            t={t}
                                         />
                                     }
-                                    title={"Style Preferences"}
+                                    title={t("aiSettings.style")}
                                     description={""}
                                 />
                             )}
@@ -141,10 +142,10 @@ export default function ChatbotSettingsSection({
             <div className='settings_secion-1 ai_parent first-card second-card mt-4'>
                 <div className='start_main_container_sub_heading left-content'>
                     <p className="text-[13px] font-semibold mb-[6px]">
-                        AI Store Sync
+                        {t("aiSettings.trainingTopicsTitle")}
                     </p>
                     <p className="text-[13px]">
-                        Connect your assistant to store data and start training
+                        {t("aiSettings.trainingTopicsDescription")}
                     </p>
                 </div>
                 <div className='ai-card-wrapper'>
@@ -193,15 +194,15 @@ export default function ChatbotSettingsSection({
                                 children={
                                     <></>
                                 }
-                                title={"Start Syncing"}
-                                description={"Connect your store data and let the AI start learning."}
+                                title={t("aiSettings.startSync")}
+                                description={t("aiSettings.startSyncDescription")}
                                 handleActivateButton={(data: any) => {
                                     handleSyncing()
                                 }}
                                 isActivated={false}
                                 isActivateButtonLoading={loading.syncing}
                                 buttonType="syncButton"
-                                activateButtonTitle={"Start syncing"}
+                                activateButtonTitle={t("aiSettings.start")}
                                 isActivateButtonDisabled={(!isProPlanOrHigher(selectedPlanName) &&
                                     !isProPlanOrHigher(permissions?.manualPlan)) ||
                                     loading.activeButton}
@@ -216,10 +217,10 @@ export default function ChatbotSettingsSection({
                                     children={
                                         <></>
                                     }
-                                    availableOn={"Advanced"}
-                                    title={"Turn on your WhatsApp assistant"}
-                                    description={"Let the AI handle chats for you on WhatsApp — from answering common questions to keeping the conversation flowing."}
-                                    activateButtonTitle={aiSettings.isWhatsappAssistantTurnedOn ? "Turn off" : "Turn on"}
+                                    availableOn={t("settings.planName4")}
+                                    title={t("aiSettings.turnOnAssistant")}
+                                    description={t("aiSettings.turnOnAssistantDescription")}
+                                    activateButtonTitle={aiSettings.isWhatsappAssistantTurnedOn ? t("aiSettings.turnOff") : t("aiSettings.turnOn")}
                                     isActivateButtonLoading={loading.activeButton === "whatsappAssistantTurnedOnButton"}
                                     isActivateButtonDisabled={(!isAdvancePlanOrHigher(selectedPlanName) && !isAdvancePlanOrHigher(permissions?.manualPlan) || loading.activeButton)}
                                     handleActivateButton={(data: any) => {

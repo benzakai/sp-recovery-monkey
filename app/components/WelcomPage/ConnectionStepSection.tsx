@@ -28,24 +28,24 @@ export default function ConnectionStepSection() {
             id: 1,
             stepIcon: <OneSVG />,
             icon: <WhatsAppSettingsStepSVG />,
-            title: "Open WhatsApp Settings",
-            description: "Tap on the three dots.",
+            title: t("dashboard.connectionSteps.openSettings"),
+            description: t("dashboard.connectionSteps.tapDots"),
             nextStepIcon: <Arrow1SVG />,
         },
         {
             id: 2,
             stepIcon: <TwoSVG />,
             icon: <LinkDeviceStepSVG />,
-            title: "Go to Linked Devices",
-            description: "Select Link a Device.",
+            title: t("dashboard.connectionSteps.linkDevice"),
+            description: t("dashboard.connectionSteps.selectDevice"),
             nextStepIcon: <Arrow2SVG />,
         },
         {
             id: 3,
             stepIcon: <ThreeSVG />,
             icon: <ScanQRStepSVG />,
-            title: "Scan Your Barcode",
-            description: "Get CartKeeper QR",
+            title: t("dashboard.connectionSteps.scanBarcode"),
+            description: t("dashboard.connectionSteps.getQr"),
             nextStepIcon: null,
         },
     ]);
@@ -55,12 +55,12 @@ export default function ConnectionStepSection() {
             <div className="bg-white rounded-xl shadow-sm border border-solid p-4 md:p-6">
                 <div className="pb-2 text-center md:text-left">
                     <p className="text-[13px] font-semibold">
-                        Set up Cartkeeper
+                        {t("dashboard.connectionSteps.title")}
                     </p>
                 </div>
                 <div className="text-center md:text-left">
                     <p className="text-[13px]">
-                        Just 3 easy steps to get started - then let the app do the magic
+                        {t("dashboard.connectionSteps.description")}
                     </p>
                 </div>
 
@@ -102,9 +102,9 @@ export default function ConnectionStepSection() {
 
                 <div className="text-center md:text-left">
                     <p className="text-[13px]">
-                        Watch video tutorial for connecting CartKeeper to WhatsApp –{" "}
+                        {t("dashboard.connectionSteps.watchTutorial")} –{" "}
                         <Link removeUnderline onClick={handleOpenModal}>
-                            watch here
+                            {t("dashboard.connectionSteps.watchHere")}
                         </Link>
                     </p>
                 </div>
@@ -115,7 +115,7 @@ export default function ConnectionStepSection() {
                     >
                         <iframe
                             src="https://www.youtube.com/embed/f3Z_M0B8Nqo"
-                            title="CartKeeper WhatsApp Setup Tutorial"
+                            title={t("dashboard.connectionSteps.videoTitle")}
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowFullScreen
                             className="w-[1000px] h-[650px] max-w-full rounded-xl border-0"

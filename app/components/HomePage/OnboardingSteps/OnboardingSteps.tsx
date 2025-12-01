@@ -19,7 +19,7 @@ import { useNavigate, useOutletContext } from '@remix-run/react';
 import { manageOnboarding } from '~/lib/onboarding/common';
 import { isProPlanOrHigher } from '~/utils/plans';
 
-export default function OnboardingSteps({ shop }: any) {
+export default function OnboardingSteps({ shop, t }: any) {
     const navigate = useNavigate();
     const { selectedPlanName, permissions }: any = useOutletContext()
     const [whatsAppOpen, setWhatsAppOpen] = useState(true);
@@ -49,6 +49,67 @@ export default function OnboardingSteps({ shop }: any) {
     useEffect(() => {
         fetchOnboardingData();
     }, []);
+
+    const STEP_CONFIG = [
+        {
+            id: "step1",
+            title: t("homePostPayment.onboardingSteps.step1.title"),
+            steps: [
+                {
+                    key: "connectWhatsapp",
+                    title: t("homePostPayment.onboardingSteps.step1.connectWhatsapp.title"),
+                    description: t("homePostPayment.onboardingSteps.step1.connectWhatsapp.description"),
+                    actionLabel: t("homePostPayment.onboardingSteps.step1.connectWhatsapp.actionLabel"),
+                    actionLink: "/app/WelcomeConnect#connectSection"
+                },
+                {
+                    key: "editMessage",
+                    title: t("homePostPayment.onboardingSteps.step1.editMessage.title"),
+                    description: t("homePostPayment.onboardingSteps.step1.editMessage.description"),
+                    actionLabel: t("homePostPayment.onboardingSteps.step1.editMessage.actionLabel"),
+                    actionLink: "/app/WelcomeConnect"
+                },
+                {
+                    key: "sendTestMessage",
+                    title: t("homePostPayment.onboardingSteps.step1.sendTestMessage.title"),
+                    description: t("homePostPayment.onboardingSteps.step1.sendTestMessage.description"),
+                    actionLabel: t("homePostPayment.onboardingSteps.step1.sendTestMessage.actionLabel"),
+                    actionLink: "/app/WelcomeConnect"
+                }
+            ]
+        },
+        {
+            id: "step2",
+            title: t("homePostPayment.onboardingSteps.step2.title"),
+            pro: true,
+            steps: [
+                {
+                    key: "startSync",
+                    title: t("homePostPayment.onboardingSteps.step2.startSync.title"),
+                    description: t("homePostPayment.onboardingSteps.step2.startSync.description"),
+                    actionLabel: t("homePostPayment.onboardingSteps.step2.startSync.actionLabel"),
+                    actionLink: "/app/AIChatbot",
+                    pro: true
+                },
+                {
+                    key: "chooseTone",
+                    title: t("homePostPayment.onboardingSteps.step2.chooseTone.title"),
+                    description: t("homePostPayment.onboardingSteps.step2.chooseTone.description"),
+                    actionLabel: t("homePostPayment.onboardingSteps.step2.chooseTone.actionLabel"),
+                    actionLink: "/app/AIChatbot",
+                    pro: true
+                },
+                {
+                    key: "installPreview",
+                    title: t("homePostPayment.onboardingSteps.step2.installPreview.title"),
+                    description: t("homePostPayment.onboardingSteps.step2.installPreview.description"),
+                    actionLabel: t("homePostPayment.onboardingSteps.step2.installPreview.actionLabel"),
+                    actionLink: "/app/AIChatbot",
+                    pro: true
+                }
+            ]
+        }
+    ];
 
     const saveOnboardingData = async () => {
         try {
@@ -147,7 +208,7 @@ export default function OnboardingSteps({ shop }: any) {
                                 <div className="acc_ttl">
                                     <Text as="p" variant="bodyMd">{title}</Text>
                                 </div>
-                                {pro && <Badge tone="info">pro</Badge>}
+                                {pro && <Badge tone="info">{t("settings.planName3")}</Badge>}
                             </InlineStack>
                             <div>
                                 <Icon
@@ -226,7 +287,7 @@ export default function OnboardingSteps({ shop }: any) {
                                     <BlockStack gap="200">
                                         <InlineStack align="space-between" blockAlign="start">
                                             <Text as="h3" variant="headingSm" fontWeight="semibold">
-                                                This card will be removed!
+                                                {t("homePostPayment.cardWillBeRemoved")}
                                             </Text>
                                             <div style={{ margin: '-8px -8px 0 0' }}>
                                                 <Button
@@ -238,11 +299,11 @@ export default function OnboardingSteps({ shop }: any) {
                                             </div>
                                         </InlineStack>
                                         <Text as="p" tone="subdued">
-                                            you won’t see this card again
+                                            {t("homePostPayment.cardWillBeRemovedDescription")}
                                         </Text>
                                         <div>
                                             <Button variant="plain" onClick={handleUndo}>
-                                                Undo
+                                                {t("homePostPayment.undo")}
                                             </Button>
                                         </div>
                                     </BlockStack>
@@ -253,7 +314,7 @@ export default function OnboardingSteps({ shop }: any) {
                                 <Box padding="400">
                                     <BlockStack gap="200">
                                         <InlineStack align="space-between" blockAlign="start">
-                                            <Text variant="headingSm" as="h2">Set up CartKeeper</Text>
+                                            <Text variant="headingSm" as="h2">{t("homePostPayment.setCartKeeper")}</Text>
                                             <div style={{ margin: '-8px -8px 0 0' }}>
                                                 <Button
                                                     icon={XIcon}
@@ -266,7 +327,7 @@ export default function OnboardingSteps({ shop }: any) {
 
                                         <Text as="p" tone="subdued">
                                             <div className='subhead'>
-                                                Use this guide to start setting up the app on your store
+                                                {t("homePostPayment.setCartKeeperDescription")}
                                             </div>
                                         </Text>
 
@@ -274,7 +335,9 @@ export default function OnboardingSteps({ shop }: any) {
                                             <div className="progress_bar">
                                                 <div className='progress_txt'>
                                                     <Text as="p" tone="subdued">
-                                                        {completedCount} of 6 tasks completed
+                                                        {t("homePostPayment.progress", {
+                                                            completedCount: completedCount,
+                                                        })}
                                                     </Text>
                                                 </div>
                                                 <ProgressBar progress={progress} size="small" tone="primary" />
@@ -304,14 +367,14 @@ export default function OnboardingSteps({ shop }: any) {
                                     <Icon source={AppsIcon} tone="base" />
                                 </div>
                                 <InlineStack gap="200" blockAlign="center">
-                                    <Text as="p" variant="bodyMd" fontWeight="medium">Embed AI Chatbot assistant to your theme</Text>
-                                    <Badge tone="info">pro</Badge>
+                                    <Text as="p" variant="bodyMd" fontWeight="medium">{t("homePostPayment.embedTitle")}</Text>
+                                    <Badge tone="info">{t("settings.planName3")}</Badge>
                                 </InlineStack>
                             </InlineStack>
                             {onboarding?.step2?.installPreview ?
-                                <Button disabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan))} onClick={() => navigate('/app/AIChatbot')}>Turn off</Button>
+                                <Button disabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan))} onClick={() => navigate('/app/AIChatbot')}>{t("aiSettings.turnOff")}</Button>
                                 :
-                                <Button disabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan))} onClick={() => navigate('/app/AIChatbot')}>Turn on</Button>
+                                <Button disabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan))} onClick={() => navigate('/app/AIChatbot')}>{t("aiSettings.turnOn")}</Button>
                             }
                         </InlineStack>
                     </Card>
@@ -323,63 +386,4 @@ export default function OnboardingSteps({ shop }: any) {
     );
 }
 
-const STEP_CONFIG = [
-    {
-        id: "step1",
-        title: "Connect to WhatsApp",
-        steps: [
-            {
-                key: "connectWhatsapp",
-                title: "Link your WhatsApp account (optional - use default line if skipped)",
-                description: "Scan the QR code to connect your WhatsApp account with the app.",
-                actionLabel: "Connect",
-                actionLink: '/app/WelcomeConnect#connectSection'
-            },
-            {
-                key: "editMessage",
-                title: "Edit your message (recommended)",
-                description: "Write or edit the WhatsApp message that will be sent to your customers.",
-                actionLabel: "Edit Message",
-                actionLink: '/app/WelcomeConnect'
-            },
-            {
-                key: "sendTestMessage",
-                title: "Send a test message (for best results)",
-                description: "Send a test message to your own number to see how it looks.",
-                actionLabel: "Send Test",
-                actionLink: '/app/WelcomeConnect'
-            }
-        ]
-    },
-    {
-        id: "step2",
-        title: "Set up AI Chatbot assistant",
-        pro: true,
-        steps: [
-            {
-                key: "startSync",
-                title: "Start Sync",
-                description: "Connect your store data and let the AI start learning.",
-                actionLabel: "Start syncing",
-                actionLink: '/app/AIChatbot',
-                pro: true
-            },
-            {
-                key: "chooseTone",
-                title: "Choose Tone of Voice",
-                description: "Select how you want the AI assistant to communicate with your customers.",
-                actionLabel: "Select Tone",
-                actionLink: '/app/AIChatbot',
-                pro: true
-            },
-            {
-                key: "installPreview",
-                title: "Install & Preview in Theme",
-                description: "Install the AI Chatbot directly in your store’s theme and preview it live.",
-                actionLabel: "Install & Preview",
-                actionLink: '/app/AIChatbot',
-                pro: true
-            }
-        ]
-    }
-];
+

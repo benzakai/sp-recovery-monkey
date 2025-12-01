@@ -67,7 +67,7 @@ export default function DashboardOverview({ getPageData, forPageType }: any) {
         <div className="bg-white rounded-xl shadow-sm border border-solid p-4 md:p-6">
             <div className="pb-2 text-center md:text-left">
                 <Text variant="headingLg" as="h5">
-                    Overview
+                    {t("dashboard.overview")}
                 </Text>
             </div>
             <div className="abandoned-block grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-6 font-inter welcome_wrapper">

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const ToggleSwitch = ({ onToggle, active, setActive }: any) => {
+const ToggleSwitch = ({ onToggle, active, setActive, t }: any) => {
 
     const handleToggle = (option: any) => {
         setActive(option);
@@ -16,7 +16,7 @@ const ToggleSwitch = ({ onToggle, active, setActive }: any) => {
                     : "text-gray-600 hover:text-black"
                     }`}
             >
-                Monthly
+                {t("settings.monthly")}
             </button>
             <button
                 onClick={() => handleToggle("Yearly")}
@@ -25,7 +25,7 @@ const ToggleSwitch = ({ onToggle, active, setActive }: any) => {
                     : "text-gray-600 hover:text-black"
                     }`}
             >
-                Yearly
+                {t("settings.yearly")}
             </button>
         </div>
     );

@@ -285,7 +285,7 @@ export default function SmartBulk() {
                                                 {t("smartBulk.title")}
                                             </Text>
                                             <div className='smart_badge'>
-                                                <Badge tone='info' >Pro</Badge>
+                                                <Badge tone='info' >{t("settings.planName3")}</Badge>
                                             </div>
                                         </div>
 
@@ -305,7 +305,7 @@ export default function SmartBulk() {
                                         <div className="w-[90%] md:w-[60%] bulk-cart-wrap">
                                             <div className='mb-4'>
                                                 <p className="text-[13px] font-semibold">
-                                                    {t("welcome.messageBoxTitle")}
+                                                    {t("dashboard.messageBoxTitle")}
                                                 </p>
                                             </div>
                                             <Card>
@@ -347,7 +347,7 @@ export default function SmartBulk() {
                                         </div> */}
                                                 </div>}
                                             </Card>
-                                            <WhatsappTest shop={shop} />
+                                            <WhatsappTest shop={shop} t={t} />
                                         </div>
                                     </Card>
 
@@ -444,7 +444,7 @@ export default function SmartBulk() {
                         isLoading={isSaveButtonLoading}
                         onDiscard={handleDiscardChanges}
                         saveText={t("settings.messageBoxSaveButton")}
-                        discardText="Discard"
+                        discardText={t("aiSettings.discard")}
                         variant="primary"
                         id="smart-bulk-save-bar"
                     />

@@ -439,7 +439,7 @@ const WelcomeConnect = () => {
                         <div>
                             <div className='text-center md:text-left'>
                                 <Text variant="headingLg" as="h5">
-                                    {stateInstance === "authorized" ? "Dashboard" : "Let's recover some carts"}
+                                    {stateInstance === "authorized" ? t("dashboard.title") : t("dashboard.authTitle")}
                                 </Text>
                             </div>
                         </div>
@@ -447,9 +447,10 @@ const WelcomeConnect = () => {
                         <div className='mb-4'>
                             <p className='text-[13px] md:text-left mt-[6px] mb-4'>{
                                 stateInstance === "authorized" ?
-                                    "View your revenue, write message, and connect to send messages"
+                                    t("dashboard.authSubTitle")
                                     :
-                                    "Just 3 easy steps to get started - then let the app do the magic"}
+                                    t("dashboard.subTitle")
+                            }
                             </p>
                             {stateInstance === "authorized" ?
                                 <DashboardOverview getPageData={getPageData} forPageType="WelcomeConnect" /> :
@@ -462,7 +463,7 @@ const WelcomeConnect = () => {
                                     <div className="p-4 md:p-6 " >
                                         <div className='text-center md:text-left'>
                                             <p className="text-[13px] font-semibold">
-                                                Get CartKeeper QR code
+                                                {t("dashboard.getQr")}
                                             </p>
                                         </div>
                                         {isShowConnectionStatus ? <>
@@ -473,7 +474,7 @@ const WelcomeConnect = () => {
                                                     </div>
                                                     <div className='p-4 md:p-5 text-center md:text-left'>
                                                         <p className="text-center text-[13px]">
-                                                            You can now easily send and receive WhatsApp messages!
+                                                            {t("dashboard.getQrDescription")}
                                                         </p>
                                                     </div>
                                                     <div className='mt-6 flex justify-center'>
@@ -484,7 +485,7 @@ const WelcomeConnect = () => {
                                                             variant='primary'
                                                             size='large'
                                                         >
-                                                            {t("welcome.disconnectButtonText")}
+                                                            {t("dashboard.disconnectButtonText")}
                                                         </Button>
                                                     </div>
                                                 </>
@@ -511,7 +512,7 @@ const WelcomeConnect = () => {
 
                                                     <div className="font-semibold mt-8">
                                                         <p className="text-center text-[13px]">
-                                                            Scan the QR code in WhatsApp under Linked Devices settings
+                                                            {t("dashboard.qrDescription")}
                                                         </p>
                                                     </div>
                                                 </>
@@ -524,7 +525,7 @@ const WelcomeConnect = () => {
                                                 </div>
                                                 <div className='p-4 md:p-5 text-center md:text-left'>
                                                     <p className="text-center text-[13px]">
-                                                        You can check the connection status anytime
+                                                        {t("dashboard.connectedDescription")}
                                                     </p>
                                                 </div>
                                                 <div className='mt-2 flex justify-center'>
@@ -533,7 +534,7 @@ const WelcomeConnect = () => {
                                                         size="large"
                                                         onClick={handleShowConnectionClick}
                                                     >
-                                                        {t("welcome.connectionStatusViewButton")}
+                                                        {t("dashboard.connectionStatusViewButton")}
                                                     </Button>
                                                 </div>
                                             </>
@@ -549,7 +550,7 @@ const WelcomeConnect = () => {
                                 >
                                     <div className=" text-center md:text-left mb-6">
                                         <p className="text-[13px] font-semibold">
-                                            {t("welcome.messageBoxTitle")}
+                                            {t("dashboard.messageBoxTitle")}
                                         </p>
                                     </div>
                                     <Card >
@@ -584,15 +585,15 @@ const WelcomeConnect = () => {
                                     </Card>
                                     <div className='mt-[6px] text-center md:text-left p-4 md:p-0'>
                                         <p className="text-[13px]">
-                                            Use this article for winning conversion phrasing - <Link url="#" removeUnderline>link here</Link>
+                                            {t("dashboard.useArticle")} - <Link url="#" removeUnderline>link here</Link>
                                         </p>
                                     </div>
-                                    <WhatsappTest shop={shop} />
+                                    <WhatsappTest shop={shop} t={t} />
                                 </div>
                             </div>
                         </Card>
                         <div>
-                            <WhatWeDoSection />
+                            <WhatWeDoSection t={t} />
                         </div>
                     </div>
                 </div >

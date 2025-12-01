@@ -125,7 +125,7 @@ export default function NewAbandonedList() {
                                 </p>
                                 <Tooltip className="mt-[6px]">
                                     <div>
-                                        The list displays carts that received an automated recovery message successfully sent to the customer via WhatsApp.
+                                        {t("abandonedList.tooltipDescription")}
                                     </div>
                                 </Tooltip>
                             </div>
@@ -169,7 +169,7 @@ export default function NewAbandonedList() {
                                             </div>
                                             <div className="loading_text_container">
                                                 <Text as="p" variant="bodyMd" alignment="center">
-                                                    Loading checkouts...
+                                                    {t("abandonedList.loadingText")}
                                                 </Text>
                                             </div>
                                         </div>
@@ -182,17 +182,17 @@ export default function NewAbandonedList() {
                                                     width={"110"} height={"110"}
                                                 />
                                                 <Text variant="headingLg" as="h5" alignment='center'>
-                                                    Your list is currently empty
+                                                    {t("abandonedList.emptyListText")}
                                                 </Text>
                                                 <div className="empty_state_description">
                                                     <Text as="p" variant="bodyMd" alignment="center">
-                                                        Abandoned carts will appear here once the
+                                                        {t("abandonedList.emptyListText2")}
                                                     </Text>
                                                     <Text as="p" variant="bodyMd" alignment="center">
-                                                        automated recovery message is successfully
+                                                        {t("abandonedList.emptyListText3")}
                                                     </Text>
                                                     <Text as="p" variant="bodyMd" alignment="center">
-                                                        sent to the customer via WhatsApp.
+                                                        {t("abandonedList.emptyListText4")}
                                                     </Text>
                                                 </div>
                                             </div>

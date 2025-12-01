@@ -92,12 +92,12 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
                             {pageType === "settings" ? t("settings.planSectionDescription", {
                                 planName: planName,
                             }) : <p className="text-[13px]">
-                                {t("home.priceSectionTitle")}
+                                {t("homePostPayment.priceSectionTitle")}
                             </p>}
                         </div>
                     )}
                     <div>
-                        <ToggleSwitch active={planIntervalType} setActive={setPlanIntervalType} />
+                        <ToggleSwitch active={planIntervalType} setActive={setPlanIntervalType} t={t} />
                     </div>
                 </div>
 

@@ -14,7 +14,7 @@ function isValidPhoneNumber(number: any) {
 const COOLDOWN_SECONDS = 90;
 const MAX_TESTS = 5;
 
-export default function WhatsappTest({ shop }: any) {
+export default function WhatsappTest({ shop, t }: any) {
     const [phone, setPhone] = useState<string>('');
     const [isSendButtonDisabled, setSendButtonDisabled] = useState(false);
     const [cooldown, setCooldown] = useState<number>(0);
@@ -72,18 +72,18 @@ export default function WhatsappTest({ shop }: any) {
 
     const handleSendTest = async () => {
         if (cooldown > 0) {
-            setNotification({ message: `You can retry sending another test in ${cooldown} seconds.`, type: 'error' });
+            setNotification({ message: t('global.whatsappTest.retryMessage',{ cooldown }), type: 'error' });
             return;
         }
 
         const trimmed = (phone || '').trim();
         if (!isValidPhoneNumber(trimmed)) {
-            setNotification({ message: 'Invalid phone number. Make sure it includes the + and country code.', type: 'error' });
+            setNotification({ message: t('global.whatsappTest.invalidPhone'), type: 'error' });
             return;
         }
 
         if (testCount >= MAX_TESTS) {
-            setNotification({ message: `Test limit reached. You have already tried ${MAX_TESTS} times.`, type: 'error' });
+            setNotification({ message: t('global.whatsappTest.testLimit',{ MAX_TESTS }), type: 'error' });
             return;
         }
 
@@ -110,7 +110,7 @@ export default function WhatsappTest({ shop }: any) {
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 setNotification({
-                    message: errorData?.error || 'Something went wrong while sending message.',
+                    message: errorData?.error || t('global.whatsappTest.errorSendingMessage'),
                     type: 'error',
                 });
                 setSendButtonDisabled(false);
@@ -119,11 +119,11 @@ export default function WhatsappTest({ shop }: any) {
             manageOnboarding({ data: { step1: { sendTestMessage: true } }, shop });
             setTestCount((p) => p + 1);
             localStorage.setItem(`whatsappTest_${shop}`, JSON.stringify({ lastTestTime: Date.now() }));
-            setNotification({ message: 'Test message sent! You’ll receive it on WhatsApp shortly.', type: 'success' });
+            setNotification({ message: t('global.whatsappTest.successSendingMessage'), type: 'success' });
             setCooldown(COOLDOWN_SECONDS);
         } catch (err) {
             console.error('error occured on handleSendTest', err);
-            setNotification({ message: 'Something went wrong while sending message, please try again later', type: 'error' });
+            setNotification({ message: t('global.whatsappTest.errorSendingMessageLater'), type: 'error' });
             setSendButtonDisabled(false);
         }
     };
@@ -147,12 +147,12 @@ export default function WhatsappTest({ shop }: any) {
         <div className='mt-2 flex flex-col text-center md:text-left'>
             <div className='flex flex-row mt-3 mb-2 gap-2 items-center'>
                 <p className="text-[13px] font-semibold">
-                    Test WhatsApp message
+                    {t('global.whatsappTest.testMessage')}
                 </p>
                 <Tooltip>
-                    <div>Send a test WhatsApp message to see how it looks.</div>
-                    <div>Enter your phone number</div>
-                    <div>(Include the country code starting with +).</div>
+                    <div>{t('global.whatsappTest.howItLooks')}</div>
+                    <div>{t('global.whatsappTest.enterPhoneNumber')}</div>
+                    <div>({t('global.whatsappTest.includeCountryCode')}).</div>
                 </Tooltip>
             </div>
             <div className='flex flex-row text-center gap-3 phone-input-wrapper'>
@@ -160,7 +160,7 @@ export default function WhatsappTest({ shop }: any) {
                     type="text"
                     label=""
                     value={phone}
-                    placeholder="Enter your phone number"
+                    placeholder={t('global.whatsappTest.enterPhoneNumber')}
                     onChange={handlePhoneNumberChange}
                     autoComplete="tel"
                 />
@@ -171,7 +171,7 @@ export default function WhatsappTest({ shop }: any) {
                         disabled={!isButtonEnabled()}
                         onClick={handleSendTest}
                     >
-                        Send Test
+                        {t('global.whatsappTest.sendTest')}
                     </Button>
 
                     {showRefresh && (
@@ -194,7 +194,7 @@ export default function WhatsappTest({ shop }: any) {
                         className={`text-sm mt-3 ${(notification.type === "error" || cooldown > 0 && notification.type !== 'success') ? "text-red-600" : "text-green-600"
                             }`}
                     >
-                        {cooldown > 0 && notification.type !== 'success' ? `You can retry sending another test in ${cooldown} seconds.` : notification.message}
+                        {cooldown > 0 && notification.type !== 'success' ? t('global.whatsappTest.retryMessage',{ cooldown }) : notification.message}
                     </p>
                 </div>
             )}

@@ -33,7 +33,11 @@
       "smartBulkNextWarning": "Mettez à niveau vers un plan Pro ou supérieur pour accéder à cette fonctionnalité",
       "smartBulkPreviousWarning": "Mettez à niveau vers un plan Pro ou supérieur pour accéder à cette fonctionnalité",
       "settingsActivateButtonStatus": "La fonctionnalité a été {{status}} avec succès.",
-      "SyncProcessStartedMessage": "Le processus de synchronisation a commencé en arrière-plan. Cela peut prendre de quelques minutes à plusieurs heures, selon la taille de vos données client."
+      "SyncProcessStartedMessage": "Le processus de synchronisation a commencé en arrière-plan. Cela peut prendre de quelques minutes à plusieurs heures, selon la taille de vos données client.",
+      "turnOnWhatsAppAssistant": "Veuillez activer l’assistant WhatsApp avant d’activer l’extension de chat.",
+      "aiChatbotSettingsSaved": "Les paramètres du chatbot IA ont été enregistrés avec succès.",
+      "aiChatbotSettingsFailed": "Échec de l’enregistrement des paramètres du chatbot IA.",
+      "aiChatbotSyncingStarted": "La synchronisation a commencé avec succès."
     },
     "icons": {
       "recoveredCarts": "Paniers récupérés",
@@ -50,19 +54,111 @@
       "customerListDescription": "Consultez les achats effectués via CartKeeper.",
       "bulkCampaign": "Campagne de masse",
       "bulkCampaignDescription": "Envoyez des messages à tous les clients de votre boutique."
+    },
+    "whatsappTest": {
+      "retryMessage": "Vous pouvez réessayer d’envoyer un autre test dans {{cooldown}} secondes.",
+      "invalidPhone": "Numéro de téléphone invalide. Assurez-vous qu’il inclut le + et l’indicatif du pays.",
+      "testLimit": "Limite de tests atteinte. Vous avez déjà essayé {{MAX_TESTS}} fois.",
+      "errorSendingMessage": "Une erreur s’est produite lors de l’envoi du message.",
+      "successSendingMessage": "Message test envoyé ! Vous le recevrez bientôt sur WhatsApp.",
+      "errorSendingMessageLater": "Une erreur s’est produite lors de l’envoi du message, veuillez réessayer plus tard.",
+      "testMessage": "Message test WhatsApp",
+      "howItLooks": "Envoyez un message test WhatsApp pour voir à quoi il ressemble.",
+      "enterPhoneNumber": "Entrez votre numéro de téléphone",
+      "includeCountryCode": "Incluez l’indicatif du pays en commençant par +",
+      "sendTest": "Envoyer le test"
     }
   },
-  "home": {
-    "title": "Bienvenue",
-    "subTitle": "Comment démarrer avec CartKeeper ?",
-    "contactSectionTitle": "Nous sommes là pour vous aider",
-    "whatsappChatTitle": "Chat WhatsApp",
-    "whatsappChatDescription": "Parlez directement avec nous via le chat WhatsApp pour obtenir de l’aide avec votre question.",
-    "whatsappChatButtonText": "Envoyez-nous un message via WhatsApp",
-    "emailContactTitle": "Contact par e-mail",
-    "emailContactDescription": "Contactez-nous directement par e-mail pour obtenir de l’aide ou du support.",
-    "emailContactButtonText": "Envoyez-nous un e-mail",
-    "priceSectionTitle": "Choisissez un plan et commencez à grandir"
+  "homePrePayment": {
+    "title": "Bienvenue sur CartKeeper !",
+    "gettingStarted": {
+      "dashboard": "Tableau de bord",
+      "dashboardDescription": "Suivez vos paniers récupérés et vos revenus",
+      "customerList": "Liste des clients",
+      "customerListDescription": "Consultez vos achats CartKeeper",
+      "bulkCampaign": "Campagne de masse",
+      "bulkCampaignDescription": "Envoyez des messages à tous vos clients",
+      "aiChatbot": "Chatbot IA",
+      "aiChatbotDescription": "Engagez vos clients et augmentez vos ventes",
+      "whatsappChat": "Chat WhatsApp",
+      "whatsappChatDescription": "Parlez-nous directement via le chat WhatsApp pour obtenir de l’aide.",
+      "whatsappLinkText": "Envoyez-nous un message sur WhatsApp",
+      "bookADemo": "Réserver une démo",
+      "bookADemoDescription": "Réservez une démo gratuite avec notre équipe de support pour obtenir de l’aide pour la configuration.",
+      "bookADemoLinkText": "Réserver une démo",
+      "videoTutorial": "Tutoriel vidéo",
+      "videoTutorialDescription": "Regardez le tutoriel vidéo pour connecter CartKeeper à WhatsApp.",
+      "videoTutorialLinkText": "Voir le tutoriel",
+      "title": "Récupérons quelques paniers",
+      "subTitle": "Comment démarrer avec CartKeeper ?",
+      "weAreHereForYou": "Nous sommes là pour vous"
+    },
+    "testimonials": {
+      "content1": "« Super application, prête à l’emploi dès le premier jour, les développeurs répondent rapidement aux questions, fortement recommandée ! »",
+      "fullContent1": "« Super application, prête à l’emploi dès le premier jour, les développeurs répondent rapidement aux questions, fortement recommandée ! »",
+      "content2": "« Il est impossible de décrire à quel point je recommande cette application à tout le monde. Efficace, rapide, ciblant l’intention d’achat… »",
+      "fullContent2": "« Il est impossible de décrire à quel point je recommande cette application à tout le monde. Efficace, rapide, ciblant l’intention d’achat. L’application permet d’envoyer un message personnalisé afin d’ajouter des codes spéciaux et des informations sur la commande. Les messages sont envoyés directement dans le chat WhatsApp sans autre interaction que le but de l’application : générer une vente. L’équipe apporte toujours un support direct via WhatsApp, ce qui rend le processus rapide et facile. Je répète un point qui rend CartKeeper spécial : il déclenche l’intention d’achat, pas seulement le panier abandonné. Fortement recommandé ! »",
+      "content3": "« J’ai commencé à utiliser CartKeeper, eu quelques problèmes et l’équipe de support a TOUJOURS répondu très rapidement… »",
+      "fullContent3": "« J’ai commencé à utiliser CartKeeper, eu quelques problèmes et l’équipe de support a TOUJOURS répondu très rapidement et a résolu mes questions efficacement ! Si je devais choisir parmi d’autres applications, je choisirais CartKeeper. Équipe incroyable et valeur ajoutée incroyable que cette application apporte. Continuez comme ça ! »",
+      "title": "Découvrez pourquoi les commerçants choisissent CartKeeper"
+    }
+  },
+  "homePostPayment": {
+    "title": "Bonjour, Bienvenue sur CartKeeper",
+    "subTitle": "Récupérons quelques paniers !",
+    "priceSectionTitle": "Choisissez un forfait et commencez à grandir !",
+    "cardWillBeRemoved": "Cette carte sera supprimée !",
+    "cardWillBeRemovedDescription": "vous ne verrez plus cette carte",
+    "undo": "Annuler",
+    "setCartKeeper": "Configurer CartKeeper",
+    "setCartKeeperDescription": "Utilisez ce guide pour commencer à configurer l'application sur votre boutique",
+    "progress": "{{completedCount}} sur 6 tâches complétées",
+    "embedTitle": "Intégrer l’assistant chatbot IA à votre thème",
+    "onboardingSteps": {
+      "step1": {
+        "title": "Se connecter à WhatsApp",
+        "connectWhatsapp": {
+          "title": "Liez votre compte WhatsApp (optionnel – utilise la ligne par défaut si ignoré)",
+          "description": "Scannez le QR code pour connecter votre compte WhatsApp à l’application.",
+          "actionLabel": "Connecter"
+        },
+        "editMessage": {
+          "title": "Modifier votre message (recommandé)",
+          "description": "Écrivez ou modifiez le message WhatsApp qui sera envoyé à vos clients.",
+          "actionLabel": "Modifier le message"
+        },
+        "sendTestMessage": {
+          "title": "Envoyer un message test (pour de meilleurs résultats)",
+          "description": "Envoyez un message test à votre propre numéro pour voir le rendu.",
+          "actionLabel": "Envoyer test"
+        }
+      },
+      "step2": {
+        "title": "Configurer l’assistant chatbot IA",
+        "startSync": {
+          "title": "Démarrer la synchronisation",
+          "description": "Connectez les données de votre boutique et laissez l’IA commencer à apprendre.",
+          "actionLabel": "Démarrer la synchro"
+        },
+        "chooseTone": {
+          "title": "Choisir le ton de voix",
+          "description": "Sélectionnez la façon dont vous souhaitez que l’assistant IA communique avec vos clients.",
+          "actionLabel": "Sélectionner le ton"
+        },
+        "installPreview": {
+          "title": "Installer et prévisualiser dans le thème",
+          "description": "Installez le chatbot IA directement dans le thème de votre boutique et prévisualisez-le en direct.",
+          "actionLabel": "Installer et prévisualiser"
+        }
+      }
+    },
+    "whatWeDo": {
+      "title": "Voici ce que nous faisons",
+      "boostSales": "Augmentez les ventes en récupérant les paniers via WhatsApp",
+      "turnIntoBuying": "Transformez les visiteurs en acheteurs grâce à votre assistant d’achat IA",
+      "boostConversions": "Boostez les conversions avec des recommandations personnalisées",
+      "loading": "Chargement des images..."
+    }
   },
   "letsStart": {
     "title": "Commençons !",
@@ -71,23 +167,33 @@
     "missedRevenue": "Revenus manqués",
     "missedRevenueDescription": "Le montant que vous auriez pu gagner avec ces paniers"
   },
-  "welcome": {
-    "title": "Bienvenue",
-    "dashboard": "Tableau de bord",
-    "subTitle": "Consultez vos revenus, écrivez des messages et connectez-vous pour les envoyer.",
-    "connectSectionTitle": "Cliquez sur le bouton pour vérifier la connexion.",
-    "connectedTitle": "Votre appareil est connecté !",
-    "notConnectedTitle": "Connectons-nous",
-    "disconnectButtonText": "Se déconnecter",
-    "qrScanText": "Scannez le code QR pour afficher les dialogues sur votre appareil :",
-    "qrScanStep1": "Ouvrez WhatsApp",
-    "qrScanStep2": "Cliquez sur \"Paramètres\"",
-    "qrScanStep3": "Cliquez sur \"Appareils liés\"",
-    "connectionStatusViewButton": "Vérifier l'état de la connexion",
-    "messageBoxTitle": "Écrivez/modifiez le message qui sera envoyé à vos clients",
-    "messageBoxBeforeLinkText": "Vous pouvez consulter l'article suivant pour des conseils sur la rédaction de messages efficaces et l'augmentation de la conversion en suivant ce",
-    "messageBoxAfterLinkText": "lien ici.",
-    "connectedMessage": "Vous devriez maintenant pouvoir envoyer et recevoir des messages WhatsApp sans problème."
+  "dashboard": {
+    "title": "Tableau de bord",
+    "authTitle": "Récupérons quelques paniers",
+    "disconnectButtonText": "Déconnecter",
+    "connectionStatusViewButton": "Afficher l’état de la connexion",
+    "messageBoxTitle": "Rédigez/modifiez le message envoyé à vos clients",
+    "authSubTitle": "Consultez vos revenus, rédigez un message et connectez-vous pour envoyer des messages",
+    "subTitle": "Seulement 3 étapes simples pour commencer — puis laissez l’application faire la magie",
+    "overview": "Aperçu",
+    "connectionSteps": {
+      "openSettings": "Ouvrir les paramètres WhatsApp",
+      "tapDots": "Appuyez sur les trois points.",
+      "linkDevice": "Allez dans Appareils liés",
+      "selectDevice": "Sélectionnez « Lier un appareil ».",
+      "scanBarcode": "Scannez votre code-barres",
+      "getQr": "Obtenir le QR CartKeeper",
+      "title": "Configurer CartKeeper",
+      "description": "Seulement 3 étapes simples pour commencer — puis laissez l’application faire la magie",
+      "watchTutorial": "Regarder le tutoriel vidéo pour connecter CartKeeper à WhatsApp",
+      "watchHere": "regarder ici",
+      "videoTitle": "Tutoriel de configuration CartKeeper pour WhatsApp"
+    },
+    "getQr": "Obtenir le code QR CartKeeper",
+    "getQrDescription": "Vous pouvez désormais envoyer et recevoir des messages WhatsApp facilement !",
+    "qrDescription": "Scannez le code QR dans WhatsApp sous Paramètres > Appareils liés",
+    "connectedDescription": "Vous pouvez vérifier l’état de la connexion à tout moment",
+    "useArticle": "Utilisez cet article pour trouver des formulations qui convertissent"
   },
   "abandonedList": {
     "title": "Paniers abandonnés",
@@ -95,7 +201,13 @@
     "tableColumnHeading1": "Heure et date",
     "tableColumnHeading2": "Nom",
     "tableColumnHeading3": "Prix de départ",
-    "paginationText": "{{currentPage}} sur {{totalPages}} paniers abandonnés"
+    "paginationText": "{{currentPage}} sur {{totalPages}} paniers abandonnés",
+    "tooltipDescription": "La liste affiche les paniers pour lesquels un message de récupération automatisé a été envoyé avec succès au client via WhatsApp.",
+    "loadingText": "Chargement des commandes...",
+    "emptyListText": "Votre liste est actuellement vide",
+    "emptyListText2": "Les paniers abandonnés apparaîtront ici une fois que le",
+    "emptyListText3": "message de récupération automatisé aura été envoyé",
+    "emptyListText4": "avec succès au client via WhatsApp."
   },
   "smartBulk": {
     "title": "Envoi Massif Intelligent",
@@ -142,7 +254,9 @@
     "syncMoreCustomers": "Synchroniser plus de clients",
     "syncMoreCustomersDesc": "Pour synchroniser plus de clients avec l'application, sélectionnez une plage de dates et cliquez sur le bouton ci-dessous. Cela importera les données des clients de votre magasin pour les dates sélectionnées.",
     "syncCustomers": "Synchroniser les clients",
-    "syncConfirmationMessage": "Êtes-vous sûr de vouloir synchroniser plus de clients ?"
+    "syncConfirmationMessage": "Êtes-vous sûr de vouloir synchroniser plus de clients ?",
+    "emptyListTitle": "Aucun panier abandonné trouvé",
+    "emptyListDescription": "Essayez de modifier les filtres ou le terme de recherche"
   },
   "settings": {
     "title": "Paramètres",
@@ -201,6 +315,35 @@
     "deactivated": "désactivé",
     "deactivate": "Désactiver",
     "OrSaveAmountPerYear": "ou ${{amount}}/an et économisez {{percent}}%",
-    "BilledAnnually": "facturé ${{amount}} une fois par an"
+    "BilledAnnually": "facturé ${{amount}} une fois par an",
+    "monthly": "Mensuel",
+    "yearly": "Annuel"
+  },
+  "aiSettings": {
+    "title": "Assistant Personnel IA",
+    "chatbotSettings": "Paramètres du Chatbot",
+    "chatbotSettingsDescription": "Personnalisez votre assistant chatbot IA",
+    "enableChatWidget": "Activer le widget de chat IA sur votre boutique",
+    "enableChatWidgetDescription": "Cliquez pour activer le widget de chat IA sur votre boutique. Cela permet aux clients de discuter avec l’assistant IA directement depuis votre site.",
+    "disableChatWidget": "Désactiver le widget de chat IA",
+    "activateChatWidget": "Activer le widget de chat IA",
+    "selectTone": "Sélectionner le ton",
+    "tone": "Ton de la voix",
+    "toneDescription": "Choisissez le ton de votre assistant — professionnel, amical ou légèrement amusant.",
+    "useEmojis": "Utiliser des emojis",
+    "useEmojisDescription": "Activez pour ajouter une touche de personnalité à vos messages grâce aux emojis",
+    "turnOff": "Désactiver",
+    "turnOn": "Activer",
+    "style": "Préférences de style",
+    "trainingTopicsTitle": "Synchronisation IA du magasin",
+    "trainingTopicsDescription": "Connectez votre assistant aux données du magasin et démarrez l’entraînement",
+    "startSync": "Démarrer la synchronisation",
+    "startSyncDescription": "Connectez les données de votre boutique et laissez l’IA commencer à apprendre.",
+    "start": "Démarrer la synchronisation",
+    "turnOnAssistant": "Activer votre assistant WhatsApp",
+    "turnOnAssistantDescription": "Laissez l’IA gérer vos conversations WhatsApp — des questions fréquentes au maintien du dialogue.",
+    "discard": "Annuler",
+    "chatIconStyle": "Style de l’icône de chat",
+    "chatIconPosition": "Position de l’icône de chat"
   }
 }

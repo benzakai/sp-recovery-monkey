@@ -147,7 +147,7 @@ export default function Index() {
             <div className='start_page'>
               <div className='start_main_container setting-page-wrap'>
                 <Text variant="headingLg" as="h5">
-                  {"Welcome to CartKeeper!"}
+                  {t("homePrePayment.title")}
                 </Text>
                 <div className='start_main_container_sub_heading setting-cart-left'>
                 </div>
@@ -159,8 +159,8 @@ export default function Index() {
                   handlePlanSelect={handlePlanSelect}
                   pageType={"home"}
                 />
-                <GettingStartedSection />
-                <Testimonials />
+                <GettingStartedSection t={t} />
+                <Testimonials t={t} />
               </div>
             </div>
           </div >

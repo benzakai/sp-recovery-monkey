@@ -13,13 +13,6 @@ import type { IndexFiltersProps } from '@shopify/polaris';
 import { useState, useCallback, useEffect, Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const emptyStateMarkup = (
-    <EmptySearchResult
-        title={'No abandoned carts found'}
-        description={'Try changing the filters or search term'}
-        withIllustration
-    />
-);
 
 export default function SmartBulkTable({
     setSelectedTableData,
@@ -52,6 +45,14 @@ export default function SmartBulkTable({
     const { mode, setMode } = useSetIndexFiltersMode();
 
     const onHandleCancel = () => { };
+
+    const emptyStateMarkup = (
+        <EmptySearchResult
+            title={t("smartBulk.emptyListTitle")}
+            description={t("smartBulk.emptyListDescription")}
+            withIllustration
+        />
+    );
 
     const handleFiltersQueryChange = useCallback(
         (value: string) => {
