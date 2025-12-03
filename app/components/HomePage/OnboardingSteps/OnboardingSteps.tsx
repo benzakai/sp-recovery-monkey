@@ -18,6 +18,7 @@ import './OnboardingSteps.css';
 import { useNavigate, useOutletContext } from '@remix-run/react';
 import { manageOnboarding } from '~/lib/onboarding/common';
 import { isProPlanOrHigher } from '~/utils/plans';
+import Tick from './SVG/Tick';
 
 export default function OnboardingSteps({ shop, t }: any) {
     const navigate = useNavigate();
@@ -187,7 +188,8 @@ export default function OnboardingSteps({ shop, t }: any) {
     const progress = (completedCount / 6) * 100;
 
     const renderIcon = (done: any) =>
-        done ? <div className="step-done-icon">✔</div> : <div className="custom-step-icon" />;
+        done ? <div className="step-done-icon"><Tick />
+        </div> : <div className="custom-step-icon" />;
 
     const navigateToStep = (link: any) => {
         navigate(link);

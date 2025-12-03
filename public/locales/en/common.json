@@ -317,7 +317,10 @@
     "OrSaveAmountPerYear": "or ${{amount}}/year and save {{percent}}%",
     "BilledAnnually": "billed at ${{amount}} once per year",
     "monthly":"Monthly",
-    "yearly":"Yearly"
+    "yearly":"Yearly",
+    "month":"Month",
+    "year":"Year",
+    "savePerYear":"/year and save"
   },
   "aiSettings": {
     "title": "AI Personal Assistant",

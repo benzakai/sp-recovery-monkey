@@ -317,7 +317,10 @@
         "OrSaveAmountPerYear": "oder ${{amount}}/Jahr und {{percent}}% sparen",
         "BilledAnnually": "einmal jährlich abgerechnet mit ${{amount}}",
         "monthly": "Monatlich",
-        "yearly": "Jährlich"
+        "yearly": "Jährlich",
+        "month": "Monat",
+        "year": "Jahr",
+        "savePerYear": "/Jahr und sparen"
     },
     "aiSettings": {
         "title": "KI-Persönlicher Assistent",

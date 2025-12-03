@@ -35,7 +35,7 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
             monthly: "$19",
             yearly: "$17.1",
             original: "$19",
-            priceLabel: "Month",
+            priceLabel: t("settings.month"),
             percentageSave: "10",
             benefits: [t("settings.starterBenefit1"), t("settings.starterBenefit2")],
         },
@@ -45,7 +45,7 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
             monthly: "$49",
             yearly: "$36.75",
             original: "$49",
-            priceLabel: "Month",
+            priceLabel: t("settings.month"),
             percentageSave: "25",
             benefits: [
                 t("settings.proBenefit1"),
@@ -61,7 +61,7 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
             monthly: "$99",
             yearly: "$59.4",
             original: "$99",
-            priceLabel: "Month",
+            priceLabel: t("settings.month"),
             percentageSave: "40",
             benefits: [
                 t("settings.advancedBenefit1"),
@@ -141,7 +141,7 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
                                         <p className={`text-sm text-green-700 ${planIntervalType === "Monthly" ? "invisible" : 'visible'}`}>
                                             {`$${Math.round(
                                                 Number(plan.yearly!.replace("$", "")) * 12 * 100
-                                            ) / 100}/year and save ${plan.percentageSave}%`}
+                                            ) / 100}${t("settings.savePerYear")} ${plan.percentageSave}%`}
 
                                         </p>
                                     )}

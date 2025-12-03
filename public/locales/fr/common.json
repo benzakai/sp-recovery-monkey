@@ -317,7 +317,10 @@
     "OrSaveAmountPerYear": "ou ${{amount}}/an et économisez {{percent}}%",
     "BilledAnnually": "facturé ${{amount}} une fois par an",
     "monthly": "Mensuel",
-    "yearly": "Annuel"
+    "yearly": "Annuel",
+    "month": "Mois",
+    "year": "Année",
+    "savePerYear": "/an et économiser"
   },
   "aiSettings": {
     "title": "Assistant Personnel IA",

@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Euploria from "../../LetsStartPage/SVGs/Euploria";
 import GreenMuse from "../../LetsStartPage/SVGs/GreenMuse";
 import Kraftathlet from "../../LetsStartPage/SVGs/Kraftathlet";
 import "./Testimonials.css";
 import Klkl from '../../LetsStartPage/SVGs/Klkl';
+import { Button } from '@shopify/polaris';
+import { XIcon } from '@shopify/polaris-icons';
 
 export default function Testimonials({ t }: any) {
     const [current, setCurrent] = useState(0);
     const [selectedTestimonial, setSelectedTestimonial] = useState<any>(null);
+    const [hidden, setHidden] = useState(false);
 
     const testimonials = [
         {
@@ -40,6 +43,13 @@ export default function Testimonials({ t }: any) {
         // }
     ];
 
+    useEffect(() => {
+        const stored = localStorage.getItem("testimonials-cartkeeper");
+        if (stored === "true") {
+            setHidden(true);
+        }
+    }, []);
+
     const prevSlide = () => {
         setCurrent((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
     };
@@ -58,9 +68,31 @@ export default function Testimonials({ t }: any) {
         return 'hidden';
     };
 
+    const handleHide = () => {
+        setHidden(true);
+        localStorage.setItem("testimonials-cartkeeper", "true");
+    };
+
+    if (hidden) return null;
+
     return (
         <div className="mt-8 sm:mt-10 md:mt-16 flex justify-center">
             <div className="w-full md:px-6 relative">
+
+                <div style={{
+                    position: 'absolute',
+                    top: '0px',
+                    right: '0px',
+                    zIndex: 10,
+                }}>
+                    <Button
+                        variant="plain"
+                        onClick={handleHide}
+                        icon={XIcon}
+                        accessibilityLabel="Hide section"
+                    />
+                </div>
+
                 <h2 className="text-center text-xl font-semibold mb-8 test-heading">
                     {t("homePrePayment.testimonials.title")}
                 </h2>
@@ -125,37 +157,39 @@ export default function Testimonials({ t }: any) {
                 </div>
             </div>
 
-            {selectedTestimonial && (
-                <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-                    <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full p-8 relative">
-                        <button
-                            onClick={() => setSelectedTestimonial(null)}
-                            className="absolute top-4 left-4 text-gray-600 text-2xl font-bold"
-                        >
-                            ×
-                        </button>
-                        <div className="flex justify-center mb-4 mt-2">
-                            {[...Array(5)].map((_, i) => (
-                                <img
-                                    key={i}
-                                    src="/images/letsStartPage/star.png"
-                                    alt="Star"
-                                    className="h-6 mx-0.5"
-                                />
-                            ))}
-                        </div>
-                        <p className="text-gray-700 mb-6 text-center">
-                            {selectedTestimonial.fullContent}
-                        </p>
-                        <div className="flex justify-center items-center gap-2">
-                            {React.cloneElement(selectedTestimonial.component, {
-                                className: "ts-svg mt-1",
-                            })}
-                            <span className="font-medium text-gray-700">{selectedTestimonial.company}</span>
+            {
+                selectedTestimonial && (
+                    <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+                        <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full p-8 relative">
+                            <button
+                                onClick={() => setSelectedTestimonial(null)}
+                                className="absolute top-4 left-4 text-gray-600 text-2xl font-bold"
+                            >
+                                ×
+                            </button>
+                            <div className="flex justify-center mb-4 mt-2">
+                                {[...Array(5)].map((_, i) => (
+                                    <img
+                                        key={i}
+                                        src="/images/letsStartPage/star.png"
+                                        alt="Star"
+                                        className="h-6 mx-0.5"
+                                    />
+                                ))}
+                            </div>
+                            <p className="text-gray-700 mb-6 text-center">
+                                {selectedTestimonial.fullContent}
+                            </p>
+                            <div className="flex justify-center items-center gap-2">
+                                {React.cloneElement(selectedTestimonial.component, {
+                                    className: "ts-svg mt-1",
+                                })}
+                                <span className="font-medium text-gray-700">{selectedTestimonial.company}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 }
