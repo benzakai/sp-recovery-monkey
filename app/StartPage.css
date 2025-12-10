@@ -1472,3 +1472,47 @@ h5.Polaris-Text--root.Polaris-Text--headingLg,
         box-shadow: var(--p-shadow-200);
     }
 }
+
+/* Custom css - 01/12 */
+@media screen and (max-width: 500px){
+    .wwd_title {
+        margin-bottom: 8px;
+    }
+
+    .main_head_cust{
+        margin-bottom: 50px;
+    }
+
+    .cust_start_pg_wrap{
+        padding-inline: 10px;
+        padding-bottom: 50px;
+    }
+
+    .cust_dash_title{
+        text-align: left;
+    }
+
+    .cust_card_title{
+        text-align: left;
+    }
+
+    .cust_card_desc{
+        text-align: left;
+    }
+
+    .cust_card_hint{
+        text-align: left;
+    }
+
+    .cust_qr_title{
+        text-align: left;
+    }
+
+    .cust_card_qr{
+        text-align: left;
+    }
+
+    .cust_wwd_last{
+        text-align: left;
+    }
+}

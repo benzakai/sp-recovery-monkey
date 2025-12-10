@@ -11,6 +11,7 @@ import OneSVG from "../SVGs/OneSVG";
 import TwoSVG from "../SVGs/TwoSVG";
 import ThreeSVG from "../SVGs/ThreeSVG";
 import PopUp from "../PopUp";
+import './ConnectionStepSection.css'
 
 export default function ConnectionStepSection() {
     const { t } = useTranslation();
@@ -53,13 +54,13 @@ export default function ConnectionStepSection() {
     return (
         <>
             <div className="bg-white rounded-xl shadow-sm border border-solid p-4 md:p-6">
-                <div className="pb-2 text-center md:text-left">
+                <div className="pb-2 text-center md:text-left cust_card_title">
                     <p className="text-[13px] font-semibold">
                         {t("dashboard.connectionSteps.title")}
                     </p>
                 </div>
                 <div className="text-center md:text-left">
-                    <p className="text-[13px]">
+                    <p className="text-[13px] cust_card_desc">
                         {t("dashboard.connectionSteps.description")}
                     </p>
                 </div>
@@ -70,10 +71,10 @@ export default function ConnectionStepSection() {
                             key={card.id}
                             className="flex flex-col lg:flex-row md:flex-row items-center w-full lg:w-auto"
                         >
-                            <div className="flex flex-col justify-center items-center text-center m-4 welcome_wrapper_content w-full lg:w-auto">
-                                <div className="mb-2">{card.icon}</div>
-                                <div className="flex flex-row items-center gap-2 mb-2">
-                                    <div className="w-6 h-6 md:w-8 md:h-8 lg:w-8 lg:h-8 flex items-center justify-center">
+                            <div className="flex flex-col justify-center items-center text-center m-4 welcome_wrapper_content w-full lg:w-auto cust_card_inner">
+                                <div className="mb-2 cust_step_img">{card.icon}</div>
+                                <div className="flex flex-row items-center gap-2 mb-2 cust_step_iwt">
+                                    <div className="w-6 h-6 md:w-8 md:h-8 lg:w-8 lg:h-8 flex items-center justify-center cust_step_icon">
                                         {React.cloneElement(card.stepIcon, {
                                             width: "100%",
                                             height: "100%",
@@ -100,7 +101,7 @@ export default function ConnectionStepSection() {
                     ))}
                 </div>
 
-                <div className="text-center md:text-left">
+                <div className="text-center md:text-left cust_card_hint">
                     <p className="text-[13px]">
                         {t("dashboard.connectionSteps.watchTutorial")} –{" "}
                         <Link removeUnderline onClick={handleOpenModal}>

@@ -431,14 +431,14 @@ const WelcomeConnect = () => {
             {isLoading ? <div className="flex justify-center items-center h-full w-full">
                 <Spinner accessibilityLabel="Spinner example" size="large" />
             </div> : <div className="bg-[#f1f1f1]">
-                <div className='start_page start_page_wrapper sm:!max-w-[100%]  px-4 md:px-0'>
+                <div className='start_page start_page_wrapper sm:!max-w-[100%]  px-4 md:px-0 cust_start_pg_wrap'>
 
                     <div className="lets_start_main_container dashboard_page_wrap">
-                        <div className="w-full flex justify-center mb-6">
+                        <div className="w-full flex justify-center mb-6 main_head_cust">
                             <BlackFridaySaleBanner btnClass="saleBannerButton" src={"/images/letsStartPage/topBanner.png"} className="cursor-pointer" />
                         </div>
                         <div>
-                            <div className='text-center md:text-left'>
+                            <div className='text-center md:text-left cust_dash_title'>
                                 <Text variant="headingLg" as="h5">
                                     {stateInstance === "authorized" ? t("dashboard.title") : t("dashboard.authTitle")}
                                 </Text>
@@ -462,7 +462,7 @@ const WelcomeConnect = () => {
                             <div className='flex flex-col lg:flex-row gap-8 lg:gap-10 '>
                                 <div className="w-full lg:w-3/12">
                                     <div className="p-4 md:p-6 " >
-                                        <div className='text-center md:text-left'>
+                                        <div className='text-center md:text-left cust_qr_title'>
                                             <p className="text-[13px] font-semibold">
                                                 {t("dashboard.getQr")}
                                             </p>
@@ -550,7 +550,7 @@ const WelcomeConnect = () => {
                                     className="p-4 md:p-6 w-full lg:w-3/5"
                                 >
                                     <div className=" text-center md:text-left mb-6">
-                                        <p className="text-[13px] font-semibold">
+                                        <p className="text-[13px] font-semibold cust_card_qr">
                                             {t("dashboard.messageBoxTitle")}
                                         </p>
                                     </div>

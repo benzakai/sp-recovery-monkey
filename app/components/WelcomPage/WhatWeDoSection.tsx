@@ -66,13 +66,13 @@ export default function WhatWeDoSection({ t }: any) {
 
     return (
         <div className='mt-6 px-4 md:px-0'>
-            <div className='mb-4 text-center md:text-left'>
-                <p className="text-[13px] font-semibold">
+            <div className='mb-4 text-center md:text-left wwd_title'>
+                <p className="text-[13px] font-semibold cust_wwd_last">
                     {t("homePostPayment.whatWeDo.title")}
                 </p>
             </div>
             <div className='text-center md:text-left'>
-                <p className="text-[13px]">
+                <p className="text-[13px] cust_wwd_last">
                     {slides[current].caption}
                 </p>
             </div>
