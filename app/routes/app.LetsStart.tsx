@@ -6,7 +6,7 @@ import fireStoreCreateService from '~/services/fireStoreCreateService';
 import { useTranslation } from 'react-i18next';
 import PlanSection from '~/components/Settings/PlanSection';
 import Testimonials from '~/components/HomePage/Testimonials/Testimonials';
-import BlackFridaySaleBanner from '~/components/global/BlackFridaySaleBanner';
+import TopSaleBanner from '~/components/global/TopSaleBanner';
 
 export const action = async ({ request }: any) => {
     const { session } = await authenticate.admin(request)
@@ -67,7 +67,7 @@ const LetsStart = () => {
         <div className="body justify-center">
             <div className="start_page">
                 <div className="w-full flex justify-center mb-12">
-                    <BlackFridaySaleBanner btnClass="saleBannerButton" src={"/images/letsStartPage/topBanner.png"} className='cursor-pointer' />
+                    <TopSaleBanner btnClass="saleBannerButton" className='cursor-pointer' />
                 </div>
 
                 <div className="letstart">

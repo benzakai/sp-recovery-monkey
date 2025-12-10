@@ -28,7 +28,7 @@ export default function SettingsSecondBlock({
                         onClick={() => handleActivateButton(buttonType)}
                     >{activateButtonTitle}</Button>}
                 </InlineStack>
-                <p className="text-[13px] text-wrap mb-2 mt-1">
+                <p className="text-[13px] text-wrap mb-2 mt-1 cust_chatbot_desc">
                     {description}
                 </p>
                 {children}

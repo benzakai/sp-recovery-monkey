@@ -12,7 +12,7 @@ import SaveBarComponent from '~/components/SaveBarComponent';
 import WhatsappTest from '~/components/WelcomPage/WhatsappTest/WhatsappTest';
 import { authenticate } from '~/shopify.server';
 import '../components/SmartBulk/SmartBulk.css'
-import BlackFridaySaleBanner from '~/components/global/BlackFridaySaleBanner';
+import TopSaleBanner from '~/components/global/TopSaleBanner';
 
 export const loader = async ({ request }: any) => {
     try {
@@ -273,9 +273,8 @@ export default function SmartBulk() {
                                 >
                                     <div className="mb-4">
                                         <div className="banner_img">
-                                            <BlackFridaySaleBanner
+                                            <TopSaleBanner
                                                 btnClass="saleBannerButton"
-                                                src={"/images/letsStartPage/topBanner.png"}
                                                 className='long_banner_smart_page'
                                             />
                                         </div>

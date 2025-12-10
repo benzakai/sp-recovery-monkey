@@ -3,7 +3,7 @@ import { useNavigate } from '@remix-run/react';
 
 let isBannerHidden = false;
 
-export default function BlackFridaySaleBanner({ className, src, btnClass }: any) {
+export default function TopSaleBanner({ className, src="/images/banners/topBanner.png", btnClass }: any) {
   const navigate = useNavigate();
   const [isImageVisible, setIsImageVisible] = React.useState(!isBannerHidden);
   const [isLoaded, setIsLoaded] = React.useState(false);

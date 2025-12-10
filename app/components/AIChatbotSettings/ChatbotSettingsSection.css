@@ -1,0 +1,30 @@
+/* Custom css - 02/12 */
+
+@media screen and (max-width: 500px){
+    .cust_chatbot_desc{
+        max-width: 100% !important;
+    }
+
+    .cust_chatbot_icon{
+        flex-direction: column !important;
+    }
+    
+    .cust_chatbot_blocks{
+        width: fit-content !important;
+        flex-direction: column;
+    }
+
+    .cust_chatbot_title{
+        justify-content: start;
+        align-items: start;
+    }
+
+    .cust_chatbot_card{
+        padding-top: 0;
+        gap: 16px;
+    }
+
+    .cust_chatbot_second_card{
+        gap: 16px;
+    }
+}

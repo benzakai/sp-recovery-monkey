@@ -6,6 +6,7 @@ import { useState } from 'react';
 import AlienSVG from '../SVGs/AlienSVG';
 import ChatIconSettings from './ChatIconSettings';
 import { isAdvancePlanOrHigher } from '~/utils/plans';
+import './ChatbotSettingsSection.css';
 
 export default function ChatbotSettingsSection({
     t,
@@ -34,7 +35,7 @@ export default function ChatbotSettingsSection({
 
     return (
         <div className='setting-block'>
-            <div className='settings_secion-1 ai_parent first-card'>
+            <div className='settings_secion-1 ai_parent first-card cust_chatbot_card'>
                 <div className='start_main_container_sub_heading left-content'>
                     <p className="text-[13px] font-semibold mb-[6px]">
                         {t("aiSettings.chatbotSettings")}
@@ -139,7 +140,7 @@ export default function ChatbotSettingsSection({
                     </BlockStack>
                 </div>
             </div>
-            <div className='settings_secion-1 ai_parent first-card second-card mt-4'>
+            <div className='settings_secion-1 ai_parent first-card second-card mt-4 cust_chatbot_second_card'>
                 <div className='start_main_container_sub_heading left-content'>
                     <p className="text-[13px] font-semibold mb-[6px]">
                         {t("aiSettings.trainingTopicsTitle")}

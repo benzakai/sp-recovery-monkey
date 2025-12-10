@@ -18,7 +18,7 @@ const renderOption = (
       <label
         key={id}
         className={`relative flex flex-col items-center ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
-          }`}
+          } cust_chatbot_icon`}
       >
         <img
           src={src}
@@ -107,14 +107,14 @@ const ChatIconSettings = ({ setAISettings, aiSettings, disabled = false, t }: an
       <p className="text-[13px]">
         {t("aiSettings.chatIconStyle")}
       </p>
-      <div className="flex gap-6 items-center mb-6 mt-2 ml-5">
+      <div className="flex gap-6 items-center mb-6 mt-2 ml-5 cust_chatbot_blocks">
         {renderOption(iconStyles, aiSettings, setAISettings, 'chat-icon-style', disabled)}
       </div>
 
       <p className="text-[13px]">
         {t("aiSettings.chatIconPosition")}
       </p>
-      <div className="flex gap-6 items-center mt-2 ml-5">
+      <div className="flex gap-6 items-center mt-2 ml-5 cust_chatbot_blocks">
         {renderOption(iconPositions, aiSettings, setAISettings, 'chat-icon-position', disabled)}
       </div>
     </>

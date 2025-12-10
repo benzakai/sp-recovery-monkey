@@ -7,7 +7,7 @@ import ChatbotSettingsSection from '~/components/AIChatbotSettings/ChatbotSettin
 import { authenticate } from '~/shopify.server';
 import { useLoaderData, useOutletContext } from '@remix-run/react';
 import SaveBarComponent from '~/components/SaveBarComponent';
-import BlackFridaySaleBanner from '~/components/global/BlackFridaySaleBanner';
+import TopSaleBanner from '~/components/global/TopSaleBanner';
 import { manageOnboarding } from '~/lib/onboarding/common';
 
 export const loader = async ({ request }: any) => {
@@ -295,12 +295,11 @@ const AIChatbot = () => {
         <div className='start_page ai_personal padding_zero'>
             <Page fullWidth>
                 <div className='bulk-box top-parent-aichatbot'>
-                    <BlackFridaySaleBanner
+                    <TopSaleBanner
                         btnClass="saleBannerButton"
                         className='cursor-pointer'
-                        src={"/images/letsStartPage/topBanner.png"}
                     />
-                    <div className='flex flex-row gap-3 items-center mt-6 mb-4'>
+                    <div className='flex flex-row gap-3 items-center mt-6 mb-4 cust_chatbot_title'>
                         <Text variant="headingLg" as="h5">
                             {t("aiSettings.title")}
                         </Text>

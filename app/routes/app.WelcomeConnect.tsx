@@ -10,7 +10,7 @@ import DashboardOverview from '~/components/WelcomPage/DashboardOverview';
 import { useLoaderData } from '@remix-run/react';
 import WhatsappTest from '~/components/WelcomPage/WhatsappTest/WhatsappTest';
 import { authenticate } from '~/shopify.server';
-import BlackFridaySaleBanner from '~/components/global/BlackFridaySaleBanner';
+import TopSaleBanner from '~/components/global/TopSaleBanner';
 import { manageOnboarding } from '~/lib/onboarding/common';
 // import { trackLCP } from '~/utils/lcpTracker';
 
@@ -435,7 +435,7 @@ const WelcomeConnect = () => {
 
                     <div className="lets_start_main_container dashboard_page_wrap">
                         <div className="w-full flex justify-center mb-6 main_head_cust">
-                            <BlackFridaySaleBanner btnClass="saleBannerButton" src={"/images/letsStartPage/topBanner.png"} className="cursor-pointer" />
+                            <TopSaleBanner btnClass="saleBannerButton" className="cursor-pointer" />
                         </div>
                         <div>
                             <div className='text-center md:text-left cust_dash_title'>

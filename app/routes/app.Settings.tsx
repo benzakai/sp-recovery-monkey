@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import PlanSection from '~/components/Settings/PlanSection';
 import SettingsSection from '~/components/Settings/SettingsSection';
 import SaveBarComponent from '~/components/SaveBarComponent';
-import BlackFridaySaleBanner from '~/components/global/BlackFridaySaleBanner';
+import TopSaleBanner from '~/components/global/TopSaleBanner';
 
 
 export const action = async ({ request }: any) => {
@@ -434,7 +434,7 @@ const Settings = () => {
         <div className="body">
             <div className='start_page'>
                 <div className='start_main_container setting-page-wrap'>
-                    <BlackFridaySaleBanner btnClass="saleBannerButton" src={"/images/letsStartPage/topBanner.png"} className="long_banner_setting_page" />
+                    <TopSaleBanner btnClass="saleBannerButton" className="long_banner_setting_page" />
                     <div className='flex flex-row justify-between mt-6 mb-4'>
                         <div className='settings-title'>
                             <Text variant="headingLg" as="h5">

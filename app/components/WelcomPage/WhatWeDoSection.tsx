@@ -65,7 +65,7 @@ export default function WhatWeDoSection({ t }: any) {
     if (hidden) return null;
 
     return (
-        <div className='mt-6 px-4 md:px-0'>
+        <div className='mt-6 px-4 md:px-0 cust_wwd_wrapper'>
             <div className='mb-4 text-center md:text-left wwd_title'>
                 <p className="text-[13px] font-semibold cust_wwd_last">
                     {t("homePostPayment.whatWeDo.title")}

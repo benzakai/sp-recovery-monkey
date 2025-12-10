@@ -4,7 +4,7 @@ import '../AbandonedCarts.css';
 import { Card, DataTable, Text, Select, Spinner } from '@shopify/polaris';
 import { useTranslation } from 'react-i18next';
 import { DateRangePicker } from '~/components/DateRangePicker';
-import BlackFridaySaleBanner from '~/components/global/BlackFridaySaleBanner';
+import TopSaleBanner from '~/components/global/TopSaleBanner';
 import Tooltip from '~/components/global/Tooltip/Tooltip';
 import '../components/AbandonedList/AbandonedList.css'
 import EmptyCart from '~/components/AbandonedList/SVGs/EmptyCart';
@@ -106,9 +106,8 @@ export default function NewAbandonedList() {
             <div className='start_page padding_zero'>
                 <div className='start_main_container abandoned_main_wrap'>
 
-                    <BlackFridaySaleBanner
+                    <TopSaleBanner
                         btnClass="saleBannerButton"
-                        src={"/images/letsStartPage/topBanner.png"}
                         className='abandoned_banner_welcome_page cursor-pointer'
                     />
 

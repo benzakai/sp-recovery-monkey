@@ -431,7 +431,7 @@ input::placeholder {
     position: absolute;
     top: 0.5rem;
     right: 0.5rem;
-    background-color: #214e60;
+    background-color: #343954;
     color: #f8fafc;
     border-radius: 50%;
     width: 1.5rem;
@@ -443,15 +443,15 @@ input::placeholder {
     font-weight: 700;
     transition: all 0.2s ease-in-out;
     z-index: 10;
-    border: 1.5px solid #214e60;
+    border: 1.5px solid #3c4160;
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     line-height: 1;
 }
 
 .saleBannerButton:hover {
-    background-color: #1a3d4d;
-    border-color: #1a3d4d;
+    background-color: #3f4566;
+    border-color: #3f4566;
     transform: scale(1.05);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
