@@ -41,13 +41,13 @@
     },
     "icons": {
       "recoveredCarts": "Carritos recuperados",
-      "recoveredCartsDescription": "Clientes que completaron su compra.",
+      "recoveredCartsDescription": "La cantidad de carritos abandonados que se convirtieron exitosamente en ventas.",
       "abandonedCarts": "Carritos abandonados",
-      "abandonedCartsDescription": "Imagina las ganancias que perdiste con estos carritos abandonados.",
+      "abandonedCartsDescription": "Clientes que están esperando para completar su compra.",
       "recoveredRevenue": "Ingresos recuperados",
-      "recoveredRevenueDescription": "Cuando generas ingresos con nuestra ayuda, aparecerán aquí.",
-      "ACRRate": "Tasa de recuperación de carritos (ACR)",
-      "ACRRateDescription": "El porcentaje de ingresos que están pendientes de recuperación.",
+      "recoveredRevenueDescription": "Las ventas totales generadas para usted por Cartkeeper.",
+      "ACRRate": "Tasa ACR",
+      "ACRRateDescription": "ACR es la proporción entre carritos abandonados y ventas completadas.",
       "dashboard": "Panel de control",
       "dashboardDescription": "Haz un seguimiento de tus carritos recuperados y tus ingresos.",
       "customerList": "Lista de clientes",
@@ -172,8 +172,8 @@
     "authTitle": "Vamos a recuperar algunos carritos",
     "disconnectButtonText": "Desconectar",
     "connectionStatusViewButton": "Mostrar estado de la conexión",
-    "messageBoxTitle": "Escribe/edita el mensaje que se enviará a tus clientes",
-    "authSubTitle": "Ve tus ingresos, escribe mensajes y conéctate para enviar mensajes",
+    "messageBoxTitle": "Escriba/edite el mensaje que se envía a sus clientes",
+    "authSubTitle": "Vea sus ingresos, escriba un mensaje y conéctese para enviar mensajes",
     "subTitle": "Solo 3 pasos sencillos para comenzar — luego deja que la app haga la magia",
     "overview": "Resumen",
     "connectionSteps": {
@@ -192,7 +192,7 @@
     "getQr": "Obtener código QR de CartKeeper",
     "getQrDescription": "¡Ahora puedes enviar y recibir mensajes de WhatsApp fácilmente!",
     "qrDescription": "Escanea el código QR en WhatsApp en la sección de Dispositivos vinculados",
-    "connectedDescription": "Puedes verificar el estado de la conexión en cualquier momento",
+    "connectedDescription": "Puede comprobar el estado de la conexión en cualquier momento.",
     "useArticle": "Usa este artículo para obtener frases ganadoras de conversión"
   },
   "abandonedList": {

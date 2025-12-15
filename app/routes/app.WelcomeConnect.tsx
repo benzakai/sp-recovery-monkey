@@ -1,4 +1,4 @@
-import { Card, Button, Spinner, Text, Link, TextField, Icon, Tooltip } from '@shopify/polaris';
+import { Card, Button, Spinner, Text, Link, TextField, Icon } from '@shopify/polaris';
 import React, { useEffect, useState } from 'react';
 import '../StartPage.css';
 import AlienSVG from '~/components/SVGs/AlienSVG';
@@ -12,6 +12,7 @@ import WhatsappTest from '~/components/WelcomPage/WhatsappTest/WhatsappTest';
 import { authenticate } from '~/shopify.server';
 import TopSaleBanner from '~/components/global/TopSaleBanner';
 import { manageOnboarding } from '~/lib/onboarding/common';
+import Tooltip from '~/components/global/Tooltip/Tooltip';
 // import { trackLCP } from '~/utils/lcpTracker';
 
 export const loader = async ({ request }: any) => {
@@ -115,8 +116,6 @@ const WelcomeConnect = () => {
             }
         } catch (error) {
             console.log("error on fetchSettings", error);
-        } finally {
-            setLoading(false)
         }
     };
 
@@ -428,9 +427,7 @@ const WelcomeConnect = () => {
 
     return (
         <>
-            {isLoading ? <div className="flex justify-center items-center h-full w-full">
-                <Spinner accessibilityLabel="Spinner example" size="large" />
-            </div> : <div className="bg-[#f1f1f1]">
+            <div className="bg-[#f1f1f1]">
                 <div className='start_page start_page_wrapper sm:!max-w-[100%]  px-4 md:px-0 cust_start_pg_wrap'>
 
                     <div className="lets_start_main_container dashboard_page_wrap">
@@ -440,23 +437,17 @@ const WelcomeConnect = () => {
                         <div>
                             <div className='text-center md:text-left cust_dash_title'>
                                 <Text variant="headingLg" as="h5">
-                                    {stateInstance === "authorized" ? t("dashboard.title") : t("dashboard.authTitle")}
+                                    {t("dashboard.title")}
                                 </Text>
                             </div>
                         </div>
 
                         <div className='mb-4'>
                             <p className='text-[13px] md:text-left mt-[6px] mb-4'>{
-                                stateInstance === "authorized" ?
-                                    t("dashboard.authSubTitle")
-                                    :
-                                    t("dashboard.subTitle")
+                                t("dashboard.authSubTitle")
                             }
                             </p>
-                            {stateInstance === "authorized" ?
-                                <DashboardOverview getPageData={getPageData} forPageType="WelcomeConnect" /> :
-                                <ConnectionStepSection />
-                            }
+                            <DashboardOverview getPageData={getPageData} forPageType="WelcomeConnect" />
                         </div>
                         <Card >
                             <div className='flex flex-col lg:flex-row gap-8 lg:gap-10 '>
@@ -572,7 +563,7 @@ const WelcomeConnect = () => {
                                                     placeholder={t("settings.messageBoxHeadingPlaceholder")}
                                                 />
                                                 <textarea
-                                                    className="w-full h-32 md:h-44 text-base border-none outline-none resize-none"
+                                                    className="w-full h-36 md:h-64 text-base border-none outline-none resize-none"
                                                     value={customMessage.content}
                                                     onChange={(e) => {
                                                         setCustomMessage((prev: any) => ({
@@ -584,12 +575,21 @@ const WelcomeConnect = () => {
                                                 />
                                             </div>}
                                     </Card>
-                                    <div className='mt-[6px] text-center md:text-left p-4 md:p-0'>
-                                        <p className="text-[13px]">
-                                            {t("dashboard.useArticle")} - <Link url="#" removeUnderline>link here</Link>
+                                    <div className="flex items-center mt-[8px] md:text-left p-4 md:p-0 gap-1">
+                                        <p className="text-center md:text-left">
+                                            We recommend using a consistent structure for the text message
                                         </p>
+
+                                        <Tooltip>
+                                            <p className="text-[9px] font-semibold text-[#5C5F62] leading-3">
+                                                We recommend using a consistent structure for the text message.
+                                            </p>
+                                            <p className="text-[9px] text-[#5C5F62] leading-3">
+                                                Start by showing the person behind the message. For example, if it’s a women’s brand, it’s often better to use a female name as the sender.
+                                            </p>
+                                        </Tooltip>
                                     </div>
-                                    <WhatsappTest shop={shop} t={t} />
+                                    {/* <WhatsappTest shop={shop} t={t} /> */}
                                 </div>
                             </div>
                         </Card>
@@ -598,7 +598,7 @@ const WelcomeConnect = () => {
                         </div>
                     </div>
                 </div >
-            </div >}
+            </div >
             <SaveBarComponent
                 onSave={handleSaveMessage}
                 isLoading={isSaveButtonLoading}

@@ -40,14 +40,14 @@
             "aiChatbotSyncingStarted": "Die Synchronisierung wurde erfolgreich gestartet."
         },
         "icons": {
-            "recoveredCarts": "Warenkörbe wiederhergestellt",
-            "recoveredCartsDescription": "Kunden, die ihren Kauf abgeschlossen haben.",
+            "recoveredCarts": "Wiederhergestellte Warenkörbe",
+            "recoveredCartsDescription": "Die Anzahl der abgebrochenen Warenkörbe, die erfolgreich in Verkäufe umgewandelt wurden.",
             "abandonedCarts": "Abgebrochene Warenkörbe",
-            "abandonedCartsDescription": "Stell dir die Einnahmen vor, die du mit diesen abgebrochenen Warenkörben verloren hast.",
-            "recoveredRevenue": "Wiederhergestellte Einnahmen",
-            "recoveredRevenueDescription": "Wenn du mit unserer Hilfe Einnahmen erzielst, werden sie hier angezeigt.",
-            "ACRRate": "Warenkorb-Wiederherstellungsrate (ACR)",
-            "ACRRateDescription": "Der Prozentsatz der Einnahmen, die noch wiederhergestellt werden müssen.",
+            "abandonedCartsDescription": "Kunden, die darauf warten, ihren Kauf abzuschließen.",
+            "recoveredRevenue": "Wiedergewonnener Umsatz",
+            "recoveredRevenueDescription": "Der Gesamtumsatz, der für Sie durch Cartkeeper generiert wurde.",
+            "ACRRate": "ACR-Rate",
+            "ACRRateDescription": "ACR ist das Verhältnis zwischen abgebrochenen Warenkörben und abgeschlossenen Verkäufen.",
             "dashboard": "Dashboard",
             "dashboardDescription": "Verfolge deine wiederhergestellten Warenkörbe und deine Einnahmen.",
             "customerList": "Kundenliste",
@@ -172,8 +172,8 @@
         "authTitle": "Lass uns ein paar Warenkörbe zurückholen",
         "disconnectButtonText": "Trennen",
         "connectionStatusViewButton": "Verbindungsstatus anzeigen",
-        "messageBoxTitle": "Schreibe/bearbeite die Nachricht, die an deine Kunden gesendet wird",
-        "authSubTitle": "Sieh dir deinen Umsatz an, schreibe Nachrichten und verbinde dich, um Mitteilungen zu senden",
+        "messageBoxTitle": "Schreiben/bearbeiten Sie die Nachricht, die an Ihre Kunden gesendet wird",
+        "authSubTitle": "Sehen Sie Ihren Umsatz ein, schreiben Sie eine Nachricht und verbinden Sie sich, um Nachrichten zu senden",
         "subTitle": "Nur 3 einfache Schritte, um loszulegen – dann übernimmt die App die Magie",
         "overview": "Übersicht",
         "connectionSteps": {
@@ -192,7 +192,7 @@
         "getQr": "CartKeeper-QR-Code erhalten",
         "getQrDescription": "Du kannst jetzt ganz einfach WhatsApp-Nachrichten senden und empfangen!",
         "qrDescription": "Scanne den QR-Code in WhatsApp unter 'Verknüpfte Geräte'",
-        "connectedDescription": "Du kannst den Verbindungsstatus jederzeit überprüfen",
+        "connectedDescription": "Sie können den Verbindungsstatus jederzeit überprüfen.",
         "useArticle": "Nutze diesen Artikel für überzeugende Conversion-Formulierungen"
     },
     "abandonedList": {

@@ -5,12 +5,12 @@ import {
 import './Tooltip.css'
 import { Icon } from '@shopify/polaris';
 
-export default function Tooltip({ children, className }: any) {
+export default function Tooltip({ children, className, minWidth = "350px" }: any) {
     const [tooltipVisible, setTooltipVisible] = useState(false);
 
     return (
         <div
-            className={`relative inline-flex items-center ${className || ''}`}
+            className={`relative inline-flex align-middle ${className || ''}`}
             onMouseEnter={() => setTooltipVisible(true)}
             onMouseLeave={() => setTooltipVisible(false)}
             onFocus={() => setTooltipVisible(true)}
@@ -23,7 +23,7 @@ export default function Tooltip({ children, className }: any) {
             </div>
 
             {tooltipVisible && (
-                <div id="whatsapp-tooltip" role="tooltip" className="whatsapp-tooltip">
+                <div id="whatsapp-tooltip" role="tooltip" className="whatsapp-tooltip" style={{ minWidth }}>
                     <div className="whatsapp-tooltip-content">
                         {children}
                     </div>

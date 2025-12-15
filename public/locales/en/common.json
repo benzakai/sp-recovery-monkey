@@ -41,13 +41,13 @@
     },
     "icons": {
       "recoveredCarts": "Recovered Carts",
-      "recoveredCartsDescription": "Customers who completed their purchase.",
+      "recoveredCartsDescription": "The number of abandoned carts successfully turned into sales.",
       "abandonedCarts": "Abandoned Carts",
-      "abandonedCartsDescription": "Picture the profits you missed from these abandoned carts.",
+      "abandonedCartsDescription": "Customers waiting for you to complete their purchase.",
       "recoveredRevenue": "Recovered Revenue",
-      "recoveredRevenueDescription": "When you make money with our help, it appears here",
+      "recoveredRevenueDescription": "The total sales generated for you by Cartkeeper.",
       "ACRRate": "ACR Rate",
-      "ACRRateDescription": "The amount of income waiting for recovery.",
+      "ACRRateDescription": "ACR is the ratio between abandoned carts and completed sales.",
       "dashboard": "Dashboard",
       "dashboardDescription": "Track your recovered carts and revenue",
       "customerList": "Customer List",
@@ -56,51 +56,51 @@
       "bulkCampaignDescription": "Message all your store customers"
     },
     "whatsappTest": {
-      "retryMessage":"You can retry sending another test in {{cooldown}} seconds.",
-      "invalidPhone":"Invalid phone number. Make sure it includes the + and country code.",
-      "testLimit":"Test limit reached. You have already tried {{MAX_TESTS}} times.",
-      "errorSendingMessage":"Something went wrong while sending message.",
-      "successSendingMessage":"Test message sent! You’ll receive it on WhatsApp shortly.",
-      "errorSendingMessageLater":"Something went wrong while sending message, please try again later",
-      "testMessage":"Test WhatsApp message",
-      "howItLooks":"Send a test WhatsApp message to see how it looks.",
-      "enterPhoneNumber":"Enter your phone number",
-      "includeCountryCode":"Include the country code starting with +",
-      "sendTest":"Send Test"
+      "retryMessage": "You can retry sending another test in {{cooldown}} seconds.",
+      "invalidPhone": "Invalid phone number. Make sure it includes the + and country code.",
+      "testLimit": "Test limit reached. You have already tried {{MAX_TESTS}} times.",
+      "errorSendingMessage": "Something went wrong while sending message.",
+      "successSendingMessage": "Test message sent! You’ll receive it on WhatsApp shortly.",
+      "errorSendingMessageLater": "Something went wrong while sending message, please try again later",
+      "testMessage": "Test WhatsApp message",
+      "howItLooks": "Send a test WhatsApp message to see how it looks.",
+      "enterPhoneNumber": "Enter your phone number",
+      "includeCountryCode": "Include the country code starting with +",
+      "sendTest": "Send Test"
     }
   },
   "homePrePayment": {
     "title": "Welcome to CartKeeper!",
-    "gettingStarted":{
-      "dashboard":"Dashboard",
-      "dashboardDescription":"Track your recovered carts and revenue",
-      "customerList":"Customer List",
-      "customerListDescription":"View your CartKeeper purchases",
-      "bulkCampaign":"Bulk Campaign",
-      "bulkCampaignDescription":"Message all your store customers",
-      "aiChatbot":"AI Chatbot",
-      "aiChatbotDescription":"Engage customers and boost sales",
-      "whatsappChat":"WhatsApp Chat",
-      "whatsappChatDescription":"Talk to us directly via WhatsApp chat to get help with your question.",
-      "whatsappLinkText":"Message us on WhatsApp",
-      "bookADemo":"Book a Demo",
-      "bookADemoDescription":"Book a free demo with our support team for setup assistance.",
-      "bookADemoLinkText":"Book a demo",
-      "videoTutorial":"Video Tutorial",
-      "videoTutorialDescription":"Watch video tutorial for connecting CartKeeper to WhatsApp.",
-      "videoTutorialLinkText":"Watch tutorial",
-      "title":"Let's recover some carts",
-      "subTitle":"How to start with CartKeeper?",
-      "weAreHereForYou":"We're Here For You"
+    "gettingStarted": {
+      "dashboard": "Dashboard",
+      "dashboardDescription": "Track your recovered carts and revenue",
+      "customerList": "Customer List",
+      "customerListDescription": "View your CartKeeper purchases",
+      "bulkCampaign": "Bulk Campaign",
+      "bulkCampaignDescription": "Message all your store customers",
+      "aiChatbot": "AI Chatbot",
+      "aiChatbotDescription": "Engage customers and boost sales",
+      "whatsappChat": "WhatsApp Chat",
+      "whatsappChatDescription": "Talk to us directly via WhatsApp chat to get help with your question.",
+      "whatsappLinkText": "Message us on WhatsApp",
+      "bookADemo": "Book a Demo",
+      "bookADemoDescription": "Book a free demo with our support team for setup assistance.",
+      "bookADemoLinkText": "Book a demo",
+      "videoTutorial": "Video Tutorial",
+      "videoTutorialDescription": "Watch video tutorial for connecting CartKeeper to WhatsApp.",
+      "videoTutorialLinkText": "Watch tutorial",
+      "title": "Let's recover some carts",
+      "subTitle": "How to start with CartKeeper?",
+      "weAreHereForYou": "We're Here For You"
     },
-    "testimonials":{
-      "content1":"“Great app, basically plug and play and worked from day 1, devs are quick to respond to questions, highly recommend!”",
-      "fullContent1":"“Great app, basically plug and play and worked from day 1, devs are quick to respond to questions, highly recommend!”",
-      "content2":"“There is no way to fully describe how much I do recommend to anyone to use this app. Efficient, fast, targeting th...",
-      "fullContent2":"“There is no way to fully describe how much I do recommend to anyone to use this app. Efficient, fast, targeting the intention of buying. App allows you to have a custom message so you can add special code and info over the order. Messages are sent directly into WhatsApp chat without any kind of interaction besides than the scope of the app: generate a sell. The team is always supporting for help directly in WhatsApp (ofc!) which makes it fast and easy. I repeat one point which I think makes Cartkeeper special: it trigger the intention of buying, not the abandoned cart. Super recommended!”",
-      "content3":"“I started using Cartkeeper, had a few issues and the support team ALWAYS responded extremely fast and sol...",
-      "fullContent3":"“I started using CartKeeper, had a few issues and the support team ALWAYS responded extremely fast and solved my queries fast and efficiently! If I would to choose between any other app out there I would choose CartKeeper. Amazing team and amazing value this app brings. Weiter so!”",
-      "title":"Discover Why Merchants Choose CartKeeper"
+    "testimonials": {
+      "content1": "“Great app, basically plug and play and worked from day 1, devs are quick to respond to questions, highly recommend!”",
+      "fullContent1": "“Great app, basically plug and play and worked from day 1, devs are quick to respond to questions, highly recommend!”",
+      "content2": "“There is no way to fully describe how much I do recommend to anyone to use this app. Efficient, fast, targeting th...",
+      "fullContent2": "“There is no way to fully describe how much I do recommend to anyone to use this app. Efficient, fast, targeting the intention of buying. App allows you to have a custom message so you can add special code and info over the order. Messages are sent directly into WhatsApp chat without any kind of interaction besides than the scope of the app: generate a sell. The team is always supporting for help directly in WhatsApp (ofc!) which makes it fast and easy. I repeat one point which I think makes Cartkeeper special: it trigger the intention of buying, not the abandoned cart. Super recommended!”",
+      "content3": "“I started using Cartkeeper, had a few issues and the support team ALWAYS responded extremely fast and sol...",
+      "fullContent3": "“I started using CartKeeper, had a few issues and the support team ALWAYS responded extremely fast and solved my queries fast and efficiently! If I would to choose between any other app out there I would choose CartKeeper. Amazing team and amazing value this app brings. Weiter so!”",
+      "title": "Discover Why Merchants Choose CartKeeper"
     }
   },
   "homePostPayment": {
@@ -172,8 +172,8 @@
     "authTitle": "Let's recover some carts",
     "disconnectButtonText": "Disconnect",
     "connectionStatusViewButton": "Show connection status",
-    "messageBoxTitle": "Write/edit the message that sent's to your customers",
-    "authSubTitle": "View your revenue, write message, and connect to send messages",
+    "messageBoxTitle": "Write/edit the message that is sent to your customers",
+    "authSubTitle": "View your revenue, write a message, and connect to send messages",
     "subTitle": "Just 3 easy steps to get started - then let the app do the magic",
     "overview": "Overview",
     "connectionSteps": {
@@ -192,7 +192,7 @@
     "getQr": "Get CartKeeper QR code",
     "getQrDescription": "You can now easily send and receive WhatsApp messages!",
     "qrDescription": "Scan the QR code in WhatsApp under Linked Devices settings",
-    "connectedDescription": "You can check the connection status anytime",
+    "connectedDescription": "You can check the connection status anytime.",
     "useArticle": "Use this article for winning conversion phrasing"
   },
   "abandonedList": {
@@ -202,12 +202,12 @@
     "tableColumnHeading2": "Name",
     "tableColumnHeading3": "Checkout price",
     "paginationText": "{{currentPage}} of {{totalPages}} Abandoned carts",
-    "tooltipDescription":"The list displays carts that received an automated recovery message successfully sent to the customer via WhatsApp.",
-    "loadingText":"Loading checkouts...",
-    "emptyListText":"Your list is currently empty",
-    "emptyListText2":"Abandoned carts will appear here once the",
-    "emptyListText3":"automated recovery message is successfully",
-    "emptyListText4":"sent to the customer via WhatsApp."
+    "tooltipDescription": "The list displays carts that received an automated recovery message successfully sent to the customer via WhatsApp.",
+    "loadingText": "Loading checkouts...",
+    "emptyListText": "Your list is currently empty",
+    "emptyListText2": "Abandoned carts will appear here once the",
+    "emptyListText3": "automated recovery message is successfully",
+    "emptyListText4": "sent to the customer via WhatsApp."
   },
   "smartBulk": {
     "title": "Smart Bulk",
@@ -255,8 +255,8 @@
     "syncMoreCustomersDesc": "To sync more customers to the app, select a date range and click the button below. This will import customer data from your store for the selected dates.",
     "syncCustomers": "Sync Customers",
     "syncConfirmationMessage": "Are you sure you want to sync more customers?",
-    "emptyListTitle":"No abandoned carts found",
-    "emptyListDescription":"Try changing the filters or search term"
+    "emptyListTitle": "No abandoned carts found",
+    "emptyListDescription": "Try changing the filters or search term"
   },
   "settings": {
     "title": "Settings",
@@ -316,11 +316,11 @@
     "deactivate": "Deactivate",
     "OrSaveAmountPerYear": "or ${{amount}}/year and save {{percent}}%",
     "BilledAnnually": "billed at ${{amount}} once per year",
-    "monthly":"Monthly",
-    "yearly":"Yearly",
-    "month":"Month",
-    "year":"Year",
-    "savePerYear":"/year and save"
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "month": "Month",
+    "year": "Year",
+    "savePerYear": "/year and save"
   },
   "aiSettings": {
     "title": "AI Personal Assistant",
@@ -346,7 +346,7 @@
     "turnOnAssistant": "Turn on your WhatsApp assistant",
     "turnOnAssistantDescription": "Let the AI handle chats for you on WhatsApp — from answering common questions to keeping the conversation flowing.",
     "discard": "Discard",
-    "chatIconStyle":"Chat Icon Style",
-    "chatIconPosition":"Chat Icon Position"
+    "chatIconStyle": "Chat Icon Style",
+    "chatIconPosition": "Chat Icon Position"
   }
 }

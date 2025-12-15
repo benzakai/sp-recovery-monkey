@@ -12,7 +12,7 @@ export const loader = async ({ request }: ActionFunctionArgs) => {
             const newMessage = await fireStoreCreateService("MainCustomMessage", session.shop, {
                 shop: session.shop,
                 header: "Hi [Customer's Name]",
-                content: "it looks like you left some items in your cart! Just a heads-up, our stock is moving fast, so grab them while you can 🎯. If you need any assistance, feel free to reach out! [link to abandon cart recovery]"
+                content: "This is Danny. I just wanted to make sure you managed to complete your order. If not, you can easily finish it here: \n\n👉 [Direct checkout link] \n If you have any questions, feel free to reply here. Either I or someone from the team will get back to you as soon as possible. \n\n Wishing you a lovely day, \n Danny \n Team [Store Name]"
             }, {});
             console.log("Created new sync status:", newMessage);
             return json({ success: 'Message saved successfully', messageData: newMessage });

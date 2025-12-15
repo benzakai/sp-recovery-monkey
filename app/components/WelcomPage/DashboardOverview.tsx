@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useTranslation } from 'react-i18next';
 import { Text } from '@shopify/polaris';
+import Tooltip from "../global/Tooltip/Tooltip";
 
 export default function DashboardOverview({ getPageData, forPageType }: any) {
     const { t } = useTranslation();
@@ -66,9 +67,9 @@ export default function DashboardOverview({ getPageData, forPageType }: any) {
     return (
         <div className="bg-white rounded-xl shadow-sm border border-solid p-4 md:p-6">
             <div className="pb-2 text-center md:text-left">
-                <Text variant="headingLg" as="h5">
+                <p className="text-[13px] font-semibold">
                     {t("dashboard.overview")}
-                </Text>
+                </p>
             </div>
             <div className="abandoned-block grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 pt-6 font-inter welcome_wrapper">
                 {getCards.map((card) => {
@@ -76,17 +77,40 @@ export default function DashboardOverview({ getPageData, forPageType }: any) {
                     return (
                         <div
                             key={card.id}
-                            className="bg-zinc-100 rounded-lg p-4 flex flex-col justify-between welcome_wrapper_content h-full min-h-[170px]"
+                            className="bg-zinc-100 rounded-lg p-4 flex flex-col h-full min-h-[133px]"
                         >
-                            {card.value === "Loading" ? (
-                                <div className="animate-pulse space-y-2 pb-4">
-                                    <div className="bg-gray-300 rounded h-8 w-28"></div>
-                                </div>
-                            ) : (
-                                <div className="font-bold text-base pb-4">{card.value}</div>
-                            )}
-                            <div className="font-bold text-lg pb-2">{card.title}</div>
-                            <div className="text-base text-gray-400">{card.description}</div>
+                            <div className="min-h-[32px] mb-3">
+                                {card.value === "Loading" ? (
+                                    <div className="animate-pulse">
+                                        <div className="bg-gray-300 rounded h-8 w-28"></div>
+                                    </div>
+                                ) : (
+                                    <div className="font-semibold text-[13px]">
+                                        {card.value}
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="font-semibold text-[13px] mb-2 min-h-[20px]">
+                                {card.title}
+                            </div>
+
+                            <div className="text-[13px] leading-snug min-h-[36px]">
+                                {card.id === 4 ? (
+                                    <span className="inline text-gray-500">
+                                        {card.description}
+                                        <Tooltip minWidth="150px">
+                                            <p className="text-[9px] text-[#5C5F62] leading-3">
+                                                A good conversion rate would be between 20-35%.
+                                            </p>
+                                        </Tooltip>
+                                    </span>
+                                ) : (
+                                    <span className="text-gray-500">
+                                        {card.description}
+                                    </span>
+                                )}
+                            </div>
                         </div>
                     );
                 })}
