@@ -6,13 +6,13 @@ import { useTranslation } from 'react-i18next';
 import SaveBarComponent from '~/components/SaveBarComponent';
 import ConnectionStepSection from '~/components/WelcomPage/ConnectionStepSection';
 import WhatWeDoSection from '~/components/WelcomPage/WhatWeDoSection';
-import DashboardOverview from '~/components/WelcomPage/DashboardOverview';
 import { useLoaderData } from '@remix-run/react';
 import WhatsappTest from '~/components/WelcomPage/WhatsappTest/WhatsappTest';
 import { authenticate } from '~/shopify.server';
 import TopSaleBanner from '~/components/global/TopSaleBanner';
 import { manageOnboarding } from '~/lib/onboarding/common';
 import Tooltip from '~/components/global/Tooltip/Tooltip';
+import Overview from '~/components/global/Overview/Overview';
 // import { trackLCP } from '~/utils/lcpTracker';
 
 export const loader = async ({ request }: any) => {
@@ -34,16 +34,6 @@ const WelcomeConnect = () => {
     // const [storeId, setStoreId] = useState('');
     const [pubsubData, setPubsubData] = useState({});
     // const [currentQRData, setCurrentQRData] = useState({});
-    const [getPageData, setPageData] = React.useState<any>({
-        abandonedCarts: [],
-        abandonedCartsSum: 0,
-        acrRate: null,
-        allCarts: [],
-        recoveredCarts: [],
-        recoveredCartsSum: 0,
-        shopCurrency: null,
-        success: null
-    });
     const [isInstanceDataLoading, setInstanceDataLoading] = useState(true)
     const [isShowConnectionStatus, setShowConnectionStatus] = useState(false)
     const topics = ['message'];
@@ -66,19 +56,12 @@ const WelcomeConnect = () => {
     useEffect(() => {
         fetchSettings()
         fetchDataAndFetchQR();
-        handleFetchAbandonedCheckouts();
         getMessageData();
     }, []);
 
     // useEffect(() => {
     //     trackLCP('Welcomeconnect page');
     //   }, []);
-
-    useEffect(() => {
-        if (customMessage?.header) {
-            setMessageLoading(false)
-        }
-    }, [customMessage])
 
     useEffect(() => {
         let intervalId: any;
@@ -343,6 +326,8 @@ const WelcomeConnect = () => {
             }
         } catch (error) {
             console.log("error occured on getMessageData", error);
+        } finally {
+            setMessageLoading(false)
         }
     }
     const getFireData = async () => {
@@ -447,7 +432,7 @@ const WelcomeConnect = () => {
                                 t("dashboard.authSubTitle")
                             }
                             </p>
-                            <DashboardOverview getPageData={getPageData} forPageType="WelcomeConnect" />
+                            <Overview />
                         </div>
                         <Card >
                             <div className='flex flex-col lg:flex-row gap-8 lg:gap-10 '>
@@ -611,42 +596,6 @@ const WelcomeConnect = () => {
         </>
     );
 
-    async function handleFetchAbandonedCheckouts() {
-        try {
-            const responseCards = await fetch("/api/welcome-page/cards-data", {
-                method: "GET",
-            })
-            if (!responseCards.ok) {
-                console.error("failed to fetch cards data", responseCards.status);
-                return;
-            }
-            const responseCardsData = await responseCards.json()
-            if (responseCardsData?.success && responseCardsData?.dashboardData) {
-                const { acr, sales_count, sum_of_sales, currency, checkout_count, shopCurrency } = responseCardsData?.dashboardData;
-                setPageData((prev: any) => ({
-                    ...prev,
-                    acrRate: acr?.toFixed(1),
-                    recoveredCarts: Math.trunc(sales_count),
-                    recoveredCartsSum: Math.trunc(sum_of_sales),
-                    shopCurrency: currency,
-                    abandonedCarts: checkout_count,
-                    success: true
-                }));
-            } else {
-                setPageData((prev: any) => ({
-                    ...prev,
-                    acrRate: 0,
-                    recoveredCarts: 0,
-                    recoveredCartsSum: 0,
-                    shopCurrency: "",
-                    abandonedCarts: 0,
-                    success: true
-                }));
-            }
-        } catch (error) {
-            console.error("handleFetchAbandonedCheckouts Error on welcomeConnect", error);
-        }
-    }
 };
 
 export default WelcomeConnect;

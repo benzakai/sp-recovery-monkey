@@ -6,6 +6,7 @@ import { Icon, Select, Spinner, Text } from '@shopify/polaris';
 import TopSaleBanner from '~/components/global/TopSaleBanner';
 import WhatWeDoSection from '../../WelcomPage/WhatWeDoSection';
 import OnboardingSteps from '../OnboardingSteps/OnboardingSteps';
+import Overview from '~/components/global/Overview/Overview';
 
 export default function WelcomePage({
     loaderData,
@@ -101,6 +102,9 @@ export default function WelcomePage({
 
                     <div>
                         <WhatWeDoSection t={t} />
+                    </div>
+                    <div className='mt-6'>
+                        <Overview />
                     </div>
                 </div>
             </div >

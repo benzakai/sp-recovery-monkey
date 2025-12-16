@@ -322,11 +322,11 @@ img.banner_welcome_page {
 }
 
 .first-card.second-card .left-content {
-    width: 14%;
+    width: 10%;
 }
 
 .ai-card-wrapper {
-    width: 83%;
+    width: 90%;
 }
 
 .ai_top_section {
@@ -857,7 +857,7 @@ h3.Polaris-Text--root.Polaris-Text--headingXl {
     display: flex;
     width: 100%;
     gap: 30px;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 .mb-5.left-text {
@@ -1141,10 +1141,10 @@ h5.Polaris-Text--root.Polaris-Text--headingLg,
         font-size: 1.3rem;
     }
 
-    .Polaris-Page__Content svg {
+    /* .Polaris-Page__Content svg {
         width: 120px;
         height: 120px;
-    }
+    } */
 
     .Polaris-Page__Content .text-2xl {
         font-size: 1.3rem;
@@ -1514,5 +1514,9 @@ h5.Polaris-Text--root.Polaris-Text--headingLg,
 
     .cust_wwd_last{
         text-align: left;
+    }
+
+    .cust_wwd_wrapper{
+        padding-inline: 0;
     }
 }

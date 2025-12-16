@@ -55,6 +55,15 @@ h2 {
     color: #000;
 }
 
+.acc_ttl {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding-left: 20px;
+}
+
 button#nextURL,
 button#previousURL {
     background-color: #fff;

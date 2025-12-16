@@ -7,6 +7,7 @@ import AlienSVG from '../SVGs/AlienSVG';
 import ChatIconSettings from './ChatIconSettings';
 import { isAdvancePlanOrHigher } from '~/utils/plans';
 import './ChatbotSettingsSection.css';
+import ChatFeaturePreview from './ChatFeaturePreview/ChatFeaturePreview';
 
 export default function ChatbotSettingsSection({
     t,
@@ -45,100 +46,102 @@ export default function ChatbotSettingsSection({
                     </p>
                 </div>
                 <div className='ai-card-wrapper'>
-                    <BlockStack gap="400">
-                        <Card roundedAbove="sm">
-                            {isSettingsLoading ? (
-                                <div className='w-[53.4rem]'>
-                                    <SkeletonLoading />
-                                </div>
-                            ) : (
-                                <SettingsSecondBlock
-                                    children={
-                                        <></>
-                                    }
-                                    isActivateButtonLoading={aiWidgetData.loading}
-                                    availableOn={t("settings.planName3")}
-                                    isActivated={aiWidgetData.enabled}
-                                    title={t("aiSettings.enableChatWidget")}
-                                    description={t("aiSettings.enableChatWidgetDescription")}
-                                    handleActivateButton={handleChatExtensionActivateButton}
-                                    buttonType={"chatExtensionActivateButton"}
-                                    activateButtonTitle={aiWidgetData.enabled ? t("aiSettings.disableChatWidget") : t("aiSettings.activateChatWidget")}
-                                    isActivateButtonDisabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan))}
-                                />
-                            )}
-                            <div className='divider-ai' />
-                            {isSettingsLoading ? (
-                                <div className='w-[53.4rem]'>
-                                    <SkeletonLoading />
-                                </div>
-                            ) : (
-                                <SettingsSecondBlock
-                                    children={
-                                        <div className="w-1/3 field">
-                                            <Select
-                                                options={options}
-                                                label=""
-                                                onChange={(v) => {
-                                                    setAISettings({ ...aiSettings, toneOfVoice: v })
-                                                }}
-                                                value={aiSettings.toneOfVoice}
+                    
+                        <BlockStack gap="400">
+                            <Card roundedAbove="sm">
+                                {isSettingsLoading ? (
+                                    <div className='w-[37rem]'>
+                                        <SkeletonLoading />
+                                    </div>
+                                ) : (
+                                    <SettingsSecondBlock
+                                        children={
+                                            <></>
+                                        }
+                                        isActivateButtonLoading={aiWidgetData.loading}
+                                        availableOn={t("settings.planName3")}
+                                        isActivated={aiWidgetData.enabled}
+                                        title={t("aiSettings.enableChatWidget")}
+                                        description={t("aiSettings.enableChatWidgetDescription")}
+                                        handleActivateButton={handleChatExtensionActivateButton}
+                                        buttonType={"chatExtensionActivateButton"}
+                                        activateButtonTitle={aiWidgetData.enabled ? t("aiSettings.disableChatWidget") : t("aiSettings.activateChatWidget")}
+                                        isActivateButtonDisabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan))}
+                                    />
+                                )}
+                                <div className='divider-ai' />
+                                {isSettingsLoading ? (
+                                    <div className='w-[37rem]'>
+                                        <SkeletonLoading />
+                                    </div>
+                                ) : (
+                                    <SettingsSecondBlock
+                                        children={
+                                            <div className="w-1/3 field">
+                                                <Select
+                                                    options={options}
+                                                    label=""
+                                                    onChange={(v) => {
+                                                        setAISettings({ ...aiSettings, toneOfVoice: v })
+                                                    }}
+                                                    value={aiSettings.toneOfVoice}
+                                                    disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
+                                                    placeholder={t("aiSettings.selectTone")}
+                                                />
+                                            </div>
+                                        }
+                                        title={t("aiSettings.tone")}
+                                        description={t("aiSettings.toneDescription")}
+                                    // activateButtonTitle={aiSettings.isDurationToSendMessageActivated ? t("settings.deactivate") : t("settings.activate")}
+                                    />
+                                )}
+                                <div className='divider-ai' />
+                                {isSettingsLoading ? (
+                                    <div className='w-[37rem]'>
+                                        <SkeletonLoading />
+                                    </div>
+                                ) : (
+                                    <SettingsSecondBlock
+                                        children={
+                                            <></>
+                                        }
+                                        title={t("aiSettings.useEmojis")}
+                                        description={t("aiSettings.useEmojisDescription")}
+                                        activateButtonTitle={aiSettings.isUseEmojisTurnedOn ? t("aiSettings.turnOff") : t("aiSettings.turnOn")}
+                                        isActivateButtonLoading={loading.activeButton === "useEmojisTurnedOnButton"}
+                                        isActivateButtonDisabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan) || loading.activeButton)}
+                                        handleActivateButton={(data: any) => {
+                                            const settingKey = activateButtons[data];
+                                            setAISettings((p: any) => ({ ...p, [settingKey]: !aiSettings[settingKey] }))
+                                            setActivateButtonActionType(data)
+                                        }}
+                                        buttonType={"useEmojisTurnedOnButton"}
+                                        isActivated={aiSettings.isUseEmojisTurnedOn}
+                                    />
+                                )}
+                                <div className='divider-ai' />
+                                {isSettingsLoading ? (
+                                    <div className='w-[37rem]'>
+                                        <SkeletonLoading />
+                                    </div>
+                                ) : (
+                                    <SettingsSecondBlock
+                                        children={
+                                            <ChatIconSettings
+                                                setAISettings={setAISettings}
+                                                aiSettings={aiSettings}
                                                 disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
-                                                placeholder={t("aiSettings.selectTone")}
+                                                t={t}
                                             />
-                                        </div>
-                                    }
-                                    title={t("aiSettings.tone")}
-                                    description={t("aiSettings.toneDescription")}
-                                // activateButtonTitle={aiSettings.isDurationToSendMessageActivated ? t("settings.deactivate") : t("settings.activate")}
-                                />
-                            )}
-                            <div className='divider-ai' />
-                            {isSettingsLoading ? (
-                                <div className='w-[53.4rem]'>
-                                    <SkeletonLoading />
-                                </div>
-                            ) : (
-                                <SettingsSecondBlock
-                                    children={
-                                        <></>
-                                    }
-                                    title={t("aiSettings.useEmojis")}
-                                    description={t("aiSettings.useEmojisDescription")}
-                                    activateButtonTitle={aiSettings.isUseEmojisTurnedOn ? t("aiSettings.turnOff") : t("aiSettings.turnOn")}
-                                    isActivateButtonLoading={loading.activeButton === "useEmojisTurnedOnButton"}
-                                    isActivateButtonDisabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan) || loading.activeButton)}
-                                    handleActivateButton={(data: any) => {
-                                        const settingKey = activateButtons[data];
-                                        setAISettings((p: any) => ({ ...p, [settingKey]: !aiSettings[settingKey] }))
-                                        setActivateButtonActionType(data)
-                                    }}
-                                    buttonType={"useEmojisTurnedOnButton"}
-                                    isActivated={aiSettings.isUseEmojisTurnedOn}
-                                />
-                            )}
-                            <div className='divider-ai' />
-                            {isSettingsLoading ? (
-                                <div className='w-[53.4rem]'>
-                                    <SkeletonLoading />
-                                </div>
-                            ) : (
-                                <SettingsSecondBlock
-                                    children={
-                                        <ChatIconSettings
-                                            setAISettings={setAISettings}
-                                            aiSettings={aiSettings}
-                                            disabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
-                                            t={t}
-                                        />
-                                    }
-                                    title={t("aiSettings.style")}
-                                    description={""}
-                                />
-                            )}
-                        </Card>
-                    </BlockStack>
+                                        }
+                                        title={t("aiSettings.style")}
+                                        description={""}
+                                    />
+                                )}
+                            </Card>
+                        </BlockStack>
                 </div>
+                <ChatFeaturePreview aiSettings={aiSettings} />
             </div>
             <div className='settings_secion-1 ai_parent first-card second-card mt-4 cust_chatbot_second_card'>
                 <div className='start_main_container_sub_heading left-content'>
@@ -188,7 +191,7 @@ export default function ChatbotSettingsSection({
                         </Card> */}
                         <Card>
                             {isSettingsLoading ? (
-                                <div className='w-[53.4rem]'>
+                                <div className='w-[37rem]'>
                                     <SkeletonLoading />
                                 </div>
                             ) : <SettingsSecondBlock
@@ -210,7 +213,7 @@ export default function ChatbotSettingsSection({
                             />}
                             <div className='divider-ai' />
                             {isSettingsLoading ? (
-                                <div className='w-[53.4rem]'>
+                                <div className='w-[37rem]'>
                                     <SkeletonLoading />
                                 </div>
                             ) : (

@@ -23,16 +23,17 @@ import Tick from './SVG/Tick';
 export default function OnboardingSteps({ shop, t }: any) {
     const navigate = useNavigate();
     const { selectedPlanName, permissions }: any = useOutletContext()
-    const [whatsAppOpen, setWhatsAppOpen] = useState(true);
-    const [aiBotOpen, setAiBotOpen] = useState(false);
+    const [isWhatsAppStepsNotDone, setWhatsAppNotDone] = useState(true);
+    const [isAiStepsNotDone, setAiBotNotDone] = useState(true);
     const [onboarding, setOnboarding] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
 
     const [isDismissed, setIsDismissed] = useState(false);
     const [isRemoved, setIsRemoved] = useState(false);
 
-    const handleWhatsAppToggle = useCallback(() => setWhatsAppOpen((prev) => !prev), []);
-    const handleAiBotToggle = useCallback(() => setAiBotOpen((prev) => !prev), []);
+    const handleWhatsAppToggle = useCallback(() => { }, []);
+
+    const handleAiBotToggle = useCallback(() => { }, []);
 
     const handleDismiss = useCallback(() => {
         setIsDismissed(true);
@@ -137,13 +138,11 @@ export default function OnboardingSteps({ shop, t }: any) {
             if (res?.data && Object.keys(res.data).length > 0) {
                 setOnboarding(res.data);
                 setIsRemoved(res.data.hideOnboarding);
-                const isWhatsAppStepsNotDone = Object.values(res.data.step1).some(v => !v);
-                setWhatsAppOpen(isWhatsAppStepsNotDone);
-                const isAiStepsNotDone = Object.values(res.data.step2).some(v => !v);
-                if (!isWhatsAppStepsNotDone) {
-                    setAiBotOpen(isAiStepsNotDone);
-                }
-                console.log("res.data.step2.installPreview", res.data.step2.installPreview);
+                const isWhatsAppStepsNotDoneFind = Object.values(res.data.step1).some(v => !v);
+                setWhatsAppNotDone(isWhatsAppStepsNotDoneFind);
+                const isAiStepsNotDoneFind = Object.values(res.data.step2).some(v => !v);
+                setAiBotNotDone(isAiStepsNotDoneFind);
+                // console.log("res.data.step2.installPreview", res.data.step2.installPreview);
                 await checkEmbedDisabled(res.data.step2.installPreview);
             } else {
                 await saveOnboardingData();
@@ -164,10 +163,7 @@ export default function OnboardingSteps({ shop, t }: any) {
             const resEmbedEnabled = !res.embedDisabled
             if (resEmbedEnabled !== installPreviewEnabled) {
                 manageOnboarding({ data: { step2: { installPreview: resEmbedEnabled } }, shop });
-                setOnboarding((prev: any) => ({
-                    ...prev,
-                    step2: { ...prev.step2, installPreview: resEmbedEnabled }
-                }));
+                fetchOnboardingData();
             }
         } catch (error) {
             console.log("error occured on checkEmbedDisabled", error);
@@ -195,7 +191,7 @@ export default function OnboardingSteps({ shop, t }: any) {
         navigate(link);
     };
 
-    const renderStepGroup = ({ groupId, title, steps, data, isOpen, toggleAccordion, pro = false }: any) => {
+    const renderStepGroup = ({ groupId, title, steps, data, isOpen, toggleAccordion, pro = false, isStepsNotDone }: any) => {
         const safeData = data || {};
         const firstIncompleteIndex = steps.findIndex((s: any) => !safeData[s.key]);
 
@@ -208,16 +204,16 @@ export default function OnboardingSteps({ shop, t }: any) {
                         <InlineStack align="space-between" blockAlign="center">
                             <InlineStack gap="200">
                                 <div className="acc_ttl">
-                                    <Text as="p" variant="bodyMd">{title}</Text>
+                                    {renderIcon(!isStepsNotDone)}  <Text as="p" variant="bodyMd">{title}</Text>
                                 </div>
                                 {pro && <Badge tone="info">{t("settings.planName3")}</Badge>}
                             </InlineStack>
-                            <div>
+                            {/* <div>
                                 <Icon
                                     source={isOpen ? ChevronUpIcon : ChevronDownIcon}
                                     tone="subdued"
                                 />
-                            </div>
+                            </div> */}
                         </InlineStack>
                     </Box>
                 </div>
@@ -352,9 +348,10 @@ export default function OnboardingSteps({ shop, t }: any) {
                                     renderStepGroup({
                                         groupId: group.id,
                                         title: group.title,
+                                        isStepsNotDone: group.id === "step1" ? isWhatsAppStepsNotDone : isAiStepsNotDone,
                                         steps: group.steps,
                                         data: onboarding ? onboarding[group.id] : {},
-                                        isOpen: group.id === "step1" ? whatsAppOpen : aiBotOpen,
+                                        isOpen: group.id === "step1" ? true : true,
                                         toggleAccordion: group.id === "step1" ? handleWhatsAppToggle : handleAiBotToggle,
                                         pro: group.pro
                                     })
@@ -371,6 +368,7 @@ export default function OnboardingSteps({ shop, t }: any) {
                                 <InlineStack gap="200" blockAlign="center">
                                     <Text as="p" variant="bodyMd" fontWeight="medium">{t("homePostPayment.embedTitle")}</Text>
                                     <Badge tone="info">{t("settings.planName3")}</Badge>
+                                    {/* <Badge progress={onboarding?.step2?.installPreview ? "complete" : "incomplete"} tone={onboarding?.step2?.installPreview ? "success" : "critical"}>{onboarding?.step2?.installPreview ? "active" : "inactive"}</Badge> */}
                                 </InlineStack>
                             </InlineStack>
                             {onboarding?.step2?.installPreview ?
