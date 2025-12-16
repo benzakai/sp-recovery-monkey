@@ -36,6 +36,7 @@ export default function ChatbotSettingsSection({
 
     return (
         <div className='setting-block'>
+            <div className='ai_left_side_section_parent'>
             <div className='settings_secion-1 ai_parent first-card cust_chatbot_card'>
                 <div className='start_main_container_sub_heading left-content'>
                     <p className="text-[13px] font-semibold mb-[6px]">
@@ -141,7 +142,6 @@ export default function ChatbotSettingsSection({
                             </Card>
                         </BlockStack>
                 </div>
-                <ChatFeaturePreview aiSettings={aiSettings} />
             </div>
             <div className='settings_secion-1 ai_parent first-card second-card mt-4 cust_chatbot_second_card'>
                 <div className='start_main_container_sub_heading left-content'>
@@ -238,7 +238,12 @@ export default function ChatbotSettingsSection({
                             )}
                         </Card>
                     </BlockStack>
+        
                 </div>
+            </div>
+            </div>
+            <div className='ai_right_side_section_parent'>
+            <ChatFeaturePreview aiSettings={aiSettings} />
             </div>
         </div>
     )

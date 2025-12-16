@@ -46,13 +46,16 @@ export default function ChatFeaturePreview({ aiSettings }: ChatFeaturePreviewPro
     const chatIcon = iconStyles[aiSettings?.iconStyle ?? 'style1'];
     const chatIconPosition = iconsClasses[aiSettings?.iconPosition ?? 'position2'];
 
+    const [desktopModalOpen, setDesktopModalOpen] = useState(false);
+
+
     const openDesktopModal = () => {
         shopify.modal.show('chat_preview_desktop_modal');
     };
 
     return (
         <>
-        <div className='media-card'>
+            <div className='media-card'>
                 <div className="ck-preview-wrapper">
 
                     <div className="ck-preview-header">
@@ -72,7 +75,7 @@ export default function ChatFeaturePreview({ aiSettings }: ChatFeaturePreviewPro
                             <div className="ck-desktop-wrapper">
                                 <DesktopStore />
 
-                                <div className="ck-maximize-btn" onClick={openDesktopModal}>
+                                <div className="ck-maximize-btn" onClick={() => setDesktopModalOpen(true)}>
                                     <Maximize />
                                 </div>
                             </div>
@@ -96,8 +99,15 @@ export default function ChatFeaturePreview({ aiSettings }: ChatFeaturePreviewPro
                     </div>
                 </div>
             </div>
-        
-            <ChatDesktopMaximize chatIcon={chatIcon} chatIconPosition={chatIconPosition} view={view} />
+
+            <ChatDesktopMaximize
+                chatIcon={chatIcon}
+                chatIconPosition={chatIconPosition}
+                view={view}
+                isOpen={desktopModalOpen}
+                onClose={() => setDesktopModalOpen(false)}
+            />
+
 
         </>
     );

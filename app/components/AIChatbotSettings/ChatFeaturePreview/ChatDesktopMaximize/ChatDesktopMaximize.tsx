@@ -1,23 +1,38 @@
-import { Modal } from '@shopify/app-bridge-react'
 import React, { useState } from 'react'
-import DesktopStore from '../../SVGs/DesktopStore'
-import WhatsappScreen from '../../SVGs/WhatsappScreen';
+import WhatsappScreen from '../../SVGs/WhatsappScreen'
 import './ChatDesktopMaximize.css'
+import DesktopStoreMax from '../../SVGs/DesktopStoreMax';
+import WhatsappScreenMax from '../../SVGs/WhatsappScreenMax';
 
 interface ChatDesktopMaximizeProps {
     chatIcon: string;
     chatIconPosition: string;
     view: string;
+    isOpen: boolean;
+    onClose: () => void;
 }
 
-export default function ChatDesktopMaximize({ chatIcon, chatIconPosition, view }: ChatDesktopMaximizeProps) {
+export default function ChatDesktopMaximize({
+    chatIcon,
+    chatIconPosition,
+    view,
+    isOpen,
+    onClose,
+}: ChatDesktopMaximizeProps) {
+
     const [showChat, setShowChat] = useState(false);
 
-    return (
-        <Modal id="chat_preview_desktop_modal">
-            <div className="ck-modal-content popup-modal">
+    if (!isOpen) return null;
 
-                <DesktopStore width='100%' height='100%' />
+    return (
+        <div className="ck-custom-modal-overlay">
+            <div className="ck-custom-modal">
+
+                <DesktopStoreMax width='100%' height='100%' />
+                <div className="ck-modal-hide" onClick={onClose}>
+                    ✕
+                </div>
+                
 
                 <img
                     src={chatIcon}
@@ -25,14 +40,13 @@ export default function ChatDesktopMaximize({ chatIcon, chatIconPosition, view }
                     onClick={() => setShowChat(true)}
                 />
 
-                {showChat && (
+               {showChat && (
                     <div className={`ck-chat-popup ${chatIconPosition} popup-new-modal`}>
                         <WhatsappScreen />
                         <div className="ck-chat-close-btn" onClick={() => setShowChat(false)}>✕</div>
                     </div>
                 )}
-
             </div>
-        </Modal>
+        </div>
     )
 }

@@ -1,0 +1,131 @@
+.ck-custom-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ck-modal-hide {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 32px;
+    height: 32px;
+    background: #fff;
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.ck-modal-hide:hover {
+    opacity: 0.8;
+}
+
+.ck-custom-modal {
+    position: relative;
+    width: 800px;
+    height: 527px; /* updated */
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+}
+.window-svg {
+    margin-top: 70px;
+}
+.ck-custom-modal .ck-bottom-right.desktop{
+    right: 70px;
+    bottom: 70px;
+}
+.ck-custom-modal .ck-bottom-left.desktop{
+    left: 70px;
+    bottom: 70px;
+}
+.ck-custom-modal .ck-bottom-center.desktop{
+    right: 0;
+    left: 0;
+    margin: 0 auto;
+    width: fit-content;
+    bottom: 70px;
+}
+.ck-chat-popup.ck-bottom-center.popup-new-modal {
+    right: 0;
+    left: 0;
+    bottom: 70px;
+    margin: 0 auto;
+}
+.ck-chat-popup.ck-bottom-right.popup-new-modal {
+    bottom: 70px;
+     right: 60px;
+}
+.ck-chat-popup.ck-bottom-left.popup-new-modal {
+    bottom: 70px;
+    left: 60px;
+}
+@media screen and ( max-width: 989px ){
+    .ck-custom-modal {
+        width: 500px;
+        height: 340px;
+    }
+    .window-svg {
+        margin-top: 50px;
+        padding: 0 20px;
+    }
+    .ck-custom-modal .ck-bottom-center.desktop{
+        bottom: 47px;
+    }
+    .ck-chat-popup.ck-bottom-center.popup-new-modal{
+        bottom: 47px;
+    }
+    .ck-custom-modal .ck-bottom-right.desktop{
+        bottom: 47px;
+        right: 42px;
+    }
+    .ck-chat-popup.ck-bottom-right.popup-new-modal{
+        bottom: 47px;
+        right: 38px;
+    }
+    .ck-custom-modal .ck-bottom-left.desktop{
+        bottom: 47px;
+        left: 42px;
+    }
+    .ck-chat-popup.ck-bottom-left.popup-new-modal{
+        bottom: 47px;
+        left: 37px;
+    }
+}
+@media screen and ( max-width: 484px ){
+    .ck-custom-modal {
+        width: 450px;
+        height: 220px;
+    }
+    .ck-custom-modal .ck-bottom-right.desktop{
+        bottom: 32px;
+        right: 32px;
+    }
+    .ck-chat-popup.ck-bottom-right.popup-new-modal{
+        bottom: 32px;
+        right: 28px;
+    }
+    .ck-custom-modal .ck-bottom-left.desktop{
+        bottom: 32px;
+        left: 32px;
+    }
+    .ck-chat-popup.ck-bottom-left.popup-new-modal{
+        bottom: 32px;
+        left: 28px;
+    }
+    .ck-custom-modal .ck-bottom-center.desktop{
+        bottom: 32px;
+    }
+    .ck-chat-popup.ck-bottom-center.popup-new-modal{
+        bottom: 32px;
+    }
+}

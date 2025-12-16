@@ -1,5 +1,40 @@
-/* Custom css - 02/12 */
+.setting-block {
+    display: flex;
+    flex-direction: row;
+    column-gap: 2rem;
+}
+.ai_right_side_section_parent {
+  position: sticky;
+  top: 20px;
+  height: calc(100vh - 20px);
+  padding-top: 20px;
+  align-self: flex-start;
+}
 
+.ai_right_side_section_parent .ck-preview-wrapper{
+    position: sticky;
+    top: 10px;
+}
+
+
+@media screen and ( max-width: 1360px ) and (min-width: 990px){
+    .media-card {
+        height: 650px;
+        max-height: 100%;
+    }
+}
+@media screen and ( min-width: 990px ){
+    .media-card{
+        height: 588px;
+        max-height: 100%;
+    }
+}
+
+@media screen and  (max-width: 989px) { 
+    .setting-block {
+        flex-direction: column;
+    }
+}
 @media screen and (max-width: 500px){
     .cust_chatbot_desc{
         max-width: 100% !important;
