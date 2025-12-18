@@ -19,6 +19,8 @@ import { useNavigate, useOutletContext } from '@remix-run/react';
 import { manageOnboarding } from '~/lib/onboarding/common';
 import { isProPlanOrHigher } from '~/utils/plans';
 import Tick from './SVG/Tick';
+import InactiveBadge from './SVG/InactiveBadge';
+import ActiveBadge from './SVG/ActiveBadge';
 
 export default function OnboardingSteps({ shop, t }: any) {
     const navigate = useNavigate();
@@ -232,9 +234,15 @@ export default function OnboardingSteps({ shop, t }: any) {
                                                 <div className="step-row current-step-row">
                                                     {renderIcon(done)}
                                                     <BlockStack gap="100">
-                                                        <Text as="p" variant="bodyMd" fontWeight="semibold">
-                                                            {s.title}
-                                                        </Text>
+                                                        <div className='flex flex-row gap-3'>
+                                                            <Text as="p" variant="bodyMd" fontWeight="semibold">
+                                                                {s.title}
+                                                            </Text>
+                                                            {(s.key === "installPreview" || s.key === "startSync" || s.key === "connectWhatsapp") && <span className="badge-wrapper">
+                                                                {done ? <ActiveBadge className="active-badge" /> : <InactiveBadge className="inactive-badge" />}
+                                                            </span>
+                                                            }
+                                                        </div>
                                                         {s.description && (
                                                             <Text as="p" variant="bodySm" tone="subdued">
                                                                 {s.description}
@@ -242,7 +250,6 @@ export default function OnboardingSteps({ shop, t }: any) {
                                                         )}
                                                     </BlockStack>
                                                 </div>
-
                                                 {!done && s.actionLabel && (
                                                     <div className="action-btn">
                                                         <Button disabled={s.pro ? (!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)) : false} variant="primary" onClick={() => navigateToStep(s.actionLink)}>{s.actionLabel}</Button>
@@ -259,6 +266,9 @@ export default function OnboardingSteps({ shop, t }: any) {
                                         <Text as="p" variant="bodyMd" tone="subdued">
                                             {s.title}
                                         </Text>
+                                        {(s.key === "installPreview" || s.key === "startSync" || s.key === "connectWhatsapp") && <span className="badge-wrapper">
+                                            {done ? <ActiveBadge className="active-badge" /> : <InactiveBadge className="inactive-badge" />}
+                                        </span>}
                                     </div>
                                 );
                             })}
@@ -368,7 +378,9 @@ export default function OnboardingSteps({ shop, t }: any) {
                                 <InlineStack gap="200" blockAlign="center">
                                     <Text as="p" variant="bodyMd" fontWeight="medium">{t("homePostPayment.embedTitle")}</Text>
                                     <Badge tone="info">{t("settings.planName3")}</Badge>
-                                    {/* <Badge progress={onboarding?.step2?.installPreview ? "complete" : "incomplete"} tone={onboarding?.step2?.installPreview ? "success" : "critical"}>{onboarding?.step2?.installPreview ? "active" : "inactive"}</Badge> */}
+                                    {<span className="badge-wrapper">
+                                        {onboarding?.step2?.installPreview ? <ActiveBadge className="active-badge" /> : <InactiveBadge className="inactive-badge" />}
+                                    </span>}
                                 </InlineStack>
                             </InlineStack>
                             {onboarding?.step2?.installPreview ?

@@ -85,6 +85,46 @@ button#previousURL {
     justify-content: center;
 }
 
+.badge-wrapper {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+}
+
+.badge-wrapper svg {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+
+.active-badge,
+.inactive-badge {
+  width: auto;
+  height: 21px;        
+  min-width: 64px;     
+  max-width: 72px;
+  background: transparent !important;
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
+  .active-badge,
+  .inactive-badge {
+    background: transparent !important;
+    max-width: 54px;
+  }
+}
+
+@media (max-width: 480px) {
+  .active-badge,
+  .inactive-badge {
+    height: 19px;
+    background: transparent !important;
+    min-width: 60px;
+  }
+}
+
+
 @media (max-width: 989px) {
     .progress_txt {
         width: 29%;
