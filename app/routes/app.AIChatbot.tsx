@@ -295,11 +295,13 @@ const AIChatbot = () => {
         <div className='start_page ai_personal padding_zero'>
             <Page fullWidth>
                 <div className='bulk-box top-parent-aichatbot'>
-                    <TopSaleBanner
-                        btnClass="saleBannerButton"
-                        className='cursor-pointer'
-                    />
-                    <div className='flex flex-row gap-3 items-center mt-6 mb-4 cust_chatbot_title'>
+                    {/* <div className='mb-6'>
+                        <TopSaleBanner
+                            btnClass="saleBannerButton"
+                            className='cursor-pointer'
+                        />
+                    </div> */}
+                    <div className='flex flex-row gap-3 items-center mb-4 cust_chatbot_title'>
                         <Text variant="headingLg" as="h5">
                             {t("aiSettings.title")}
                         </Text>

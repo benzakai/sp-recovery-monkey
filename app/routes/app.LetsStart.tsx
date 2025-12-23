@@ -66,9 +66,9 @@ const LetsStart = () => {
     return (
         <div className="body justify-center">
             <div className="start_page">
-                <div className="w-full flex justify-center mb-12">
+                {/* <div className="w-full flex justify-center mb-12">
                     <TopSaleBanner btnClass="saleBannerButton" className='cursor-pointer' />
-                </div>
+                </div> */}
 
                 <div className="letstart">
                     <PlanSection

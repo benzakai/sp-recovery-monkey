@@ -54,7 +54,7 @@ export default function SettingsSection({
                                 }
                                 title={t("settings.scheduleMessages")}
                                 description={t("settings.scheduleMessagesDescription")}
-                                activateButtonTitle={settings.isDurationToSendMessageActivated ? t("settings.deactivate") : t("settings.activate")}
+                                activateButtonTitle={settings.isDurationToSendMessageActivated ? t("aiSettings.turnOff") : t("aiSettings.turnOn")}
                                 isActivateButtonLoading={loading.activeButton === "durationToSendMessageActivateButton"}
                                 isActivateButtonDisabled={loading.activeButton}
                                 handleActivateButton={handleActivateButton}
@@ -92,7 +92,7 @@ export default function SettingsSection({
                                 availableOn={"Pro"}
                                 activateButtonTitle={settings.isSelectedLanguageActivated ? t("settings.deactivate") : t("settings.activate")}
                                 isActivateButtonLoading={loading.activeButton === "languageSelectActivateButton"}
-                                isActivateButtonDisabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
+                                isActivateButtonDisabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)) || loading.activeButton}
                                 handleActivateButton={handleActivateButton}
                                 buttonType={"languageSelectActivateButton"}
                                 isActivated={settings.isSelectedLanguageActivated}
@@ -165,7 +165,7 @@ export default function SettingsSection({
                                 availableOn={"Pro"}
                                 activateButtonTitle={settings.isDurationToSendFollowUpMessageActivated ? t("settings.deactivate") : t("settings.activate")}
                                 isActivateButtonLoading={loading.activeButton === "followUpMessageActivateButton"}
-                                isActivateButtonDisabled={!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)}
+                                isActivateButtonDisabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)) || loading.activeButton}
                                 handleActivateButton={handleActivateButton}
                                 buttonType={"followUpMessageActivateButton"}
                                 isActivated={settings.isDurationToSendFollowUpMessageActivated}

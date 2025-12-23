@@ -272,14 +272,14 @@ export default function SmartBulk() {
                                 // onClick={() => handleSelectCard(card.id)}
                                 >
                                     <div className="mb-4">
-                                        <div className="banner_img">
+                                        {/* <div className="banner_img mb-6">
                                             <TopSaleBanner
                                                 btnClass="saleBannerButton"
                                                 className='long_banner_smart_page'
                                             />
-                                        </div>
+                                        </div> */}
 
-                                        <div className='flex flex-row items-center gap-3 smartBulk_parent mt-6 mb-[6px]'>
+                                        <div className='flex flex-row items-center gap-3 smartBulk_parent mb-[6px]'>
                                             <Text variant="headingLg" as="h5">
                                                 {t("smartBulk.title")}
                                             </Text>

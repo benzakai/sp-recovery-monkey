@@ -416,9 +416,9 @@ const WelcomeConnect = () => {
                 <div className='start_page start_page_wrapper sm:!max-w-[100%]  px-4 md:px-0 cust_start_pg_wrap'>
 
                     <div className="lets_start_main_container dashboard_page_wrap">
-                        <div className="w-full flex justify-center mb-6 main_head_cust">
+                        {/* <div className="w-full flex justify-center mb-6 main_head_cust">
                             <TopSaleBanner btnClass="saleBannerButton" className="cursor-pointer" />
-                        </div>
+                        </div> */}
                         <div>
                             <div className='text-center md:text-left cust_dash_title'>
                                 <Text variant="headingLg" as="h5">

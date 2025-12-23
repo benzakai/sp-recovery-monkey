@@ -23,7 +23,8 @@ export default function SettingsSecondBlock({
                     </p>}
                     {buttonType && <Button
                         disabled={isActivateButtonDisabled}
-                        tone={isActivated ? 'critical' : 'success'}
+                        // tone={isActivated ? 'critical' : 'success'}
+                        variant="secondary"
                         loading={isActivateButtonLoading}
                         onClick={() => handleActivateButton(buttonType)}
                     >{activateButtonTitle}</Button>}

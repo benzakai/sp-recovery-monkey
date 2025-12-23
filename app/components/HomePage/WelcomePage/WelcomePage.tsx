@@ -7,6 +7,7 @@ import TopSaleBanner from '~/components/global/TopSaleBanner';
 import WhatWeDoSection from '../../WelcomPage/WhatWeDoSection';
 import OnboardingSteps from '../OnboardingSteps/OnboardingSteps';
 import Overview from '~/components/global/Overview/Overview';
+import BannerInfo from '../BannerInfo/BannerInfo';
 
 export default function WelcomePage({
     loaderData,
@@ -20,6 +21,7 @@ export default function WelcomePage({
     const { t, i18n } = useTranslation()
     const navigate = useNavigate();
     const anySubscriptionRef = useRef(anySubscription);
+    const [isChatEmbedEnabled, setChatEmbedEnabled] = useState(false);
 
     useEffect(() => {
         if (loaderData) {
@@ -72,11 +74,11 @@ export default function WelcomePage({
         <div className="bg-[#f1f1f1]">
             <div className='start_page start_page_wrapper sm:!max-w-[100%]  px-4 md:px-0'>
                 <div className="lets_start_main_container dashboard_page_wrap">
-                    <TopSaleBanner
+                    {/* <TopSaleBanner
                         btnClass="saleBannerButton"
                         className='abandoned_banner_welcome_page cursor-pointer'
-                    />
-                    <div className='flex flex-row justify-between mb-6 mt-6'>
+                    /> */}
+                    <div className='flex flex-row justify-between mb-6'>
                         <div>
                             <Text variant="headingLg" as="h5">
                                 {t("homePostPayment.title")}
@@ -92,9 +94,11 @@ export default function WelcomePage({
                             value={selectedLanguage}
                         />
                     </div>
+                    {isChatEmbedEnabled && <BannerInfo />}
                     <OnboardingSteps
                         t={t}
                         shop={shop}
+                        setChatEmbedEnabled={setChatEmbedEnabled}
                     />
                     {/* <div className="w-full flex justify-center mb-6">
                                 <TopSaleBanner btnClass="saleBannerButton" src={"/images/letsStartPage/topBanner.png"} className="cursor-pointer" />

@@ -434,8 +434,10 @@ const Settings = () => {
         <div className="body">
             <div className='start_page'>
                 <div className='start_main_container setting-page-wrap'>
-                    <TopSaleBanner btnClass="saleBannerButton" className="long_banner_setting_page" />
-                    <div className='flex flex-row justify-between mt-6 mb-4'>
+                    {/* <div className='mb-6'>
+                        <TopSaleBanner btnClass="saleBannerButton" className="long_banner_setting_page" />
+                    </div> */}
+                    <div className='flex flex-row justify-between mb-4'>
                         <div className='settings-title'>
                             <Text variant="headingLg" as="h5">
                                 {t('settings.title')}

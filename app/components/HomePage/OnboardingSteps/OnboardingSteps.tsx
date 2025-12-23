@@ -22,7 +22,7 @@ import Tick from './SVG/Tick';
 import InactiveBadge from './SVG/InactiveBadge';
 import ActiveBadge from './SVG/ActiveBadge';
 
-export default function OnboardingSteps({ shop, t }: any) {
+export default function OnboardingSteps({ shop, t, setChatEmbedEnabled }: any) {
     const navigate = useNavigate();
     const { selectedPlanName, permissions }: any = useOutletContext()
     const [isWhatsAppStepsNotDone, setWhatsAppNotDone] = useState(true);
@@ -167,6 +167,7 @@ export default function OnboardingSteps({ shop, t }: any) {
                 manageOnboarding({ data: { step2: { installPreview: resEmbedEnabled } }, shop });
                 fetchOnboardingData();
             }
+            setChatEmbedEnabled(resEmbedEnabled);
         } catch (error) {
             console.log("error occured on checkEmbedDisabled", error);
         }

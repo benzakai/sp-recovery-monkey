@@ -105,13 +105,14 @@ export default function NewAbandonedList() {
         <div className="body">
             <div className='start_page padding_zero'>
                 <div className='start_main_container abandoned_main_wrap'>
+                    {/* <div className='mb-6'>
+                        <TopSaleBanner
+                            btnClass="saleBannerButton"
+                            className='abandoned_banner_welcome_page cursor-pointer'
+                        />
+                    </div> */}
 
-                    <TopSaleBanner
-                        btnClass="saleBannerButton"
-                        className='abandoned_banner_welcome_page cursor-pointer'
-                    />
-
-                    <div className='mt-6 mb-4'>
+                    <div className='mb-4'>
                         <div className='start_main_container_sub_heading'>
                             <Text variant="headingLg" as="h5">
                                 {t('abandonedList.title')}

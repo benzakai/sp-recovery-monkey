@@ -99,31 +99,30 @@ button#previousURL {
 
 .active-badge,
 .inactive-badge {
-  width: auto;
-  height: 21px;        
-  min-width: 64px;     
-  max-width: 72px;
-  background: transparent !important;
   display: inline-block;
+  width: 86px;     
+  height: 23px;    
+  min-width: 86px;
+  max-width: 86px;
+  background: transparent !important;
 }
+
 
 @media (max-width: 768px) {
   .active-badge,
   .inactive-badge {
-    background: transparent !important;
-    max-width: 54px;
+    width: 72px;
+    height: auto;
   }
 }
 
 @media (max-width: 480px) {
   .active-badge,
   .inactive-badge {
-    height: 19px;
-    background: transparent !important;
-    min-width: 60px;
+    width: 64px;
+    height: auto;
   }
 }
-
 
 @media (max-width: 989px) {
     .progress_txt {

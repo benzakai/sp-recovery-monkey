@@ -62,7 +62,7 @@ export default function DashboardOverview({ getPageData, forPageType }: any) {
                 },
             ]);
         }
-    }, [getPageData]);
+    }, [getPageData, t]);
 
     return (
         <div className="bg-white rounded-xl shadow-sm border border-solid p-4 md:p-6">
