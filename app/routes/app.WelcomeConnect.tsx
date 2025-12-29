@@ -548,7 +548,7 @@ const WelcomeConnect = () => {
                                                     placeholder={t("settings.messageBoxHeadingPlaceholder")}
                                                 />
                                                 <textarea
-                                                    className="w-full h-36 md:h-64 text-base border-none outline-none resize-none"
+                                                    className="w-full h-32 md:h-44 text-base border-none outline-none resize-none"
                                                     value={customMessage.content}
                                                     onChange={(e) => {
                                                         setCustomMessage((prev: any) => ({
@@ -574,7 +574,7 @@ const WelcomeConnect = () => {
                                             </p>
                                         </Tooltip>
                                     </div>
-                                    {/* <WhatsappTest shop={shop} t={t} /> */}
+                                    <WhatsappTest shop={shop} t={t} />
                                 </div>
                             </div>
                         </Card>

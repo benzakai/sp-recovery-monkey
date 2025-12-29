@@ -393,7 +393,7 @@ export default function SmartBulk() {
                                             </div>
                                             <Button
                                                 variant="primary"
-                                                disabled={(selectedTableData.length && customMessage?.content && customMessage?.header && (isProPlanOrHigher(selectedPlanName) || isProPlanOrHigher(permissions?.manualPlan))) ? false : true}
+                                                disabled={(selectedTableData.length && (isProPlanOrHigher(selectedPlanName) || isProPlanOrHigher(permissions?.manualPlan))) ? false : true}
                                                 onClick={handleSendMessageInitial}
                                             >
                                                 {t("smartBulk.sendMessageButton")}

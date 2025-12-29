@@ -15,8 +15,9 @@
     position: sticky;
     top: 10px;
 }
-
-
+.cust_chatbot_icon img{
+    object-fit: contain;
+}
 @media screen and ( max-width: 1360px ) and (min-width: 990px){
     .media-card {
         height: 650px;
@@ -33,6 +34,10 @@
 @media screen and  (max-width: 989px) { 
     .setting-block {
         flex-direction: column;
+    }
+    .cust_chatbot_icon img{
+        /* height: 90px;
+        width: 85px; */
     }
 }
 @media screen and (max-width: 500px){
