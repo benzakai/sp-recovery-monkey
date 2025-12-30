@@ -10,6 +10,7 @@ import handleOrdersPaidWebhookService from "~/services/handleOrdersPaidWebhookSe
 import processCustomerUpdate from "~/services/webhooks/handlers/processCustomerUpdate";
 import processCustomerDelete from "~/services/webhooks/handlers/processCustomerDelete";
 import { fetchCustomerDataService } from "~/services/webhooks/handlers/fetchCustomerDataService";
+import { processCKSales } from "~/services/webhooks/orderHandlers/processOrders";
 
 const firestoreDatabase = new Firestore();
 const checkoutCollection = firestoreDatabase.collection('users');
@@ -319,6 +320,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       break;
 
     case 'ORDERS_CREATE':
+      processCKSales(payload, session?.shop as string);
       const processOrdersCreate = async () => {
         try {
           console.log("ORDERS_CREATE webhook triggered: Order ID => ", payload?.id, " Checkout ID => ", payload?.checkout_id);

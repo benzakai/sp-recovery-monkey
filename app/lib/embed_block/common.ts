@@ -55,7 +55,7 @@ export async function getSettingsData(admin: any, themeId: string) {
 
 export function isAppEmbedDisabled(parsedData: any, appHandle: string): boolean {
   const blocks = parsedData?.current?.blocks;
-  console.log("blocks", blocks)
+  // console.log("blocks", blocks)
   if (!blocks) {
     return true;
   }
@@ -63,10 +63,10 @@ export function isAppEmbedDisabled(parsedData: any, appHandle: string): boolean 
   const appKey = appHandle.toLowerCase();
   for (const blockId of Object.keys(blocks)) {
     const block = blocks[blockId];
-    console.log('value of block', block)
-    console.log('appKey', appKey)
+    // console.log('value of block', block)
+    // console.log('appKey', appKey)
     if (block?.type?.toLowerCase().includes(appKey)) {
-      console.log("block------------------->", block)
+      // console.log("block------------------->", block)
       return block.disabled;
     }
   }

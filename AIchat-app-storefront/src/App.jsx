@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { iconsClasses, iconsUrl, getBubblePosition } from './utils/constants';
 
@@ -10,6 +10,7 @@ function App() {
   const [showBubble, setShowBubble] = useState(false);
   const [aiSettings, setAISettings] = useState(null)
   const [isLoading, setIsLoading] = useState(true);
+  const chatIdRef = useRef(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -75,7 +76,7 @@ function App() {
 
 
   useEffect(() => {
-    console.log('last update on... 12:09');
+    console.log('last update on... 02:29');
     const shopId = Shopify?.shop;
     const customerId =
       typeof ShopifyAnalytics !== "undefined"
@@ -93,6 +94,7 @@ function App() {
     try {
       const userID = getChatSessionId(shopId, customerId)
       setChatId(userID);
+      chatIdRef.current = userID;
       getAiChatbotSettings();
     } catch (error) {
       console.error('Error initializing chat session:', error);
@@ -162,6 +164,7 @@ function App() {
 
   const addPrductToCart = async (pId) => {
     if (!pId) return console.log("product id not found on add to cart")
+    const finalChatId = chatIdRef.current;
     try {
       const response = await fetch(window.Shopify.routes.root + 'cart/add.js', {
         method: 'POST',
@@ -170,7 +173,11 @@ function App() {
         },
         body: JSON.stringify({
           id: pId,
-          quantity: 1
+          quantity: 1,
+          properties: {
+            _source: "ck_ai_chat",
+            _chatId: finalChatId
+          }
         })
       })
 
