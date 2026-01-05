@@ -21,7 +21,7 @@ export default function WelcomePage({
     const { t, i18n } = useTranslation()
     const navigate = useNavigate();
     const anySubscriptionRef = useRef(anySubscription);
-    const [isChatEmbedEnabled, setChatEmbedEnabled] = useState(false);
+    const [isChatEmbedEnabled, setChatEmbedEnabled] = useState('loading');
 
     useEffect(() => {
         if (loaderData) {
@@ -94,7 +94,14 @@ export default function WelcomePage({
                             value={selectedLanguage}
                         />
                     </div>
-                    {isChatEmbedEnabled && <BannerInfo />}
+                    {isChatEmbedEnabled !== 'loading' && (
+                        <BannerInfo
+                            isPlanSelected={anySubscriptionRef.current}
+                            isChatEmbedEnabled={isChatEmbedEnabled}
+                            t={t}
+                        />
+                    )}
+
                     <OnboardingSteps
                         t={t}
                         shop={shop}

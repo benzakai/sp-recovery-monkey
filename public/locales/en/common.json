@@ -158,6 +158,13 @@
       "turnIntoBuying": "Turn browsing into buying with your AI shopping assistant",
       "boostConversions": "Boost conversions with personalized recommendations",
       "loading": "Loading images..."
+    },
+    "infoBanner": {
+      "messageSendingAutoTitle": "Abandoned cart messages are now sending automatically",
+      "chatbotInstalledThemeTitle":"Abandoned cart AI Chatbot assistant is now install in our theme",
+      "descriptionAppSetup": "Complete the rest of the app setup",
+      "descriptionWhatsappSetup": "Complete the rest of Connect to WhatsApp setup",
+      "descriptionChatbotSetup":"Complete the rest of the AI Chatbot assistant  setup"
     }
   },
   "letsStart": {

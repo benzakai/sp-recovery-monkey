@@ -158,6 +158,13 @@
             "turnIntoBuying": "Verwandle Stöbern in Käufe mit deinem AI-Shopping-Assistenten",
             "boostConversions": "Steigere Conversions mit personalisierten Empfehlungen",
             "loading": "Bilder werden geladen..."
+        },
+        "infoBanner": {
+            "messageSendingAutoTitle": "Nachrichten zu abgebrochenen Warenkörben werden jetzt automatisch versendet",
+            "chatbotInstalledThemeTitle": "Der KI-Chatbot-Assistent für abgebrochene Warenkörbe ist jetzt in Ihrem Theme installiert",
+            "descriptionAppSetup": "Schließen Sie die restliche App-Einrichtung ab",
+            "descriptionWhatsappSetup": "Schließen Sie die restliche Einrichtung von Connect to WhatsApp ab",
+            "descriptionChatbotSetup": "Schließen Sie die restliche Einrichtung des KI-Chatbot-Assistenten ab"
         }
     },
     "letsStart": {

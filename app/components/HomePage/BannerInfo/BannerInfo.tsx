@@ -1,28 +1,68 @@
-import { Banner } from '@shopify/polaris'
-import React, { useEffect, useState } from 'react'
+import { Banner } from '@shopify/polaris';
+import { useEffect, useState } from 'react';
 
-export default function BannerInfo() {
-    const [hidden, setHidden] = useState(false);
+export default function BannerInfo({ isPlanSelected, isChatEmbedEnabled, t }: any) {
+    const [hideAppSetupBanner, setHideAppSetupBanner] = useState(false);
+    const [hideChatbotBanner, setHideChatbotBanner] = useState(false);
+    const [hideMessageBanner, setHideMessageBanner] = useState(false);
+
+    const isFullyConfigured = isPlanSelected && isChatEmbedEnabled;
 
     useEffect(() => {
-        const stored = localStorage.getItem("ck-bannerInfo");
-        if (stored === "true") {
-            setHidden(true);
-        }
+        setHideChatbotBanner(
+            localStorage.getItem("ck-hide-chatbot-banner") === "true"
+        );
+        setHideMessageBanner(
+            localStorage.getItem("ck-hide-message-banner") === "true"
+        );
+        setHideAppSetupBanner(
+            localStorage.getItem("ck-hide-app-setup-banner") === "true"
+        );
     }, []);
 
-    const handleHide = () => {
-        setHidden(true);
-        localStorage.setItem("ck-bannerInfo", "true");
-    };
-
-    if (hidden) return null;
-
     return (
-        <div className='mb-6'>
-            <Banner title="Abandoned cart messages are now sending automatically" onDismiss={handleHide}>
-                <p>Complete the rest of the app setup</p>
-            </Banner>
+        <div>
+            {isFullyConfigured && !hideChatbotBanner && (
+                <div className="mb-6">
+                    <Banner
+                        title={t("homePostPayment.infoBanner.chatbotInstalledThemeTitle")}
+                        onDismiss={() => {
+                            setHideChatbotBanner(true);
+                            localStorage.setItem("ck-hide-chatbot-banner", "true");
+                        }}
+                    >
+                        <p>{t("homePostPayment.infoBanner.descriptionChatbotSetup")}</p>
+                    </Banner>
+                </div>
+            )}
+
+            {!isFullyConfigured && !hideAppSetupBanner && (
+                <div className="mb-6">
+                    <Banner
+                        title={t("homePostPayment.infoBanner.messageSendingAutoTitle")}
+                        onDismiss={() => {
+                            setHideAppSetupBanner(true);
+                            localStorage.setItem("ck-hide-app-setup-banner", "true");
+                        }}
+                    >
+                        <p>{t("homePostPayment.infoBanner.descriptionAppSetup")}</p>
+                    </Banner>
+                </div>
+            )}
+
+            {isFullyConfigured && !hideMessageBanner && (
+                <div className="mb-6">
+                    <Banner
+                        title={t("homePostPayment.infoBanner.messageSendingAutoTitle")}
+                        onDismiss={() => {
+                            setHideMessageBanner(true);
+                            localStorage.setItem("ck-hide-message-banner", "true");
+                        }}
+                    >
+                        <p>{t("homePostPayment.infoBanner.descriptionWhatsappSetup")}</p>
+                    </Banner>
+                </div>
+            )}
         </div>
-    )
+    );
 }

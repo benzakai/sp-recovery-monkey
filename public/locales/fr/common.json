@@ -158,6 +158,13 @@
       "turnIntoBuying": "Transformez les visiteurs en acheteurs grâce à votre assistant d’achat IA",
       "boostConversions": "Boostez les conversions avec des recommandations personnalisées",
       "loading": "Chargement des images..."
+    },
+    "infoBanner": {
+      "messageSendingAutoTitle": "Les messages de paniers abandonnés sont désormais envoyés automatiquement",
+      "chatbotInstalledThemeTitle": "L’assistant chatbot IA pour paniers abandonnés est maintenant installé sur votre thème",
+      "descriptionAppSetup": "Terminez le reste de la configuration de l’application",
+      "descriptionWhatsappSetup": "Terminez le reste de la configuration de Connect to WhatsApp",
+      "descriptionChatbotSetup": "Terminez le reste de la configuration de l’assistant chatbot IA"
     }
   },
   "letsStart": {

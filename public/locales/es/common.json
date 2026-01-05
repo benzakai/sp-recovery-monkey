@@ -158,6 +158,13 @@
       "turnIntoBuying": "Convierte a los visitantes en compradores con tu asistente de compras con IA",
       "boostConversions": "Aumenta las conversiones con recomendaciones personalizadas",
       "loading": "Cargando imágenes..."
+    },
+    "infoBanner": {
+      "messageSendingAutoTitle": "Los mensajes de carritos abandonados ahora se envían automáticamente",
+      "chatbotInstalledThemeTitle": "El asistente de chatbot con IA para carritos abandonados ya está instalado en tu tema",
+      "descriptionAppSetup": "Completa el resto de la configuración de la aplicación",
+      "descriptionWhatsappSetup": "Completa el resto de la configuración de Connect to WhatsApp",
+      "descriptionChatbotSetup": "Completa el resto de la configuración del asistente de chatbot con IA"
     }
   },
   "letsStart": {
