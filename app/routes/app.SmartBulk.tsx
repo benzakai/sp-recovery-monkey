@@ -346,7 +346,7 @@ export default function SmartBulk() {
                                         </div> */}
                                                 </div>}
                                             </Card>
-                                            <WhatsappTest shop={shop} t={t} />
+                                            <WhatsappTest shop={shop} t={t} page="smartBulk" message={customMessage} />
                                         </div>
                                     </Card>
 

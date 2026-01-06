@@ -14,7 +14,7 @@ function isValidPhoneNumber(number: any) {
 const COOLDOWN_SECONDS = 90;
 const MAX_TESTS = 5;
 
-export default function WhatsappTest({ shop, t }: any) {
+export default function WhatsappTest({ shop, t, page, message }: any) {
     const [phone, setPhone] = useState<string>('');
     const [isSendButtonDisabled, setSendButtonDisabled] = useState(false);
     const [cooldown, setCooldown] = useState<number>(0);
@@ -72,7 +72,7 @@ export default function WhatsappTest({ shop, t }: any) {
 
     const handleSendTest = async () => {
         if (cooldown > 0) {
-            setNotification({ message: t('global.whatsappTest.retryMessage',{ cooldown }), type: 'error' });
+            setNotification({ message: t('global.whatsappTest.retryMessage', { cooldown }), type: 'error' });
             return;
         }
 
@@ -83,7 +83,7 @@ export default function WhatsappTest({ shop, t }: any) {
         }
 
         if (testCount >= MAX_TESTS) {
-            setNotification({ message: t('global.whatsappTest.testLimit',{ MAX_TESTS }), type: 'error' });
+            setNotification({ message: t('global.whatsappTest.testLimit', { MAX_TESTS }), type: 'error' });
             return;
         }
 
@@ -104,6 +104,8 @@ export default function WhatsappTest({ shop, t }: any) {
                     },
                     phone: trimmed,
                     shop,
+                    message,
+                    page
                 }),
             });
 
@@ -194,7 +196,7 @@ export default function WhatsappTest({ shop, t }: any) {
                         className={`text-sm mt-3 ${(notification.type === "error" || cooldown > 0 && notification.type !== 'success') ? "text-red-600" : "text-green-600"
                             }`}
                     >
-                        {cooldown > 0 && notification.type !== 'success' ? t('global.whatsappTest.retryMessage',{ cooldown }) : notification.message}
+                        {cooldown > 0 && notification.type !== 'success' ? t('global.whatsappTest.retryMessage', { cooldown }) : notification.message}
                     </p>
                 </div>
             )}

@@ -574,7 +574,7 @@ const WelcomeConnect = () => {
                                             </p>
                                         </Tooltip>
                                     </div>
-                                    <WhatsappTest shop={shop} t={t} />
+                                    <WhatsappTest shop={shop} t={t} page="dashboard" message={null} />
                                 </div>
                             </div>
                         </Card>

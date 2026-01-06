@@ -12,22 +12,39 @@ const setFirestoreData = async (collectionName: any, documentName: any, data: an
 };
 
 export async function action({ request }: ActionFunctionArgs) {
-    const { collectionName, documentName, data, phone, shop } = await request.json();
+    const { collectionName, documentName, data, phone, shop, message, page } = await request.json();
+    // console.log("data for request body =>>>>>", JSON.stringify({
+    //     storeId: shop,
+    //     phoneNumber: phone,
+    //     ...(page === "smartBulk" ? {
+    //         message: {
+    //             header: message.header,
+    //             content: message.content
+    //         }
+    //     } : {})
+    // }))
     try {
-        const response = await fetch("https://hook.eu1.make.com/qd742i85d5ugdxd6ffw0ftw68l45b66o", {
+        const webhookURL = page === "smartBulk" ? "https://hook.eu1.make.com/b76m46o362d30xzyh5nxku3xe71j8f3u" : "https://hook.eu1.make.com/qd742i85d5ugdxd6ffw0ftw68l45b66o"
+        const response = await fetch(webhookURL, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
                 storeId: shop,
-                phoneNumber: phone
+                phoneNumber: phone,
+                ...(page === "smartBulk" ? {
+                    message: {
+                        header: message.header,
+                        content: message.content
+                    }
+                } : {})
             })
         })
         if (!response.ok) {
             const text = await response.text();
             const errorText = `Webhook failed with status ${response.status}: ${text}`
-            // console.error(errorText);
+            // console.error("errorText=>", errorText);
             return json(
                 { error: errorText },
                 { status: response.status }
