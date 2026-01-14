@@ -6,7 +6,7 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
     const [planIntervalType, setPlanIntervalType] = useState("Yearly");
 
     useEffect(() => {
-        if (planName.includes("Yearly")) {
+        if (planName && planName.includes("Yearly")) {
             setPlanIntervalType("Yearly");
         }
     }, [planName]);
@@ -89,11 +89,9 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
                         </div>
                     ) : (
                         <div className="my-auto ">
-                            {pageType === "settings" ? t("settings.planSectionDescription", {
+                            {t("settings.planSectionDescription", {
                                 planName: planName,
-                            }) : <p className="text-[13px]">
-                                {t("homePostPayment.priceSectionTitle")}
-                            </p>}
+                            })}
                         </div>
                     )}
                     <div>
@@ -148,9 +146,9 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
                                 </div>
 
                                 <div className={(pageType !== "settings" && plan.key === "Free") ? 'mt-14 ' : 'mt-6'}>
-                                    {((pageType === "settings" && plan.key === "Free") ? false : true) && (
+                                    {((plan.key === "Free") ? false : true) && (
                                         <div className="start_plan_button_section">
-                                            {loadingPage ? (
+                                            {(loadingPage || planName === "not set") ? (
                                                 <SkeletonDisplayText size="large" maxWidth="40ch" />
                                             ) : (
                                                 <Button
@@ -174,7 +172,7 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
                                     )}
 
 
-                                    <ul className={`start_plan_list space-y-2 ${(pageType === "settings" && plan.key === "Free") ? "mt-36" : "mt-4"}`}>
+                                    <ul className={`start_plan_list space-y-2 ${plan.key === "Free" ? "mt-[126px]" : "mt-4"}`}>
                                         {plan.benefits.map((benefit: string, idx: number) => (
                                             <li className="start_plan_list_item" key={idx}>
                                                 {benefit}

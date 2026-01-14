@@ -8,6 +8,9 @@ import WhatWeDoSection from '../../WelcomPage/WhatWeDoSection';
 import OnboardingSteps from '../OnboardingSteps/OnboardingSteps';
 import Overview from '~/components/global/Overview/Overview';
 import BannerInfo from '../BannerInfo/BannerInfo';
+import GettingStartedSection from '../GettingStartedSection/GettingStartedSection';
+import Testimonials from '../Testimonials/Testimonials';
+import '../../../StartPage.css';
 
 export default function WelcomePage({
     loaderData,
@@ -15,12 +18,11 @@ export default function WelcomePage({
     handleLanguageChange,
     selectedLanguage,
     setSelectedLanguage,
-    anySubscription,
-    shop
+    shop,
+    PlanSect
 }: any) {
     const { t, i18n } = useTranslation()
     const navigate = useNavigate();
-    const anySubscriptionRef = useRef(anySubscription);
     const [isChatEmbedEnabled, setChatEmbedEnabled] = useState('loading');
 
     useEffect(() => {
@@ -38,9 +40,6 @@ export default function WelcomePage({
         }
     }, [actionData]);
 
-    useEffect(() => {
-        anySubscriptionRef.current = anySubscription;
-    }, [anySubscription]);
 
     const languageOptions = [
         {
@@ -73,7 +72,7 @@ export default function WelcomePage({
     return (
         <div className="bg-[#f1f1f1]">
             <div className='start_page start_page_wrapper sm:!max-w-[100%]  px-4 md:px-0'>
-                <div className="lets_start_main_container dashboard_page_wrap">
+                <div className="start_main_container setting-page-wrap">
                     {/* <TopSaleBanner
                         btnClass="saleBannerButton"
                         className='abandoned_banner_welcome_page cursor-pointer'
@@ -96,7 +95,6 @@ export default function WelcomePage({
                     </div>
                     {isChatEmbedEnabled !== 'loading' && (
                         <BannerInfo
-                            isPlanSelected={anySubscriptionRef.current}
                             isChatEmbedEnabled={isChatEmbedEnabled}
                             t={t}
                         />
@@ -117,8 +115,17 @@ export default function WelcomePage({
                     <div className='mt-6'>
                         <Overview />
                     </div>
-                </div>
-            </div >
+                    {/* letstart Section */}
+                    <div className="mt-16">
+                        <Text variant="headingLg" as="h5">
+                            {t("homePostPayment.priceSectionTitle")}
+                        </Text>
+                        {PlanSect}
+                        <GettingStartedSection t={t} />
+                        <Testimonials t={t} />
+                    </div>
+                </div >
+            </div>
         </div >
     )
 }

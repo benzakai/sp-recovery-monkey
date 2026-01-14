@@ -5,11 +5,8 @@ import { authenticate } from "../shopify.server";
 import fireStoreCreateService from '~/services/fireStoreCreateService';
 import { useTranslation } from 'react-i18next';
 import PlanSection from '~/components/Settings/PlanSection';
-import { Spinner, Text } from '@shopify/polaris';
 import db from '../db.server';
 import WelcomePage from '~/components/HomePage/WelcomePage/WelcomePage';
-import Testimonials from '~/components/HomePage/Testimonials/Testimonials';
-import GettingStartedSection from '~/components/HomePage/GettingStartedSection/GettingStartedSection';
 import { manageOnboarding } from '~/lib/onboarding/common';
 
 
@@ -95,19 +92,24 @@ export default function Index() {
   const actionData = useActionData()
   const navigate = useNavigate()
   const [selectedLanguage, setSelectedLanguage] = useState('en');
-  const { setAnySubscription, setSelectedPlanName, anySubscription }: any = useOutletContext()
+  const { setSelectedPlanName, selectedPlanName }: any = useOutletContext()
 
   useEffect(() => {
     if (actionData?.success) {
       if (actionData?.planName === "Free") {
-        setAnySubscription(true)
-        setPlanName(planName);
-        setSelectedPlanName("Free")
+        setPlanName(actionData?.planName);
+        setSelectedPlanName(actionData?.planName)
+        setLoadingPlanButton(null)
         shopify.toast.show(t("global.toastMessage.successSubscriptionCreated"));
-        navigate('/app')
       }
     }
   }, [actionData])
+
+  useEffect(() => {
+    if (selectedPlanName) {
+      setPlanName(selectedPlanName)
+    }
+  }, [selectedPlanName])
 
   useEffect(() => {
     manageOnboarding({ data: {} });
@@ -131,47 +133,22 @@ export default function Index() {
   }
 
   return (
-    <>
-      {anySubscription === "loading" ? (
-        <div className="flex justify-center items-center h-full w-full">
-          <Spinner accessibilityLabel="Spinner example" size="large" />
-        </div>
-      ) : (
-        anySubscription ?
-          <WelcomePage
-            loaderData={loaderData}
-            actionData={actionData}
-            handleLanguageChange={handleLanguageChange}
-            selectedLanguage={selectedLanguage}
-            setSelectedLanguage={setSelectedLanguage}
-            anySubscription={anySubscription}
-            shop={loaderData.shop}
-          />
-          :
-          <div className="body">
-            <div className='start_page'>
-              <div className='start_main_container setting-page-wrap'>
-                <Text variant="headingLg" as="h5">
-                  {t("homePrePayment.title")}
-                </Text>
-                <div className='start_main_container_sub_heading setting-cart-left'>
-                </div>
-                <PlanSection
-                  t={t}
-                  loadingPage={false}
-                  loadingButton={isLoadingPlanButton}
-                  planName={planName}
-                  handlePlanSelect={handlePlanSelect}
-                  pageType={"home"}
-                />
-                <GettingStartedSection t={t} />
-                <Testimonials t={t} />
-              </div>
-            </div>
-          </div >
-      )
-      }
-    </>
+    <WelcomePage
+      loaderData={loaderData}
+      actionData={actionData}
+      handleLanguageChange={handleLanguageChange}
+      selectedLanguage={selectedLanguage}
+      setSelectedLanguage={setSelectedLanguage}
+      shop={loaderData.shop}
+      PlanSect={<PlanSection
+        t={t}
+        loadingPage={false}
+        loadingButton={isLoadingPlanButton}
+        planName={planName}
+        handlePlanSelect={handlePlanSelect}
+        pageType={"home"}
+      />}
+    />
   );
 
 };

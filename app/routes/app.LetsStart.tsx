@@ -42,12 +42,11 @@ const LetsStart = () => {
     const submit = useSubmit();
     const actionData = useActionData()
     const navigate = useNavigate()
-    const { setAnySubscription, setSelectedPlanName }: any = useOutletContext()
+    const { setSelectedPlanName }: any = useOutletContext()
 
     useEffect(() => {
         if (actionData?.success) {
             if (actionData?.planName === "Free") {
-                setAnySubscription(true)
                 setPlanName(planName);
                 setSelectedPlanName("Free")
                 shopify.toast.show(t("global.toastMessage.successSubscriptionCreated"));

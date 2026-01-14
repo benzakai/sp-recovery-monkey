@@ -7,33 +7,40 @@ import AIChatbot from './SVG/AIChatbot'
 import Calendar from './SVG/Calendar'
 import Youtube from './SVG/Youtube'
 import Chat from './SVG/Chat'
+import { useNavigate } from '@remix-run/react'
 
 export default function GettingStartedSection({ t }: any) {
+
+    const navigate = useNavigate();
 
     const startCartkeeperValues = [
         {
             id: "dashboard",
             icon: <Dashboard />,
             title: t("homePrePayment.gettingStarted.dashboard"),
-            description: t("homePrePayment.gettingStarted.dashboardDescription")
+            description: t("homePrePayment.gettingStarted.dashboardDescription"),
+            redirectTo: '/app/WelcomeConnect'
         },
         {
             id: "customerList",
             icon: <CustomerList />,
             title: t("homePrePayment.gettingStarted.customerList"),
-            description: t("homePrePayment.gettingStarted.customerListDescription")
+            description: t("homePrePayment.gettingStarted.customerListDescription"),
+            redirectTo: '/app/AbandonedList'
         },
         {
             id: "bulkCampaign",
             icon: <BulkCampaign />,
             title: t("homePrePayment.gettingStarted.bulkCampaign"),
-            description: t("homePrePayment.gettingStarted.bulkCampaignDescription")
+            description: t("homePrePayment.gettingStarted.bulkCampaignDescription"),
+            redirectTo: '/app/SmartBulk'
         },
         {
             id: "aiChatbot",
             icon: <AIChatbot />,
             title: t("homePrePayment.gettingStarted.aiChatbot"),
-            description: t("homePrePayment.gettingStarted.aiChatbotDescription")
+            description: t("homePrePayment.gettingStarted.aiChatbotDescription"),
+            redirectTo: '/app/AIChatbot'
         }
     ]
 
@@ -81,7 +88,7 @@ export default function GettingStartedSection({ t }: any) {
                     {
                         startCartkeeperValues.map((card) => {
                             return (
-                                <div key={card.id} className='w-1/4'>
+                                <div key={card.id} className='w-1/4 cursor-pointer' onClick={() => navigate(card.redirectTo)}>
                                     <Card>
                                         <div className='flex flex-col justify-start gap-3'>
                                             {card.icon}

@@ -1,12 +1,12 @@
 import { Banner } from '@shopify/polaris';
 import { useEffect, useState } from 'react';
 
-export default function BannerInfo({ isPlanSelected, isChatEmbedEnabled, t }: any) {
+export default function BannerInfo({ isChatEmbedEnabled, t }: any) {
     const [hideAppSetupBanner, setHideAppSetupBanner] = useState(false);
     const [hideChatbotBanner, setHideChatbotBanner] = useState(false);
     const [hideMessageBanner, setHideMessageBanner] = useState(false);
 
-    const isFullyConfigured = isPlanSelected && isChatEmbedEnabled;
+    const isFullyConfigured = isChatEmbedEnabled;
 
     useEffect(() => {
         setHideChatbotBanner(

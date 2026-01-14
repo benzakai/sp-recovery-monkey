@@ -1,9 +1,8 @@
 import { ActionFunctionArgs, json } from "@remix-run/node";
 import { authenticate } from "../shopify.server";
-import { Firestore } from "@google-cloud/firestore";
+import { firestore } from "~/utils/firestore.server";
 import fireStoreCreateService from "~/services/fireStoreCreateService";
 
-const firestore = new Firestore();
 
 const setFirestoreData = async (collectionName, documentName, data) => {
     try {

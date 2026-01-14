@@ -183,21 +183,6 @@ const Settings = () => {
         submit(formData, { method: "post" });
     };
 
-    const getSubscriptionData = async () => {
-        const response = await fetch('/api/firestore?collectionName=subscriptions', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        const Responsedata = await response.json();
-        if (Responsedata.data) {
-            return Responsedata.data;
-        } else {
-            return null;
-        }
-    };
-
     const fetchSettings = async () => {
         try {
             const response = await fetch('/api/firestore?collectionName=settings', {
@@ -246,7 +231,6 @@ const Settings = () => {
     };
 
     const getFireData = async () => {
-        const subscriptionData = await getSubscriptionData();
         const settingsData = await fetchSettings()
         // console.log("settingsData", settingsData);
         if (settingsData) {
@@ -290,16 +274,14 @@ const Settings = () => {
             }
         }
 
-        if (Object.keys(subscriptionData).length === 0) {
-            setPlanName('NO_PLAN');
-        } else {
-            setPlanName(subscriptionData?.plan);
-        }
+        setPlanName(selectedPlanName);
         setLoadingPage(false)
     }
     useEffect(() => {
-        getFireData();
-    }, []);
+        if (selectedPlanName) {
+            getFireData();
+        }
+    }, [selectedPlanName]);
 
     const sendPubSubData = async (data: any) => {
         const topicNames = ["settings"]

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import {
     Card,
     Text,
@@ -13,7 +13,7 @@ import {
     Divider,
     Spinner
 } from '@shopify/polaris';
-import { ChevronUpIcon, ChevronDownIcon, XIcon, AppsIcon, StatusActiveIcon } from '@shopify/polaris-icons';
+import { XIcon, AppsIcon } from '@shopify/polaris-icons';
 import './OnboardingSteps.css';
 import { useNavigate, useOutletContext } from '@remix-run/react';
 import { manageOnboarding } from '~/lib/onboarding/common';
@@ -24,17 +24,14 @@ import ActiveBadge from './SVG/ActiveBadge';
 
 export default function OnboardingSteps({ shop, t, setChatEmbedEnabled }: any) {
     const navigate = useNavigate();
+    const [openStepKey, setOpenStepKey] = useState<string[]>([]);
     const { selectedPlanName, permissions }: any = useOutletContext()
-    const [isWhatsAppStepsNotDone, setWhatsAppNotDone] = useState(true);
-    const [isAiStepsNotDone, setAiBotNotDone] = useState(true);
     const [onboarding, setOnboarding] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
-
     const [isDismissed, setIsDismissed] = useState(false);
     const [isRemoved, setIsRemoved] = useState(false);
 
     const handleWhatsAppToggle = useCallback(() => { }, []);
-
     const handleAiBotToggle = useCallback(() => { }, []);
 
     const handleDismiss = useCallback(() => {
@@ -48,13 +45,17 @@ export default function OnboardingSteps({ shop, t, setChatEmbedEnabled }: any) {
     const handlePermanentRemove = useCallback(() => {
         setIsRemoved(true);
         manageOnboarding({ data: { hideOnboarding: true }, shop });
+    }, [shop]);
+
+    const toggleStep = useCallback((key: string) => {
+        setOpenStepKey(prev =>
+            prev.includes(key)
+                ? prev.filter(k => k !== key)
+                : [...prev, key]
+        );
     }, []);
 
-    useEffect(() => {
-        fetchOnboardingData();
-    }, []);
-
-    const STEP_CONFIG = [
+    const STEP_CONFIG = useMemo(() => [
         {
             id: "step1",
             title: t("homePostPayment.onboardingSteps.step1.title"),
@@ -113,91 +114,144 @@ export default function OnboardingSteps({ shop, t, setChatEmbedEnabled }: any) {
                 }
             ]
         }
-    ];
+    ], [t]);
 
-    const saveOnboardingData = async () => {
-        try {
-            const response = await fetch('/api/onboarding_create', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({}),
-            });
-            if (!response.ok) {
-                throw new Error('failed to save onboarding data');
+    useEffect(() => {
+        let isMounted = true;
+        let timeoutId: NodeJS.Timeout;
+
+        const initializeOnboarding = async () => {
+            try {
+                // fetching onboarding data first (faster than embed status which requires theme API calls)
+                const controller = new AbortController();
+                const timeoutHandle = setTimeout(() => controller.abort(), 3000); // 3s timeout
+                
+                const onboardingResponse = await fetch('/api/firestore?collectionName=onboardingProgress', { 
+                    signal: controller.signal 
+                });
+                clearTimeout(timeoutHandle);
+                
+                const onboardingData = await onboardingResponse.json();
+
+                if (!isMounted) return;
+
+                let dataToSet = onboardingData?.data;
+
+                // if no data exists, creating it but not waiting for it - using default data
+                if (!dataToSet || Object.keys(dataToSet).length === 0) {
+                    dataToSet = {
+                        hideOnboarding: false,
+                        step1: { connectWhatsapp: false, editMessage: false, sendTestMessage: false },
+                        step2: { startSync: false, chooseTone: false, installPreview: false }
+                    };
+                    
+                    // creaing data in background without blocking UI
+                    fetch('/api/onboarding_create', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({}),
+                    }).catch(err => console.error('Background onboarding creation failed:', err));
+                }
+
+                if (!isMounted) return;
+
+                // setting initial state immediately with onboarding data only
+                setOnboarding(dataToSet);
+                setIsRemoved(dataToSet?.hideOnboarding || false);
+                initFirstIncompleteStep(dataToSet);
+                
+                // setting loading to false to show UI immediately
+                setIsLoading(false);
+
+                // fetching embed status in the background (non-blocking) with timeout
+                // This can take up to 2-3 seconds due to Shopify API calls
+                const embedController = new AbortController();
+                const embedTimeout = setTimeout(() => embedController.abort(), 2500);
+                
+                fetch('/api/getEmbedStatus', { signal: embedController.signal })
+                    .then(res => res.json())
+                    .then(embedData => {
+                        clearTimeout(embedTimeout);
+                        if (!isMounted) return;
+                        
+                        const resEmbedEnabled = !embedData.embedDisabled;
+                        setChatEmbedEnabled(resEmbedEnabled);
+                        
+                        // updating onboarding data if embed status differs
+                        if (resEmbedEnabled !== dataToSet?.step2?.installPreview) {
+                            const updatedData = {
+                                ...dataToSet,
+                                step2: { ...dataToSet?.step2, installPreview: resEmbedEnabled }
+                            };
+                            setOnboarding(updatedData);
+                            manageOnboarding({ data: { step2: { installPreview: resEmbedEnabled } }, shop });
+                        }
+                    })
+                    .catch(err => {
+                        clearTimeout(embedTimeout);
+                        console.error('Error fetching embed status:', err);
+                        setChatEmbedEnabled(false);
+                    });
+
+            } catch (err) {
+                console.error('Error initializing onboarding:', err);
+                if (isMounted) {
+                    setOnboarding({ step1: {}, step2: {} });
+                    setIsLoading(false);
+                }
             }
-        } catch (error) {
-            console.error('error saving onboarding data:', error);
-        }
-    }
+        };
 
-    const fetchOnboardingData = async () => {
-        try {
-            const response = await fetch('/api/firestore?collectionName=onboardingProgress');
-            const res = await response.json();
-            console.log("res.data", res.data);
-            if (res?.data && Object.keys(res.data).length > 0) {
-                setOnboarding(res.data);
-                setIsRemoved(res.data.hideOnboarding);
-                const isWhatsAppStepsNotDoneFind = Object.values(res.data.step1).some(v => !v);
-                setWhatsAppNotDone(isWhatsAppStepsNotDoneFind);
-                const isAiStepsNotDoneFind = Object.values(res.data.step2).some(v => !v);
-                setAiBotNotDone(isAiStepsNotDoneFind);
-                // console.log("res.data.step2.installPreview", res.data.step2.installPreview);
-                await checkEmbedDisabled(res.data.step2.installPreview);
-            } else {
-                await saveOnboardingData();
-                await fetchOnboardingData();
-            }
-        } catch (err) {
-            console.error(err);
-            setOnboarding({ step1: {}, step2: {} });
-        } finally {
-            setIsLoading(false);
-        }
-    };
+        initializeOnboarding();
 
-    const checkEmbedDisabled = async (installPreviewEnabled: boolean) => {
-        try {
-            const response = await fetch('/api/getEmbedStatus');
-            const res = await response.json();
-            const resEmbedEnabled = !res.embedDisabled
-            if (resEmbedEnabled !== installPreviewEnabled) {
-                manageOnboarding({ data: { step2: { installPreview: resEmbedEnabled } }, shop });
-                fetchOnboardingData();
-            }
-            setChatEmbedEnabled(resEmbedEnabled);
-        } catch (error) {
-            console.log("error occured on checkEmbedDisabled", error);
-        }
-    }
+        return () => {
+            isMounted = false;
+            if (timeoutId) clearTimeout(timeoutId);
+        };
+    }, [shop]);
 
-    const completedCount = onboarding
-        ? [
-            onboarding.step1?.connectWhatsapp,
-            onboarding.step1?.editMessage,
-            onboarding.step1?.sendTestMessage,
-            onboarding.step2?.chooseTone,
-            onboarding.step2?.installPreview,
-            onboarding.step2?.startSync
-        ].filter(Boolean).length
-        : 0;
+    const completedCount = useMemo(() => {
+        return onboarding
+            ? [
+                onboarding.step1?.connectWhatsapp,
+                onboarding.step1?.editMessage,
+                onboarding.step1?.sendTestMessage,
+                onboarding.step2?.chooseTone,
+                onboarding.step2?.installPreview,
+                onboarding.step2?.startSync
+            ].filter(Boolean).length
+            : 0;
+    }, [onboarding]);
 
-    const progress = (completedCount / 6) * 100;
+    const progress = useMemo(() => (completedCount / 6) * 100, [completedCount]);
 
-    const renderIcon = (done: any) =>
+    const renderIcon = useCallback((done: any) =>
         done ? <div className="step-done-icon"><Tick />
-        </div> : <div className="custom-step-icon" />;
+        </div> : <div className="custom-step-icon" />, []);
 
-    const navigateToStep = (link: any) => {
+    const navigateToStep = useCallback((link: any) => {
         navigate(link);
-    };
+    }, [navigate]);
 
-    const renderStepGroup = ({ groupId, title, steps, data, isOpen, toggleAccordion, pro = false, isStepsNotDone }: any) => {
+    const initFirstIncompleteStep = useCallback((data: any) => {
+        const stepsInOrder = [
+            ...STEP_CONFIG[0].steps.map(s => s.key),
+            ...STEP_CONFIG[1].steps.map(s => s.key),
+        ];
+
+        const firstIncompleteKey = stepsInOrder.find(
+            key =>
+                data?.step1?.[key] === false ||
+                data?.step2?.[key] === false
+        );
+
+        if (firstIncompleteKey) {
+            setOpenStepKey([firstIncompleteKey]);
+        }
+    }, [STEP_CONFIG]);
+
+    const renderStepGroup = useCallback(({ groupId, title, steps, data, isOpen, toggleAccordion, pro = false, isStepsNotDone }: any) => {
         const safeData = data || {};
-        const firstIncompleteIndex = steps.findIndex((s: any) => !safeData[s.key]);
-
 
         return (
             <>
@@ -226,13 +280,13 @@ export default function OnboardingSteps({ shop, t, setChatEmbedEnabled }: any) {
                         <BlockStack gap="400">
                             {steps.map((s: any, i: any) => {
                                 const done = safeData[s.key];
-                                const isHighlighted = i === firstIncompleteIndex;
+                                const isHighlighted = openStepKey.includes(s.key);
 
                                 if (isHighlighted) {
                                     return (
                                         <Box key={s.key} background="bg-surface-secondary" borderRadius="200">
                                             <InlineStack align="space-between" blockAlign="center" gap="400">
-                                                <div className="step-row current-step-row">
+                                                <div className="step-row current-step-row cursor-pointer" onClick={() => toggleStep(s.key)}>
                                                     {renderIcon(done)}
                                                     <BlockStack gap="100">
                                                         <div className='flex flex-row gap-3'>
@@ -262,7 +316,11 @@ export default function OnboardingSteps({ shop, t, setChatEmbedEnabled }: any) {
                                 }
 
                                 return (
-                                    <div className="step-row" key={s.key}>
+                                    <div
+                                        className="step-row cursor-pointer"
+                                        key={s.key}
+                                        onClick={() => toggleStep(s.key)}
+                                    >
                                         {renderIcon(done)}
                                         <Text as="p" variant="bodyMd" tone="subdued">
                                             {s.title}
@@ -278,7 +336,7 @@ export default function OnboardingSteps({ shop, t, setChatEmbedEnabled }: any) {
                 </Collapsible>
             </>
         );
-    };
+    }, [STEP_CONFIG, renderIcon, openStepKey, toggleStep, selectedPlanName, permissions, navigateToStep, t]);
 
     return (
         <>
@@ -359,7 +417,7 @@ export default function OnboardingSteps({ shop, t, setChatEmbedEnabled }: any) {
                                     renderStepGroup({
                                         groupId: group.id,
                                         title: group.title,
-                                        isStepsNotDone: group.id === "step1" ? isWhatsAppStepsNotDone : isAiStepsNotDone,
+                                        isStepsNotDone: group.id === "step1" ? Object.values(onboarding?.step1 || {}).some(v => !v) : Object.values(onboarding?.step2 || {}).some(v => !v),
                                         steps: group.steps,
                                         data: onboarding ? onboarding[group.id] : {},
                                         isOpen: group.id === "step1" ? true : true,
