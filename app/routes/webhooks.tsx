@@ -11,6 +11,7 @@ import processCustomerUpdate from "~/services/webhooks/handlers/processCustomerU
 import processCustomerDelete from "~/services/webhooks/handlers/processCustomerDelete";
 import { fetchCustomerDataService } from "~/services/webhooks/handlers/fetchCustomerDataService";
 import { processCKSales } from "~/services/webhooks/orderHandlers/processOrders";
+import fireStoreUpdateService from "~/services/fireStoreUpdateService";
 
 const firestoreDatabase = new Firestore();
 const checkoutCollection = firestoreDatabase.collection('users');
@@ -251,6 +252,12 @@ export const action = async ({ request }: ActionFunctionArgs) => {
           await fireStoreCreateService("AppUninstalledDate", shop, newDataToSave, {});
           await deleteSubscriptionData(session?.shop as string);
           await deleteAppInstalledDate(session?.shop as string);
+          // updating onboarding hide to false on uninstall
+          await fireStoreUpdateService(
+            "onboardingProgress",
+            session?.shop as string,
+            { hideOnboarding: false }
+          );
           await publishMessagePubSubService("uninstall", JSON.stringify(payload));
           if (session) {
             await db.session.deleteMany({ where: { shop } });
