@@ -12,6 +12,7 @@ import processCustomerDelete from "~/services/webhooks/handlers/processCustomerD
 import { fetchCustomerDataService } from "~/services/webhooks/handlers/fetchCustomerDataService";
 import { processCKSales } from "~/services/webhooks/orderHandlers/processOrders";
 import fireStoreUpdateService from "~/services/fireStoreUpdateService";
+import { handleBulkOperationFinish } from "~/services/webhooks/bulkOperationHandlers/handleBulkOperationFinish";
 
 const firestoreDatabase = new Firestore();
 const checkoutCollection = firestoreDatabase.collection('users');
@@ -55,11 +56,11 @@ const setSubscriptionData = async (data: any, storeId: string) => {
   try {
     const updatedAt = data?.app_subscription?.updated_at;
     const endDate = addDaysToFormattedDate(updatedAt, 30);
-    
+
     const fetchStart = Date.now();
     const existing = await fireStoreFetchService("subscriptions", storeId); // fetching existing procancelledDate here becuse on first (active status) webhook trigger before data update suddenly secong (canceled status) triggers.
     logTiming(`[setSubscriptionData] Fetch existing subscription`, fetchStart, { storeId });
-    
+
     const existingProCancelledDate = existing?.proCancelledDate ?? null;
 
     const createStart = Date.now();
@@ -84,7 +85,7 @@ const getSubsciptionData = async (storeId: string) => {
   try {
     const doc = await fireStoreFetchService("subscriptions", storeId);
     logTiming(`[getSubsciptionData]`, functionStart, { storeId, found: !!doc });
-    
+
     if (!doc) {
       return null;
     } else {
@@ -194,12 +195,12 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const authStart = Date.now();
   const { topic, shop, session, admin, payload } = await authenticate.webhook(request);
   logTiming(`[WEBHOOK] Authenticate`, authStart, { topic, shop });
-  
+
   if (!admin && topic !== "SHOP_REDACT") {
     console.error(`[WEBHOOK ERROR] Unauthorized webhook attempt - Topic: ${topic} | Shop: ${shop}`);
     throw new Response();
   }
-  
+
   console.log(`[WEBHOOK] Received - Topic: ${topic} | Shop: ${shop}`);
 
   // sending response immediately to acknowledge webhook
@@ -226,9 +227,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 const processWebhookTopic = async (topic: string, payload: any, shop: string, session: any, admin: any) => {
   const totalStart = Date.now();
   const logContext = { topic, shop, timestamp: new Date().toISOString() };
-  
+
   console.log(`[WEBHOOK PROCESSING] Started - ${topic} for ${shop}`);
-  
+
   switch (topic) {
     case "CHECKOUTS_CREATE":
       try {
@@ -236,7 +237,7 @@ const processWebhookTopic = async (topic: string, payload: any, shop: string, se
         const subStart = Date.now();
         const hasActiveSubscription = await checkSubscriptionStatus(session?.shop as string);
         logTiming(`[CHECKOUTS_CREATE] Subscription check`, subStart);
-        
+
         if (hasActiveSubscription) {
           const dataStart = Date.now();
           await setCheckoutData(payload, session?.shop as string);
@@ -260,12 +261,12 @@ const processWebhookTopic = async (topic: string, payload: any, shop: string, se
         const subStart = Date.now();
         const hasActiveSubscription = await checkSubscriptionStatus(session?.shop as string);
         logTiming(`[CHECKOUTS_UPDATE] Subscription check`, subStart);
-        
+
         if (hasActiveSubscription) {
           const updateStart = Date.now();
           await setUpdatesData(payload, session?.shop as string);
           logTiming(`[CHECKOUTS_UPDATE] Set update data`, updateStart);
-          
+
           // handling checkouts without phone
           if (payload?.phone == null) {
             const phoneStart = Date.now();
@@ -313,7 +314,7 @@ const processWebhookTopic = async (topic: string, payload: any, shop: string, se
       try {
         console.log(`[APP_UNINSTALLED] Processing for ${shop}`);
         const uninstallStart = Date.now();
-        
+
         const newDataToSave = {
           appUninstalledDate: new Date().toISOString(),
           email: payload.email,
@@ -322,19 +323,19 @@ const processWebhookTopic = async (topic: string, payload: any, shop: string, se
           city: payload.city,
           shop_owner: payload.shop_owner
         };
-        
+
         const fsStart = Date.now();
         await fireStoreCreateService("AppUninstalledDate", shop, newDataToSave, {});
         logTiming(`[APP_UNINSTALLED] Firestore create uninstalled date`, fsStart);
-        
+
         const delSubStart = Date.now();
         await deleteSubscriptionData(session?.shop as string);
         logTiming(`[APP_UNINSTALLED] Delete subscription`, delSubStart);
-        
+
         const delAppStart = Date.now();
         await deleteAppInstalledDate(session?.shop as string);
         logTiming(`[APP_UNINSTALLED] Delete app installed date`, delAppStart);
-        
+
         const updateStart = Date.now();
         await fireStoreUpdateService(
           "onboardingProgress",
@@ -342,15 +343,15 @@ const processWebhookTopic = async (topic: string, payload: any, shop: string, se
           { hideOnboarding: false }
         );
         logTiming(`[APP_UNINSTALLED] Update onboarding progress`, updateStart);
-        
+
         const pubStart = Date.now();
         await publishMessagePubSubService("uninstall", JSON.stringify(payload));
         logTiming(`[APP_UNINSTALLED] Publish to PubSub`, pubStart);
-        
+
         if (session) {
           await db.session.deleteMany({ where: { shop } });
         }
-        
+
         // deleting instance data
         try {
           const instanceData = await fireStoreFetchService("InstanceData", shop);
@@ -363,7 +364,7 @@ const processWebhookTopic = async (topic: string, payload: any, shop: string, se
                 body: JSON.stringify({ idInstance: instanceData.idInstance })
               }
             );
-            
+
             if (responseDeleteInstance.ok) {
               await fireStoreDeleteService("InstanceData", shop);
               console.log(`[APP_UNINSTALLED] Instance deleted for ${shop}`);
@@ -378,7 +379,7 @@ const processWebhookTopic = async (topic: string, payload: any, shop: string, se
             stack: instanceError instanceof Error ? instanceError.stack : undefined,
           });
         }
-        
+
         console.log(`[APP_UNINSTALLED] Completed for ${shop}`);
       } catch (error) {
         console.error(`[APP_UNINSTALLED ERROR]`, {
@@ -393,17 +394,17 @@ const processWebhookTopic = async (topic: string, payload: any, shop: string, se
       try {
         console.log(`[APP_SUBSCRIPTIONS_UPDATE] Processing for ${shop}`);
         const subUpdateStart = Date.now();
-        
+
         const subscription = payload?.app_subscription;
         const incomingPlan = subscription?.name;
         const incomingStatus = subscription?.status;
         const isProPlan = incomingPlan === "Pro";
         const isCancelled = incomingStatus === "CANCELLED";
-        
+
         const fetchStart = Date.now();
         const subscriptionDataFound: any = await fireStoreFetchService("subscriptions", shop);
         logTiming(`[APP_SUBSCRIPTIONS_UPDATE] Fetch subscription data`, fetchStart, { shop });
-        
+
         const proCancelledDate = (isProPlan && isCancelled)
           ? subscription?.updated_at
           : subscriptionDataFound?.proCancelledDate ?? null;
@@ -440,15 +441,15 @@ const processWebhookTopic = async (topic: string, payload: any, shop: string, se
       try {
         console.log(`[ORDERS_CREATE] Processing - ID: ${payload?.id}, Checkout: ${payload?.checkout_id}`);
         const orderCreateStart = Date.now();
-        
+
         const processSalesStart = Date.now();
         processCKSales(payload, session?.shop as string);
         logTiming(`[ORDERS_CREATE] Process CK sales`, processSalesStart);
-        
+
         const subStart = Date.now();
         const hasActiveSub = await checkSubscriptionStatus(session?.shop as string);
         logTiming(`[ORDERS_CREATE] Subscription check`, subStart);
-        
+
         if (hasActiveSub) {
           const pubStart = Date.now();
           await sendDataToPubSub(payload);
@@ -520,6 +521,26 @@ const processWebhookTopic = async (topic: string, payload: any, shop: string, se
       }
       break;
 
+    case 'BULK_OPERATIONS_FINISH':
+      try {
+        console.log(`[BULK_OPERATIONS_FINISH] Processing - BulkId: ${payload?.admin_graphql_api_id}`);
+        const bulkOperationFinishStart = Date.now();
+        await handleBulkOperationFinish({
+          payload,
+          session,
+          shop,
+        });
+        logTiming(`[BULK_OPERATIONS_FINISH] Process bulk operation finish`, bulkOperationFinishStart, { bulkId: payload?.admin_graphql_api_id });
+      } catch (error) {
+        console.error("[BULK_OPERATIONS_FINISH ERROR]", {
+          operationId: payload?.id,
+          shop,
+          error: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        });
+      }
+      break;
+
     case "CUSTOMERS_DATA_REQUEST":
     case "CUSTOMERS_REDACT":
     case "SHOP_REDACT":
@@ -531,7 +552,7 @@ const processWebhookTopic = async (topic: string, payload: any, shop: string, se
   }
 
   const totalDuration = logTiming(`[WEBHOOK PROCESSING] Total for ${topic}`, totalStart, { shop });
-  
+
   // Log warning if webhook processing takes longer than 10 seconds
   if (totalDuration > 10000) {
     console.warn(`[WEBHOOK WARNING] SLOW WEBHOOK DETECTED - ${topic} took ${totalDuration}ms for ${shop}`);

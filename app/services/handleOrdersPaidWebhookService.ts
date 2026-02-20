@@ -5,14 +5,16 @@ import { Firestore } from "@google-cloud/firestore";
 export default async function handleOrdersPaidWebhookService(payload: any, shop: string) {
     try {
         const getDoc = await fireStoreFetchService("AbandonedCheckoutsData", String(payload.checkout_id));
-
+        console.log("before publishing to first sales topic for checkout:", payload.checkout_id, "store:", shop);
         if (getDoc != undefined) {
+            console.log("publishing to first sales topic for checkout:", payload.checkout_id, "store:", shop);
             await publishMessagePubSubService("sales", JSON.stringify(payload));
         }
 
         const getCustomerOrders: any = await getAllCheckoutsOfCustomer(payload.customer.admin_graphql_api_id);
         if (getCustomerOrders?.success == true) {
             if (getCustomerOrders.data.length > 0) {
+                console.log("publishing to second sales topic for checkout:", payload.checkout_id, "store:", shop);
                 await publishMessagePubSubService("sales", JSON.stringify({
                     storeId: shop,
                     customerId: payload.customer.admin_graphql_api_id,

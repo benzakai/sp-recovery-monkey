@@ -161,10 +161,10 @@
     },
     "infoBanner": {
       "messageSendingAutoTitle": "Abandoned cart messages are now sending automatically",
-      "chatbotInstalledThemeTitle":"Abandoned cart AI Chatbot assistant is now install in our theme",
+      "chatbotInstalledThemeTitle": "Abandoned cart AI Chatbot assistant is now install in our theme",
       "descriptionAppSetup": "Complete the rest of the app setup",
       "descriptionWhatsappSetup": "Complete the rest of Connect to WhatsApp setup",
-      "descriptionChatbotSetup":"Complete the rest of the AI Chatbot assistant  setup"
+      "descriptionChatbotSetup": "Complete the rest of the AI Chatbot assistant  setup"
     }
   },
   "letsStart": {
@@ -246,6 +246,15 @@
     "tableColumnHeading2": "Name",
     "tableColumnHeading3": "Phone",
     "tableColumnHeading4": "Subscription",
+    "segments": {
+      "title": "Segments",
+      "description": "Select a segment to send to from your store’s segment list.",
+      "confirmationTitle": "Are you sure you want to send the message to the selected segments?",
+      "SearchPlaceholder": "Search segments",
+      "tableColumn":{
+        "name":"Name"
+      }
+    },
     "calendar": {
       "today": "Today",
       "yesterday": "Yesterday",

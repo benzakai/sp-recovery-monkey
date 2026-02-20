@@ -246,6 +246,15 @@
     "tableColumnHeading2": "Nom",
     "tableColumnHeading3": "Téléphone",
     "tableColumnHeading4": "Abonnement",
+    "segments": {
+      "title": "Segments",
+      "description": "Sélectionnez un segment dans la liste des segments de votre boutique auquel vous souhaitez envoyer le message.",
+      "confirmationTitle": "Êtes-vous sûr de vouloir envoyer le message aux segments sélectionnés ?",
+      "SearchPlaceholder": "Rechercher des segments",
+      "tableColumn": {
+        "name": "Nom"
+      }
+    },
     "calendar": {
       "today": "Hoy",
       "yesterday": "Ayer",

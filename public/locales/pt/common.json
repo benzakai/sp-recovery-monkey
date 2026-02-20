@@ -246,6 +246,15 @@
     "tableColumnHeading2": "Nome",
     "tableColumnHeading3": "Telefone",
     "tableColumnHeading4": "Assinatura",
+    "segments": {
+      "title": "Segmentos",
+      "description": "Selecione um segmento da lista de segmentos da sua loja para o qual deseja enviar a mensagem.",
+      "confirmationTitle": "Tem certeza de que deseja enviar a mensagem para os segmentos selecionados?",
+      "SearchPlaceholder": "Pesquisar segmentos",
+      "tableColumn": {
+        "name": "Nome"
+      }
+    },
     "calendar": {
       "today": "Hoje",
       "yesterday": "Ontem",
