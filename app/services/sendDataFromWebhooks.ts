@@ -7,10 +7,10 @@ import fireStoreFetchService from "./fireStoreFetchService";
 
 const logger = {
   info: (message: string, data?: any) => {
-    // console.log(`[INFO] sendDataFromWebhooks [${new Date().toISOString()}] ${message}`, data ? JSON.stringify(data) : '');
+    console.log(`[INFO] sendDataFromWebhooks [${new Date().toISOString()}] ${message}`, data ? JSON.stringify(data) : '');
   },
   warn: (message: string, data?: any) => {
-    // console.warn(`[WARN] sendDataFromWebhooks [${new Date().toISOString()}] ${message}`, data ? JSON.stringify(data) : '');
+    console.warn(`[WARN] sendDataFromWebhooks [${new Date().toISOString()}] ${message}`, data ? JSON.stringify(data) : '');
   },
   error: (message: string, error?: any, data?: any) => {
     console.error(`[ERROR] sendDataFromWebhooks [${new Date().toISOString()}] ${message}`, {
@@ -20,9 +20,9 @@ const logger = {
     });
   },
   debug: (message: string, data?: any) => {
-    if (process.env.DEBUG) {
-      // console.log(`[DEBUG] sendDataFromWebhooks [${new Date().toISOString()}] ${message}`, data ? JSON.stringify(data) : '');
-    }
+    // if (process.env.DEBUG) {
+    console.log(`[DEBUG] sendDataFromWebhooks [${new Date().toISOString()}] ${message}`, data ? JSON.stringify(data) : '');
+    // }
   }
 };
 
@@ -212,20 +212,20 @@ const getFirestoreData = async (collectionName: string, storeId: string) => {
 const handleOldCheckout = async (checkout: any, shop: string, token: string, session: any) => {
   const checkoutId = checkout.checkoutId;
   logger.info(`Processing old checkout`, { checkoutId, shop });
-  
+
   try {
     const recentOrders = await fetchOrders(shop, token);
     const shopDomain = await getShopDomain(shop, token);
-    
+
     if (!shopDomain) {
       logger.warn(`Failed to retrieve shop domain`, { shop, checkoutId });
     }
-    
+
     const orderExists = recentOrders.some((order: any) => order.checkout_id === checkoutId);
-    logger.debug(`Checked if order exists for checkout`, { checkoutId, orderExists });
+    logger.debug(`Checked if order exists for checkout`, { checkoutId, orderExists, shop });
 
     if (orderExists) {
-      logger.info(`Order exists for checkout, deleting records`, { checkoutId, shop });
+      logger.info(`Order exists for checkout, deleting records, not proceesing to publish topic`, { checkoutId, shop });
       await fireStoreDeleteService("users", String(checkoutId));
       await fireStoreDeleteService("checkoutUpdateData", String(checkoutId));
       logger.info(`Successfully deleted checkout records`, { checkoutId });
@@ -233,7 +233,7 @@ const handleOldCheckout = async (checkout: any, shop: string, token: string, ses
       logger.info(`Checkout is abandoned`, { checkoutId, shop });
 
       const checkoutUpdateDoc = await fireStoreFetchService("checkoutUpdateData", checkoutId.toString());
-      logger.debug(`Retrieved checkout update document`, { checkoutId, docExists: !!checkoutUpdateDoc });
+      logger.debug(`Retrieved checkout update document`, { checkoutId, docExists: !!checkoutUpdateDoc, shop });
 
       if (checkoutUpdateDoc) {
         const getGreenAPIData = await getFirestoreData("ConnectPagedata", shop);
@@ -250,7 +250,7 @@ const handleOldCheckout = async (checkout: any, shop: string, token: string, ses
           await sendDataToPubSub(objj);
           await handleAddAbandonedCheckouts(checkoutId.toString(), shop, objj);
           await setsubscriptionAbandonedCarts(objj);
-          logger.info(`Successfully processed abandoned checkout`, { checkoutId, shop });
+          logger.info(`Successfully processed abandoned checkout with green api`, { checkoutId, shop });
         } else {
           logger.info(`No Green API data found, sending data without it`, { shop, checkoutId });
           await sendDataToPubSub(objj);
@@ -259,12 +259,12 @@ const handleOldCheckout = async (checkout: any, shop: string, token: string, ses
           logger.info(`Successfully processed abandoned checkout without Green API data`, { checkoutId, shop });
         }
       } else {
-        logger.warn(`No checkout update document found, skipping data submission`, { checkoutId });
+        logger.warn(`No checkout update document found, skipping data submission`, { checkoutId, shop });
       }
 
       await fireStoreDeleteService("users", String(checkoutId));
       await fireStoreDeleteService("checkoutUpdateData", String(checkoutId));
-      logger.info(`Cleanup completed for checkout`, { checkoutId });
+      logger.info(`Cleanup completed for checkout`, { checkoutId, shop });
     }
   } catch (error) {
     logger.error(`Error handling old checkout`, error, { checkoutId, shop });
@@ -274,7 +274,7 @@ const handleOldCheckout = async (checkout: any, shop: string, token: string, ses
 const sendDataToPubSub = async (message: any) => {
   const shopDomain = message?.["SHOP DOMAIN"];
   logger.info(`Publishing message to PubSub`, { shopDomain, topicName: "NewAbandonedCheckout" });
-  
+
   try {
     const messageJson = JSON.stringify(message);
     await publishMessagePubSubService("NewAbandonedCheckout", messageJson);
@@ -287,7 +287,7 @@ const sendDataToPubSub = async (message: any) => {
 const fetchOrders = async (shopName: string, token: string) => {
   const lastTenMinuteTime = new Date(Date.now() - 10 * 60 * 1000).toISOString();
   logger.debug(`Fetching orders from Shopify`, { shopName, since: lastTenMinuteTime });
-  
+
   try {
     const response = await fetch(
       `https://${shopName}/admin/api/2024-10/orders.json?status=any&created_at_min=${lastTenMinuteTime}`,
@@ -308,7 +308,7 @@ const fetchOrders = async (shopName: string, token: string) => {
     const responseData = await response.json();
     const orderCount = Array.isArray(responseData?.orders) ? responseData.orders.length : 0;
     logger.debug(`Successfully fetched orders from Shopify`, { shopName, count: orderCount });
-    
+
     return Array.isArray(responseData?.orders) ? responseData.orders : [];
   } catch (error) {
     logger.error(`Error fetching orders from Shopify`, error, { shopName });
@@ -318,7 +318,7 @@ const fetchOrders = async (shopName: string, token: string) => {
 
 const getShopDomain = async (shopName: string, token: string) => {
   logger.debug(`Fetching shop domain from Shopify`, { shopName });
-  
+
   try {
     const response = await fetch(
       `https://${shopName}/admin/api/2024-10/graphql.json`,
@@ -352,18 +352,18 @@ const getShopDomain = async (shopName: string, token: string) => {
     }
 
     const responseData = await response.json();
-    
+
     if (responseData.errors) {
       logger.error(`GraphQL error while fetching shop domain`, new Error(JSON.stringify(responseData.errors)), { shopName });
       return '';
     }
-    
+
     const domain = responseData.data?.shop?.primaryDomain?.host;
     if (!domain) {
       logger.warn(`Shop domain not found in response`, { shopName });
       return '';
     }
-    
+
     logger.debug(`Successfully fetched shop domain`, { shopName, domain });
     return domain;
   } catch (error) {
@@ -378,7 +378,7 @@ export const sendDataFromWebhooks = async () => {
   try {
     const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
     logger.debug(`Querying checkouts older than`, { tenMinutesAgo });
-    
+
     const oldCheckoutsQuerySnapshot = await checkoutCollection.where("createdAt", "<=", tenMinutesAgo).get();
 
     logger.info(`Found old checkouts in Firestore`, { count: oldCheckoutsQuerySnapshot.size });
@@ -386,10 +386,10 @@ export const sendDataFromWebhooks = async () => {
     oldCheckoutsQuerySnapshot?.forEach(async (doc) => {
       const checkout = doc.data();
       const storeId = checkout?.storeId;
-      
+
       try {
         logger.debug(`Processing checkout document`, { storeId, checkoutId: checkout?.checkoutId });
-        
+
         const session = await db.session.findFirst({ where: { shop: checkout.storeId } });
 
         if (session) {
@@ -466,7 +466,7 @@ const setsubscriptionAbandonedCarts = async (data: any) => {
 
 export const checkMatching = async (session: any) => {
   logger.info(`Checking matching carts`, { shop: session.shop });
-  
+
   try {
     return {
       success: true
@@ -479,7 +479,7 @@ export const checkMatching = async (session: any) => {
       logger.info(`No subscription abandoned carts found`, { shop: session.shop });
       return { data: 'No subscriptionAbandonedCarts found', status: true };
     }
-    
+
     const recoveredCarts = await getAbandonedCarts(session);
     logger.debug(`Found recovered carts`, { shop: session.shop, count: recoveredCarts?.length || 0 });
 
@@ -530,13 +530,13 @@ export const checkMatching = async (session: any) => {
 export const getAbandonedCarts = async (session: any) => {
   let allCheckouts: any = [];
   let lastId = null;
-  
+
   logger.info(`Fetching abandoned carts for store`, { shop: session.shop });
 
   try {
     do {
       logger.debug(`Fetching checkouts batch`, { shop: session.shop, lastId });
-      
+
       const response: any = await fetch(
         `https://${session.shop}/admin/api/2024-10/checkouts.json?limit=250${lastId ? `&since_id=${lastId}` : ''}`,
         {
@@ -547,7 +547,7 @@ export const getAbandonedCarts = async (session: any) => {
           },
         }
       );
-      
+
       if (!response.ok) {
         logger.error(`Failed to fetch checkouts - HTTP error`, new Error(`HTTP ${response.status}`), { shop: session.shop });
         break;
@@ -555,7 +555,7 @@ export const getAbandonedCarts = async (session: any) => {
 
       const responseData = await response.json();
       const checkouts = responseData.checkouts;
-      
+
       logger.debug(`Fetched checkouts batch`, { shop: session.shop, count: checkouts?.length || 0 });
 
       if (checkouts?.length > 0) {
@@ -572,7 +572,7 @@ export const getAbandonedCarts = async (session: any) => {
 
     const subscriptionData = await getSubscriptionsData(session);
     const referenceDateStr = subscriptionData?.startDate;
-    
+
     if (!referenceDateStr) {
       logger.warn(`No reference date found for subscription`, { shop: session.shop });
       return [];
@@ -624,7 +624,7 @@ export const deleteConnectPageDataFromFirestore = async (storeId: string) => {
 
 async function storeSubscriptionActive(storeId: string) {
   logger.debug(`Checking if store subscription is active`, { storeId });
-  
+
   try {
     const doc = await fireStoreFetchService("subscriptions", storeId);
 
@@ -648,11 +648,11 @@ async function storeSubscriptionActive(storeId: string) {
 
 async function handleAddAbandonedCheckouts(checkoutId: string, storeId: string, payload: any) {
   logger.debug(`Adding abandoned checkout record`, { checkoutId, storeId });
-  
+
   try {
     const customerId = payload?.UpdateData?.customer?.admin_graphql_api_id ?? null;
     const cleanedPayload = replaceUndefined(payload);
-    
+
     await fireStoreCreateService("AbandonedCheckoutsData", checkoutId, {
       storeId,
       checkoutId,
@@ -660,7 +660,7 @@ async function handleAddAbandonedCheckouts(checkoutId: string, storeId: string, 
       payload: cleanedPayload,
       createdAt: new Date()
     }, {});
-    
+
     logger.info(`Successfully added abandoned checkout record`, { checkoutId, storeId });
   } catch (error) {
     logger.error(`Error adding abandoned checkout record`, error, { checkoutId, storeId });
@@ -669,7 +669,7 @@ async function handleAddAbandonedCheckouts(checkoutId: string, storeId: string, 
 
 export async function getShopDetails(admin: any) {
   logger.info(`Fetching shop details`);
-  
+
   try {
     const response = await admin?.graphql(`query {
       shop {
@@ -690,7 +690,7 @@ export async function getShopDetails(admin: any) {
 
     const responseJson = await response.json();
     const shopData = responseJson.data.shop;
-    
+
     if (!shopData) {
       logger.error(`No shop data in response`);
       return { success: false };
@@ -708,7 +708,7 @@ export async function getShopDetails(admin: any) {
     while (hasNextPage != false) {
       pageCount++;
       logger.debug(`Fetching orders page`, { pageCount });
-      
+
       let query: string = `query {
         ${hasNextPage != null ? `orders(first: 50, after: "${endCursor}") {` : `orders(first: 50) {`}
           edges {

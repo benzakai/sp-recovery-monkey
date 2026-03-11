@@ -26,16 +26,19 @@ function cleanAndFormatData(str: any) {
 }
 
 async function saveFailedSale(docId: string, saleId: string, saleData: any, reason: string) {
-    const failedSale = {
-        [saleId]: JSON.stringify({
-            ...(saleData ? saleData : { noDataReason: "The order data format is invalid." }),
-            failureReason: reason,
-        }),
-    };
+    try {
+        const failedSale = {
+            [saleId]: JSON.stringify({
+                ...(saleData ? saleData : { noDataReason: "The order data format is invalid." }),
+                failureReason: reason,
+            }),
+        };
 
-    await fireStoreCreateService("SalesTaggingFailedOrders", docId, failedSale, { merge: true });
+        await fireStoreCreateService("SalesTaggingFailedOrders", docId, failedSale, { merge: true });
+    } catch (error) {
+        console.error(`Failed to save failed sale for ${docId}`, error);
+    }
 }
-
 
 
 async function tagOrder(session: any, orderID: any, previousTags: any) {
@@ -161,6 +164,8 @@ export default async function orderTaggingService() {
         for (const doc of salesTaggingCollectionDocuments.docs) {
             const sales = doc.data();
             const session = await getSession(doc.id);
+            console.log("doc.id on ordertagging processing==============>", doc.id)
+            if (doc.id === ".myshopify.com") continue;
             count++
             // console.log("session", session);
             if (session) {
@@ -211,6 +216,7 @@ export default async function orderTaggingService() {
 
                 }
             } else {
+                console.log("doc.id on ordertagging failing==============>", doc.id)
                 const batch = firestoreDatabase.batch();
                 const failedCollection = firestoreDatabase.collection("SalesTaggingFailedOrders").doc(doc.id);
                 for (const saleId in sales) {

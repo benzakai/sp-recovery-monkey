@@ -157,14 +157,38 @@ const setUpdatesData = async (data: any, shopName: string) => {
         // console.log("No customer email found in data, skipping customer data fetch.");
       }
     }
-    // console.log("checkoutData==========>", checkoutData)
+    console.log("checkoutData==========>", checkoutData?.id, "shopName:", shopName)
     await fireStoreCreateService("checkoutUpdateData", String(data?.id), {
       STORE_ID: shopName,
       UpdateData: checkoutData
     }, {});
-    // console.log("......setUpdatesData process finish.......");
+    console.log("......setUpdatesData process finish....... shop:", shopName);
   } catch (error) {
     console.log("error on setUpdatesData", error);
+  }
+};
+
+const shouldProcessWebhook = async (webhookId: string, topic: string) => {
+  const webhookRef = firestoreDatabase.collection('processedWebhooks').doc(webhookId);
+
+  try {
+    return await firestoreDatabase.runTransaction(async (transaction) => {
+      const doc = await transaction.get(webhookRef);
+      if (doc.exists) {
+        return false; // Already processed
+      }
+      // Log it as "processing"
+      transaction.set(webhookRef, {
+        topic,
+        processedAt: FieldValue.serverTimestamp(),
+        // Optional: TTL to auto-delete after 7 days to save storage
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+      });
+      return true;
+    });
+  } catch (error) {
+    console.error("Error in idempotency check:", error);
+    return false; // Safer to skip if DB is failing
   }
 };
 
@@ -207,6 +231,15 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   // processing data asynchronously in background (non-blocking)
   (async () => {
     try {
+      if (topic === "CHECKOUTS_UPDATE") {
+        const uniqueKey = `${topic}_${payload?.id}_${payload?.updated_at}`;
+        const isNew = await shouldProcessWebhook(uniqueKey, topic);
+
+        if (!isNew) {
+          console.log(`[IDEMPOTENCY] Skipping duplicate webhook: ${uniqueKey}`);
+          return;
+        }
+      }
       await processWebhookTopic(topic, payload, shop, session, admin);
     } catch (error) {
       console.error(`[WEBHOOK ERROR] Failed to process ${topic} for shop ${shop}:`, {
@@ -257,13 +290,14 @@ const processWebhookTopic = async (topic: string, payload: any, shop: string, se
       break;
     case "CHECKOUTS_UPDATE":
       try {
-        console.log(`[CHECKOUTS_UPDATE] Processing - ID: ${payload?.id}`);
+        console.log(`[CHECKOUTS_UPDATE] Processing - ID: ${payload?.id} shop: ${shop}`);
         const subStart = Date.now();
         const hasActiveSubscription = await checkSubscriptionStatus(session?.shop as string);
         logTiming(`[CHECKOUTS_UPDATE] Subscription check`, subStart);
-
+        // console.log(`[CHECKOUTS_UPDATE] hasActiveSubscription: ${hasActiveSubscription} shop: ${shop}`);
         if (hasActiveSubscription) {
           const updateStart = Date.now();
+          // console.log(`[CHECKOUTS_UPDATE] inside if : ${hasActiveSubscription} shop: ${shop}`);
           await setUpdatesData(payload, session?.shop as string);
           logTiming(`[CHECKOUTS_UPDATE] Set update data`, updateStart);
 
