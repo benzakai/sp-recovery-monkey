@@ -56,7 +56,7 @@
       "bulkCampaignDescription": " Envía mensajes a todos los clientes de tu tienda."
     },
     "whatsappTest": {
-      "retryMessage": "Puedes volver a enviar otra prueba en {{cooldown}} segundos.",
+      "retryMessage": "Puedes volver a enviar otra prueba en {{cooldown}}.",
       "invalidPhone": "Número de teléfono inválido. Asegúrate de incluir el + y el código de país.",
       "testLimit": "Límite de pruebas alcanzado. Ya has intentado {{MAX_TESTS}} veces.",
       "errorSendingMessage": "Algo salió mal al enviar el mensaje.",

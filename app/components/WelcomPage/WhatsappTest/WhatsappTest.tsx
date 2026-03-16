@@ -11,7 +11,20 @@ function isValidPhoneNumber(number: any) {
     return regex.test(number);
 }
 
-const COOLDOWN_SECONDS = 90;
+function formatCooldown(seconds: number) {
+    const days = Math.floor(seconds / 86400);
+    const hours = Math.floor((seconds % 86400) / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    if (days > 0) return `${days}d ${hours}h`;
+    if (hours > 0) return `${hours}h ${minutes}m`;
+    if (minutes > 0) return `${minutes}m ${secs}s`;
+
+    return `${secs}s`;
+}
+
+const COOLDOWN_SECONDS = 24 * 60 * 60;
 const MAX_TESTS = 5;
 
 export default function WhatsappTest({ shop, t, page, message }: any) {
@@ -196,7 +209,7 @@ export default function WhatsappTest({ shop, t, page, message }: any) {
                         className={`text-sm mt-3 ${(notification.type === "error" || cooldown > 0 && notification.type !== 'success') ? "text-red-600" : "text-green-600"
                             }`}
                     >
-                        {cooldown > 0 && notification.type !== 'success' ? t('global.whatsappTest.retryMessage', { cooldown }) : notification.message}
+                        {cooldown > 0 && notification.type !== 'success' ? t('global.whatsappTest.retryMessage', { cooldown: formatCooldown(cooldown) }) : notification.message}
                     </p>
                 </div>
             )}
