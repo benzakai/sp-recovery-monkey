@@ -4,23 +4,29 @@ import fireStoreCreateService from "./fireStoreCreateService";
 
 const firestoreDatabase = new Firestore();
 
+/**
+ * Standardized logging helper for Order Tagging
+ */
+const logAction = (level: 'INFO' | 'ERROR' | 'SUCCESS', shop: string, message: string, extra: any = "") => {
+    const timestamp = new Date().toISOString();
+    const prefix = `[ORDERTAGGING][${level}][${shop}]`;
+    console.log(`${prefix} - ${message}`, extra);
+};
+
 async function getSession(shop: string) {
     try {
         const data = await prisma.session.findFirst({ where: { shop } });
         if (data) return data;
     } catch (error) {
-        console.log(`ERROR on getSession from orderTaggingService on this store ${shop}`, error);
+        logAction('ERROR', shop, `Failed to get session from DB`, error);
     }
 }
 
 function cleanAndFormatData(str: any) {
-    const newstr = str.replace(/,,+/g, ",")
+    const newstr = str.replace(/,,+/g, ",");
     try {
-        const data = JSON.parse(newstr);
-        // console.log("data", data)
-        return data
+        return JSON.parse(newstr);
     } catch (error) {
-        // console.error("Invalid JSON string:", error, "sale:", str);
         return null;
     }
 }
@@ -35,14 +41,14 @@ async function saveFailedSale(docId: string, saleId: string, saleData: any, reas
         };
 
         await fireStoreCreateService("SalesTaggingFailedOrders", docId, failedSale, { merge: true });
+        logAction('INFO', docId, `Sale ${saleId} recorded in SalesTaggingFailedOrders. Reason: ${reason}`);
     } catch (error) {
-        console.error(`Failed to save failed sale for ${docId}`, error);
+        logAction('ERROR', docId, `Critical failure saving failed sale record for ${saleId}`, error);
     }
 }
 
-
 async function tagOrder(session: any, orderID: any, previousTags: any) {
-    // console.log("orderID on tagOder", orderID)
+    const shop = session?.shop || "Unknown";
     try {
         if (session?.shop) {
             const url = `https://${session.shop}/admin/api/2025-01/graphql.json`;
@@ -59,16 +65,6 @@ async function tagOrder(session: any, orderID: any, previousTags: any) {
               orderUpdate(input: $input) { 
                 order { 
                   id 
-                  metafields(first: 3) { 
-                    edges { 
-                      node { 
-                        id 
-                        namespace 
-                        key 
-                        value 
-                      } 
-                    } 
-                  } 
                 } 
                 userErrors { 
                   message 
@@ -88,160 +84,125 @@ async function tagOrder(session: any, orderID: any, previousTags: any) {
                 headers: headers,
                 body: body
             })
-
-            const data = await response.json()
-            // console.log("data got from tagOrder", data)
-            return data
+            return await response.json();
         } else {
-            console.log("leaving tagOrder function without adding tag becasue session data shop is missing, session:", session);
+            logAction('ERROR', shop, "Leaving tagOrder: Session data shop is missing");
         }
     } catch (error) {
-        console.log(`error occured on tagOrder from orderTaggingService for this store ${session?.shop}, error:`, error)
+        logAction('ERROR', shop, `Exception in tagOrder API call`, error);
     }
 }
 
 async function getOrderData(session: any, orderNumber: any) {
-    // console.log("orderNumber from getOrderID", orderNumber);
-    // console.log("session.shop", session.shop)
-    // console.log("session.accessToken", session.accessToken)
+    const shop = session?.shop || "Unknown";
     try {
         if (session?.shop && orderNumber) {
             const url = `https://${session.shop}/admin/api/2025-01/graphql.json`;
-            const accessToken = session.accessToken;
-
             const headers = {
                 'Content-Type': 'application/json',
-                'X-Shopify-Access-Token': accessToken
+                'X-Shopify-Access-Token': session.accessToken
             };
 
             const body = JSON.stringify({
-                query: `
-                    query {
-                        orders(first: 10, query:"name:${orderNumber}") {
-                            nodes{
-                                id
-                                tags
-                            }
-                        }
-                    }`
+                query: `query { orders(first: 1, query:"name:${orderNumber}") { nodes { id tags } } }`
             });
 
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: headers,
-                body: body
-            });
-
+            const response = await fetch(url, { method: 'POST', headers, body });
             const data = await response.json();
-            // console.log("data of orderID", data);
             const orderData = data?.data?.orders?.nodes?.[0];
-            // console.log("orderID found on getOrderID", orderID, "for this shop", session?.shop);
-            // console.log('sdffddddddd', data?.extensions.cost.throttleStatus)
 
-            if (orderData) {
-                return orderData;
-            } else {
-                return null;
+            if (!orderData) {
+                logAction('INFO', shop, `Order name ${orderNumber} not found in Shopify`);
             }
-
+            return orderData;
         } else {
-            console.log("leaving getOrderID function becasue session data shop or order number is missing, session:", session, "orderNumber:", orderNumber);
+            logAction('ERROR', shop, `Leaving getOrderData: Missing shop or orderNumber (${orderNumber})`);
         }
     } catch (error) {
-        console.log(`error occured on getOrderID from orderTaggingService for this store ${session?.shop}, error:`, error)
+        logAction('ERROR', shop, `Exception in getOrderData API call`, error);
     }
 }
 
 export default async function orderTaggingService() {
-    console.log("orderTaggingService function STARTED!")
+    logAction('INFO', 'SYSTEM', "orderTaggingService function STARTED");
     try {
         const salesTaggingCollection = firestoreDatabase.collection('SalesTagging');
         const salesTaggingCollectionDocuments = await salesTaggingCollection.get();
-        console.log("salesTaggingCollectionDocuments count", salesTaggingCollectionDocuments.size);
+        
+        logAction('INFO', 'SYSTEM', `Found ${salesTaggingCollectionDocuments.size} stores to process`);
 
         const delay = (ms: any) => new Promise(resolve => setTimeout(resolve, ms));
-        let count = 0
+        let count = 0;
+
         for (const doc of salesTaggingCollectionDocuments.docs) {
+            const shop = doc.id;
             const sales = doc.data();
-            const session = await getSession(doc.id);
-            console.log("doc.id on ordertagging processing==============>", doc.id)
-            if (doc.id === ".myshopify.com") continue;
-            count++
-            // console.log("session", session);
+    
+            if (shop === ".myshopify.com") continue;
+            
+            count++;
+            logAction('INFO', shop, `Processing store [${count}/${salesTaggingCollectionDocuments.size}]`);
+
+            const session = await getSession(shop);
+
             if (session) {
-                // console.log("sales data..........", sales)
                 for (const saleId in sales) {
-
-
                     let sale;
                     try {
                         sale = cleanAndFormatData(sales[saleId]);
                     } catch (error) {
-                        console.log(`JSON parsing error for Sale ID: ${saleId} in shop: ${doc.id}`, count);
+                        logAction('ERROR', shop, `JSON parsing error for Sale ID: ${saleId}`);
                         continue;
                     }
 
-                    // console.log("orderTaggingService sale", sale);
-
                     if (sale && sale["Order Number"]) {
                         const orderNumber = sale["Order Number"];
+                        const gotOrder = await getOrderData(session, orderNumber);
+                        const orderID = gotOrder?.id;
+                        const previousTags = gotOrder?.tags || [];
 
-                        if (orderNumber) {
-                            // console.log("saleId", saleId)
-                            // console.log("continuing the process because session found!", session)
-                            const gotOrder = await getOrderData(session, orderNumber)
-                            const orderID = gotOrder?.id;
-                            const previousTags = gotOrder?.tags ? gotOrder?.tags : [];
-                            // console.log("previousTags", previousTags)
-                            if (orderID) {
-                                const data = await tagOrder(session, orderID, previousTags)
-                                if (data?.data?.orderUpdate?.userErrors?.length === 0) {
-                                    console.log(`successfully added tag to this ${orderID} order of this ${doc.id} shop, saleId: ${saleId},  count:`, count)
-                                    await doc.ref.update({
-                                        [`${saleId}`]: FieldValue.delete()
-                                    });
-                                } else {
-                                    await saveFailedSale(doc.id, saleId, sale, "Problem during tag adding API");
-                                    console.log(`error occured on tagOrder for this store: ${doc.id} - data?.data?.orderUpdate?.userErrors:`, data?.data?.orderUpdate?.userErrors)
-                                }
+                        if (orderID) {
+                            const data = await tagOrder(session, orderID, previousTags);
+                            if (data?.data?.orderUpdate?.userErrors?.length === 0) {
+                                logAction('SUCCESS', shop, `Tagged order ${orderID} for sale ${saleId}`);
+                                await doc.ref.update({
+                                    [`${saleId}`]: FieldValue.delete()
+                                });
                             } else {
-                                await saveFailedSale(doc.id, saleId, sale, "Order not found on the store matching the Order Number");
+                                const errors = data?.data?.orderUpdate?.userErrors;
+                                logAction('ERROR', shop, `Shopify UserErrors for sale ${saleId}`, errors);
+                                await saveFailedSale(shop, saleId, sale, "Problem during tag adding API");
                             }
-                            await delay(200);
+                        } else {
+                            await saveFailedSale(shop, saleId, sale, "Order not found on store matching Order Number");
                         }
+                        await delay(200);
                     } else {
-                        await saveFailedSale(doc.id, saleId, sale, "No valid Order Number found or data format is invalid");
-                        console.log(`No valid Order Number for Sale ID: ${saleId} shop: ${doc.id}, sale: ${sale}`);
+                        logAction('ERROR', shop, `Invalid data/missing Order Number for Sale ID: ${saleId}`);
+                        await saveFailedSale(shop, saleId, sale, "No valid Order Number found or data format is invalid");
                     }
-
                 }
             } else {
-                console.log("doc.id on ordertagging failing==============>", doc.id)
+                logAction('ERROR', shop, "Session not found - Moving sales to Failed collection (likely uninstalled)");
                 const batch = firestoreDatabase.batch();
-                const failedCollection = firestoreDatabase.collection("SalesTaggingFailedOrders").doc(doc.id);
+                const failedCollection = firestoreDatabase.collection("SalesTaggingFailedOrders").doc(shop);
+                
                 for (const saleId in sales) {
                     const sale = cleanAndFormatData(sales[saleId]);
-                    batch.set(
-                        failedCollection,
-                        {
-                            [saleId]: JSON.stringify({
-                                ...(sale ? sale : { noDataReason: "The order data format is invalid." }),
-                                failureReason: "No session found — store may have uninstalled the app",
-                            }),
-                        },
-                        { merge: true }
-                    );
+                    batch.set(failedCollection, {
+                        [saleId]: JSON.stringify({
+                            ...(sale ? sale : { noDataReason: "The order data format is invalid." }),
+                            failureReason: "No session found — store may have uninstalled the app",
+                        }),
+                    }, { merge: true });
                 }
                 await batch.commit();
-                // console.log(`All failed sales batch written for store ${doc.id}`);
-                continue;
-                // console.log("Session not found on orderTaggingService function for this store '",doc.id,"' so not moving forward with this store data.");
             }
         }
-        console.log("================ orderTaggingService function STOPPED! ==================")
+        logAction('INFO', 'SYSTEM', "orderTaggingService function FINISHED");
         return { success: true };
     } catch (error) {
-        console.log("ERROR on orderTaggingService", error);
+        logAction('ERROR', 'SYSTEM', "Global catch in orderTaggingService", error);
         return { success: false };
     }
 }

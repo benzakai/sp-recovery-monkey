@@ -246,13 +246,14 @@ const handleOldCheckout = async (checkout: any, shop: string, token: string, ses
         if (getGreenAPIData.success == true) {
           logger.info(`Green API data found, proceeding with data submission`, { shop, checkoutId });
           objj["Green API ID"] = getGreenAPIData.data;
-
+          // logger.info(`if objj......`, { objj, shop })
           await sendDataToPubSub(objj);
           await handleAddAbandonedCheckouts(checkoutId.toString(), shop, objj);
           await setsubscriptionAbandonedCarts(objj);
           logger.info(`Successfully processed abandoned checkout with green api`, { checkoutId, shop });
         } else {
           logger.info(`No Green API data found, sending data without it`, { shop, checkoutId });
+          // logger.info(`else objj......`, { objj, shop })
           await sendDataToPubSub(objj);
           await handleAddAbandonedCheckouts(checkoutId.toString(), shop, objj);
           await setsubscriptionAbandonedCarts(objj);
