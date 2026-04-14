@@ -266,22 +266,36 @@ const processWebhookTopic = async (topic: string, payload: any, shop: string, se
   switch (topic) {
     case "CHECKOUTS_CREATE":
       try {
-        console.log(`[CHECKOUTS_CREATE] Processing - ID: ${payload?.id}`);
+
+        const checkoutIdentifier =
+          payload?.id ??
+          (payload?.name ? payload.name.replace("#", "") : null);
+        // console.log("[CHECKOUTS_CREATE] payload?.id", payload?.id, "shop:", shop);
+        // console.log("[CHECKOUTS_CREATE] payload.name", payload?.name, "shop:", shop);
+        console.log(`[CHECKOUTS_CREATE] Resolved checkoutIdentifier: ${checkoutIdentifier}, shop: ${shop}`);
+        if (!checkoutIdentifier) {
+          console.warn(`[CHECKOUTS_CREATE] Skipped - No checkout identifier`, {
+            shop,
+            payloadKeys: Object.keys(payload || {})
+          });
+          return;
+        }
+        console.log(`[CHECKOUTS_CREATE] Processing - ID: ${checkoutIdentifier}, shop: ${shop}`);
         const subStart = Date.now();
         const hasActiveSubscription = await checkSubscriptionStatus(session?.shop as string);
         logTiming(`[CHECKOUTS_CREATE] Subscription check`, subStart);
 
         if (hasActiveSubscription) {
           const dataStart = Date.now();
-          await setCheckoutData(payload, session?.shop as string);
+          await setCheckoutData({ ...payload, id: checkoutIdentifier }, session?.shop as string);
           logTiming(`[CHECKOUTS_CREATE] Set checkout data`, dataStart);
-          console.log(`[CHECKOUTS_CREATE] Completed for checkout ${payload?.id}`);
+          console.log(`[CHECKOUTS_CREATE] Completed for checkout ${checkoutIdentifier}`);
         } else {
           console.log(`[CHECKOUTS_CREATE] Skipped - No active subscription for ${shop}`);
         }
       } catch (error) {
         console.error(`[CHECKOUTS_CREATE ERROR]`, {
-          checkoutId: payload?.id,
+          checkoutId: payload?.id ?? payload?.name,
           shop,
           error: error instanceof Error ? error.message : String(error),
           stack: error instanceof Error ? error.stack : undefined,
@@ -290,7 +304,19 @@ const processWebhookTopic = async (topic: string, payload: any, shop: string, se
       break;
     case "CHECKOUTS_UPDATE":
       try {
-        console.log(`[CHECKOUTS_UPDATE] Processing - ID: ${payload?.id} shop: ${shop}`);
+        const checkoutIdentifier =
+          payload?.id ??
+          (payload?.name ? payload.name.replace("#", "") : null);
+        // console.log("[CHECKOUTS_UPDATE] payload?.id", payload?.id, "shop: ", shop)
+        // console.log("[CHECKOUTS_UPDATE] payload.name", payload.name, "shop: ", shop)
+        if (!checkoutIdentifier) {
+          console.warn(`[CHECKOUTS_UPDATE] Skipped - No checkout identifier`, {
+            shop,
+            payloadId: checkoutIdentifier
+          });
+          return;
+        }
+        console.log(`[CHECKOUTS_UPDATE] Processing - ID: ${checkoutIdentifier}, shop: ${shop}`);
         const subStart = Date.now();
         const hasActiveSubscription = await checkSubscriptionStatus(session?.shop as string);
         logTiming(`[CHECKOUTS_UPDATE] Subscription check`, subStart);
@@ -298,14 +324,15 @@ const processWebhookTopic = async (topic: string, payload: any, shop: string, se
         if (hasActiveSubscription) {
           const updateStart = Date.now();
           // console.log(`[CHECKOUTS_UPDATE] inside if : ${hasActiveSubscription} shop: ${shop}`);
-          await setUpdatesData(payload, session?.shop as string);
+          await setUpdatesData(
+            { ...payload, id: checkoutIdentifier },
+            session?.shop as string
+          );
           logTiming(`[CHECKOUTS_UPDATE] Set update data`, updateStart);
-
           // handling checkouts without phone
           if (payload?.phone == null) {
-            const phoneStart = Date.now();
             const checkoutData = {
-              checkoutId: payload.id,
+              checkoutId: checkoutIdentifier,
               updatedAt: new Date(),
               createdAt: new Date(payload.created_at),
               payload: payload,
@@ -318,26 +345,26 @@ const processWebhookTopic = async (topic: string, payload: any, shop: string, se
 
             await parentShopRef.set(
               {
-                createdAt: FieldValue.serverTimestamp(),
+                createdAt: FieldValue.serverTimestamp()
               },
               { merge: true }
             );
 
             const shopDocRef = parentShopRef
               .collection("checkouts")
-              .doc(payload.id.toString());
+              .doc(checkoutIdentifier.toString());
 
             await shopDocRef.set(checkoutData, { merge: true });
-            console.log(`[CHECKOUTS_UPDATE] Completed - No phone number tracked for ${payload?.id}`);
+            console.log(`[CHECKOUTS_UPDATE] Completed - No phone number tracked for ${checkoutIdentifier}`);
           } else {
-            console.log(`[CHECKOUTS_UPDATE] Completed for checkout ${payload?.id}`);
+            console.log(`[CHECKOUTS_UPDATE] Completed for checkout ${checkoutIdentifier}`);
           }
         } else {
           console.log(`[CHECKOUTS_UPDATE] Skipped - No active subscription for ${shop}`);
         }
       } catch (error) {
         console.error(`[CHECKOUTS_UPDATE ERROR]`, {
-          checkoutId: payload?.id,
+          checkoutId: payload?.id ?? payload?.name,
           shop,
           error: error instanceof Error ? error.message : String(error),
           stack: error instanceof Error ? error.stack : undefined,
