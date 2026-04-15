@@ -1,9 +1,20 @@
-import { Badge, Button, SkeletonBodyText, SkeletonDisplayText, Text } from '@shopify/polaris';
+import { Button, SkeletonBodyText, SkeletonDisplayText, Text } from '@shopify/polaris';
 import ToggleSwitch from '../SubscriptionPlan/ToggleSwitch';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { XIcon } from '@shopify/polaris-icons';
 
 export default function PlanSection({ t, loadingPage, loadingButton, planName, handlePlanSelect, pageType }: any) {
     const [planIntervalType, setPlanIntervalType] = useState("Yearly");
+    const [isHidden, setIsHidden] = useState(false);
+
+    useEffect(() => {
+        if (pageType !== "settings") return;
+
+        const stored = localStorage.getItem("settingsPlanSectionHidden");
+        if (stored === "true") {
+            setIsHidden(true);
+        }
+    }, [pageType]);
 
     useEffect(() => {
         if (planName && planName.includes("Yearly")) {
@@ -18,7 +29,12 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
     const getPrice = (monthly: string, yearly: string) =>
         planIntervalType === "Monthly" ? monthly : yearly;
 
+    const handleHide = useCallback(() => {
+        setIsHidden(true);
+        localStorage.setItem("settingsPlanSectionHidden", "true");
+    }, []);
 
+    if (pageType === "settings" && isHidden) return null;
 
     const plans = [
         {
@@ -75,11 +91,21 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
 
     return (
         <div className="settings_secion-2">
-            {pageType === "settings" && <div className="start_main_container_sub_heading setting_subheading">
-                <Text variant="headingLg" as="h5">
-                    {t("settings.planSectionTitle")}
-                </Text>
-            </div>}
+            {pageType === "settings" && (
+                <div className="start_main_container_sub_heading setting_subheading flex items-start justify-between gap-4">
+                    <Text variant="headingLg" as="h5">
+                        {t("settings.planSectionTitle")}
+                    </Text>
+                    <div style={{ margin: '-8px -8px 0 0' }}>
+                        <Button
+                            icon={XIcon}
+                            variant="plain"
+                            onClick={handleHide}
+                            accessibilityLabel="Hide plan section"
+                        />
+                    </div>
+                </div>
+            )}
 
             <div className="start_price_container setting_price">
                 <div className="flex flex-col md:flex-row justify-between mb-4 gap-4">
