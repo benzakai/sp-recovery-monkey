@@ -22,16 +22,105 @@
     gap: 12px;
     align-items: flex-start;
     padding: 4px 16px;
-    /* width: 100%; */
+    width: 100%;
+    min-width: 0;
 }
 
 .current-step-row {
     padding-top: 10px;
     padding-bottom: 10px;
+    flex: 1 1 auto;
 }
 
 .action-btn {
     padding: 4px 16px;
+}
+
+.step-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.step-content {
+    display: flex;
+    flex: 1 1 auto;
+    min-width: 0;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.step-content-inline {
+    justify-content: center;
+}
+
+.step-title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.step-status-badge {
+    flex: 0 0 auto;
+    align-self: flex-start;
+}
+
+.step-card-action {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.step-card-controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.embed-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.embed-card-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.embed-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    padding-top: 2px;
+}
+
+.embed-card-content {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.embed-card-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.embed-card-action {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .accordion-trigger {
@@ -58,10 +147,9 @@ h2 {
 .acc_ttl {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
     align-items: center;
     gap: 10px;
-    padding-left: 20px;
+    min-width: 0;
 }
 
 button#nextURL,
@@ -139,5 +227,71 @@ button#previousURL {
     .progress_txt {
         width: 100%;
         padding-bottom: 5px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .step-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .step-card-action {
+        justify-content: flex-start;
+        padding-top: 0;
+    }
+
+    .step-card-controls {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .embed-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .embed-card-action {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 767px) {
+    .step-row {
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+
+    .step-content {
+        width: calc(100% - 30px);
+    }
+
+    .step-content-inline {
+        width: auto;
+        flex: 1 1 0;
+    }
+
+    .step-status-badge {
+        margin-left: 30px;
+    }
+
+    .action-btn {
+        padding-left: 46px;
+        padding-right: 16px;
+    }
+
+    .step-card-controls {
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .embed-card-title-row,
+    .step-title-row {
+        gap: 8px;
+    }
+
+    .step-status-badge {
+        margin-left: 30px;
     }
 }

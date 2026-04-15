@@ -9,6 +9,7 @@ import OnboardingSteps from '../OnboardingSteps/OnboardingSteps';
 import Overview from '~/components/global/Overview/Overview';
 import BannerInfo from '../BannerInfo/BannerInfo';
 import GettingStartedSection from '../GettingStartedSection/GettingStartedSection';
+import PricingSection from '../PricingSection/PricingSection';
 import Testimonials from '../Testimonials/Testimonials';
 import '../../../StartPage.css';
 
@@ -117,10 +118,7 @@ export default function WelcomePage({
                     </div>
                     {/* letstart Section */}
                     <div className="mt-16">
-                        <Text variant="headingLg" as="h5">
-                            {t("homePostPayment.priceSectionTitle")}
-                        </Text>
-                        {PlanSect}
+                        <PricingSection t={t} PlanSect={PlanSect} />
                         <GettingStartedSection t={t} />
                         <Testimonials t={t} />
                     </div>

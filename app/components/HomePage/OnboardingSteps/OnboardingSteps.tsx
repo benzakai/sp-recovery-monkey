@@ -285,49 +285,58 @@ export default function OnboardingSteps({ shop, t, setChatEmbedEnabled }: any) {
                                 if (isHighlighted) {
                                     return (
                                         <Box key={s.key} background="bg-surface-secondary" borderRadius="200">
-                                            <InlineStack align="space-between" blockAlign="center" gap="400">
-                                                <div className="step-row current-step-row cursor-pointer" onClick={() => toggleStep(s.key)}>
+                                            <div className="step-card">
+                                                <div className="step-row current-step-row" onClick={() => toggleStep(s.key)}>
                                                     {renderIcon(done)}
-                                                    <BlockStack gap="100">
-                                                        <div className='flex flex-row gap-3'>
+                                                    <div className="step-content">
+                                                        <div className="step-title-row">
                                                             <Text as="p" variant="bodyMd" fontWeight="semibold">
                                                                 {s.title}
                                                             </Text>
-                                                            {(s.key === "installPreview" || s.key === "startSync" || s.key === "connectWhatsapp") && <span className="badge-wrapper">
-                                                                {done ? <ActiveBadge className="active-badge" /> : <InactiveBadge className="inactive-badge" />}
-                                                            </span>
-                                                            }
                                                         </div>
                                                         {s.description && (
                                                             <Text as="p" variant="bodySm" tone="subdued">
                                                                 {s.description}
                                                             </Text>
                                                         )}
-                                                    </BlockStack>
+                                                    </div>
                                                 </div>
-                                                {!done && s.actionLabel && (
-                                                    <div className="action-btn">
-                                                        <Button disabled={s.pro ? (!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)) : false} variant="primary" onClick={() => navigateToStep(s.actionLink)}>{s.actionLabel}</Button>
+                                                {((s.key === "installPreview" || s.key === "startSync" || s.key === "connectWhatsapp") || (!done && s.actionLabel)) && (
+                                                    <div className="action-btn step-card-action">
+                                                        <div className="step-card-controls">
+                                                            {(s.key === "installPreview" || s.key === "startSync" || s.key === "connectWhatsapp") && (
+                                                                <span className="badge-wrapper step-status-badge">
+                                                                    {done ? <ActiveBadge className="active-badge" /> : <InactiveBadge className="inactive-badge" />}
+                                                                </span>
+                                                            )}
+                                                            {!done && s.actionLabel && (
+                                                                <Button disabled={s.pro ? (!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)) : false} variant="primary" onClick={() => navigateToStep(s.actionLink)}>{s.actionLabel}</Button>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 )}
-                                            </InlineStack>
+                                            </div>
                                         </Box>
                                     );
                                 }
 
                                 return (
                                     <div
-                                        className="step-row cursor-pointer"
+                                        className="step-row"
                                         key={s.key}
                                         onClick={() => toggleStep(s.key)}
                                     >
                                         {renderIcon(done)}
-                                        <Text as="p" variant="bodyMd" tone="subdued">
-                                            {s.title}
-                                        </Text>
-                                        {(s.key === "installPreview" || s.key === "startSync" || s.key === "connectWhatsapp") && <span className="badge-wrapper">
-                                            {done ? <ActiveBadge className="active-badge" /> : <InactiveBadge className="inactive-badge" />}
-                                        </span>}
+                                        <div className="step-content step-content-inline">
+                                            <Text as="p" variant="bodyMd" tone="subdued">
+                                                {s.title}
+                                            </Text>
+                                        </div>
+                                        {(s.key === "installPreview" || s.key === "startSync" || s.key === "connectWhatsapp") && (
+                                            <span className="badge-wrapper step-status-badge">
+                                                {done ? <ActiveBadge className="active-badge" /> : <InactiveBadge className="inactive-badge" />}
+                                            </span>
+                                        )}
                                     </div>
                                 );
                             })}
@@ -429,25 +438,29 @@ export default function OnboardingSteps({ shop, t, setChatEmbedEnabled }: any) {
                         )
                     )}
                     <Card>
-                        <InlineStack align="space-between" blockAlign="center">
-                            <InlineStack gap="300" blockAlign="center">
-                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div className="embed-card">
+                            <div className="embed-card-main">
+                                <div className="embed-card-icon">
                                     <Icon source={AppsIcon} tone="base" />
                                 </div>
-                                <InlineStack gap="200" blockAlign="center">
-                                    <Text as="p" variant="bodyMd" fontWeight="medium">{t("homePostPayment.embedTitle")}</Text>
-                                    <Badge tone="info">{t("settings.planName3")}</Badge>
-                                    {<span className="badge-wrapper">
+                                <div className="embed-card-content">
+                                    <div className="embed-card-title-row">
+                                        <Text as="p" variant="bodyMd" fontWeight="medium">{t("homePostPayment.embedTitle")}</Text>
+                                        <Badge tone="info">{t("settings.planName3")}</Badge>
+                                        <span className="badge-wrapper step-status-badge">
                                         {onboarding?.step2?.installPreview ? <ActiveBadge className="active-badge" /> : <InactiveBadge className="inactive-badge" />}
-                                    </span>}
-                                </InlineStack>
-                            </InlineStack>
-                            {onboarding?.step2?.installPreview ?
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="embed-card-action">
+                                {onboarding?.step2?.installPreview ?
                                 <Button disabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan))} onClick={() => navigate('/app/AIChatbot')}>{t("aiSettings.turnOff")}</Button>
                                 :
                                 <Button disabled={(!isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan))} onClick={() => navigate('/app/AIChatbot')}>{t("aiSettings.turnOn")}</Button>
-                            }
-                        </InlineStack>
+                                }
+                            </div>
+                        </div>
                     </Card>
 
                 </BlockStack>
@@ -456,5 +469,3 @@ export default function OnboardingSteps({ shop, t, setChatEmbedEnabled }: any) {
         </>
     );
 }
-
-
