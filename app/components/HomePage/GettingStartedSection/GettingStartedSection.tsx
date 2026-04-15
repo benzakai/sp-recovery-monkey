@@ -84,14 +84,16 @@ export default function GettingStartedSection({ t }: any) {
                 <p className="text-[13px] font-semibold">
                     {t("homePrePayment.gettingStarted.subTitle")}
                 </p>
-                <div className='flex flex-row gap-3 mt-4 w-full cartKeeper'>
+                <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 mt-4 w-full cartKeeper'>
                     {
                         startCartkeeperValues.map((card) => {
                             return (
-                                <div key={card.id} className='w-1/4 cursor-pointer' onClick={() => navigate(card.redirectTo)}>
+                                <div key={card.id} className='w-full min-w-0 cursor-pointer' onClick={() => navigate(card.redirectTo)}>
                                     <Card>
-                                        <div className='flex flex-col justify-start gap-3'>
-                                            {card.icon}
+                                        <div className='flex flex-col justify-start gap-3 min-w-0'>
+                                            <div className='getting-started-icon'>
+                                                {card.icon}
+                                            </div>
                                             <p className="text-[13px] font-semibold">
                                                 {card.title}
                                             </p>
@@ -114,10 +116,10 @@ export default function GettingStartedSection({ t }: any) {
                     {t("homePrePayment.gettingStarted.weAreHereForYou")}
                 </p>
 
-                <div className='flex flex-row  gap-6 mt-4 w-full social-card'>
+                <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mt-4 w-full social-card'>
                     {weAreHereForYouValues.map((card) => {
                         return (
-                            <div className='w-1/3'>
+                            <div className='w-full min-w-0'>
                                 <div className='flex flex-col justify-start gap-3 bg-zinc-100 p-3 rounded-lg social-blk'>
                                     <div className='flex flex-row justify-start gap-3'>
                                         <p className="">
