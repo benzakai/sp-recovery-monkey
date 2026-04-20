@@ -96,18 +96,16 @@ export default function PlanSection({ t, loadingPage, loadingButton, planName, h
                     <Text variant="headingLg" as="h5">
                         {t("settings.planSectionTitle")}
                     </Text>
-                    <div style={{ margin: '-8px -8px 0 0' }}>
-                        <Button
-                            icon={XIcon}
-                            variant="plain"
-                            onClick={handleHide}
-                            accessibilityLabel="Hide plan section"
-                        />
-                    </div>
+                    <Button
+                        icon={XIcon}
+                        variant="plain"
+                        onClick={handleHide}
+                        accessibilityLabel="Hide plan section"
+                    />
                 </div>
             )}
 
-            <div className="start_price_container setting_price">
+            <div className="start_price_container setting_price mt-2">
                 <div className="flex flex-col md:flex-row justify-between mb-4 gap-4">
                     {loadingPage ? (
                         <div className="w-56">

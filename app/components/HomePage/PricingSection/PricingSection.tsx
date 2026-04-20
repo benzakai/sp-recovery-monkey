@@ -25,14 +25,12 @@ export default function PricingSection({ t, PlanSect }: any) {
                 <Text variant="headingLg" as="h5">
                     {t("homePostPayment.priceSectionTitle")}
                 </Text>
-                <div style={{ margin: '-8px -8px 0 0' }}>
-                    <Button
-                        icon={XIcon}
-                        variant="plain"
-                        onClick={handleHide}
-                        accessibilityLabel="Hide pricing section"
-                    />
-                </div>
+                <Button
+                    icon={XIcon}
+                    variant="plain"
+                    onClick={handleHide}
+                    accessibilityLabel="Hide pricing section"
+                />
             </div>
             {PlanSect}
         </div>

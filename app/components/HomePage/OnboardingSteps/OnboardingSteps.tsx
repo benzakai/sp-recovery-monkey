@@ -389,16 +389,14 @@ export default function OnboardingSteps({ shop, t, setChatEmbedEnabled }: any) {
                             <Card padding="0">
                                 <Box padding="400">
                                     <BlockStack gap="200">
-                                        <InlineStack align="space-between" blockAlign="start">
+                                        <InlineStack align="space-between" blockAlign="center">
                                             <Text variant="headingSm" as="h2">{t("homePostPayment.setCartKeeper")}</Text>
-                                            <div style={{ margin: '-8px -8px 0 0' }}>
-                                                <Button
-                                                    icon={XIcon}
-                                                    variant="plain"
-                                                    onClick={handleDismiss}
-                                                    accessibilityLabel="Dismiss setup guide"
-                                                />
-                                            </div>
+                                            <Button
+                                                icon={XIcon}
+                                                variant="plain"
+                                                onClick={handleDismiss}
+                                                accessibilityLabel="Dismiss setup guide"
+                                            />
                                         </InlineStack>
 
                                         <Text as="p" tone="subdued">

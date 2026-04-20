@@ -65,36 +65,28 @@ export default function WhatWeDoSection({ t }: any) {
     if (hidden) return null;
 
     return (
-        <div className='mt-6 px-4 md:px-0 cust_wwd_wrapper'>
-            <div className='mb-4 text-center md:text-left wwd_title'>
-                <p className="text-[20px] font-semibold cust_wwd_last">
-                    {t("homePostPayment.whatWeDo.title")}
-                </p>
-            </div>
-            <div className='text-center md:text-left'>
-                <p className="text-[13px] font-semibold cust_wwd_last">
-                    {slides[current].caption}
-                </p>
-            </div>
+            <div className='mt-6 px-4 md:px-0 cust_wwd_wrapper'>
+                <div className='mb-4 flex items-center justify-between wwd_title'>
+                    <p className="text-[20px] font-semibold cust_wwd_last">
+                        {t("homePostPayment.whatWeDo.title")}
+                    </p>
+                    <Button
+                        variant="plain"
+                        onClick={handleHide}
+                        icon={XIcon}
+                        accessibilityLabel="Hide section"
+                    />
+                </div>
+                <div className='text-center md:text-left'>
+                    <p className="text-[13px] font-semibold cust_wwd_last">
+                        {slides[current].caption}
+                    </p>
+                </div>
 
             <div className={`mt-4 ${imagesLoaded ? 'loaded' : 'not_loaded'}`}>
                 <div className="flex justify-center">
                     {imagesLoaded ? (
                         <div style={{ position: 'relative', display: 'inline-block' }}>
-                            <div style={{
-                                position: 'absolute',
-                                top: '-30px',
-                                right: '0px',
-                                zIndex: 10,
-                            }}>
-                                <Button
-                                    variant="plain"
-                                    onClick={handleHide}
-                                    icon={XIcon}
-                                    accessibilityLabel="Hide section"
-                                />
-                            </div>
-
                             <img
                                 src={slides[current].img}
                                 alt="Feature"

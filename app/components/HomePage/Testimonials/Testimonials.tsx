@@ -4,7 +4,7 @@ import GreenMuse from "../../LetsStartPage/SVGs/GreenMuse";
 import Kraftathlet from "../../LetsStartPage/SVGs/Kraftathlet";
 import "./Testimonials.css";
 import Klkl from '../../LetsStartPage/SVGs/Klkl';
-import { Button } from '@shopify/polaris';
+import { Button, Text } from '@shopify/polaris';
 import { XIcon } from '@shopify/polaris-icons';
 
 export default function Testimonials({ t }: any) {
@@ -79,23 +79,20 @@ export default function Testimonials({ t }: any) {
         <div className="mt-8 sm:mt-10 md:mt-16 flex justify-center">
             <div className="w-full md:px-6 relative">
 
-                <div style={{
-                    position: 'absolute',
-                    top: '0px',
-                    right: '0px',
-                    zIndex: 10,
-                }}>
-                    <Button
-                        variant="plain"
-                        onClick={handleHide}
-                        icon={XIcon}
-                        accessibilityLabel="Hide section"
-                    />
-                </div>
+                <div className="relative flex items-center justify-center mb-8">
+                    <Text variant="headingLg" as="h5">
+                        {t("homePrePayment.testimonials.title")}
+                    </Text>
 
-                <h2 className="text-center text-xl font-semibold mb-8 test-heading">
-                    {t("homePrePayment.testimonials.title")}
-                </h2>
+                    <div className="absolute right-0">
+                        <Button
+                            variant="plain"
+                            onClick={handleHide}
+                            icon={XIcon}
+                            accessibilityLabel="Hide section"
+                        />
+                    </div>
+                </div>
 
                 <button onClick={prevSlide} className="ts-carousel-btn ts-section-left">
                     <img src="/images/homePage/leftNav.png" alt="Previous" />
