@@ -79,7 +79,7 @@ export default function Testimonials({ t }: any) {
         <div className="mt-8 sm:mt-10 md:mt-16 flex justify-center">
             <div className="w-full md:px-6 relative">
 
-                <div className="relative flex items-center justify-center mb-8">
+                <div className="relative flex justify-center mb-8">
                     <Text variant="headingLg" as="h5">
                         {t("homePrePayment.testimonials.title")}
                     </Text>

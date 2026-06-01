@@ -161,6 +161,14 @@
     .ts-testimonials-grid{
         margin-bottom: 10px;
     }
+    
+    .ts-section-left {
+        left: 0;
+    }
+    
+    .ts-section-right {
+        right: 0;
+    }
 }
 
 @media (max-width: 480px) {
