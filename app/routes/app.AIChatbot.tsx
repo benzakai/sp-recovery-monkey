@@ -292,7 +292,7 @@ const AIChatbot = () => {
     }
 
     return (
-        <div className='start_page ai_personal padding_zero'>
+        <div className='start_page ai_personal ai-chatbot-page padding_zero'>
             <Page fullWidth>
                 <div className='bulk-box top-parent-aichatbot'>
                     {/* <div className='mb-6'>

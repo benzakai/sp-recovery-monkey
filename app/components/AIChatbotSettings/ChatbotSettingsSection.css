@@ -3,6 +3,20 @@
     flex-direction: row;
     column-gap: 2rem;
 }
+
+.ai-chatbot-settings-section {
+    width: 100%;
+}
+
+.ai-chatbot-left-section {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.ai-chatbot-preview-section {
+    flex: 0 0 230px;
+}
+
 .ai_right_side_section_parent {
   position: sticky;
   top: 20px;
@@ -15,9 +29,15 @@
     position: sticky;
     top: 10px;
 }
+
 .cust_chatbot_icon img{
     object-fit: contain;
 }
+
+.ai-chatbot-card-wrapper {
+    width: 90%;
+}
+
 @media screen and ( max-width: 1360px ) and (min-width: 990px){
     .media-card {
         height: 650px;
@@ -35,36 +55,155 @@
     .setting-block {
         flex-direction: column;
     }
+
+    .ai-chatbot-page {
+        padding-top: 1rem;
+    }
+
+    .ai-chatbot-card-wrapper {
+        width: 100%;
+    }
+
+    .ai-chatbot-preview-section {
+        position: static;
+        width: 100%;
+        height: auto;
+        flex-basis: auto;
+        padding-top: 20px;
+    }
+
     .cust_chatbot_icon img{
         /* height: 90px;
         width: 85px; */
     }
 }
 @media screen and (max-width: 500px){
-    .cust_chatbot_desc{
+    .ai-chatbot-page {
+        padding: 12px 8px 96px;
+    }
+
+    .ai-chatbot-page .Polaris-Page {
+        padding: 0;
+    }
+
+    .ai-chatbot-page .Polaris-Page__Content {
+        margin-top: 0;
+    }
+
+    .ai-chatbot-page .top-parent-aichatbot {
+        max-width: 278px;
+    }
+
+    .ai-chatbot-page .cust_chatbot_title {
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 14px;
+        padding-top: 8px;
+    }
+
+    .ai-chatbot-page .Polaris-Text--headingLg {
+        font-size: 18px;
+        line-height: 24px;
+    }
+
+    .ai-chatbot-page .Polaris-Badge {
+        min-height: 18px;
+        padding: 0 6px;
+    }
+
+    .ai-chatbot-page .Polaris-Badge span {
+        font-size: 10px;
+        line-height: 15px;
+    }
+
+    .ai-chatbot-settings-card {
+        padding-top: 0;
+        gap: 12px;
+    }
+
+    .ai-chatbot-sync-card {
+        margin-top: 18px !important;
+    }
+
+    .ai-chatbot-section-copy p {
+        font-size: 13px;
+        line-height: 18px;
+    }
+
+    .ai-chatbot-section-copy p:first-child {
+        margin-bottom: 6px;
+    }
+
+    .ai-chatbot-card-wrapper .Polaris-ShadowBevel {
+        border-radius: 6px;
+    }
+
+    .ai-chatbot-card-wrapper .Polaris-Box {
+        padding: 0;
+    }
+
+    .ai-chatbot-card-wrapper .p-4 {
+        padding: 14px 16px !important;
+    }
+
+    .ai-chatbot-card-wrapper .Polaris-InlineStack {
+        align-items: flex-start;
+        column-gap: 10px;
+        flex-wrap: nowrap;
+    }
+
+    .ai-chatbot-card-wrapper .Polaris-InlineStack > p {
+        flex: 1 1 auto;
+        min-width: 0;
+        font-size: 13px;
+        line-height: 18px;
+    }
+
+    .ai-chatbot-card-wrapper .Polaris-InlineStack .Polaris-Button {
+        flex: 0 0 auto;
+        min-height: 30px;
+    }
+
+    .ai-chatbot-card-wrapper .cust_chatbot_desc{
         max-width: 100% !important;
+        font-size: 13px;
+        line-height: 20px;
+        margin: 6px 0 8px;
     }
 
     .cust_chatbot_icon{
         flex-direction: column !important;
     }
-    
+
     .cust_chatbot_blocks{
         width: fit-content !important;
         flex-direction: column;
     }
 
-    .cust_chatbot_title{
-        justify-content: start;
-        align-items: start;
+    .ai-chatbot-card-wrapper .divider-ai {
+        margin: 0;
     }
 
-    .cust_chatbot_card{
-        padding-top: 0;
-        gap: 16px;
+    .ai-chatbot-card-wrapper .field,
+    .ai-chatbot-card-wrapper .w-1\/3 {
+        width: 160px;
     }
 
-    .cust_chatbot_second_card{
-        gap: 16px;
+    .ai-chatbot-card-wrapper .Polaris-Select__Input,
+    .ai-chatbot-card-wrapper .Polaris-Select__Content {
+        min-height: 34px;
+    }
+
+    .ai-chatbot-preview-section {
+        padding-top: 18px;
+    }
+
+    .ai-chatbot-preview-section .media-card {
+        width: 206px;
+        min-width: 0;
+    }
+
+    .ai-chatbot-preview-section .ck-preview-header {
+        margin-bottom: 10px;
     }
 }

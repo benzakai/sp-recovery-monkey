@@ -35,10 +35,10 @@ export default function ChatbotSettingsSection({
     ];
 
     return (
-        <div className='setting-block'>
-            <div className='ai_left_side_section_parent'>
-            <div className='settings_secion-1 ai_parent first-card cust_chatbot_card'>
-                <div className='start_main_container_sub_heading left-content'>
+        <div className='setting-block ai-chatbot-settings-section'>
+            <div className='ai_left_side_section_parent ai-chatbot-left-section'>
+            <div className='settings_secion-1 ai_parent first-card cust_chatbot_card ai-chatbot-settings-card'>
+                <div className='start_main_container_sub_heading left-content ai-chatbot-section-copy'>
                     <p className="text-[13px] font-semibold mb-[6px]">
                         {t("aiSettings.chatbotSettings")}
                     </p>
@@ -46,7 +46,7 @@ export default function ChatbotSettingsSection({
                         {t("aiSettings.chatbotSettingsDescription")}
                     </p>
                 </div>
-                <div className='ai-card-wrapper'>
+                <div className='ai-card-wrapper ai-chatbot-card-wrapper'>
                     
                         <BlockStack gap="400">
                             <Card roundedAbove="sm">
@@ -143,8 +143,8 @@ export default function ChatbotSettingsSection({
                         </BlockStack>
                 </div>
             </div>
-            <div className='settings_secion-1 ai_parent first-card second-card mt-4 cust_chatbot_second_card'>
-                <div className='start_main_container_sub_heading left-content'>
+            <div className='settings_secion-1 ai_parent first-card second-card mt-4 cust_chatbot_second_card ai-chatbot-settings-card ai-chatbot-sync-card'>
+                <div className='start_main_container_sub_heading left-content ai-chatbot-section-copy'>
                     <p className="text-[13px] font-semibold mb-[6px]">
                         {t("aiSettings.trainingTopicsTitle")}
                     </p>
@@ -152,7 +152,7 @@ export default function ChatbotSettingsSection({
                         {t("aiSettings.trainingTopicsDescription")}
                     </p>
                 </div>
-                <div className='ai-card-wrapper'>
+                <div className='ai-card-wrapper ai-chatbot-card-wrapper'>
                     <BlockStack gap="400">
 
                         {/* <Card roundedAbove="sm">
@@ -242,7 +242,7 @@ export default function ChatbotSettingsSection({
                 </div>
             </div>
             </div>
-            <div className='ai_right_side_section_parent'>
+            <div className='ai_right_side_section_parent ai-chatbot-preview-section'>
             <ChatFeaturePreview aiSettings={aiSettings} />
             </div>
         </div>
