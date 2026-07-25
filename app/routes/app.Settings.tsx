@@ -23,6 +23,11 @@ export const action = async ({ request }: any) => {
     const selectedAppLanugage = formData.get("selectedAppLanugage");
     const planName = formData.get("planName");
     let savedLanguage;
+    const isTestStore = [
+        "nextgen-store-2.myshopify.com",
+        "cartkeeper-dev-store.myshopify.com",
+    ].includes(session.shop);
+    
     if (actionType === "languageChange") {
         const existingLanguage = await db.appLanguages.findUnique({
             where: {
@@ -50,12 +55,12 @@ export const action = async ({ request }: any) => {
         if (planName === "Free") {
             const { hasActivePayment, appSubscriptions } = await billing.check({
                 plans: [STARTER_PLAN, PRO_PLAN, ADVANCE_PLAN, STARTER_PLAN_YEARLY, PRO_PLAN_YEARLY, ADVANCE_PLAN_YEARLY],
-                isTest: session.shop === "sprecoverymonkey.myshopify.com" ? true : false,
+                isTest: isTestStore,
             });
             const subscription = appSubscriptions?.[0];
             const cancelledSubscription = await billing.cancel({
                 subscriptionId: subscription.id,
-                isTest: session.shop === "sprecoverymonkey.myshopify.com" ? true : false,
+                isTest: isTestStore,
                 // prorate: true,
             });
             // console.log("cancelledSubscription", cancelledSubscription);
@@ -69,11 +74,11 @@ export const action = async ({ request }: any) => {
         } else {
             const okay = await billing.require({
                 plans: [planName],
-                isTest: session.shop === "sprecoverymonkey.myshopify.com" ? true : false,
+                isTest: isTestStore,
                 trialDays: 0,
                 onFailure: async () => billing.request({
                     plan: planName,
-                    isTest: session.shop === "sprecoverymonkey.myshopify.com" ? true : false,
+                    isTest: isTestStore,
                     trialDays: 0
                 }),
             });
