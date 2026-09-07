@@ -68,7 +68,7 @@ const WelcomeConnect = () => {
         console.log("stateInstance on interval ", stateInstance, instance)
         if (stateInstance !== 'authorized' && instance?.apiUrl && instance?.idInstance && instance?.apiTokenInstance) {
             intervalId = setInterval(async () => {
-                await fetchQR({ url: instance?.apiUrl, id: instance?.idInstance, token: instance?.apiTokenInstance });
+                await fetchQR({ url: instance?.apiUrl, id: instance?.idInstance, token: instance?.apiTokenInstance, provider: instance?.provider });
             }, 3000);
         }
         // console.log("stateInstance==========>", stateInstance);
@@ -129,14 +129,14 @@ const WelcomeConnect = () => {
     };
 
 
-    const fetchPhoneNumber = async ({ url, id, token }: any) => {
+    const fetchPhoneNumber = async ({ url, id, token, provider }: any) => {
         const response = await fetch('/api/fetchPhoneNumber', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                url, id, token
+                url, id, token, provider
             }),
         });
         const data = await response.json();
@@ -189,9 +189,9 @@ const WelcomeConnect = () => {
     //     }
     // };
 
-    const savePubSubAndDBData = async ({ url, id, token }: any) => {
+    const savePubSubAndDBData = async ({ url, id, token, provider }: any) => {
         try {
-            const phoneNumberData = await fetchPhoneNumber({ url, id, token });
+            const phoneNumberData = await fetchPhoneNumber({ url, id, token, provider });
             setPubsubData(async (prevState) => {
                 const updatedData = {
                     ...prevState,
@@ -200,6 +200,7 @@ const WelcomeConnect = () => {
                     phoneNumber: phoneNumberData?.reponseData?.phone,
                     greenAPIKey: token,
                     greenAPIUrl: url,
+                    provider,
                 };
                 await sendDataToPubSub(updatedData);
                 await setDataInFirestore('ConnectPagedata', `${updatedData?.storeId}`, updatedData);
@@ -210,7 +211,7 @@ const WelcomeConnect = () => {
         }
     }
 
-    const fetchQR = async ({ url, id, token }: any) => {
+    const fetchQR = async ({ url, id, token, provider }: any) => {
         try {
             // console.log("fetcQR    url, id, token", url, id, token);
             const response = await fetch('/api/fetchQR', {
@@ -218,7 +219,7 @@ const WelcomeConnect = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ url, id, token }),
+                body: JSON.stringify({ url, id, token, provider }),
             });
             if (response.ok) {
                 const data = await response.json();
@@ -227,14 +228,14 @@ const WelcomeConnect = () => {
                     window.location.reload()
                 }
 
-                if (data.qrData?.type === 'qrCode') {
+                if (data.qrData?.type === 'qrCode' && data.qrData?.message) {
                     setQRCode(`data:image/png;base64,${data.qrData.message}`);
                     updateGreenApiInstanceStatus('notAuthorized');
                     manageOnboarding({ data: { step1: { connectWhatsapp: false } }, shop });
                 } else if (data.qrData?.type === 'alreadyLogged') {
                     updateGreenApiInstanceStatus('authorized');
                     manageOnboarding({ data: { step1: { connectWhatsapp: true } }, shop });
-                    savePubSubAndDBData({ url, id, token })
+                    savePubSubAndDBData({ url, id, token, provider })
                 }
             }
         } catch (error) {
@@ -307,6 +308,11 @@ const WelcomeConnect = () => {
                 // await handleFetchAbandonedCheckouts(false)
                 // savePubSubAndDBData({ url, id, token, argTopics: ["disconnecting"] })
                 updateGreenApiInstanceStatus("notAuthorized")
+                setQRCode('')
+                // Re-resolve the instance now that it's disconnected — this is what lets
+                // resolveInstanceForConnect pick up a whatsAppStrategy change and switch
+                // provider immediately, instead of only on the next full page reload.
+                await fetchDataAndFetchQR()
             }
         } catch (error) {
             console.log("error occured on disconnectInstance", error);
@@ -348,7 +354,7 @@ const WelcomeConnect = () => {
             // setStateInstance('authorized');
             // console.log("isInstanceAuthorized triggger", isInstanceAuthorized);
             // await handleFetchAbandonedCheckouts(isInstanceAuthorized);
-            return { url: instanceData.apiUrl, id: instanceData.idInstance, token: instanceData.apiTokenInstance }
+            return { url: instanceData.apiUrl, id: instanceData.idInstance, token: instanceData.apiTokenInstance, provider: instanceData.provider }
         } catch (error) {
             console.log("got error on getFireData", error);
         }
@@ -356,9 +362,9 @@ const WelcomeConnect = () => {
 
     const fetchDataAndFetchQR = async () => {
         try {
-            const { url, id, token }: any = await getFireData();
+            const { url, id, token, provider }: any = await getFireData();
             if (url && id && token) {
-                await fetchQR({ url, id, token });
+                await fetchQR({ url, id, token, provider });
             } else {
                 console.error('Missing URL, ID, or Token');
             }
@@ -446,7 +452,7 @@ const WelcomeConnect = () => {
                                         {isShowConnectionStatus ? <>
                                             {stateInstance === "authorized" ? (
                                                 <>
-                                                    <div className='flex justify-center mt-6'>
+                                                    <div className='flex justify-center mt-6 lg:mb-8'>
                                                         <AlienSVG />
                                                     </div>
                                                     <div className='p-4 md:p-5 text-center md:text-left'>
@@ -454,7 +460,7 @@ const WelcomeConnect = () => {
                                                             {t("dashboard.getQrDescription")}
                                                         </p>
                                                     </div>
-                                                    <div className='mt-6 flex justify-center'>
+                                                    <div className='mt-6 lg:mt-12 flex justify-center'>
                                                         <Button
                                                             onClick={() => disconnectInstance(instance?.apiUrl, instance?.idInstance, instance?.apiTokenInstance, false)}
                                                             disabled={isDisBtnLoading}
@@ -497,7 +503,7 @@ const WelcomeConnect = () => {
                                             )}
                                         </> :
                                             <>
-                                                <div className='flex justify-center mt-6'>
+                                                <div className='flex justify-center mt-6 lg:mb-8'>
                                                     <AlienSVG />
                                                 </div>
                                                 <div className='p-4 md:p-5 text-center md:text-left'>
@@ -505,7 +511,7 @@ const WelcomeConnect = () => {
                                                         {t("dashboard.connectedDescription")}
                                                     </p>
                                                 </div>
-                                                <div className='mt-2 flex justify-center'>
+                                                <div className='mt-2 lg:mt-12 flex justify-center'>
                                                     <Button
                                                         variant="primary"
                                                         size="large"

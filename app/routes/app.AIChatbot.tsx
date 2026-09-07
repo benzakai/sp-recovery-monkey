@@ -182,6 +182,7 @@ const AIChatbot = () => {
             storeId: instanceResponseData.instance.shop,
             greenAPIKey: instanceResponseData.instance?.apiTokenInstance,
             greenAPIUrl: instanceResponseData.instance.apiUrl,
+            provider: instanceResponseData.instance?.provider,
         }
         // console.log("message", message);
         const pubSubRespone = await fetch('/api/sendPubSubData', {

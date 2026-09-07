@@ -66,6 +66,7 @@ async function publishInChunks({
     storeId: instance.shop,
     greenAPIKey: instance.apiTokenInstance,
     greenAPIUrl: instance.apiUrl,
+    provider: instance.provider,
   };
   console.log("PUBLISHING MESSAGE TO PUBSUB >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", message)
     await publishMessagePubSubService(

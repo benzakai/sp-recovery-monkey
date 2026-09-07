@@ -24,7 +24,7 @@ export const action = async ({ request }: any) => {
     const shop = session.shop;
 
     const incomingData = await request.json();
-    console.log("incoming data:", incomingData);
+    // console.log("incoming data:", incomingData);
 
     const docRef = firestoreDatabase.collection("onboardingProgress").doc(shop);
     const docSnap = await docRef.get();

@@ -13,6 +13,7 @@ import { fetchCustomerDataService } from "~/services/webhooks/handlers/fetchCust
 import { processCKSales } from "~/services/webhooks/orderHandlers/processOrders";
 import fireStoreUpdateService from "~/services/fireStoreUpdateService";
 import { handleBulkOperationFinish } from "~/services/webhooks/bulkOperationHandlers/handleBulkOperationFinish";
+import { logoutInstance, deleteInstanceAccount } from "~/services/instance/instanceService";
 
 const firestoreDatabase = new Firestore();
 const checkoutCollection = firestoreDatabase.collection('users');
@@ -417,20 +418,14 @@ const processWebhookTopic = async (topic: string, payload: any, shop: string, se
         try {
           const instanceData = await fireStoreFetchService("InstanceData", shop);
           if (instanceData?.idInstance) {
-            const responseDeleteInstance = await fetch(
-              `${process.env.PARTNER_API_URL}/partner/deleteInstanceAccount/${process.env.PARTNER_TOKEN}`,
-              {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ idInstance: instanceData.idInstance })
-              }
-            );
+            await logoutInstance(instanceData);
+            const deleted = await deleteInstanceAccount(instanceData);
 
-            if (responseDeleteInstance.ok) {
+            if (deleted) {
               await fireStoreDeleteService("InstanceData", shop);
               console.log(`[APP_UNINSTALLED] Instance deleted for ${shop}`);
             } else {
-              console.warn(`[APP_UNINSTALLED] Instance API returned status ${responseDeleteInstance.status}`);
+              console.warn(`[APP_UNINSTALLED] Instance API returned a failure for ${shop}`);
             }
           }
         } catch (instanceError) {

@@ -27,7 +27,7 @@ export const action = async ({ request }: any) => {
         "nextgen-store-2.myshopify.com",
         "cartkeeper-dev-store.myshopify.com",
     ].includes(session.shop);
-    
+
     if (actionType === "languageChange") {
         const existingLanguage = await db.appLanguages.findUnique({
             where: {
@@ -298,6 +298,7 @@ const Settings = () => {
             storeId: instanceResponseData.instance.shop,
             greenAPIKey: instanceResponseData.instance?.apiTokenInstance,
             greenAPIUrl: instanceResponseData.instance.apiUrl,
+            provider: instanceResponseData.instance?.provider,
         }
         const pubSubRespone = await fetch('/api/sendPubSubData', {
             method: 'POST',
