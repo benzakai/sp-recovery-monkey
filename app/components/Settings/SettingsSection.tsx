@@ -25,6 +25,7 @@ export default function SettingsSection({
         { label: t("settings.durationLable20Min"), value: 'After 20 min' },
         { label: t("settings.durationLable25Min"), value: 'After 25 min' },
         { label: t("settings.durationLable30Min"), value: 'After 30 min' },
+        { label: t("settings.durationLable60Min"), value: 'After 60 min' },
     ];
     const followUpMessageDuration = [
         { label: t("settings.messageDurationLable24Hours"), value: 'After 24 hours' },
