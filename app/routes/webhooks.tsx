@@ -467,7 +467,13 @@ const processWebhookTopic = async (topic: string, payload: any, shop: string, se
 
         const documentRef = SubscriptionsCollection.doc(shop);
 
-        if (!subscriptionDataFound || (subscriptionDataFound?.name !== "Free" && incomingStatus !== "CANCELLED")) {
+        // EXPIRED/DECLINED/PENDING belong to charges the merchant never approved, they must not overwrite a plan that is already active
+        const isUnapprovedCharge = ["EXPIRED", "DECLINED", "PENDING"].includes(incomingStatus);
+
+        if (isUnapprovedCharge && subscriptionDataFound?.status === "ACTIVE") {
+          console.log(`[APP_SUBSCRIPTIONS_UPDATE] Skipped ${incomingStatus} webhook for ${incomingPlan}, keeping active plan: ${subscriptionDataFound?.plan}`);
+        }
+        else if (!subscriptionDataFound || (subscriptionDataFound?.name !== "Free" && incomingStatus !== "CANCELLED")) {
           const setStart = Date.now();
           await setSubscriptionData(payload, shop);
           logTiming(`[APP_SUBSCRIPTIONS_UPDATE] Set subscription data`, setStart, { plan: incomingPlan, status: incomingStatus });

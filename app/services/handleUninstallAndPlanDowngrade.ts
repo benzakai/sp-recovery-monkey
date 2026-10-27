@@ -1,6 +1,7 @@
 import { Firestore } from "@google-cloud/firestore";
 import fireStoreDeleteService from "./fireStoreDeleteService";
 import firestoreDeleteSubcollections from "./firestoreDeleteSubcollections";
+import { isProPlanOrHigher } from "~/utils/plans";
 
 const firestoreDatabase = new Firestore();
 
@@ -67,8 +68,8 @@ export default async function handleUninstallAndPlanDowngrade(): Promise<boolean
                 const manualPlan = permissionsData?.manualPlan;
 
                 const isActiveProPlan = (
-                    ((plan === "Pro" || plan === "Advance") && status === "ACTIVE") ||
-                    manualPlan === "Pro"
+                    (isProPlanOrHigher(plan) && status === "ACTIVE") ||
+                    isProPlanOrHigher(manualPlan)
                 );
 
                 if (!isActiveProPlan) {

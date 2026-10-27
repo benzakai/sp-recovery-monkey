@@ -64,6 +64,16 @@ const jobSixth = CronJob.from({
     timeZone: 'America/Los_Angeles'
 });
 
+const jobSeventh = CronJob.from({
+    cronTime: '30 23 * * *',  // This runs at 11:30 PM every day, before uninstall-planDowngrade reads the plans
+    onTick: async function () {
+        console.log("CRON JOB STARTING jobSeventh for cron/syncSubscriptions", new Date());
+        const response = await axios.get(process.env.CRON_API_SEVENTH_URL);
+    },
+    start: true,
+    timeZone: 'America/Los_Angeles'
+});
+
 
 
 const app = express();
