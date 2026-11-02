@@ -1,4 +1,5 @@
-import { ActionFunctionArgs } from "@remix-run/node";
+import type { ActionFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { resolveInstanceForConnect } from "~/services/instance/instanceService";
 import { authenticate } from "~/shopify.server";
 
@@ -10,6 +11,6 @@ export async function loader({ request }: ActionFunctionArgs) {
     return { instance };
   } catch (error: any) {
     console.error("Error fetching instance data:", error);
-    return { error: error.message };
+    return json({ error: error.message }, { status: 503 });
   }
 }

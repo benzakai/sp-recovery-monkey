@@ -334,7 +334,7 @@ const AIChatbot = () => {
                 isLoading={isSaveButtonLoading}
                 onDiscard={handleDiscardChanges}
                 saveText={t("settings.messageBoxSaveButton")}
-                discardText={t("settings.discard")}
+                discardText={t("aiSettings.discard")}
                 variant="primary"
                 id="ai-settings-save-bar"
             />

@@ -68,7 +68,7 @@ const WelcomeConnect = () => {
         console.log("stateInstance on interval ", stateInstance, instance)
         if (stateInstance !== 'authorized' && instance?.apiUrl && instance?.idInstance && instance?.apiTokenInstance) {
             intervalId = setInterval(async () => {
-                await fetchQR({ url: instance?.apiUrl, id: instance?.idInstance, token: instance?.apiTokenInstance, provider: instance?.provider });
+                await fetchQR();
             }, 3000);
         }
         // console.log("stateInstance==========>", stateInstance);
@@ -170,6 +170,9 @@ const WelcomeConnect = () => {
         try {
             const response = await fetch('/api/getInstance');
             const data = await response.json();
+            if (!response.ok || !data.instance) {
+                throw new Error(data.error || "Failed to load WhatsApp connection");
+            }
             setInstance(data.instance);
             return data.instance
         } catch (error) {
@@ -211,7 +214,7 @@ const WelcomeConnect = () => {
         }
     }
 
-    const fetchQR = async ({ url, id, token, provider }: any) => {
+    const fetchQR = async () => {
         try {
             // console.log("fetcQR    url, id, token", url, id, token);
             const response = await fetch('/api/fetchQR', {
@@ -219,10 +222,19 @@ const WelcomeConnect = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ url, id, token, provider }),
             });
             if (response.ok) {
                 const data = await response.json();
+                const resolvedInstance = data.instance;
+                if (!resolvedInstance) return;
+                setInstance((previous: any) =>
+                    previous?.idInstance === resolvedInstance.idInstance &&
+                    previous?.apiUrl === resolvedInstance.apiUrl &&
+                    previous?.apiTokenInstance === resolvedInstance.apiTokenInstance &&
+                    previous?.provider === resolvedInstance.provider
+                        ? previous
+                        : resolvedInstance
+                );
                 // console.log("data of fetchQR", data);
                 if (data?.error?.includes("is deleted")) {
                     window.location.reload()
@@ -235,7 +247,12 @@ const WelcomeConnect = () => {
                 } else if (data.qrData?.type === 'alreadyLogged') {
                     updateGreenApiInstanceStatus('authorized');
                     manageOnboarding({ data: { step1: { connectWhatsapp: true } }, shop });
-                    savePubSubAndDBData({ url, id, token, provider })
+                    savePubSubAndDBData({
+                        url: resolvedInstance.apiUrl,
+                        id: resolvedInstance.idInstance,
+                        token: resolvedInstance.apiTokenInstance,
+                        provider: resolvedInstance.provider,
+                    })
                 }
             }
         } catch (error) {
@@ -309,9 +326,8 @@ const WelcomeConnect = () => {
                 // savePubSubAndDBData({ url, id, token, argTopics: ["disconnecting"] })
                 updateGreenApiInstanceStatus("notAuthorized")
                 setQRCode('')
-                // Re-resolve the instance now that it's disconnected — this is what lets
-                // resolveInstanceForConnect pick up a whatsAppStrategy change and switch
-                // provider immediately, instead of only on the next full page reload.
+                // Re-resolve after logout so a legacy store gets its Greener QR
+                // immediately, regardless of its saved whatsAppStrategy.
                 await fetchDataAndFetchQR()
             }
         } catch (error) {
@@ -347,7 +363,7 @@ const WelcomeConnect = () => {
                 // await getMessageData()
             } else if (stateInstanceData?.responseData?.stateInstance == 'notAuthorized') {
                 // updateGreenApiInstanceStatus('notAuthorized');
-                deleteConnectPageData();
+                await deleteConnectPageData();
             }
             // const isInstanceAuthorized = stateInstanceData?.responseData?.stateInstance === 'authorized'
             // const isInstanceAuthorized1 = true
@@ -362,9 +378,9 @@ const WelcomeConnect = () => {
 
     const fetchDataAndFetchQR = async () => {
         try {
-            const { url, id, token, provider }: any = await getFireData();
+            const { url, id, token }: any = await getFireData();
             if (url && id && token) {
-                await fetchQR({ url, id, token, provider });
+                await fetchQR();
             } else {
                 console.error('Missing URL, ID, or Token');
             }

@@ -7,31 +7,25 @@ interface ProviderConfig {
     stateMethod: "getWaSettings" | "getStateInstance";
 }
 
-// Greener is the default for every store. Green-API stays in place as the manual
-// fallback: set whatsAppStrategy = "legacy" on Firestore settings/<shop> to put that
-// store back on Green-API. The switch only takes effect once the store is no longer
-// authorized, so it never interrupts a live connection.
-export function resolveStrategy(whatsAppStrategy: string | null | undefined): Provider {
-    if (whatsAppStrategy === "legacy") return "legacy";
-
-    // Never default a store onto Greener in an environment where it isn't configured —
-    // a missing env var should degrade to Green-API, not break every new install.
-    const greenerConfigured = Boolean(
-        process.env.GREENER_API_BASE_URL && process.env.GREENER_PARTNER_TOKEN
-    );
-    return greenerConfigured ? "greener" : "legacy";
-}
-
 export function getProviderConfig(provider: Provider): ProviderConfig {
     if (provider === "greener") {
+        const partnerApiUrl = process.env.GREENER_API_BASE_URL?.trim();
+        const partnerToken = process.env.GREENER_PARTNER_TOKEN?.trim();
+
+        if (!partnerApiUrl || !partnerToken) {
+            throw new Error("Greener is not configured. Set GREENER_API_BASE_URL and GREENER_PARTNER_TOKEN before connecting WhatsApp.");
+        }
+
         return {
-            partnerApiUrl: process.env.GREENER_API_BASE_URL as string,
-            partnerToken: process.env.GREENER_PARTNER_TOKEN as string,
+            partnerApiUrl,
+            partnerToken,
             qrMethod: "getQR",
             stateMethod: "getStateInstance",
         };
     }
 
+    // Legacy configuration is only for maintaining and cleaning up existing
+    // Green-API connections. All new instances must be created with Greener.
     return {
         partnerApiUrl: process.env.PARTNER_API_URL as string,
         partnerToken: process.env.PARTNER_TOKEN as string,

@@ -1,4 +1,7 @@
 {
+  "home": {
+    "title": "Home"
+  },
   "global": {
     "planNames": {
       "Free": "Free",

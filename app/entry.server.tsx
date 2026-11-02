@@ -32,7 +32,10 @@ export default async function handleRequest(
     : "onShellReady";
 
   const instance = createInstance();
-  const lng = await i18next.getLocale(request);
+  const savedLanguage = remixContext.staticHandlerContext.loaderData.root?.userSelectedLanguage;
+  const lng = i18n.supportedLngs.includes(savedLanguage)
+    ? savedLanguage
+    : await i18next.getLocale(request);
   const ns = i18next.getRouteNamespaces(remixContext);
 
   await instance

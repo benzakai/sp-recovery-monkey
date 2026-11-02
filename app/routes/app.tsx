@@ -5,12 +5,27 @@ import { boundary } from "@shopify/shopify-app-remix/server";
 import { AppProvider } from "@shopify/shopify-app-remix/react";
 import { NavMenu } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
+import polarisEnglish from "@shopify/polaris/locales/en.json";
+import polarisSpanish from "@shopify/polaris/locales/es.json";
+import polarisPortuguese from "@shopify/polaris/locales/pt-PT.json";
+import polarisFrench from "@shopify/polaris/locales/fr.json";
+import polarisGerman from "@shopify/polaris/locales/de.json";
+import polarisItalian from "@shopify/polaris/locales/it.json";
 import { authenticate } from "../shopify.server";
 import React from "react";
 import { useTranslation } from "react-i18next";
 // import { trackLCP } from "~/utils/lcpTracker";
 
 React.useLayoutEffect = React.useEffect;
+
+const polarisTranslations = {
+  en: polarisEnglish,
+  es: polarisSpanish,
+  pt: polarisPortuguese,
+  fr: polarisFrench,
+  de: polarisGerman,
+  it: polarisItalian,
+};
 
 export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 
@@ -25,7 +40,8 @@ export default function App() {
   const { apiKey } = useLoaderData<typeof loader>();
   const [selectedPlanName, setSelectedPlanName] = React.useState<any>(null);
   const [permissions, setPermissions] = React.useState<any>({})
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const language = (i18n.resolvedLanguage || i18n.language || "en").split("-")[0] as keyof typeof polarisTranslations;
 
   async function fetchPermissions(): Promise<any> {
     try {
@@ -76,7 +92,7 @@ export default function App() {
   //   }, []);
 
   return (
-    <AppProvider isEmbeddedApp apiKey={apiKey}>
+    <AppProvider isEmbeddedApp apiKey={apiKey} i18n={polarisTranslations[language] || polarisEnglish}>
       <NavMenu>
         <Link to="/app" rel="home">{t("home.title")}</Link>
         <Link to="/app/WelcomeConnect">{t("dashboard.title")}</Link>

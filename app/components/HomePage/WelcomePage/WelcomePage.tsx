@@ -67,6 +67,11 @@ export default function WelcomePage({
             label: 'Deutsch',
             value: 'de',
             prefix: <Icon source={LanguageFilledIcon} />,
+        },
+        {
+            label: 'Italiano',
+            value: 'it',
+            prefix: <Icon source={LanguageFilledIcon} />,
         }
     ];
 
