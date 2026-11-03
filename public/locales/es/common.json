@@ -340,7 +340,21 @@
     "yearly": "Anual",
     "month": "Mes",
     "year": "Año",
-    "savePerYear": "/año y ahorrar"
+    "savePerYear": "/año y ahorrar",
+    "orderConfirmationTitle": "Confirmación de pedido",
+    "orderConfirmationDescription": "Redacta aquí un mensaje para enviar a tu cliente la confirmación de su pedido.",
+    "orderConfirmationHeadingText": "Hola [name] 🎉",
+    "orderConfirmationContentText": "¡Gracias por tu pedido! 🛍️\n\nLo hemos recibido y te mantendremos informado mientras lo preparamos. 📦\nTu número de pedido es {{order_number}}.\n\n¡Gracias por comprar en [Store Name]! 💛",
+    "fulfillmentMessageTitle": "Mensajes de notificación de envío",
+    "fulfillmentMessageDescription": "Redacta aquí un mensaje para informar al cliente cuando su pedido haya sido preparado y enviado. Si tu transportista proporciona automáticamente números de seguimiento a tu tienda, puedes mantener la frase sobre el seguimiento. Si no, elimina esa frase.",
+    "fulfillmentMessageHeadingText": "Hola [name]",
+    "fulfillmentMessageContentText": "¡Tu pedido ha sido empaquetado y enviado!\n\nPuedes seguirlo aquí: {{tracking_url}}.\n\n¡Gracias por comprar en [Store Name]!",
+    "reviewRequestTitle": "Mensajes de solicitud de reseña",
+    "reviewRequestDescription": "Redacta aquí un mensaje para pedir a tu cliente que deje una reseña de tu tienda.",
+    "reviewRequestHeadingText": "Hola [name] 😊",
+    "reviewRequestContentText": "¡Esperamos que estés disfrutando de tu compra! 🛍️\n¿Podrías dedicar un momento a dejarnos una reseña? Tu opinión es muy importante para nosotros. ⭐\n{{review_link}}\n\n¡Gracias por comprar en [Store Name]! 💛",
+    "reviewRequestLinkHint": "Reemplaza {{review_link}} por el enlace a la página de reseñas de tu tienda.",
+    "messageSendTimeDescription": "Elige el momento perfecto para enviar este mensaje a tus clientes."
   },
   "aiSettings": {
     "title": "Asistente Personal de IA",

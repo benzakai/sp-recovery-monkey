@@ -11,6 +11,7 @@ import processCustomerUpdate from "~/services/webhooks/handlers/processCustomerU
 import processCustomerDelete from "~/services/webhooks/handlers/processCustomerDelete";
 import { fetchCustomerDataService } from "~/services/webhooks/handlers/fetchCustomerDataService";
 import { processCKSales } from "~/services/webhooks/orderHandlers/processOrders";
+import { processOrderFulfillments } from "~/services/webhooks/orderHandlers/processOrderFulfillments";
 import fireStoreUpdateService from "~/services/fireStoreUpdateService";
 import { handleBulkOperationFinish } from "~/services/webhooks/bulkOperationHandlers/handleBulkOperationFinish";
 import { logoutInstance, deleteInstanceAccount } from "~/services/instance/instanceService";
@@ -542,6 +543,21 @@ const processWebhookTopic = async (topic: string, payload: any, shop: string, se
       } catch (error) {
         console.error(`[ORDERS_PAID ERROR]`, {
           checkoutId: payload?.checkout_id,
+          shop,
+          error: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        });
+      }
+      break;
+
+    case 'ORDERS_UPDATED':
+      try {
+        const orderUpdatedStart = Date.now();
+        await processOrderFulfillments(payload, shop);
+        logTiming(`[ORDERS_UPDATED] Process fulfillments`, orderUpdatedStart, { orderId: payload?.id });
+      } catch (error) {
+        console.error(`[ORDERS_UPDATED ERROR]`, {
+          orderId: payload?.id,
           shop,
           error: error instanceof Error ? error.message : String(error),
           stack: error instanceof Error ? error.stack : undefined,

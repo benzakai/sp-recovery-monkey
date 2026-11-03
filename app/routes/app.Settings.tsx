@@ -100,6 +100,13 @@ export const loader = async ({ request }: any) => {
 
 const languages = ['English', 'Español', 'العربية', 'Português', 'Deutsch', 'Français', 'Italiano']
 
+// Pro messages sent by the external WhatsApp service, saved the same way as followUpMessage
+const proMessageSettings = [
+    { messageKey: "orderConfirmationMessage", durationKey: "durationToSendOrderConfirmation", activatedKey: "isOrderConfirmationActivated", buttonType: "orderConfirmationActivateButton", textKey: "orderConfirmation" },
+    { messageKey: "fulfillmentMessage", durationKey: "durationToSendFulfillmentMessage", activatedKey: "isFulfillmentMessageActivated", buttonType: "fulfillmentMessageActivateButton", textKey: "fulfillmentMessage" },
+    { messageKey: "reviewRequestMessage", durationKey: "durationToSendReviewRequest", activatedKey: "isReviewRequestActivated", buttonType: "reviewRequestActivateButton", textKey: "reviewRequest" },
+];
+
 function areSettingsEqual(a: any, b: any) {
     if (a.durationToSendMessage !== b.durationToSendMessage) return false;
     if (a.durationToSendFollowUpMessage !== b.durationToSendFollowUpMessage) return false;
@@ -108,6 +115,13 @@ function areSettingsEqual(a: any, b: any) {
         a.followUpMessage?.header !== b.followUpMessage?.header ||
         a.followUpMessage?.content !== b.followUpMessage?.content
     ) return false;
+    for (const { messageKey, durationKey } of proMessageSettings) {
+        if (a[durationKey] !== b[durationKey]) return false;
+        if (
+            a[messageKey]?.header !== b[messageKey]?.header ||
+            a[messageKey]?.content !== b[messageKey]?.content
+        ) return false;
+    }
     return true;
 }
 
@@ -133,7 +147,15 @@ const Settings = () => {
         selectedLanguage: "en",
         isDurationToSendMessageActivated: true,
         isSelectedLanguageActivated: false,
-        isDurationToSendFollowUpMessageActivated: false
+        isDurationToSendFollowUpMessageActivated: false,
+        ...Object.fromEntries(proMessageSettings.flatMap(({ messageKey, durationKey, activatedKey, textKey }) => [
+            [messageKey, {
+                header: t(`settings.${textKey}HeadingText`),
+                content: t(`settings.${textKey}ContentText`)
+            }],
+            [durationKey, "After 10 min"],
+            [activatedKey, false],
+        ]))
         // judgeme: "no"
     });
     const [compareSettings, setCompareSettings] = useState(settings);
@@ -150,6 +172,7 @@ const Settings = () => {
         followUpMessageActivateButton: 'isDurationToSendFollowUpMessageActivated',
         durationToSendMessageActivateButton: 'isDurationToSendMessageActivated',
         languageSelectActivateButton: 'isSelectedLanguageActivated',
+        ...Object.fromEntries(proMessageSettings.map(({ buttonType, activatedKey }) => [buttonType, activatedKey])),
     };
 
     useEffect(() => {
@@ -247,7 +270,11 @@ const Settings = () => {
                     followUpMessage: {
                         ...prev.followUpMessage,
                         ...settingsData?.followUpMessage,
-                    }
+                    },
+                    ...Object.fromEntries(proMessageSettings.map(({ messageKey }) => [messageKey, {
+                        ...prev[messageKey],
+                        ...settingsData?.[messageKey],
+                    }]))
                 };
 
                 const isDowngraded =
@@ -255,6 +282,7 @@ const Settings = () => {
                 if (isDowngraded) {
                     updated.isSelectedLanguageActivated = false;
                     updated.isDurationToSendFollowUpMessageActivated = false;
+                    proMessageSettings.forEach(({ activatedKey }) => { updated[activatedKey] = false; });
                 }
 
                 return updated;
@@ -269,12 +297,14 @@ const Settings = () => {
             if (
                 mustDisable &&
                 (settingsData?.isSelectedLanguageActivated ||
-                    settingsData?.isDurationToSendFollowUpMessageActivated)
+                    settingsData?.isDurationToSendFollowUpMessageActivated ||
+                    proMessageSettings.some(({ activatedKey }) => settingsData?.[activatedKey]))
             ) {
                 handleSaveSettings({
                     ...settingsData,
                     isSelectedLanguageActivated: false,
-                    isDurationToSendFollowUpMessageActivated: false
+                    isDurationToSendFollowUpMessageActivated: false,
+                    ...Object.fromEntries(proMessageSettings.map(({ activatedKey }) => [activatedKey, false])),
                 });
             }
         }
@@ -319,7 +349,8 @@ const Settings = () => {
         preferredLanguages,
         isDurationToSendFollowUpMessageActivated,
         isDurationToSendMessageActivated,
-        isSelectedLanguageActivated
+        isSelectedLanguageActivated,
+        ...proMessageValues
         // judgeme 
     }: any) => {
         try {
@@ -333,7 +364,12 @@ const Settings = () => {
                 selectedLanguage: settings.selectedLanguage,
                 isDurationToSendFollowUpMessageActivated,
                 isDurationToSendMessageActivated,
-                isSelectedLanguageActivated
+                isSelectedLanguageActivated,
+                ...Object.fromEntries(proMessageSettings.flatMap(({ messageKey, durationKey, activatedKey }) => [
+                    [messageKey, proMessageValues[messageKey] || settings[messageKey]],
+                    [durationKey, proMessageValues[durationKey] || settings[durationKey]],
+                    [activatedKey, Boolean(proMessageValues[activatedKey])],
+                ]))
                 // judgeme
             };
             console.log('settingsData.................>', settingsData)
@@ -348,7 +384,7 @@ const Settings = () => {
             const responsedata = await response.json();
             if (responsedata.success) {
                 sendPubSubData(settingsData)
-                setCompareSettings({ ...settings, isDurationToSendMessageActivated, isDurationToSendFollowUpMessageActivated, isSelectedLanguageActivated })
+                setCompareSettings({ ...settings, isDurationToSendMessageActivated, isDurationToSendFollowUpMessageActivated, isSelectedLanguageActivated, ...Object.fromEntries(proMessageSettings.map(({ activatedKey }) => [activatedKey, Boolean(proMessageValues[activatedKey])])) })
                 shopify.toast.show(t("global.toastMessage.successSettingsSaved"))
                 return { success: true }
             } else {

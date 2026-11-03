@@ -340,7 +340,21 @@
         "yearly": "Jährlich",
         "month": "Monat",
         "year": "Jahr",
-        "savePerYear": "/Jahr und sparen"
+        "savePerYear": "/Jahr und sparen",
+        "orderConfirmationTitle": "Bestellbestätigung",
+        "orderConfirmationDescription": "Verfasse hier eine Nachricht, um deinem Kunden eine Bestellbestätigung zu senden.",
+        "orderConfirmationHeadingText": "Hallo [name] 🎉",
+        "orderConfirmationContentText": "Vielen Dank für deine Bestellung! 🛍️\n\nWir haben sie erhalten und halten dich auf dem Laufenden, während sie vorbereitet wird. 📦\nDeine Bestellnummer lautet {{order_number}}.\n\nDanke für deinen Einkauf bei [Store Name]! 💛",
+        "fulfillmentMessageTitle": "Versandbenachrichtigungen",
+        "fulfillmentMessageDescription": "Verfasse hier eine Nachricht, um den Kunden zu informieren, sobald seine Bestellung versandt wurde. Wenn dein Versanddienstleister deinem Shop automatisch Sendungsnummern bereitstellt, kannst du den Satz zur Sendungsverfolgung beibehalten. Andernfalls entferne diesen Satz.",
+        "fulfillmentMessageHeadingText": "Hallo [name]",
+        "fulfillmentMessageContentText": "Deine Bestellung wurde verpackt und versandt!\n\nDu kannst sie hier verfolgen: {{tracking_url}}.\n\nDanke für deinen Einkauf bei [Store Name]!",
+        "reviewRequestTitle": "Bewertungsanfragen",
+        "reviewRequestDescription": "Verfasse hier eine Nachricht, um deinen Kunden um eine Bewertung deines Shops zu bitten.",
+        "reviewRequestHeadingText": "Hallo [name] 😊",
+        "reviewRequestContentText": "Wir hoffen, du hast Freude an deinem Einkauf! 🛍️\nWürdest du dir kurz Zeit nehmen, uns eine Bewertung zu hinterlassen? Dein Feedback bedeutet uns sehr viel. ⭐\n{{review_link}}\n\nDanke für deinen Einkauf bei [Store Name]! 💛",
+        "reviewRequestLinkHint": "Ersetze {{review_link}} durch den Link zur Bewertungsseite deines Shops.",
+        "messageSendTimeDescription": "Lege den perfekten Zeitpunkt fest, um diese Nachricht an deine Kunden zu senden."
     },
     "aiSettings": {
         "title": "KI-Persönlicher Assistent",

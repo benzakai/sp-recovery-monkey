@@ -3,6 +3,7 @@ import React from 'react'
 import SkeletonLoading from './SkeletonLoading'
 import SettingsSecondBlock from './SettingsSecondBlock'
 import MultiselectTagCombobox from '../MultiselectTagCombobox'
+import MessageSettingCard from './MessageSettingCard'
 
 export default function SettingsSection({
     t,
@@ -27,6 +28,19 @@ export default function SettingsSection({
         { label: t("settings.durationLable30Min"), value: 'After 30 min' },
         { label: t("settings.durationLable60Min"), value: 'After 60 min' },
     ];
+    const isNotProPlan = !isProPlanOrHigher(selectedPlanName) && !isProPlanOrHigher(permissions?.manualPlan)
+    const messageCardProps = {
+        t,
+        isSettingsLoading,
+        isMessageLoading,
+        settings,
+        setSettings,
+        loading,
+        handleActivateButton,
+        isDisabled: isNotProPlan,
+        durationOptions: options,
+        durationDescription: t("settings.messageSendTimeDescription"),
+    }
     const followUpMessageDuration = [
         { label: t("settings.messageDurationLable24Hours"), value: 'After 24 hours' },
         { label: t("settings.messageDurationLable48Hours"), value: 'After 48 hours' }
@@ -194,6 +208,34 @@ export default function SettingsSection({
                             />
                         )}
                     </Card>
+                    <MessageSettingCard
+                        {...messageCardProps}
+                        title={t("settings.orderConfirmationTitle")}
+                        description={t("settings.orderConfirmationDescription")}
+                        messageKey="orderConfirmationMessage"
+                        durationKey="durationToSendOrderConfirmation"
+                        activatedKey="isOrderConfirmationActivated"
+                        buttonType="orderConfirmationActivateButton"
+                    />
+                    <MessageSettingCard
+                        {...messageCardProps}
+                        title={t("settings.fulfillmentMessageTitle")}
+                        description={t("settings.fulfillmentMessageDescription")}
+                        messageKey="fulfillmentMessage"
+                        durationKey="durationToSendFulfillmentMessage"
+                        activatedKey="isFulfillmentMessageActivated"
+                        buttonType="fulfillmentMessageActivateButton"
+                    />
+                    <MessageSettingCard
+                        {...messageCardProps}
+                        title={t("settings.reviewRequestTitle")}
+                        description={t("settings.reviewRequestDescription")}
+                        messageKey="reviewRequestMessage"
+                        durationKey="durationToSendReviewRequest"
+                        activatedKey="isReviewRequestActivated"
+                        buttonType="reviewRequestActivateButton"
+                        hint={t("settings.reviewRequestLinkHint")}
+                    />
                     {/* <Card roundedAbove="sm">
                         <div className='p-4'>
                             <InlineStack wrap={false} gap="400">
