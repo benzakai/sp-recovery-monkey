@@ -5,6 +5,7 @@ import { useLoaderData, useSubmit, useActionData, useOutletContext } from '@remi
 import { authenticate, STARTER_PLAN, PRO_PLAN, ADVANCE_PLAN, ADVANCE_PLAN_YEARLY, PRO_PLAN_YEARLY, STARTER_PLAN_YEARLY } from "../shopify.server";
 import fireStoreCreateService from '~/services/fireStoreCreateService';
 import { isProPlanOrHigher } from '~/utils/plans';
+import { normalizeSettingsMessageTemplates, REVIEW_REQUEST_DURATIONS } from '~/utils/messageTemplates';
 import {
     LanguageFilledIcon
 } from '@shopify/polaris-icons';
@@ -153,7 +154,7 @@ const Settings = () => {
                 header: t(`settings.${textKey}HeadingText`),
                 content: t(`settings.${textKey}ContentText`)
             }],
-            [durationKey, "After 10 min"],
+            [durationKey, durationKey === "durationToSendReviewRequest" ? REVIEW_REQUEST_DURATIONS[0] : "After 10 min"],
             [activatedKey, false],
         ]))
         // judgeme: "no"
@@ -288,7 +289,9 @@ const Settings = () => {
                 return updated;
             };
 
-            setSettings((prev: any) => mergedSettings(prev));
+            setSettings((prev: any) => normalizeSettingsMessageTemplates(mergedSettings(prev)));
+            // Keep the saved version for comparison so legacy tokens and timings can be saved
+            // through the normal Save bar without resetting any custom wording.
             setCompareSettings((prev: any) => mergedSettings(prev));
 
             const mustDisable =
@@ -355,7 +358,7 @@ const Settings = () => {
     }: any) => {
         try {
             setSaveButtonLoading("doLoad")
-            const settingsData = {
+            const settingsData = normalizeSettingsMessageTemplates({
                 durationToSendMessage,
                 notificationStatus: new Boolean(notificationStatus).toString(),
                 followUpMessage: followUpMessage || "",
@@ -371,7 +374,7 @@ const Settings = () => {
                     [activatedKey, Boolean(proMessageValues[activatedKey])],
                 ]))
                 // judgeme
-            };
+            });
             console.log('settingsData.................>', settingsData)
             const response = await fetch('/api/saveSettings', {
                 method: 'POST',
@@ -383,8 +386,10 @@ const Settings = () => {
 
             const responsedata = await response.json();
             if (responsedata.success) {
-                sendPubSubData(settingsData)
-                setCompareSettings({ ...settings, isDurationToSendMessageActivated, isDurationToSendFollowUpMessageActivated, isSelectedLanguageActivated, ...Object.fromEntries(proMessageSettings.map(({ activatedKey }) => [activatedKey, Boolean(proMessageValues[activatedKey])])) })
+                await sendPubSubData(settingsData);
+                const savedSettings = { ...settings, ...settingsData };
+                setSettings(savedSettings);
+                setCompareSettings(savedSettings);
                 shopify.toast.show(t("global.toastMessage.successSettingsSaved"))
                 return { success: true }
             } else {

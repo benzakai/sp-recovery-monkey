@@ -4,6 +4,7 @@ import SkeletonLoading from './SkeletonLoading'
 import SettingsSecondBlock from './SettingsSecondBlock'
 import MultiselectTagCombobox from '../MultiselectTagCombobox'
 import MessageSettingCard from './MessageSettingCard'
+import { REVIEW_REQUEST_DURATIONS } from '~/utils/messageTemplates'
 
 export default function SettingsSection({
     t,
@@ -45,6 +46,10 @@ export default function SettingsSection({
         { label: t("settings.messageDurationLable24Hours"), value: 'After 24 hours' },
         { label: t("settings.messageDurationLable48Hours"), value: 'After 48 hours' }
     ];
+    const reviewRequestDurationOptions = REVIEW_REQUEST_DURATIONS.map((value, index) => ({
+        label: t(`settings.messageDurationLable${[7, 14, 30][index]}Days`),
+        value,
+    }));
     return (
         <div className='setting-block'>
             <div className='settings_secion-1 setting_right_cart'>
@@ -232,6 +237,7 @@ export default function SettingsSection({
                         description={t("settings.reviewRequestDescription")}
                         messageKey="reviewRequestMessage"
                         durationKey="durationToSendReviewRequest"
+                        durationOptions={reviewRequestDurationOptions}
                         activatedKey="isReviewRequestActivated"
                         buttonType="reviewRequestActivateButton"
                         hint={t("settings.reviewRequestLinkHint")}
