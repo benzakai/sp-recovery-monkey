@@ -101,10 +101,11 @@ export const loader = async ({ request }: any) => {
 
 const languages = ['English', 'Español', 'العربية', 'Português', 'Deutsch', 'Français', 'Italiano']
 
-// Pro messages sent by the external WhatsApp service, saved the same way as followUpMessage
+// Pro messages sent by the external WhatsApp service, saved the same way as followUpMessage.
+// order confirmation and fulfillment are sent right away, so they have no durationKey and no send time is saved for them
 const proMessageSettings = [
-    { messageKey: "orderConfirmationMessage", durationKey: "durationToSendOrderConfirmation", activatedKey: "isOrderConfirmationActivated", buttonType: "orderConfirmationActivateButton", textKey: "orderConfirmation" },
-    { messageKey: "fulfillmentMessage", durationKey: "durationToSendFulfillmentMessage", activatedKey: "isFulfillmentMessageActivated", buttonType: "fulfillmentMessageActivateButton", textKey: "fulfillmentMessage" },
+    { messageKey: "orderConfirmationMessage", activatedKey: "isOrderConfirmationActivated", buttonType: "orderConfirmationActivateButton", textKey: "orderConfirmation" },
+    { messageKey: "fulfillmentMessage", activatedKey: "isFulfillmentMessageActivated", buttonType: "fulfillmentMessageActivateButton", textKey: "fulfillmentMessage" },
     { messageKey: "reviewRequestMessage", durationKey: "durationToSendReviewRequest", activatedKey: "isReviewRequestActivated", buttonType: "reviewRequestActivateButton", textKey: "reviewRequest" },
 ];
 
@@ -117,7 +118,7 @@ function areSettingsEqual(a: any, b: any) {
         a.followUpMessage?.content !== b.followUpMessage?.content
     ) return false;
     for (const { messageKey, durationKey } of proMessageSettings) {
-        if (a[durationKey] !== b[durationKey]) return false;
+        if (durationKey && a[durationKey] !== b[durationKey]) return false;
         if (
             a[messageKey]?.header !== b[messageKey]?.header ||
             a[messageKey]?.content !== b[messageKey]?.content
@@ -154,7 +155,7 @@ const Settings = () => {
                 header: t(`settings.${textKey}HeadingText`),
                 content: t(`settings.${textKey}ContentText`)
             }],
-            [durationKey, durationKey === "durationToSendReviewRequest" ? REVIEW_REQUEST_DURATIONS[0] : "After 10 min"],
+            ...(durationKey ? [[durationKey, REVIEW_REQUEST_DURATIONS[0]]] : []),
             [activatedKey, false],
         ]))
         // judgeme: "no"
@@ -370,7 +371,7 @@ const Settings = () => {
                 isSelectedLanguageActivated,
                 ...Object.fromEntries(proMessageSettings.flatMap(({ messageKey, durationKey, activatedKey }) => [
                     [messageKey, proMessageValues[messageKey] || settings[messageKey]],
-                    [durationKey, proMessageValues[durationKey] || settings[durationKey]],
+                    ...(durationKey ? [[durationKey, proMessageValues[durationKey] || settings[durationKey]]] : []),
                     [activatedKey, Boolean(proMessageValues[activatedKey])],
                 ]))
                 // judgeme

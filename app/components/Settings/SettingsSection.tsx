@@ -218,7 +218,6 @@ export default function SettingsSection({
                         title={t("settings.orderConfirmationTitle")}
                         description={t("settings.orderConfirmationDescription")}
                         messageKey="orderConfirmationMessage"
-                        durationKey="durationToSendOrderConfirmation"
                         activatedKey="isOrderConfirmationActivated"
                         buttonType="orderConfirmationActivateButton"
                     />
@@ -227,7 +226,6 @@ export default function SettingsSection({
                         title={t("settings.fulfillmentMessageTitle")}
                         description={t("settings.fulfillmentMessageDescription")}
                         messageKey="fulfillmentMessage"
-                        durationKey="durationToSendFulfillmentMessage"
                         activatedKey="isFulfillmentMessageActivated"
                         buttonType="fulfillmentMessageActivateButton"
                     />

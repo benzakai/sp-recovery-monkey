@@ -84,7 +84,8 @@ export default function MessageSettingCard({
                     isActivated={settings[activatedKey]}
                 />
             )}
-            {isSettingsLoading ? (
+            {/* send time is shown only for delayed messages, cards without durationKey are sent right away */}
+            {durationKey && (isSettingsLoading ? (
                 <SkeletonLoading />
             ) : (
                 <SettingsSecondBlock
@@ -104,7 +105,7 @@ export default function MessageSettingCard({
                     title={""}
                     description={durationDescription}
                 />
-            )}
+            ))}
         </Card>
     )
 }
